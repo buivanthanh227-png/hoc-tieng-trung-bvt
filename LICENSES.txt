@@ -1,0 +1,7 @@
+Ứng dụng Học Tiếng Trung được đóng gói từ mã nguồn do người dùng cung cấp.
+
+Dữ liệu từ điển CVDICT: https://github.com/ph0ngp/CVDICT
+Giấy phép dữ liệu: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+Giấy phép: https://creativecommons.org/licenses/by-sa/4.0/
+
+Các thư viện JavaScript bên thứ ba được tải từ CDN theo cấu hình hiện tại có giấy phép riêng của từng dự án.
