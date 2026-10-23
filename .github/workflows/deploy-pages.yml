@@ -1,0 +1,66 @@
+name: Build and deploy Học Tiếng Trung
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Lấy mã nguồn ứng dụng
+        uses: actions/checkout@v4
+
+      - name: Chuẩn bị Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Tải và nhúng bộ từ điển CVDICT
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cvdict
+          urls=(
+            'https://github.com/ph0ngp/CVDICT/raw/refs/heads/main/CVDICT.u8'
+            'https://raw.githubusercontent.com/ph0ngp/CVDICT/main/CVDICT.u8'
+          )
+          downloaded=0
+          for url in "${urls[@]}"; do
+            echo "Đang thử tải dữ liệu từ: $url"
+            if curl --fail --location --retry 3 --retry-all-errors --connect-timeout 20 --max-time 180 "$url" -o /tmp/cvdict/CVDICT.u8; then
+              if python tools/build_site.py /tmp/cvdict/CVDICT.u8; then
+                downloaded=1
+                break
+              fi
+            fi
+          done
+          if [ "$downloaded" -ne 1 ]; then
+            echo 'Không thể xác minh/nhúng đủ ít nhất 120.000 dòng CVDICT. Hủy xuất bản để tránh đưa lên một bản chỉ có từ cơ bản.' >&2
+            exit 1
+          fi
+
+      - name: Cấu hình GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Đóng gói website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Xuất bản website
+        id: deployment
+        uses: actions/deploy-pages@v4
