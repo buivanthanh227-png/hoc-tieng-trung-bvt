@@ -51,7 +51,6 @@
 .practice-write-card .stroke-stage{min-height:210px}
 .practice-write-card .writing-canvas{touch-action:none}
 @media(max-width:520px){.homework-answer .homework-zh{font-size:22px}}
-@media(max-width:520px){input,select,textarea,.field{font-size:16px}.field.small{font-size:14px}.stroke-dialog{max-height:calc(100vh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}}
 
 .read-search-panel{margin:10px 0 12px;padding:11px;border:1px solid var(--line);border-radius:13px;background:#fff}.read-search-title{font-size:12px;font-weight:800;margin:0 0 7px}.read-search-status{font-size:11px;color:var(--muted);line-height:1.45;margin:6px 0 0}.read-result-heading{font-size:11px;font-weight:800;color:#667085;padding:7px 7px 4px}.read-result-hanzi{font-size:19px;font-weight:850;white-space:nowrap}.read-result-meta{flex:1;min-width:0}.read-result-meta small{display:block;font-size:11px;color:var(--muted);line-height:1.4;margin-top:3px;overflow-wrap:anywhere}.read-result-cta{font-size:10px;font-weight:800;color:var(--red);white-space:nowrap}.read-search-panel .field{min-width:0}
 </style>
@@ -164,7 +163,6 @@
   <p class="smallprint" style="margin:12px 0 0">Dữ liệu nét được tải theo từng chữ từ Hanzi Writer Data. Nếu không có dữ liệu cho chữ hiếm, bạn có thể tra bổ sung tại <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>.</p>
  </div>
 </div>
-<!-- EMBEDDED_CVDICT_DATA_SLOT -->
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.29.5/dist/index.min.js"></script>
 <script>
@@ -294,13 +292,13 @@ function parseCVDICT(text){
  return result;
 }
 function mergeRows(rows){const out=buildSeed();const seen=new Set(out.map(r=>r[0]+'|'+r[1]+'|'+keyPinyin(r[2])));for(const raw of rows){if(!Array.isArray(raw)||raw.length<4)continue;const row=[String(raw[0]||''),String(raw[1]||raw[0]||''),String(raw[2]||''),String(raw[3]||''),String(raw[4]||hskFromSeed(raw[0])||'')];if(!row[0]||!row[3])continue;const k=row[0]+'|'+row[1]+'|'+keyPinyin(row[2]);if(seen.has(k))continue;seen.add(k);out.push(row);}return out;}
-function makeSearchRecord(r){const simp=norm(r[0]);return {simp,trad:r[0]===r[1]?simp:norm(r[1]),py:norm(r[2]),meaning:norm(r[3])};}
+function makeSearchRecord(r){const meaningText=String(r[3]||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'d').toLowerCase();return {simp:norm(r[0]),trad:norm(r[1]),py:norm(r[2]),meaning:norm(r[3]),meaningTokens:meaningText.split(/[^\p{L}\p{N}]+/u).filter(Boolean).map(norm),all:norm([r[0],r[1],r[2],r[3]].join(' '))};}
 function searchScoreForRow(i,q){
  if(!q)return 1;const f=searchIndex[i];if(!f)return 0;let best=0;
  const scoreField=(v,target,exact,prefix,inside)=>{if(!v||!target)return 0;if(v===target)return exact;if(v.startsWith(target))return prefix;if(target.length>=3&&v.includes(target))return inside;return 0;};
- best=Math.max(best,scoreField(f.simp,q,140,125,112),scoreField(f.trad,q,138,123,110),scoreField(f.py,q,125,112,96),((q.length>=3||!SEARCH_SYNONYMS[q])?scoreField(f.meaning,q,120,110,98):0));
+ best=Math.max(best,scoreField(f.simp,q,140,125,112),scoreField(f.trad,q,138,123,110),scoreField(f.py,q,125,112,96),((q.length>=3||!SEARCH_SYNONYMS[q])?scoreField(f.meaning,q,120,110,98):0),(f.meaningTokens.includes(q)&&(q.length>=3||!SEARCH_SYNONYMS[q]))?136:0,(q.length>=3||!SEARCH_SYNONYMS[q])&&q.length>=3&&f.meaningTokens.some(w=>w.startsWith(q))?108:0,q.length>=3&&f.all.includes(q)?65:0);
  const expansions=SEARCH_SYNONYMS[q]||[];
- for(const raw of expansions){const x=norm(raw);if(!x)continue;best=Math.max(best,scoreField(f.simp,x,155,140,120),scoreField(f.trad,x,152,138,118),scoreField(f.py,x,125,108,90),scoreField(f.meaning,x,110,98,80));}
+ for(const raw of expansions){const x=norm(raw);if(!x)continue;best=Math.max(best,scoreField(f.simp,x,155,140,120),scoreField(f.trad,x,152,138,118),scoreField(f.py,x,125,108,90),scoreField(f.meaning,x,110,98,80),f.meaningTokens.includes(x)?106:0,x.length>=3&&f.all.includes(x)?68:0);}
  // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
  return best;
 }
@@ -362,42 +360,11 @@ $('cvdict-file').addEventListener('change',async e=>{
 });
 async function init(){
  setDictionary(buildSeed(),'Từ điển tích hợp sẵn');
- const embeddedNode=$('embedded-cvdict-data');
- const embeddedVersion=embeddedNode?.dataset.version||'';
- let cachedVersion='';
- try{cachedVersion=localStorage.getItem('cn-dictionary-version')||'';}catch(e){}
- const hasEmbedded=Boolean(embeddedVersion&&embeddedNode);
- $('dict-status').textContent=hasEmbedded?'📚 Bản phát hành có dữ liệu CVDICT nhúng sẵn; đang kiểm tra bộ từ điển đã lưu trên thiết bị…':'📚 Đã mở bộ từ thông dụng tích hợp sẵn; đang kiểm tra bộ từ điển lớn đã lưu…';
- // Reuse IndexedDB only when it matches the dictionary build published with this page.
- if(!hasEmbedded||cachedVersion===embeddedVersion){
-  try{
-   const cached=await Promise.race([idbGet(),new Promise((_,reject)=>setTimeout(()=>reject(Error('Quá thời gian đọc bộ nhớ cục bộ')),2500))]);
-   if(Array.isArray(cached)&&cached.length>1000){
-    const rows=mergeRows(cached);setDictionary(rows,hasEmbedded?'CVDICT đã lưu':'CVDICT đã lưu');
-    if(embeddedNode)embeddedNode.remove();
-    $('dict-status').className='source-status ok';
-    $('dict-status').textContent='✅ Đã mở bộ từ điển đã lưu ('+rows.length.toLocaleString('vi-VN')+' từ vựng). Có thể tra cứu offline trên thiết bị/trình duyệt này.';
-    return;
-   }
-  }catch(e){$('dict-status').textContent='📚 Bộ từ cơ bản đã sẵn sàng; bộ nhớ cục bộ không phản hồi nhanh. Ứng dụng tiếp tục hoạt động.';}
- }
- if(hasEmbedded){
-  $('dict-status').className='source-status';
-  $('dict-status').textContent='⏳ Đang nạp dữ liệu từ vựng được nhúng sẵn vào ứng dụng; lần đầu có thể mất một chút thời gian trên điện thoại…';
-  await new Promise(resolve=>setTimeout(resolve,30));
-  try{
-   let raw=embeddedNode.textContent||'';
-   if(raw.length<500000)throw Error('Khối dữ liệu CVDICT nhúng vào bị thiếu.');
-   const parsed=parseCVDICT(raw);raw='';embeddedNode.remove();
-   if(parsed.length<120000)throw Error('Chỉ đọc được '+parsed.length.toLocaleString('vi-VN')+' mục từ; cần ít nhất 120.000.');
-   const rows=mergeRows(parsed);setDictionary(rows,'CVDICT nhúng sẵn');
-   $('dict-status').className='source-status ok';
-   $('dict-status').textContent='✅ Đã tích hợp sẵn '+rows.length.toLocaleString('vi-VN')+' từ vựng CVDICT. Không cần tải từ điển từ nguồn ngoài; lần sau có thể mở từ bản lưu trên thiết bị.';
-   try{await idbPut(rows);try{localStorage.setItem('cn-dictionary-version',embeddedVersion);}catch(e){}$('dict-status').textContent+=' Đã lưu bộ từ điển trên thiết bị.';}
-   catch(e){$('dict-status').textContent+=' Dữ liệu vẫn dùng được trong bản ứng dụng này, nhưng trình duyệt không cho lưu bản sao offline riêng.';}
-   $('dict-source-badge').textContent='CVDICT nhúng sẵn';$('top-status').textContent='Từ điển lớn đã tích hợp sẵn';return;
-  }catch(e){$('dict-status').className='source-status error';$('dict-status').textContent='⚠️ Không nạp được dữ liệu nhúng: '+(e?.message||String(e))+'. Bạn vẫn có thể tra bộ từ cơ bản; hãy chạy lại quy trình xuất bản GitHub Pages.';embeddedNode.remove();return;}
- }
+ $('dict-status').textContent='📚 Đã mở bộ từ thông dụng tích hợp sẵn; đang kiểm tra bộ từ điển lớn đã lưu…';
+ try{
+  const cached=await Promise.race([idbGet(),new Promise((_,reject)=>setTimeout(()=>reject(Error('Quá thời gian đọc bộ nhớ cục bộ')),2500))]);
+  if(Array.isArray(cached)&&cached.length>1000){const rows=mergeRows(cached);setDictionary(rows,'CVDICT đã lưu');$('dict-status').className='source-status ok';$('dict-status').textContent='✅ Đã mở bộ từ điển đã lưu ('+rows.length.toLocaleString('vi-VN')+' từ vựng). Có thể tra cứu offline trên thiết bị/trình duyệt này.';return;}
+ }catch(e){$('dict-status').textContent='📚 Bộ từ cơ bản đã sẵn sàng; bộ nhớ cục bộ không phản hồi nhanh. Ứng dụng tiếp tục hoạt động.';}
  if(location.protocol==='file:'){await downloadDictionary();return;}
  await downloadDictionary();
 }
