@@ -29,7 +29,6 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p site
-          # Đưa file index.html có sẵn và các tài nguyên PWA sang thư mục xuất bản
           cp index.html site/
           [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
           [ -f icon.svg ] && cp icon.svg site/ || true
