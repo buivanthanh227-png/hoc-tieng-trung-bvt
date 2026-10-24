@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v15-sentence-storage';
+const CACHE_NAME = 'hoc-trung-app-shell-v16-curated-grammar';
 const APP_FILES = ['./index.html', './manifest.webmanifest', './icon.svg', './sw.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 

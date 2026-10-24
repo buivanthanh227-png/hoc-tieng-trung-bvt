@@ -269,7 +269,7 @@ function restoreSelectedCombine(){
  }catch(e){return 0;}
 }
 const pinyinMap = {'是':'shì','有':'yǒu','没有':'méiyǒu','喜欢':'xǐhuan','爱':'ài','想':'xiǎng','要':'yào','会':'huì','能':'néng','可以':'kěyǐ','学习':'xuéxí','工作':'gōngzuò','说':'shuō','听':'tīng','看':'kàn','读':'dú','写':'xiě','吃':'chī','喝':'hē','买':'mǎi','卖':'mài','去':'qù','来':'lái','回':'huí','做':'zuò','住':'zhù','坐':'zuò','觉得':'juéde','认识':'rènshi','知道':'zhīdào','帮助':'bāngzhù','问':'wèn','回答':'huídá','告诉':'gàosu','给':'gěi','找':'zhǎo','等':'děng','开':'kāi','关':'guān','不':'bù','没':'méi','很':'hěn','在':'zài','吗':'ma','我':'wǒ','你':'nǐ','您':'nín','他':'tā','她':'tā','我们':'wǒmen','你们':'nǐmen','他们':'tāmen','今天':'jīntiān','明天':'míngtiān','昨天':'zuótiān','现在':'xiànzài','是':'shì','的':'de','了':'le','一起':'yìqǐ'};
-const viMap = {'我':'tôi','你':'bạn','您':'ông/bà','他':'anh ấy','她':'cô ấy','我们':'chúng tôi','你们':'các bạn','他们':'họ','爸爸':'bố','妈妈':'mẹ','老师':'giáo viên','学生':'học sinh','同学':'bạn học','医生':'bác sĩ','朋友':'bạn','孩子':'đứa trẻ','中文':'tiếng Trung','汉语':'tiếng Trung','水':'nước','茶':'trà','咖啡':'cà phê','米饭':'cơm','苹果':'quả táo','水果':'trái cây','菜':'món ăn/rau','东西':'đồ vật','钱':'tiền','书':'sách','手机':'điện thoại','电脑':'máy tính','衣服':'quần áo','天气':'thời tiết','学校':'trường học','医院':'bệnh viện','商店':'cửa hàng','饭店':'nhà hàng','书店':'hiệu sách','机场':'sân bay','家':'nhà','中国':'Trung Quốc','北京':'Bắc Kinh','今天':'hôm nay','明天':'ngày mai','昨天':'hôm qua','现在':'bây giờ','每天':'mỗi ngày','是':'là','有':'có','没有':'không có','喜欢':'thích','爱':'yêu','想':'muốn','要':'muốn/cần','会':'biết/có thể','能':'có thể','可以':'có thể','学习':'học','工作':'làm việc','说':'nói','听':'nghe','看':'xem','读':'đọc','写':'viết','吃':'ăn','喝':'uống','买':'mua','卖':'bán','去':'đi','来':'đến','回':'trở về','做':'làm','住':'sống/ở','坐':'ngồi','觉得':'cảm thấy','认识':'quen biết','知道':'biết','帮助':'giúp đỡ','问':'hỏi','回答':'trả lời','告诉':'nói cho biết','给':'cho','找':'tìm','等':'đợi','开':'mở','关':'đóng','好':'tốt','大':'lớn','小':'nhỏ','多':'nhiều','少':'ít','忙':'bận','累':'mệt','高兴':'vui','漂亮':'đẹp','贵':'đắt','便宜':'rẻ','快':'nhanh','慢':'chậm','热':'nóng','冷':'lạnh','好吃':'ngon','不':'không','没':'không/chưa','很':'rất','在':'ở/tại','一起':'cùng nhau'};
+const viMap = {'我':'tôi','你':'bạn','您':'ông/bà','他':'anh ấy','她':'cô ấy','我们':'chúng tôi','你们':'các bạn','他们':'họ','爸爸':'bố','妈妈':'mẹ','老师':'giáo viên','学生':'học sinh','同学':'bạn học','医生':'bác sĩ','朋友':'bạn bè','孩子':'đứa trẻ','中文':'tiếng Trung','汉语':'tiếng Trung','水':'nước','茶':'trà','咖啡':'cà phê','米饭':'cơm','苹果':'quả táo','水果':'trái cây','菜':'món ăn/rau','东西':'đồ vật','钱':'tiền','书':'sách','手机':'điện thoại','电脑':'máy tính','衣服':'quần áo','天气':'thời tiết','学校':'trường','医院':'bệnh viện','商店':'cửa hàng','饭店':'nhà hàng','书店':'hiệu sách','机场':'sân bay','家':'nhà','中国':'Trung Quốc','北京':'Bắc Kinh','今天':'hôm nay','明天':'ngày mai','昨天':'hôm qua','现在':'bây giờ','每天':'mỗi ngày','是':'là','有':'có','没有':'không có','喜欢':'thích','爱':'yêu','想':'muốn','要':'muốn/cần','会':'biết/có thể','能':'có thể','可以':'có thể','学习':'học','工作':'làm việc','说':'nói','听':'nghe','看':'xem','读':'đọc','写':'viết','吃':'ăn','喝':'uống','买':'mua','卖':'bán','去':'đi','来':'đến','回':'trở về','做':'làm','住':'sống/ở','坐':'ngồi','觉得':'cảm thấy','认识':'quen biết','知道':'biết','帮助':'giúp đỡ','问':'hỏi','回答':'trả lời','告诉':'nói cho biết','给':'cho','找':'tìm','等':'đợi','开':'mở','关':'đóng','好':'tốt','大':'lớn','小':'nhỏ','多':'nhiều','少':'ít','忙':'bận','累':'mệt','高兴':'vui','漂亮':'đẹp','贵':'đắt','便宜':'rẻ','快':'nhanh','慢':'chậm','热':'nóng','冷':'lạnh','好吃':'ngon','不':'không','没':'không/chưa','很':'rất','在':'ở/tại','一起':'cùng nhau'};
 const sentenceDeck = [
 {zh:'我喜欢喝茶。',py:'Wǒ xǐhuan hē chá.',vi:'Tôi thích uống trà。'},
 {zh:'你今天忙吗？',py:'Nǐ jīntiān máng ma?',vi:'Hôm nay bạn có bận không?'},
@@ -517,191 +517,311 @@ function normVietnamese(s){return norm(String(s||'').replace(/[.,!?。？！、�
 function verbPhrase(verb,obj,negative=''){const stems={'是':'là','有':'có','没有':'không có','喜欢':'thích','爱':'yêu/thích','想':'muốn','要':'muốn','会':'biết/có thể','能':'có thể','可以':'có thể','学习':'học','工作':'làm việc','说':'nói','听':'nghe','看':'xem','读':'đọc','写':'viết','吃':'ăn','喝':'uống','买':'mua','卖':'bán','去':'đi đến','来':'đến','回':'về','做':'làm','住':'sống ở','坐':'ngồi','觉得':'cảm thấy','认识':'quen biết','知道':'biết','帮助':'giúp đỡ','问':'hỏi','回答':'trả lời','告诉':'nói cho biết','给':'cho','找':'tìm','等':'đợi','开':'mở','关':'đóng','决定':'quyết định','影响':'ảnh hưởng','发展':'phát triển','负责':'chịu trách nhiệm','提高':'nâng cao','减少':'giảm bớt','增加':'tăng thêm','继续':'tiếp tục','完成':'hoàn thành','管理':'quản lý','需要':'cần'};let base=stems[verb]||gloss(verb);if(verb==='是'&&obj)return `là ${gloss(obj)}`;if(verb==='没有')return 'không có'+(obj?' '+gloss(obj):'');if(negative)base='không '+base;if(obj)base+=' '+gloss(obj);return base;}
 function makeChineseSentence(tokens,vi,reason,punctuation='。'){const real=tokens.filter(Boolean);const isQuestion=punctuation==='？';return {zh:real.map(x=>x.zh).join('')+punctuation,py:real.map(x=>x.py).filter(Boolean).join(' '),vi:vi.replace(/[.!?。？！]+$/,'')+(isQuestion?'?':'.'),reason,words:real.map(x=>x.zh)};}
 function buildSentences(){
- const items=[...selectedCombine.entries()].map(([word,item])=>({word,item,role:effectiveRole(item),row:item.row}));
+ // Conservative grammar engine: only known structures and vetted word combinations.
+ // The sentence builder is not a free permutation engine. A token can appear only
+ // when that exact word is in selectedCombine; otherwise the candidate is rejected.
+ const items=[...selectedCombine.entries()].map(([word,item])=>({word,role:effectiveRole(item),row:item.row}));
  if(items.length<2){toast('Hãy chọn ít nhất 2 từ.');return [];}
- const byWord=new Map(items.map(x=>[x.word,x]));
- const unique=a=>[...new Set(a)];
- const roles=(...wanted)=>items.filter(x=>wanted.includes(x.role)).map(x=>x.word);
- const pronouns=new Set(['我','你','您','他','她','我们','你们','他们','它','它们']);
- const people=new Set(['爸爸','妈妈','老师','学生','同学','医生','朋友','孩子','先生','小姐']);
- const subjects=unique([...roles('subject'),...items.filter(x=>people.has(x.word)&&['noun','subject'].includes(x.role)).map(x=>x.word)]);
- const verbs=roles('verb');
- const nouns=roles('noun');
- const adjectives=roles('adj');
- const negatives=roles('neg').filter(w=>['不','没','没有'].includes(w));
- const adverbs=roles('adv').filter(w=>['很','也','都'].includes(w));
- const times=roles('time');
- const places=unique([...roles('place'),...items.filter(x=>x.role==='noun'&&['学校','医院','商店','饭店','书店','机场','家','中国','北京'].includes(x.word)).map(x=>x.word)]);
- const prepositions=roles('prep');
- const questionParticles=roles('particle').filter(w=>w==='吗');
- const topicParticles=roles('particle').filter(w=>w==='呢');
- const completedParticles=roles('particle').filter(w=>w==='了');
- const sentences=[];const seen=new Set();
- const soft=w=>String(gloss(w)||w).trim().toLocaleLowerCase('vi-VN').replace(/[；;]/g,' ').replace(/\s+/g,' ');
- const upperFirst=s=>{s=String(s||'').trim();return s?s.charAt(0).toLocaleUpperCase('vi-VN')+s.slice(1):s;};
- const wordVi={我:'tôi',你:'bạn',您:'ông/bà',他:'anh ấy',她:'cô ấy',我们:'chúng tôi',你们:'các bạn',他们:'họ',不:'không',没:'không',没有:'không có',爱:'yêu',喜欢:'thích',累:'mệt',累了:'mệt rồi',冷:'lạnh',热:'nóng',忙:'bận',高兴:'vui',很:'rất',也:'cũng',都:'đều',是:'là',去:'đi đến',来:'đến',回:'trở về',工作:'làm việc',学习:'học',妈妈:'mẹ',爸爸:'bố',老师:'giáo viên',学生:'học sinh',朋友:'bạn',吗:'không',呢:'thì sao',了:'rồi',在:'ở',有:'có',懂:'hiểu',怕:'sợ',想:'muốn/nhớ',要:'muốn',会:'biết/có thể',能:'có thể',可以:'có thể',吃:'ăn',喝:'uống',看:'xem',听:'nghe',说:'nói',读:'đọc',写:'viết',买:'mua',卖:'bán',做:'làm',知道:'biết',认识:'quen biết',帮助:'giúp đỡ',找:'tìm',等:'đợi',觉得:'cảm thấy'};
- const glossVi=w=>wordVi[w]||soft(w)||w;
- const verbBase={是:'là',有:'có',没有:'không có',喜欢:'thích',爱:'yêu',想:'muốn',要:'muốn',会:'biết/có thể',能:'có thể',可以:'có thể',学习:'học',工作:'làm việc',说:'nói',听:'nghe',看:'xem',读:'đọc',写:'viết',吃:'ăn',喝:'uống',买:'mua',卖:'bán',去:'đi đến',来:'đến',回:'trở về',做:'làm',住:'sống ở',坐:'ngồi/đi bằng',觉得:'cảm thấy',认识:'quen biết',知道:'biết',帮助:'giúp đỡ',问:'hỏi',回答:'trả lời',告诉:'nói cho biết',给:'cho',找:'tìm',等:'đợi',开:'mở',关:'đóng'};
- const intransitive=new Set(['工作','学习','休息','睡觉']);
- const completedVerbs=new Set(['去','来','回','工作','学习','吃','喝','买','看','读','写','听','说','做','睡觉','走','跑','找']);
- const isPersonOrPronoun=w=>pronouns.has(w)||people.has(w);
- const objectAllowed=(verb,obj)=>{
-  if(!byWord.has(obj)||obj===verb)return false;
-  const it=byWord.get(obj);const nominal=['noun','place','subject'].includes(it.role)||isPersonOrPronoun(obj);
-  const foods=new Set(['米饭','苹果','水果','菜','东西']);
-  const drinks=new Set(['水','茶','咖啡']);
-  const goods=new Set(['水','茶','咖啡','米饭','苹果','水果','菜','东西','书','手机','电脑','衣服']);
-  const languages=new Set(['中文','汉语']);
-  switch(verb){
-   case '是': return new Set(['爸爸','妈妈','老师','学生','同学','医生','朋友','孩子','先生','小姐']).has(obj);
-   case '有': case '没有': return new Set(['钱','书','手机','电脑','衣服','水','茶','咖啡','米饭','苹果','水果','菜','东西','朋友','孩子','时间','家']).has(obj)&&!pronouns.has(obj);
-   case '喜欢': case '爱': return nominal&&(['noun','place'].includes(it.role)||isPersonOrPronoun(obj));
-   case '想': return pronouns.has(obj)||obj==='家';
-   case '要': return (it.role==='noun'||it.role==='place')&&!['天气','中国','北京','中文','汉语'].includes(obj);
-   case '去': case '来': case '回': return places.includes(obj);
-   case '吃': return foods.has(obj);
-   case '喝': return drinks.has(obj);
-   case '买': case '卖': return goods.has(obj);
-   case '学习': return languages.has(obj)||obj==='工作';
-   case '工作': return false;
-   case '说': return languages.has(obj)||isPersonOrPronoun(obj);
-   case '听': return languages.has(obj)||isPersonOrPronoun(obj)||obj==='音乐';
-   case '看': return new Set(['书','手机','电脑','中文','汉语','电影','电视']).has(obj)||isPersonOrPronoun(obj);
-   case '读': case '写': return new Set(['书','中文','汉语']).has(obj);
-   case '认识': case '帮助': return isPersonOrPronoun(obj);
-   case '知道': return nominal;
-   case '找': return nominal&&!['天气','中文','汉语'].includes(obj);
-   case '等': return isPersonOrPronoun(obj)||places.includes(obj);
-   case '做': return new Set(['菜','米饭','东西','工作']).has(obj);
-   case '住': return places.includes(obj);
-   case '觉得': return adjectives.includes(obj);
-   case '坐': case '给': case '问': case '回答': case '告诉': case '开': case '关': return false; // requires a more specific complement/pattern
-   default: return false;
-  }
+ const chosen=new Set(items.map(x=>x.word));
+ const has=w=>chosen.has(w);
+ const take=list=>list.filter(has);
+ const unique=list=>[...new Set(list)];
+ const sentences=[];
+ const seen=new Set();
+ const priorityOf=[];
+ const pronouns=['我','你','您','他','她','我们','你们','他们','它','它们'];
+ const people=['爸爸','妈妈','老师','学生','同学','医生','朋友','孩子','先生','小姐'];
+ const subjects=unique(items.filter(x=>x.role==='subject'||pronouns.includes(x.word)||people.includes(x.word)).map(x=>x.word));
+ const adjectives=take(['累','冷','热','忙','高兴','好','大','小','多','少','漂亮','贵','便宜','快','慢','好吃']);
+ const times=take(['今天','明天','昨天','现在','每天']);
+ const places=take(['学校','医院','商店','饭店','书店','机场','中国','北京','家']);
+ const verbs=take(['是','有','没有','喜欢','爱','想','要','会','能','可以','学习','工作','说','听','看','读','写','吃','喝','买','卖','去','来','回','做','住','坐','觉得','认识','知道','帮助','找','等','需要']);
+ const negatives=take(['不','没','没有']);
+ const adverbs=take(['很','也','都']);
+ const particles=take(['吗','呢','了']);
+ const vn={
+  '我':'tôi','你':'bạn','您':'ông/bà','他':'anh ấy','她':'cô ấy','我们':'chúng tôi','你们':'các bạn','他们':'họ','它':'nó','它们':'chúng',
+  '爸爸':'bố','妈妈':'mẹ','老师':'giáo viên','学生':'học sinh','同学':'bạn học','医生':'bác sĩ','朋友':'bạn bè','孩子':'con','先生':'ông','小姐':'cô',
+  '累':'mệt','冷':'lạnh','热':'nóng','忙':'bận','高兴':'vui','好':'tốt','大':'to','小':'nhỏ','多':'nhiều','少':'ít','漂亮':'đẹp','贵':'đắt','便宜':'rẻ','快':'nhanh','慢':'chậm','好吃':'ngon',
+  '今天':'hôm nay','明天':'ngày mai','昨天':'hôm qua','现在':'bây giờ','每天':'mỗi ngày',
+  '学校':'trường','医院':'bệnh viện','商店':'cửa hàng','饭店':'nhà hàng','书店':'hiệu sách','机场':'sân bay','中国':'Trung Quốc','北京':'Bắc Kinh','家':'nhà',
+  '中文':'tiếng Trung','汉语':'tiếng Trung','水':'nước','茶':'trà','咖啡':'cà phê','米饭':'cơm','苹果':'táo','水果':'trái cây','菜':'món ăn/rau','东西':'đồ','钱':'tiền','书':'sách','手机':'điện thoại','电脑':'máy tính','衣服':'quần áo','天气':'thời tiết','音乐':'âm nhạc','电影':'phim','电视':'ti-vi','工作':'công việc','时间':'thời gian','猫':'mèo','狗':'chó','中国人':'người Trung Quốc','问题':'vấn đề','帮助':'sự giúp đỡ','飞机':'máy bay','文化':'văn hóa','经济':'kinh tế','管理':'quản lý',
+  '是':'là','有':'có','没有':'không có','喜欢':'thích','爱':'yêu','想':'muốn','要':'muốn/cần','会':'biết/có thể','能':'có thể','可以':'có thể','学习':'học','说':'nói','听':'nghe','看':'xem','读':'đọc','写':'viết','吃':'ăn','喝':'uống','买':'mua','卖':'bán','去':'đi đến','来':'đến','回':'về','做':'làm/nấu','住':'sống','坐':'đi/ngồi','觉得':'cảm thấy','认识':'quen biết','知道':'biết','帮助':'giúp','找':'tìm','等':'đợi','需要':'cần',
+  '不':'không','没':'chưa/không','很':'rất','也':'cũng','都':'đều','在':'ở/tại','吗':'không','呢':'thì sao','了':'rồi'
  };
- const verbMeaning=(v,obj='')=>{
-  if(v==='是')return 'là '+glossVi(obj);
-  if(v==='有')return 'có '+glossVi(obj);
-  if(v==='没有')return 'không có '+glossVi(obj);
-  if(v==='想'&&pronouns.has(obj))return 'nhớ '+glossVi(obj);
-  return (verbBase[v]||glossVi(v))+(obj?' '+glossVi(obj):'');
- };
- const add=(words,vi,reason,punctuation='。')=>{
-  if(!Array.isArray(words)||words.length<2||words.some(w=>!byWord.has(w))||new Set(words).size!==words.length)return;
+ const word=(w)=>vn[w]||(()=>{const raw=gloss(w);return String(raw||w).split(/[；;/]/)[0].replace(/[（(].*?[）)]/g,'').trim()||w;})();
+ const cap=s=>{s=String(s||'').trim();return s?s.charAt(0).toLocaleUpperCase('vi-VN')+s.slice(1):s;};
+ const sentence=(words,translation,reason,punctuation='。',priority=50)=>{
+  if(words.length<2||words.some(w=>!has(w))||new Set(words).size!==words.length)return;
   const key=words.join('')+punctuation;if(seen.has(key))return;seen.add(key);
-  const toks=words.map(w=>token(w));
-  const sentence=makeChineseSentence(toks,upperFirst(vi),reason+' Chỉ dùng đúng các từ đã chọn, không tự thêm từ.',punctuation);
-  sentence.words=words.slice();sentences.push(sentence);
+  const result=makeChineseSentence(words.map(w=>token(w)),cap(translation),reason+' Chỉ ghép đúng các từ đã chọn; không tự thêm từ.',punctuation);
+  result.words=words.slice();result.priority=priority;sentences.push(result);
  };
- // Mẫu 1: Chủ ngữ + tính từ; chỉ dùng 不 để phủ định tính từ.
+ const q=(words,translation,reason,priority=70)=>{if(has('吗'))sentence([...words,'吗'],translation,reason+' Câu hỏi dùng 吗 đã được chọn.','？',priority);};
+ const personSet=new Set([...pronouns,...people]);
+ const pluralSet=new Set(['我们','你们','他们','它们']);
+ const adjLe=new Set(['累','忙','好','高兴','冷','热']);
+ const identityNouns=new Set(['老师','学生','同学','医生','中国人']);
+ const possessiveObjects=new Set(['钱','书','手机','电脑','衣服','水','茶','咖啡','米饭','苹果','水果','菜','东西','朋友','孩子','时间','家','工作']);
+ const objectPairs={
+  '爱':new Set([...pronouns,'爸爸','妈妈','孩子']),
+  '喜欢':new Set([...pronouns,...people,'中文','汉语','水','茶','咖啡','米饭','苹果','水果','菜','东西','书','手机','电脑','衣服','音乐','电影','电视','猫','狗','工作','学习']),
+  '吃':new Set(['米饭','苹果','水果','菜','东西']),
+  '喝':new Set(['水','茶','咖啡']),
+  '买':new Set(['水','茶','咖啡','米饭','苹果','水果','菜','东西','书','手机','电脑','衣服']),
+  '卖':new Set(['水','茶','咖啡','米饭','苹果','水果','菜','东西','书','手机','电脑','衣服']),
+  '看':new Set(['书','手机','电脑','电影','电视']),
+  '听':new Set(['音乐']),
+  '读':new Set(['书','中文','汉语']),
+  '写':new Set(['中文','汉语']),
+  '说':new Set(['中文','汉语']),
+  '学习':new Set(['中文','汉语','经济','文化','管理']),
+  '认识':new Set([...pronouns,...people]),
+  '帮助':new Set([...pronouns,...people]),
+  '找':new Set([...pronouns,...people,'钱','书','手机','电脑','衣服','东西','朋友','孩子']),
+  '等':new Set([...pronouns,...people]),
+  '做':new Set(['菜','米饭']),
+  '需要':new Set(['钱','时间','帮助','水','茶','咖啡','书','手机','电脑','工作']),
+  '坐':new Set(['飞机'])
+ };
+ const allowed=(verb,obj)=>!!(objectPairs[verb]&&has(obj)&&objectPairs[verb].has(obj));
+ const verbVi=(v,obj)=>{
+  if(v==='去')return 'đi đến '+word(obj);
+  if(v==='来')return 'đến '+word(obj);
+  if(v==='回')return 'về '+word(obj);
+  if(v==='坐'&&obj==='飞机')return 'đi máy bay';
+  if(v==='看'&&obj==='书')return 'đọc sách';
+  if(v==='看'&&obj==='电影')return 'xem phim';
+  if(v==='看'&&obj==='电视')return 'xem ti-vi';
+  if(v==='做'&&obj==='菜')return 'nấu ăn';
+  if(v==='做'&&obj==='米饭')return 'nấu cơm';
+  if(v==='说'&&['中文','汉语'].includes(obj))return 'nói tiếng Trung';
+  if(v==='听'&&obj==='音乐')return 'nghe nhạc';
+  if(v==='学习'&&['中文','汉语'].includes(obj))return 'học tiếng Trung';
+  if(v==='读'&&obj==='书')return 'đọc sách';
+  if(v==='写'&&['中文','汉语'].includes(obj))return 'viết tiếng Trung';
+  return (word(v)||v)+(obj?' '+word(obj):'');
+ };
+ const addQuestionFor=(words,translation,reason,priority)=>q(words,translation,reason,priority);
+
+ // A. Subject + adjective predicates. 很/不/也/都 only appear when selected.
  for(const sub of subjects)for(const adj of adjectives){
-  add([sub,adj],`${glossVi(sub)} ${glossVi(adj)}`,`Mẫu chủ ngữ + tính từ: ${sub} + ${adj}.`);
-  if(negatives.includes('不'))add([sub,'不',adj],`${glossVi(sub)} không ${glossVi(adj)}`,`Mẫu chủ ngữ + 不 + tính từ.`);
-  for(const adv of adverbs){
-   if(adv==='都'&&!['我们','你们','他们'].includes(sub))continue;
-   add([sub,adv,adj],`${glossVi(sub)} ${glossVi(adv)} ${glossVi(adj)}`,`Mẫu chủ ngữ + trạng từ đã chọn + tính từ.`);
-  }
-  for(const tm of times){
-   add([sub,tm,adj],`${glossVi(sub)} ${glossVi(tm)} ${glossVi(adj)}`,`Mẫu chủ ngữ + thời gian + tính từ.`);
-   if(adverbs.includes('很'))add([sub,tm,'很',adj],`${glossVi(sub)} ${glossVi(tm)} rất ${glossVi(adj)}`,`Mẫu chủ ngữ + thời gian + 很 + tính từ.`);
-   if(negatives.includes('不'))add([sub,tm,'不',adj],`${glossVi(sub)} ${glossVi(tm)} không ${glossVi(adj)}`,`Mẫu chủ ngữ + thời gian + 不 + tính từ.`);
-  }
-  if(questionParticles.includes('吗')){
-   add([sub,adj,'吗'],`${glossVi(sub)} ${glossVi(adj)} không`,`Mẫu câu hỏi: chủ ngữ + tính từ + 吗.`,'？');
-   if(negatives.includes('不'))add([sub,'不',adj,'吗'],`${glossVi(sub)} không ${glossVi(adj)} à`,`Mẫu câu hỏi phủ định: chủ ngữ + 不 + tính từ + 吗.`,'？');
-   for(const adv of adverbs){if(adv==='都'&&!['我们','你们','他们'].includes(sub))continue;add([sub,adv,adj,'吗'],`${glossVi(sub)} ${glossVi(adv)} ${glossVi(adj)} không`,`Mẫu câu hỏi: chủ ngữ + trạng từ + tính từ + 吗.`,'？');}
-  }
+  const subVi=word(sub),adjVi=word(adj);
+  sentence([sub,adj],`${subVi} ${adjVi}`,`Mẫu chủ ngữ + tính từ: ${sub} + ${adj}.`,'。',10);
+  if(has('很'))sentence([sub,'很',adj],`${subVi} rất ${adjVi}`,`Mẫu chủ ngữ + 很 + tính từ.`,'。',5);
+  if(has('不'))sentence([sub,'不',adj],`${subVi} không ${adjVi}`,`Mẫu chủ ngữ + 不 + tính từ.`,'。',6);
+  if(has('也'))sentence([sub,'也',adj],`${subVi} cũng ${adjVi}`,`Mẫu chủ ngữ + 也 + tính từ.`,'。',12);
+  if(has('都')&&pluralSet.has(sub))sentence([sub,'都',adj],`${subVi} đều ${adjVi}`,`Mẫu chủ ngữ số nhiều + 都 + tính từ.`,'。',12);
+  addQuestionFor([sub,adj],`${subVi} có ${adjVi} không`,`Mẫu câu hỏi chủ ngữ + tính từ.`,35);
+  if(has('很'))addQuestionFor([sub,'很',adj],`${subVi} ${adjVi} lắm à`,`Mẫu câu hỏi với 很 + tính từ.`,36);
+  if(has('了')&&adjLe.has(adj))sentence([sub,adj,'了'],`${subVi} ${adjVi} rồi`,`Mẫu chủ ngữ + tính từ + 了 (trạng thái thay đổi).`,'。',28);
  }
- // Mẫu 2: Chủ ngữ + động từ + tân ngữ, có kiểm tra kết hợp từ.
- const transitive=verbs.filter(v=>!['是','在','会','能','可以','想','要'].includes(v));
- for(const sub of subjects)for(const v of transitive){
-  for(const obj of unique([...nouns,...places,...roles('subject')])){
-   if(!objectAllowed(v,obj))continue;
-   const phrase=`${glossVi(sub)} ${verbMeaning(v,obj)}`;
-   add([sub,v,obj],phrase,`Mẫu chủ ngữ + động từ + tân ngữ; kết hợp từ đã được giới hạn cho ${v}.`);
-   for(const tm of times)add([sub,tm,v,obj],`${glossVi(sub)} ${glossVi(tm)} ${verbMeaning(v,obj)}`,`Mẫu chủ ngữ + thời gian + động từ + tân ngữ.`);
-   for(const adv of adverbs){
-    if(adv==='都'&&!['我们','你们','他们'].includes(sub))continue;
-    if(!['喜欢','爱','认识','知道','学习','看','听','说','买','吃','喝'].includes(v)&&adv!=='也')continue;
-    add([sub,adv,v,obj],`${glossVi(sub)} ${glossVi(adv)} ${verbMeaning(v,obj)}`,`Mẫu chủ ngữ + trạng từ + động từ + tân ngữ.`);
+ // A2. 觉得 + tính từ: only use this complement pattern when both tokens are selected.
+ if(has('觉得'))for(const sub of subjects)for(const adj of adjectives){
+  sentence([sub,'觉得',adj],`${word(sub)} cảm thấy ${word(adj)}`,`Mẫu nhận xét/cảm giác: chủ ngữ + 觉得 + tính từ.`,'。',14);
+  if(has('很'))sentence([sub,'觉得','很',adj],`${word(sub)} cảm thấy rất ${word(adj)}`,`Mẫu chủ ngữ + 觉得 + 很 + tính từ.`,'。',15);
+  if(has('不')){
+   sentence([sub,'不','觉得',adj],`${word(sub)} không cảm thấy ${word(adj)}`,`Mẫu phủ định: chủ ngữ + 不 + 觉得 + tính từ.`,'。',17);
+   sentence([sub,'觉得','不',adj],`${word(sub)} cảm thấy không ${word(adj)}`,`Mẫu chủ ngữ + 觉得 + 不 + tính từ.`,'。',18);
+  }
+  if(has('吗'))sentence([sub,'觉得',adj,'吗'],`${word(sub)} cảm thấy ${word(adj)} phải không`,`Mẫu câu hỏi với 觉得 + tính từ.`,'？',45);
+ }
+ // B. 是 + danh từ chỉ nghề/vai trò; không ghép 是 với mọi danh từ.
+ if(has('是'))for(const sub of subjects)for(const obj of take([...identityNouns])){
+  if(sub===obj)continue;
+  sentence([sub,'是',obj],`${word(sub)} là ${word(obj)}`,`Mẫu nhận diện: chủ ngữ + 是 + nghề/vai trò.`,'。',15);
+  if(has('不'))sentence([sub,'不','是',obj],`${word(sub)} không phải là ${word(obj)}`,`Mẫu phủ định: chủ ngữ + 不 + 是 + nghề/vai trò.`,'。',16);
+  addQuestionFor([sub,'是',obj],`${word(sub)} là ${word(obj)} phải không`,`Mẫu câu hỏi với 是.` ,40);
+ }
+ // C. 有/没有/没 + danh từ sở hữu thông dụng.
+ for(const sub of subjects)for(const obj of take([...possessiveObjects])){
+  if(sub===obj)continue;
+  if(has('有')){
+   sentence([sub,'有',obj],`${word(sub)} có ${word(obj)}`,`Mẫu sở hữu: chủ ngữ + 有 + danh từ.`,'。',18);
+   addQuestionFor([sub,'有',obj],`${word(sub)} có ${word(obj)} không`,`Mẫu câu hỏi sở hữu với 有.`,42);
+  }
+  if(has('没有')){
+   sentence([sub,'没有',obj],`${word(sub)} không có ${word(obj)}`,`Mẫu phủ định sở hữu: chủ ngữ + 没有 + danh từ.`,'。',17);
+   addQuestionFor([sub,'没有',obj],`${word(sub)} có ${word(obj)} không`,`Mẫu câu hỏi với 没有.` ,43);
+  }
+  if(has('没')&&['钱','时间','工作'].includes(obj))sentence([sub,'没',obj],`${word(sub)} không có ${word(obj)}`,`Mẫu khẩu ngữ: chủ ngữ + 没 + danh từ (tiền/thời gian/công việc).`,'。',21);
+ }
+ // D. Verb + object using explicit, limited collocation lists.
+ for(const sub of subjects)for(const v of verbs){
+  if(['是','有','没有','想','要','会','能','可以','去','来','回','工作','住','在','觉得'].includes(v))continue;
+  for(const obj of take([...(objectPairs[v]||[]) ])){
+   if(!allowed(v,obj))continue;
+   const base=verbVi(v,obj);
+   let tr=`${word(sub)} ${base}`;
+   if(v==='爱')tr=`${word(sub)} yêu ${word(obj)}`;
+   if(v==='喜欢')tr=`${word(sub)} thích ${word(obj)}`;
+   if(v==='喜欢'&&obj==='工作')tr=`${word(sub)} thích làm việc`;
+   if(v==='喜欢'&&obj==='学习')tr=`${word(sub)} thích học`;
+   sentence([sub,v,obj],tr,`Mẫu chủ ngữ + ${v} + tân ngữ; cặp từ ${v} + ${obj} đã được kiểm soát.`,'。',20);
+   if(has('也'))sentence([sub,'也',v,obj],`${word(sub)} cũng ${v==='爱'?'yêu':v==='喜欢'?'thích':verbVi(v,obj)}${['爱','喜欢'].includes(v)?' '+word(obj):''}`,`Mẫu chủ ngữ + 也 + động từ + tân ngữ.`,'。',22);
+   if(has('都')&&pluralSet.has(sub))sentence([sub,'都',v,obj],`${word(sub)} đều ${v==='爱'?'yêu':v==='喜欢'?'thích':verbVi(v,obj)}${['爱','喜欢'].includes(v)?' '+word(obj):''}`,`Mẫu chủ ngữ số nhiều + 都 + động từ + tân ngữ.`,'。',22);
+   if(has('很')&&['喜欢','爱'].includes(v))sentence([sub,'很',v,obj],`${word(sub)} rất ${v==='爱'?'yêu':'thích'} ${word(obj)}`,`Mẫu trạng từ 很 + động từ tâm lý.`,'。',22);
+   if(has('不')&&!['等'].includes(v)){
+    let negTr;
+    if(v==='喜欢')negTr=`${word(sub)} không thích ${word(obj)}`;
+    else if(v==='爱')negTr=`${word(sub)} không yêu ${word(obj)}`;
+    else negTr=`${word(sub)} không ${base}`;
+    sentence([sub,'不',v,obj],negTr,`Mẫu phủ định: chủ ngữ + 不 + ${v} + tân ngữ.`,'。',24);
    }
-   for(const neg of negatives){
-    if(neg==='没有')continue;
-    if(neg==='不'&&['有','没有','去','来','回'].includes(v))continue;
-    if(neg==='没'&&!['吃','喝','去','来','回','买','看','读','写','听','说','做','找','工作','学习'].includes(v))continue;
-    add([sub,neg,v,obj],`${glossVi(sub)} ${neg==='不'?'không':'chưa'} ${verbMeaning(v,obj)}`,`Mẫu chủ ngữ + phủ định + động từ + tân ngữ.`);
-    for(const tm of times)add([sub,tm,neg,v,obj],`${glossVi(sub)} ${glossVi(tm)} ${neg==='不'?'không':'chưa'} ${verbMeaning(v,obj)}`,`Mẫu chủ ngữ + thời gian + phủ định + động từ + tân ngữ.`);
+   addQuestionFor([sub,v,obj],`${word(sub)} có ${base} không`,`Mẫu câu hỏi với động từ + tân ngữ.`,48);
+   if(has('了')&&['吃','喝','买','看','读','写','做','学习'].includes(v)){
+    let completed=tr;
+    if(v==='吃')completed=`${word(sub)} đã ăn ${word(obj)}`;
+    else if(v==='喝')completed=`${word(sub)} đã uống ${word(obj)}`;
+    else if(v==='买')completed=`${word(sub)} đã mua ${word(obj)}`;
+    else if(v==='看')completed=`${word(sub)} đã xem ${word(obj)}`;
+    else if(v==='读')completed=`${word(sub)} đã đọc ${word(obj)}`;
+    else if(v==='写')completed=`${word(sub)} đã viết ${word(obj)}`;
+    else if(v==='做')completed=`${word(sub)} đã ${base}`;
+    else if(v==='学习')completed=`${word(sub)} đã học ${word(obj)}`;
+    sentence([sub,v,'了',obj],completed,`Mẫu thể hoàn thành: chủ ngữ + động từ + 了 + tân ngữ.`,'。',32);
    }
-   if(questionParticles.includes('吗')){
-    add([sub,v,obj,'吗'],`${glossVi(sub)} ${verbMeaning(v,obj)} không`,`Mẫu câu hỏi: chủ ngữ + động từ + tân ngữ + 吗.`,'？');
-    if(negatives.includes('不')&&!['有','没有','去','来','回'].includes(v))add([sub,'不',v,obj,'吗'],`${glossVi(sub)} không ${verbMeaning(v,obj)} à`,`Mẫu câu hỏi phủ định + 吗.`,'？');
+   if(has('没')&&['吃','喝','去','回','买','看','读','写','做','学习','工作'].includes(v)){
+    let past=`${word(sub)} chưa ${base}`;
+    if(v==='吃')past=`${word(sub)} chưa ăn ${word(obj)}`;
+    if(v==='喝')past=`${word(sub)} chưa uống ${word(obj)}`;
+    if(v==='买')past=`${word(sub)} chưa mua ${word(obj)}`;
+    sentence([sub,'没',v,obj],past,`Mẫu phủ định hành động đã/ chưa xảy ra: chủ ngữ + 没 + động từ + tân ngữ.`,'。',30);
    }
   }
  }
- // Mẫu có bổ ngữ tính từ: 我觉得冷.
- for(const sub of subjects)for(const v of verbs.filter(v=>v==='觉得'))for(const adj of adjectives){
-  add([sub,v,adj],`${glossVi(sub)} cảm thấy ${glossVi(adj)}`,`Mẫu chủ ngữ + 觉得 + tính từ.`);
-  if(questionParticles.includes('吗'))add([sub,v,adj,'吗'],`${glossVi(sub)} cảm thấy ${glossVi(adj)} không`,`Mẫu câu hỏi với 觉得 + tính từ.`,'？');
- }
- // Mẫu động từ không cần tân ngữ.
- for(const sub of subjects)for(const v of verbs.filter(v=>intransitive.has(v))){
-  add([sub,v],`${glossVi(sub)} ${verbBase[v]||glossVi(v)}`,`Mẫu chủ ngữ + động từ không cần tân ngữ.`);
-  for(const neg of negatives){
-   if(neg==='没有')continue;
-   if(neg==='没'&&!['工作','学习','休息','睡觉'].includes(v))continue;
-   add([sub,neg,v],`${glossVi(sub)} ${neg==='不'?'không':'chưa'} ${verbBase[v]||glossVi(v)}`,`Mẫu chủ ngữ + phủ định + động từ không cần tân ngữ.`);
-  }
-  for(const tm of times)add([sub,tm,v],`${glossVi(sub)} ${glossVi(tm)} ${verbBase[v]||glossVi(v)}`,`Mẫu chủ ngữ + thời gian + động từ.`);
-  if(questionParticles.includes('吗'))add([sub,v,'吗'],`${glossVi(sub)} ${verbBase[v]||glossVi(v)} không`,`Mẫu câu hỏi chủ ngữ + động từ + 吗.`,'？');
- }
- // Mẫu ý định/năng lực: 我想吃苹果 / 我会说中文 / 我可以去学校.
- const intents=verbs.filter(v=>['想','要'].includes(v));
- const modals=verbs.filter(v=>['会','能','可以'].includes(v));
- const actionVerbs=verbs.filter(v=>['去','来','回','工作','学习','说','听','看','读','写','吃','喝','买','卖','做','住','认识','知道','帮助','找','等'].includes(v));
+ // D2. Basic movement and intransitive predicates, without inventing a modal/time word.
  for(const sub of subjects){
-  for(const head of [...intents,...modals])for(const action of actionVerbs){
-   const isLike=head==='喜欢';
-   if(head==='要'&&['认识','知道','帮助','等'].includes(action))continue;
-   if(!['想','要','会','能','可以'].includes(head))continue;
-   if(['去','来','回','住'].includes(action)){
-    for(const place of places)add([sub,head,action,place],`${glossVi(sub)} ${verbBase[head]||head} ${verbBase[action]||action} ${glossVi(place)}`,`Mẫu chủ ngữ + động từ ý định/khả năng + động từ + nơi chốn.`);
-    add([sub,head,action],`${glossVi(sub)} ${verbBase[head]||head} ${verbBase[action]||action}`,`Mẫu chủ ngữ + động từ ý định/khả năng + động từ.`);
-   }else if(['工作','学习'].includes(action)){
-    add([sub,head,action],`${glossVi(sub)} ${verbBase[head]||head} ${verbBase[action]||action}`,`Mẫu chủ ngữ + động từ ý định/khả năng + động từ.`);
-   }else{
-    for(const obj of unique([...nouns,...places,...roles('subject')]))if(objectAllowed(action,obj)){
-     add([sub,head,action,obj],`${glossVi(sub)} ${verbBase[head]||head} ${verbMeaning(action,obj)}`,`Mẫu chủ ngữ + động từ ý định/khả năng + động từ + tân ngữ.`);
-    }
+  if(has('工作')){
+   sentence([sub,'工作'],`${word(sub)} làm việc`,`Mẫu chủ ngữ + 工作.`,'。',19);
+   addQuestionFor([sub,'工作'],`${word(sub)} có làm việc không`,`Mẫu câu hỏi với 工作.`,45);
+   if(has('不'))sentence([sub,'不','工作'],`${word(sub)} không làm việc`,`Mẫu phủ định chủ ngữ + 不 + 工作.`,'。',24);
+   if(has('没'))sentence([sub,'没','工作'],`${word(sub)} chưa làm việc`,`Mẫu phủ định hành động với 没.`,'。',25);
+  }
+  if(has('学习')){
+   sentence([sub,'学习'],`${word(sub)} học`,`Mẫu chủ ngữ + 学习.`,'。',19);
+   addQuestionFor([sub,'学习'],`${word(sub)} có học không`,`Mẫu câu hỏi với 学习.`,45);
+   if(has('不'))sentence([sub,'不','学习'],`${word(sub)} không học`,`Mẫu phủ định chủ ngữ + 不 + 学习.`,'。',24);
+   if(has('没'))sentence([sub,'没','学习'],`${word(sub)} chưa học`,`Mẫu phủ định hành động với 没.`,'。',25);
+  }
+  for(const place of take([...places])){
+   if(has('去')&&place!=='家'){
+    sentence([sub,'去',place],`${word(sub)} đi đến ${word(place)}`,`Mẫu di chuyển: chủ ngữ + 去 + nơi chốn.`,'。',18);
+    addQuestionFor([sub,'去',place],`${word(sub)} đi đến ${word(place)} phải không`,`Mẫu câu hỏi di chuyển với 去.`,45);
+    if(has('不'))sentence([sub,'不','去',place],`${word(sub)} không đi đến ${word(place)}`,`Mẫu phủ định với 去.`,'。',24);
+    if(has('没'))sentence([sub,'没','去',place],`${word(sub)} chưa đi đến ${word(place)}`,`Mẫu phủ định hành động với 没 + 去.`,'。',25);
+   }
+   if(has('来')&&place!=='家'){
+    sentence([sub,'来',place],`${word(sub)} đến ${word(place)}`,`Mẫu di chuyển: chủ ngữ + 来 + nơi chốn.`,'。',19);
+    addQuestionFor([sub,'来',place],`${word(sub)} đến ${word(place)} phải không`,`Mẫu câu hỏi di chuyển với 来.`,45);
+    if(has('不'))sentence([sub,'不','来',place],`${word(sub)} không đến ${word(place)}`,`Mẫu phủ định với 来.`,'。',24);
+    if(has('没'))sentence([sub,'没','来',place],`${word(sub)} chưa đến ${word(place)}`,`Mẫu phủ định hành động với 没 + 来.`,'。',25);
+   }
+   if(has('回')){
+    sentence([sub,'回',place],`${word(sub)} về ${word(place)}`,`Mẫu di chuyển: chủ ngữ + 回 + nơi chốn.`,'。',18);
+    addQuestionFor([sub,'回',place],`${word(sub)} về ${word(place)} phải không`,`Mẫu câu hỏi di chuyển với 回.`,45);
+    if(has('不'))sentence([sub,'不','回',place],`${word(sub)} không về ${word(place)}`,`Mẫu phủ định với 回.`,'。',24);
+    if(has('没'))sentence([sub,'没','回',place],`${word(sub)} chưa về ${word(place)}`,`Mẫu phủ định hành động với 没 + 回.`,'。',25);
    }
   }
-  // 喜欢 + hành động (một mẫu có kết hợp từ riêng).
-  if(verbs.includes('喜欢'))for(const action of ['吃','喝','看','听','读','写','学习'])if(verbs.includes(action)){
-   for(const obj of unique([...nouns,...places,...roles('subject')]))if(objectAllowed(action,obj))add([sub,'喜欢',action,obj],`${glossVi(sub)} thích ${verbMeaning(action,obj)}`,`Mẫu chủ ngữ + 喜欢 + động từ + tân ngữ.`);
+ }
+ const modalMeaning=(m,act)=>m==='想'||m==='要'?'muốn':m==='会'?(['说','读','写','做'].includes(act)?'biết':'sẽ'):'có thể';
+ // E. Modal/intent verbs + a known action. Never treat 想 as a generic verb-object pair.
+ const modals=take(['想','要','会','能','可以']);
+ const actions=take(['去','来','回','工作','学习','说','听','看','读','写','吃','喝','买','卖','做','坐']);
+ for(const sub of subjects)for(const m of modals)for(const act of actions){
+  if(['去','来','回'].includes(act)){
+   for(const place of take([...places])){
+    if(act==='去'&&place==='家')continue;
+    if(act==='来'&&place==='家')continue;
+    const head=modalMeaning(m,act);
+    const actionText=act==='去'?'đi đến '+word(place):act==='来'?'đến '+word(place):'về '+word(place);
+    sentence([sub,m,act,place],`${word(sub)} ${head} ${actionText}`,`Mẫu ý định/khả năng: chủ ngữ + ${m} + ${act} + nơi chốn.`,'。',22);
+    addQuestionFor([sub,m,act,place],`${word(sub)} ${head} ${actionText} không`,`Mẫu câu hỏi về ý định/khả năng.` ,50);
+   }
+  }else if(['工作'].includes(act)){
+   const head=modalMeaning(m,act);
+   sentence([sub,m,act],`${word(sub)} ${head} làm việc`,`Mẫu ý định/khả năng + động từ không cần tân ngữ.`,'。',24);
+  }else{
+   const targets=take([...(objectPairs[act]||[])]).filter(obj=>allowed(act,obj));
+   for(const obj of targets){
+    const head=modalMeaning(m,act);
+    let actionText=verbVi(act,obj);
+    if(act==='说'&&['中文','汉语'].includes(obj))actionText='nói tiếng Trung';
+    if(act==='学习'&&['中文','汉语'].includes(obj))actionText='học tiếng Trung';
+    if(act==='做'&&obj==='菜')actionText='nấu ăn';
+    if(act==='做'&&obj==='米饭')actionText='nấu cơm';
+    sentence([sub,m,act,obj],`${word(sub)} ${head} ${actionText}`,`Mẫu ý định/khả năng: chủ ngữ + ${m} + động từ + tân ngữ.`,'。',23);
+    addQuestionFor([sub,m,act,obj],`${word(sub)} ${head} ${actionText} không`,`Mẫu câu hỏi về khả năng/ý định.` ,50);
+   }
   }
  }
- // 没有 thường là vị ngữ phủ định độc lập, không được ghép thành 不没有.
- if(negatives.includes('没有'))for(const sub of subjects)for(const obj of unique([...nouns,...places])){
-  if(objectAllowed('没有',obj)){
-   add([sub,'没有',obj],`${glossVi(sub)} không có ${glossVi(obj)}`,`Mẫu chủ ngữ + 没有 + tân ngữ.`);
-   if(questionParticles.includes('吗'))add([sub,'没有',obj,'吗'],`${glossVi(sub)} không có ${glossVi(obj)} phải không`,`Mẫu câu hỏi có/không với 没有 + tân ngữ.`,'？');
+ // 想 + a pronoun is an established expression meaning 'miss/think of someone'.
+ if(has('想'))for(const sub of subjects)for(const obj of take(pronouns)){
+  if(sub===obj)continue;
+  sentence([sub,'想',obj],`${word(sub)} nhớ ${word(obj)}`,`Cụm cố định 想 + đại từ: nhớ/nghĩ đến ai đó.`,'。',19);
+  if(has('不'))sentence([sub,'不','想',obj],`${word(sub)} không nhớ ${word(obj)}`,`Mẫu phủ định 不想 + đại từ trong nghĩa nhớ/nghĩ đến.`,'。',27);
+ }
+ // 喜欢 + verb phrase, only with a vetted verb-object pair.
+ if(has('喜欢'))for(const sub of subjects)for(const act of take(['吃','喝','看','听','读','写','学习','做'])){
+  for(const obj of take([...(objectPairs[act]||[])]))if(allowed(act,obj)){
+   let vp=verbVi(act,obj);
+   if(act==='吃')vp='ăn '+word(obj);if(act==='喝')vp='uống '+word(obj);if(act==='看')vp=obj==='书'?'đọc sách':obj==='电影'?'xem phim':obj==='电视'?'xem ti-vi':'xem '+word(obj);if(act==='听'&&obj==='音乐')vp='nghe nhạc';if(act==='读'&&obj==='书')vp='đọc sách';if(act==='学习'&&['中文','汉语'].includes(obj))vp='học tiếng Trung';if(act==='做'&&obj==='菜')vp='nấu ăn';if(act==='做'&&obj==='米饭')vp='nấu cơm';
+   sentence([sub,'喜欢',act,obj],`${word(sub)} thích ${vp}`,`Mẫu sở thích: chủ ngữ + 喜欢 + động từ + tân ngữ.`,'。',25);
   }
  }
- // Mẫu nơi chốn: 在 phải là từ được người học chọn.
- for(const sub of subjects)for(const place of places){
-  if(prepositions.includes('在'))add([sub,'在',place],`${glossVi(sub)} ở ${glossVi(place)}`,`Mẫu chủ ngữ + 在 + nơi chốn.`);
-  if(prepositions.includes('在'))for(const tm of times)add([sub,tm,'在',place],`${glossVi(sub)} ${glossVi(tm)} ở ${glossVi(place)}`,`Mẫu chủ ngữ + thời gian + 在 + nơi chốn.`);
+ // F. Location and residence: 在 must be chosen; 去/来/回 only use grammatically suitable places.
+ for(const sub of subjects)for(const place of take([...places])){
+  if(has('在')){
+   sentence([sub,'在',place],`${word(sub)} ở ${word(place)}`,`Mẫu vị trí: chủ ngữ + 在 + nơi chốn.`,'。',18);
+   for(const tm of times)sentence([sub,tm,'在',place],`${word(tm)} ${word(sub)} ở ${word(place)}`,`Mẫu thời gian + vị trí: chủ ngữ + thời gian + 在 + nơi chốn.`,'。',29);
+   addQuestionFor([sub,'在',place],`${word(sub)} ở ${word(place)} phải không`,`Mẫu câu hỏi vị trí.` ,48);
+  }
+  if(has('住')&&has('在')&&place!=='家')sentence([sub,'住','在',place],`${word(sub)} sống ở ${word(place)}`,`Mẫu cư trú: chủ ngữ + 住 + 在 + nơi chốn.`,'。',22);
  }
- // 呢 là câu hỏi chuyển chủ đề; 了 chỉ đi với động từ tương thích.
- for(const ne of topicParticles)for(const sub of subjects)add([sub,ne],`Còn ${glossVi(sub)} thì sao`,`Mẫu hỏi tiếp/chuyển chủ đề: chủ ngữ + 呢.`,'？');
- for(const le of completedParticles)for(const sub of subjects)for(const v of verbs.filter(v=>completedVerbs.has(v))){
-  if(intransitive.has(v))add([sub,v,le],`${glossVi(sub)} đã ${verbBase[v]||glossVi(v)}`,`Mẫu động từ + 了 để diễn tả sự việc đã xảy ra.`);
-  for(const obj of unique([...nouns,...places,...roles('subject')]))if(objectAllowed(v,obj))add([sub,v,le,obj],`${glossVi(sub)} đã ${verbMeaning(v,obj)}`,`Mẫu chủ ngữ + động từ + 了 + tân ngữ.`);
+ // G. Time + ordinary actions with safe valency. Time is placed after the subject.
+ for(const sub of subjects)for(const tm of times){
+  if(has('很')&&['今天','昨天','现在','每天'].includes(tm))for(const adj of adjectives){
+   sentence([sub,tm,'很',adj],`${word(tm)} ${word(sub)} rất ${word(adj)}`,`Mẫu chủ ngữ + thời gian + 很 + tính từ.`,'。',29);
+   if(has('都')&&tm==='每天')sentence([sub,tm,'都','很',adj],`${word(sub)} ngày nào cũng rất ${word(adj)}`,`Mẫu 每天 + 都 + 很 + tính từ.`,'。',28);
+  }
+  for(const act of take(['工作','学习'])){
+   sentence([sub,tm,act],`${word(tm)} ${word(sub)} ${act==='工作'?'làm việc':'học'}`,`Mẫu chủ ngữ + thời gian + động từ không cần tân ngữ.`,'。',31);
+  }
+  for(const v of take(['去','来','回']))for(const place of take([...places])){
+   if(v==='去'&&place==='家')continue;if(v==='来'&&place==='家')continue;
+   const actText=v==='去'?'đi đến '+word(place):v==='来'?'đến '+word(place):'về '+word(place);
+   sentence([sub,tm,v,place],`${word(tm)} ${word(sub)} ${actText}`,`Mẫu chủ ngữ + thời gian + động từ + nơi chốn.`,'。',30);
+  }
+  for(const v of take(['吃','喝','买','看','学习','说','做']))for(const obj of take([...(objectPairs[v]||[])]))if(allowed(v,obj)){
+   let action=verbVi(v,obj);if(v==='吃')action='ăn '+word(obj);if(v==='喝')action='uống '+word(obj);if(v==='买')action='mua '+word(obj);if(v==='看')action=obj==='书'?'đọc sách':obj==='电影'?'xem phim':obj==='电视'?'xem ti-vi':'xem '+word(obj);if(v==='学习'&&['中文','汉语'].includes(obj))action='học tiếng Trung';if(v==='说'&&['中文','汉语'].includes(obj))action='nói tiếng Trung';if(v==='做'&&obj==='菜')action='nấu ăn';if(v==='做'&&obj==='米饭')action='nấu cơm';
+   sentence([sub,tm,v,obj],`${word(tm)} ${word(sub)} ${action}`,`Mẫu chủ ngữ + thời gian + động từ + tân ngữ.`,'。',30);
+  }
  }
- // Xếp câu ngắn, thường dùng lên trước; không tạo cụm rời rạc khi thiếu chủ ngữ.
- sentences.sort((a,b)=>Number(b.zh.endsWith('？'))-Number(a.zh.endsWith('？'))||a.words.length-b.words.length||a.zh.length-b.zh.length);
- return sentences.slice(0,12);
+ // H. Negating modals uses 不 before 会/能/可以/想/要; forbid '不有' and '不没有'.
+ if(has('不'))for(const sub of subjects)for(const m of take(['会','能','可以','想','要']))for(const act of actions){
+  if(['去','来','回'].includes(act)){
+   for(const place of take([...places])){
+    if(act==='去'&&place==='家')continue;if(act==='来'&&place==='家')continue;
+    const phrase=act==='去'?'đi đến '+word(place):act==='来'?'đến '+word(place):'về '+word(place);
+    const modal=(m==='想'||m==='要')?'muốn':m==='会'&&['说','读','写','做'].includes(act)?'biết':'thể';
+    sentence([sub,'不',m,act,place],`${word(sub)} không ${modal} ${phrase}`,`Mẫu phủ định: chủ ngữ + 不 + ${m} + động từ + nơi chốn.`,'。',33);
+   }
+  }else if(act==='工作'){
+   const modal=(m==='想'||m==='要')?'muốn':m==='会'&&['说','读','写','做'].includes(act)?'biết':'thể';sentence([sub,'不',m,act],`${word(sub)} không ${modal} làm việc`,`Mẫu phủ định 不 + ${m} + động từ.`,'。',34);
+  }else for(const obj of take([...(objectPairs[act]||[])]))if(allowed(act,obj)){
+   const modal=(m==='想'||m==='要')?'muốn':m==='会'&&['说','读','写','做'].includes(act)?'biết':'thể';let action=verbVi(act,obj);if(act==='吃')action='ăn '+word(obj);if(act==='喝')action='uống '+word(obj);if(act==='说'&&['中文','汉语'].includes(obj))action='nói tiếng Trung';if(act==='学习'&&['中文','汉语'].includes(obj))action='học tiếng Trung';
+   sentence([sub,'不',m,act,obj],`${word(sub)} không ${modal} ${action}`,`Mẫu phủ định của ý định/khả năng: 不 + ${m} + động từ + tân ngữ.`,'。',34);
+  }
+ }
+ // I. 呢 is contextual; only return the fixed, valid topic-follow-up construction.
+ if(has('呢'))for(const sub of take([...pronouns]))sentence([sub,'呢'],`Còn ${word(sub)} thì sao`,`Câu hỏi tiếp chủ đề: ${sub} + 呢.`,'？',60);
+
+ // Keep the most informative well-formed candidates first. Never synthesize unselected lexical items.
+ sentences.sort((a,b)=>b.words.length-a.words.length||a.priority-b.priority||a.zh.length-b.zh.length);
+ return sentences.slice(0,12).map(({priority,...rest})=>rest);
 }
-$('make-sentences').onclick=()=>{generatedSentences=buildSentences();$('sentence-count').textContent=generatedSentences.length+' câu';const c=$('sentence-results');if(!generatedSentences.length){c.innerHTML='<div class="empty" style="margin-top:10px"><b>Chưa tìm được câu chắc chắn đúng từ các từ đã chọn.</b><br>Bộ ghép câu hiện chỉ hiển thị các mẫu và kết hợp từ thông dụng đã được kiểm soát; không tự chèn từ hoặc đoán nghĩa. Hãy thử thêm chủ ngữ, động từ/tính từ, tân ngữ hoặc trợ từ phù hợp.</div>';return;}c.innerHTML='';generatedSentences.forEach((s,i)=>{const div=document.createElement('article');div.className='sent-card';div.innerHTML=`<div class="row between"><span class="pill">Câu ${i+1}</span><button class="iconbtn" data-speak="${escapeHTML(s.zh.replace(/[。！？]/g,''))}" aria-label="Nghe câu">🔊</button></div><div class="chinese">${escapeHTML(s.zh)}</div><div class="meta">${escapeHTML(s.py||'Pinyin chưa có cho mọi từ')}</div><div class="translation">${escapeHTML(s.vi)}</div><p class="smallprint">Từ đã dùng: ${s.words.map(w=>escapeHTML(w)).join(' + ')}.</p><p class="smallprint">${escapeHTML(s.reason)}</p><div class="sent-actions"><button class="btn tiny" data-practice-sentence="${i}" data-kind="vi-zh">Luyện Việt → Trung</button><button class="btn outline tiny" data-practice-sentence="${i}" data-kind="zh-vi">Luyện Trung → Việt</button><button class="btn secondary tiny" data-practice-sentence="${i}" data-kind="read">Luyện đọc câu</button></div>`;c.appendChild(div);});c.querySelectorAll('[data-practice-sentence]').forEach(b=>b.onclick=()=>{const s=generatedSentences[Number(b.dataset.practiceSentence)];if(s){currentCustomSentence=s;practiceReturnTab='combine';practiceMode=b.dataset.kind;practiceChecked=false;sessionDone=0;sessionCorrect=0;updateModeButtons();loadPractice();switchTab('practice');}});};
+$('make-sentences').onclick=()=>{generatedSentences=buildSentences();$('sentence-count').textContent=generatedSentences.length+' câu';const c=$('sentence-results');if(!generatedSentences.length){c.innerHTML='<div class="empty" style="margin-top:10px"><b>Chưa tìm được câu chắc chắn đúng từ các từ đã chọn.</b><br>Bộ ghép câu chỉ dùng các mẫu ngữ pháp và kết hợp từ thông dụng đã được kiểm soát. Nếu các từ chưa tạo thành câu tự nhiên, ứng dụng sẽ không đoán hoặc tự thêm từ. Hãy thử chọn thêm chủ ngữ, động từ/tính từ, tân ngữ hoặc trợ từ phù hợp.</div>';return;}c.innerHTML='';generatedSentences.forEach((s,i)=>{const div=document.createElement('article');div.className='sent-card';div.innerHTML=`<div class="row between"><span class="pill">Câu ${i+1}</span><button class="iconbtn" data-speak="${escapeHTML(s.zh.replace(/[。！？]/g,''))}" aria-label="Nghe câu">🔊</button></div><div class="chinese">${escapeHTML(s.zh)}</div><div class="meta">${escapeHTML(s.py||'Pinyin chưa có cho mọi từ')}</div><div class="translation">${escapeHTML(s.vi)}</div><p class="smallprint">Từ đã dùng: ${s.words.map(w=>escapeHTML(w)).join(' + ')}.</p><p class="smallprint">${escapeHTML(s.reason)}</p><div class="sent-actions"><button class="btn tiny" data-practice-sentence="${i}" data-kind="vi-zh">Luyện Việt → Trung</button><button class="btn outline tiny" data-practice-sentence="${i}" data-kind="zh-vi">Luyện Trung → Việt</button><button class="btn secondary tiny" data-practice-sentence="${i}" data-kind="read">Luyện đọc câu</button></div>`;c.appendChild(div);});c.querySelectorAll('[data-practice-sentence]').forEach(b=>b.onclick=()=>{const s=generatedSentences[Number(b.dataset.practiceSentence)];if(s){currentCustomSentence=s;practiceReturnTab='combine';practiceMode=b.dataset.kind;practiceChecked=false;sessionDone=0;sessionCorrect=0;updateModeButtons();loadPractice();switchTab('practice');}});};
 function updateModeButtons(){
  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===practiceMode));
  const labels={'vi-zh':'Hãy dịch nghĩa tiếng Việt sang tiếng Trung.','zh-vi':'Hãy dịch câu tiếng Trung sang tiếng Việt.','write':'Tìm từ cần viết, xem mẫu nét bên trái rồi viết/chấm thứ tự nét bên phải.','read':'Tìm từ hoặc câu bạn muốn luyện; chọn nội dung rồi nghe mẫu và đọc theo.'};
