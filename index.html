@@ -12,10 +12,10 @@
 <title>Học Tiếng Trung · Trung Việt</title>
 <style>
 :root{--red:#b91c1c;--red2:#dc2626;--ink:#182230;--muted:#657184;--line:#e4e7ec;--paper:#fff;--bg:#f5f6f8;--green:#147d4a;--amber:#a15c07;--shadow:0 4px 18px rgba(18,31,53,.06)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;-webkit-tap-highlight-color:transparent;padding-bottom:calc(76px + env(safe-area-inset-bottom))}button,input,select,textarea{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}.topbar{position:sticky;top:0;z-index:20;background:var(--red);color:white;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));box-shadow:0 2px 8px #0002}.toprow{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:860px;margin:auto}.brand{display:flex;gap:10px;align-items:center}.logo{width:38px;height:38px;border-radius:12px;background:#ffffff20;display:grid;place-items:center;font-size:23px}.brand h1{font-size:16px;margin:0;line-height:1.25}.brand p{font-size:11px;margin:4px 0 0;color:#fee2e2}.count-pill{white-space:nowrap;background:#991b1b;border:1px solid #ffffff44;border-radius:99px;font-size:11px;padding:6px 9px}.tabs{position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:19;display:flex;gap:4px;padding:7px max(10px,calc((100% - 840px)/2));background:white;border-bottom:1px solid var(--line);box-shadow:0 3px 8px #00000008}.tab{flex:1;min-height:43px;border:0;border-radius:10px;background:transparent;color:#647084;font-size:12px;font-weight:700;padding:7px 4px}.tab span{display:block;font-size:17px;line-height:1.3}.tab.active{background:#fef2f2;color:var(--red)}main{max-width:860px;margin:auto;padding:14px 13px 26px}.panel{display:none}.panel.active{display:block}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}.section-title{font-size:15px;font-weight:800;margin:0 0 10px}.subtle{color:var(--muted);font-size:12px;line-height:1.5}.row{display:flex;align-items:center;gap:8px}.row.wrap{flex-wrap:wrap}.between{justify-content:space-between}.grow{flex:1;min-width:0}.field{width:100%;border:1px solid #d4d9e1;background:#fff;border-radius:12px;padding:12px 13px;color:var(--ink);outline:none;font-size:14px;min-height:43px}.field:focus{border-color:#dc6262;box-shadow:0 0 0 3px #fee2e2}.field.small{font-size:12px;padding:9px 10px;min-height:37px}.btn{border:0;border-radius:11px;padding:10px 13px;font-size:13px;font-weight:750;background:var(--red);color:white;min-height:40px}.btn.secondary{background:#f1f3f6;color:#344054;border:1px solid #e3e6eb}.btn.outline{background:white;color:var(--red);border:1px solid #f0b6b6}.btn.dark{background:#202938;color:white}.btn.tiny{font-size:11px;min-height:31px;padding:6px 9px;border-radius:9px}.btn.full{width:100%}.source-status{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:12px;background:#fff7ed;color:#854d0e;font-size:12px;line-height:1.45;border:1px solid #fed7aa;margin:10px 0}.source-status.ok{background:#ecfdf3;color:#166534;border-color:#bbf7d0}.source-status.error{background:#fef2f2;color:#991b1b;border-color:#fecaca}.filters{display:flex;gap:6px;overflow-x:auto;padding:2px 0 7px;margin-top:9px;scrollbar-width:thin}.filter{white-space:nowrap;border:1px solid var(--line);color:#4b5563;background:white;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:750}.filter.active{background:var(--red);color:white;border-color:var(--red)}.list{display:grid;gap:9px}.word{background:white;border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;gap:9px;justify-content:space-between;align-items:center}.word-main{min-width:0;flex:1}.hanzi{font-size:25px;line-height:1.2;font-weight:800;letter-spacing:.3px;overflow-wrap:anywhere}.pinyin{font-size:12px;color:var(--red);margin-top:4px}.meaning{font-size:13px;color:#475467;line-height:1.45;margin-top:3px;overflow-wrap:anywhere}.tag{display:inline-flex;align-items:center;background:#fef2f2;color:#991b1b;border-radius:6px;padding:3px 6px;font-size:10px;font-weight:800;margin-left:5px;vertical-align:middle}.tag.gray{background:#f1f5f9;color:#64748b}.word-actions{display:flex;flex-direction:column;gap:5px}.iconbtn{background:#f8fafc;border:1px solid var(--line);border-radius:9px;min-width:36px;min-height:33px;color:#39465a;font-size:15px}.pagination{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--muted)}.empty{text-align:center;padding:25px 12px;border:1px dashed #d0d5dd;border-radius:13px;color:var(--muted);font-size:13px;background:#fff}.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:5px 9px;background:#f1f5f9;color:#344054;font-size:11px;font-weight:750}.selected-list{display:grid;gap:8px}.selected-item{display:grid;grid-template-columns:minmax(0,1fr) 115px 35px;gap:6px;align-items:center;padding:8px;background:#f8fafc;border:1px solid var(--line);border-radius:11px}.selected-word{min-width:0}.selected-word b{font-size:19px}.selected-word small{display:block;color:var(--muted);font-size:10px;line-height:1.3;margin-top:2px;max-height:26px;overflow:hidden}.role-select{min-width:0;width:100%;font-size:11px;border:1px solid #d6dae1;border-radius:8px;padding:8px 4px;background:#fff}.sent-card{padding:14px;background:white;border:1px solid var(--line);border-radius:14px;margin-top:9px}.sent-card .chinese{font-size:24px;font-weight:850;line-height:1.5;overflow-wrap:anywhere}.sent-card .translation{font-size:14px;color:#344054;margin-top:4px}.sent-card .meta{font-size:12px;color:var(--red);margin-top:6px}.sent-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.mode-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.mode-btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 8px;font-size:12px;font-weight:750;color:#475467}.mode-btn.active{background:#fef2f2;color:var(--red);border-color:#f4abab}.question{font-size:27px;line-height:1.4;font-weight:850;text-align:center;margin:18px 0 6px;overflow-wrap:anywhere}.question-translation{font-size:13px;color:var(--muted);text-align:center;min-height:20px}.answer{margin:15px 0 9px}.result{padding:13px;border-radius:12px;margin-top:12px;font-size:13px;line-height:1.6;border:1px solid}.result.good{color:#166534;background:#f0fdf4;border-color:#bbf7d0}.result.mid{color:#854d0e;background:#fffbeb;border-color:#fde68a}.result.bad{color:#991b1b;background:#fef2f2;border-color:#fecaca}.score{font-size:24px;font-weight:900}.progressbar{height:6px;border-radius:99px;background:#e5e7eb;overflow:hidden;flex:1}.progressbar div{height:100%;background:var(--red);width:0;transition:width .2s}.write-panel{display:none;margin-top:11px}.write-panel.show{display:block}.canvas-wrap{border:1px solid #d7dce3;border-radius:14px;padding:8px;background:#fbfcfd;width:100%;max-width:300px;aspect-ratio:1/1;margin:10px auto}.writing-canvas{width:100%;height:auto;aspect-ratio:1/1;display:block;touch-action:none;border-radius:8px;background-color:white;background-image:linear-gradient(90deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px));background-size:100% 100%}.smallprint{font-size:11px;color:var(--muted);line-height:1.5}.reading-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}.score-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px 7px;background:#f8fafc;border:1px solid var(--line);border-radius:11px;text-align:center}.stat b{display:block;font-size:19px}.stat span{display:block;font-size:10px;color:var(--muted);margin-top:3px}.footer-note{font-size:10px;color:#7b8494;text-align:center;line-height:1.6;padding:12px 8px}.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,15px);opacity:0;pointer-events:none;z-index:50;background:#1f2937;color:white;padding:10px 14px;border-radius:10px;font-size:12px;max-width:90vw;text-align:center;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;-webkit-tap-highlight-color:transparent;padding-bottom:calc(76px + env(safe-area-inset-bottom))}button,input,select,textarea{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}.topbar{position:sticky;top:0;z-index:20;background:var(--red);color:white;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));box-shadow:0 2px 8px #0002}.toprow{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:860px;margin:auto}.brand{display:flex;gap:10px;align-items:center}.logo{width:38px;height:38px;border-radius:12px;background:#ffffff20;display:grid;place-items:center;font-size:23px}.brand h1{font-size:16px;margin:0;line-height:1.25}.brand p{font-size:11px;margin:4px 0 0;color:#fee2e2}.count-pill{white-space:nowrap;background:#991b1b;border:1px solid #ffffff44;border-radius:99px;font-size:11px;padding:6px 9px}.tabs{position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:19;display:flex;gap:4px;padding:7px max(10px,calc((100% - 840px)/2));background:white;border-bottom:1px solid var(--line);box-shadow:0 3px 8px #00000008}.tab{flex:1;min-height:43px;border:0;border-radius:10px;background:transparent;color:#647084;font-size:12px;font-weight:700;padding:7px 4px}.tab span{display:block;font-size:17px;line-height:1.3}.tab.active{background:#fef2f2;color:var(--red)}main{max-width:860px;margin:auto;padding:14px 13px 26px}.panel{display:none}.panel.active{display:block}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}.section-title{font-size:15px;font-weight:800;margin:0 0 10px}.subtle{color:var(--muted);font-size:12px;line-height:1.5}.row{display:flex;align-items:center;gap:8px}.row.wrap{flex-wrap:wrap}.between{justify-content:space-between}.grow{flex:1;min-width:0}.field{width:100%;border:1px solid #d4d9e1;background:#fff;border-radius:12px;padding:12px 13px;color:var(--ink);outline:none;font-size:14px;min-height:43px}.field:focus{border-color:#dc6262;box-shadow:0 0 0 3px #fee2e2}.field.small{font-size:12px;padding:9px 10px;min-height:37px}.btn{border:0;border-radius:11px;padding:10px 13px;font-size:13px;font-weight:750;background:var(--red);color:white;min-height:40px}.btn.secondary{background:#f1f3f6;color:#344054;border:1px solid #e3e6eb}.btn.outline{background:white;color:var(--red);border:1px solid #f0b6b6}.btn.dark{background:#202938;color:white}.btn.tiny{font-size:11px;min-height:31px;padding:6px 9px;border-radius:99px}.btn.full{width:100%}.source-status{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:12px;background:#fff7ed;color:#854d0e;font-size:12px;line-height:1.45;border:1px solid #fed7aa;margin:10px 0}.source-status.ok{background:#ecfdf3;color:#166534;border-color:#bbf7d0}.source-status.error{background:#fef2f2;color:#991b1b;border-color:#fecaca}.filters{display:flex;gap:6px;overflow-x:auto;padding:2px 0 7px;margin-top:9px;scrollbar-width:thin}.filter{white-space:nowrap;border:1px solid var(--line);color:#4b5563;background:white;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:750}.filter.active{background:var(--red);color:white;border-color:var(--red)}.list{display:grid;gap:9px}.word{background:white;border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;gap:9px;justify-content:space-between;align-items:center}.word-main{min-width:0;flex:1}.hanzi{font-size:25px;line-height:1.2;font-weight:800;letter-spacing:.3px;overflow-wrap:anywhere}.pinyin{font-size:12px;color:var(--red);margin-top:4px}.meaning{font-size:13px;color:#475467;line-height:1.45;margin-top:3px;overflow-wrap:anywhere}.tag{display:inline-flex;align-items:center;background:#fef2f2;color:#991b1b;border-radius:6px;padding:3px 6px;font-size:10px;font-weight:800;margin-left:5px;vertical-align:middle}.tag.gray{background:#f1f5f9;color:#64748b}.word-actions{display:flex;flex-direction:column;gap:5px}.iconbtn{background:#f8fafc;border:1px solid var(--line);border-radius:9px;min-width:36px;min-height:33px;color:#39465a;font-size:15px}.pagination{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--muted)}.empty{text-align:center;padding:25px 12px;border:1px dashed #d0d5dd;border-radius:13px;color:var(--muted);font-size:13px;background:#fff}.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:5px 9px;background:#f1f5f9;color:#344054;font-size:11px;font-weight:750}.selected-list{display:grid;gap:8px}.selected-item{display:grid;grid-template-columns:minmax(0,1fr) 115px 35px;gap:6px;align-items:center;padding:8px;background:#f8fafc;border:1px solid var(--line);border-radius:11px}.selected-word{min-width:0}.selected-word b{font-size:19px}.selected-word small{display:block;color:var(--muted);font-size:10px;line-height:1.3;margin-top:2px;max-height:26px;overflow:hidden}.role-select{min-width:0;width:100%;font-size:11px;border:1px solid #d6dae1;border-radius:8px;padding:8px 4px;background:#fff}.sent-card{padding:14px;background:white;border:1px solid var(--line);border-radius:14px;margin-top:9px}.sent-card .chinese{font-size:24px;font-weight:850;line-height:1.5;overflow-wrap:anywhere}.sent-card .translation{font-size:14px;color:#344054;margin-top:4px}.sent-card .meta{font-size:12px;color:var(--red);margin-top:6px}.sent-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.mode-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.mode-btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 8px;font-size:12px;font-weight:750;color:#475467}.mode-btn.active{background:#fef2f2;color:var(--red);border-color:#f4abab}.question{font-size:27px;line-height:1.4;font-weight:850;text-align:center;margin:18px 0 6px;overflow-wrap:anywhere}.question-translation{font-size:13px;color:var(--muted);text-align:center;min-height:20px}.answer{margin:15px 0 9px}.result{padding:13px;border-radius:12px;margin-top:12px;font-size:13px;line-height:1.6;border:1px solid}.result.good{color:#166534;background:#f0fdf4;border-color:#bbf7d0}.result.mid{color:#854d0e;background:#fffbeb;border-color:#fde68a}.result.bad{color:#991b1b;background:#fef2f2;border-color:#fecaca}.score{font-size:24px;font-weight:900}.progressbar{height:6px;border-radius:99px;background:#e5e7eb;overflow:hidden;flex:1}.progressbar div{height:100%;background:var(--red);width:0;transition:width .2s}.write-panel{display:none;margin-top:11px}.write-panel.show{display:block}.canvas-wrap{border:1px solid #d7dce3;border-radius:14px;padding:8px;background:#fbfcfd;width:100%;max-width:300px;aspect-ratio:1/1;margin:10px auto}.writing-canvas{width:100%;height:auto;aspect-ratio:1/1;display:block;touch-action:none;border-radius:8px;background-color:white;background-image:linear-gradient(90deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px));background-size:100% 100%}.smallprint{font-size:11px;color:var(--muted);line-height:1.5}.reading-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}.score-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px 7px;background:#f8fafc;border:1px solid var(--line);border-radius:11px;text-align:center}.stat b{display:block;font-size:19px}.stat span{display:block;font-size:10px;color:var(--muted);margin-top:3px}.footer-note{font-size:10px;color:#7b8494;text-align:center;line-height:1.6;padding:12px 8px}.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,15px);opacity:0;pointer-events:none;z-index:50;background:#1f2937;color:white;padding:10px 14px;border-radius:10px;font-size:12px;max-width:90vw;text-align:center;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media(min-width:650px){main{padding:22px}.dict-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dict-grid .word{margin:0}.mode-row{grid-template-columns:repeat(4,1fr)}.question{font-size:32px}.selected-list{grid-template-columns:1fr 1fr}.selected-item{grid-template-columns:minmax(0,1fr) 105px 32px}}
 
-.credit-line{font-size:9px;line-height:1.35;font-weight:800;letter-spacing:.12px;max-width:calc(100vw - 125px);margin:4px 0 0;color:#fff;overflow-wrap:anywhere}.topbar{min-height:76px}.tabs{top:calc(76px + env(safe-area-inset-bottom))}
+.credit-line{font-size:9px;line-height:1.35;font-weight:800;letter-spacing:.12px;max-width:calc(100vw - 125px);margin:4px 0 0;color:#fff;overflow-wrap:anywhere}.topbar{min-height:76px}.tabs{top:calc(76px + env(safe-area-inset-top))}
 .combine-suggestions{margin-top:7px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;padding:5px}.combine-suggestions[hidden]{display:none}.combine-suggestion{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid #eef0f3;padding:9px 7px;min-height:48px}.combine-suggestion:last-child{border-bottom:0}.combine-suggestion:active{background:#fff1f2}.suggestion-hanzi{font-size:19px;font-weight:850;white-space:nowrap;min-width:42px}.suggestion-meta{min-width:0;flex:1}.suggestion-pinyin{font-size:11px;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.suggestion-meaning{font-size:11px;color:#667085;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.suggestion-add{border-radius:8px;background:#fef2f2;color:var(--red);font-size:11px;font-weight:800;padding:6px 8px;white-space:nowrap}.selected-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:38px}.selected-chip{display:inline-flex;align-items:center;gap:7px;max-width:100%;border:1px solid #fecaca;background:#fff7f7;color:#991b1b;padding:7px 8px;border-radius:10px}.selected-chip b{font-size:18px}.selected-chip small{font-size:10px;color:#6b7280;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.selected-chip button{border:0;background:transparent;color:#991b1b;font-weight:900;font-size:16px;padding:0 2px}.stroke-modal[hidden]{display:none}.stroke-modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(12px + env(safe-area-inset-bottom))}.stroke-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.58)}.stroke-dialog{position:relative;z-index:1;width:min(760px,100%);max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;background:#fff;border-radius:18px;padding:15px;box-shadow:0 22px 70px #0004}.stroke-char-picker{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}.stroke-char-button{min-width:39px;min-height:39px;border:1px solid var(--line);background:#f8fafc;border-radius:9px;font-size:21px;font-weight:800}.stroke-char-button.active{background:#fef2f2;border-color:#ef4444;color:#b91c1c}.stroke-content-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stroke-panel{border:1px solid var(--line);border-radius:13px;padding:10px;min-width:0}.stroke-panel h3{font-size:13px;margin:0 0 8px}.stroke-stage{width:100%;max-width:235px;aspect-ratio:1/1;margin:0 auto 7px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background-color:white;background-image:linear-gradient(45deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(-45deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(90deg,transparent calc(50% - .5px),#f0f1f3 50%,transparent calc(50% + .5px)),linear-gradient(transparent calc(50% - .5px),#f0f1f3 50%,transparent calc(50% + .5px));position:relative;display:grid;place-items:center}.stroke-stage svg{max-width:100%;max-height:100%}.stroke-fallback-char{font-size:120px;color:#cbd5e1;font-weight:300;line-height:1}.stroke-panel .smallprint{min-height:32px;margin:4px 0 8px}.stroke-panel .btn{font-size:12px;padding:9px 8px;min-height:38px}
 @media(max-width:520px){.topbar{min-height:86px}.tabs{top:calc(86px + env(safe-area-inset-top))}.credit-line{font-size:8px;max-width:calc(100vw - 135px)}.stroke-content-grid{grid-template-columns:1fr 1fr;gap:7px}.stroke-dialog{padding:12px}.stroke-panel{padding:7px}.stroke-stage{max-width:100%;}.stroke-panel h3{font-size:12px}.stroke-fallback-char{font-size:82px}.stroke-panel .btn{font-size:11px}}
 
@@ -30,9 +30,13 @@
 .practice-write-char-picker .stroke-char-button{min-width:34px;min-height:34px;font-size:18px}
 @media(max-width:370px){.credit-line{font-size:7px}.stroke-content-grid{grid-template-columns:1fr}.stroke-stage{max-width:210px}.practice-write-grid{gap:6px}.practice-write-card{padding:6px}.practice-write-card .btn{font-size:10px;padding:7px 5px}.practice-write-card .smallprint{font-size:9px}}
 
+
+
+/* Compact top-right metadata: count first and author credit underneath. */
 .toprow{align-items:center;gap:10px}.brand{flex:1;min-width:0}.brand>div:last-child{min-width:0}.top-meta{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;max-width:54%;min-width:0}.count-pill{white-space:normal;text-align:right;line-height:1.25;max-width:100%;font-size:10px;padding:5px 8px}.credit-line{font-size:7px;line-height:1.2;font-weight:700;letter-spacing:0;text-align:right;max-width:100%;margin:0;color:#fff;overflow-wrap:anywhere}
 @media(max-width:520px){.topbar{min-height:0;padding:6px 10px;padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px}.toprow{gap:7px}.brand{gap:7px}.logo{width:34px;height:34px;font-size:21px}.brand h1{font-size:14px}.brand p{font-size:9px}.top-meta{max-width:52%;gap:3px}.count-pill{font-size:9px;padding:4px 6px}.credit-line{font-size:6.5px;line-height:1.15}.tabs{top:calc(52px + env(safe-area-inset-top))}
 @media(max-width:370px){.brand h1{font-size:12px;white-space:nowrap}.top-meta{max-width:52%}}}
+
 
 .write-vocab-results-empty{padding:12px;color:var(--muted);font-size:12px}
 .homework-source{font-size:10px;color:var(--muted);margin-top:8px}
@@ -78,7 +82,6 @@
  <div class="pagination"><button class="btn secondary tiny" id="prev-page">← Trước</button><span id="page-info">Trang 1</span><button class="btn secondary tiny" id="next-page">Sau →</button></div>
  <div class="footer-note">Nguồn: CVDICT Chinese–Vietnamese (dữ liệu CC-CEDICT contributors), giấy phép <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>. Dữ liệu được đóng gói từ bộ term_bank trong kho yomilens-dictionaries. Bản dịch có thể cần kiểm chứng theo ngữ cảnh. Ứng dụng không tạo từ giả để làm tăng số lượng.<br>Thứ tự nét chữ: <a href="https://github.com/chanind/hanzi-writer" target="_blank" rel="noreferrer">Hanzi Writer</a> và dữ liệu <a href="https://github.com/chanind/hanzi-writer-data" target="_blank" rel="noreferrer">Hanzi Writer Data</a>, dựa trên <a href="https://github.com/skishore/makemeahanzi" target="_blank" rel="noreferrer">Make Me a Hanzi</a> / Arphic Public License. Một số chữ hiếm có thể không có dữ liệu; khi đó có liên kết dự phòng tới <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net</a>.</div>
 </section>
-
 <section id="panel-practice" class="panel">
  <div class="card homework-card">
   <h2 class="section-title">Dịch nhanh Việt ⇄ Trung</h2>
@@ -127,7 +130,6 @@
  </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Thống kê của bạn</h3><button class="btn secondary tiny" id="clear-history" type="button">Xóa lịch sử</button></div><div class="score-stats" style="margin-top:11px"><div class="stat"><b id="stat-done">0</b><span>Lượt đã làm</span></div><div class="stat"><b id="stat-correct">0</b><span>Đạt từ 80%</span></div><div class="stat"><b id="stat-percent">0%</b><span>Tỷ lệ chính xác</span></div></div><p class="smallprint" style="margin-bottom:0">Nút xóa sẽ đặt lại thống kê luyện tập trên thiết bị này; không xóa từ điển đã nạp.</p></div>
 </section>
-
 <section id="panel-combine" class="panel">
  <div class="card combine-card">
   <h2 class="section-title">Ghép câu từ từ bạn chọn</h2>
@@ -143,7 +145,6 @@
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
 </main>
-
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="stroke-modal" class="stroke-modal" hidden>
  <div class="stroke-backdrop" data-close-stroke></div>
@@ -161,69 +162,714 @@
   <p class="smallprint" style="margin:12px 0 0">Dữ liệu nét được tải theo từng chữ từ Hanzi Writer Data. Nếu không có dữ liệu cho chữ hiếm, bạn có thể tra bổ sung tại <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>.</p>
  </div>
 </div>
+<script id="embedded-cvdict-data" type="text/plain" data-version="cedict-vi-2024-tones-122523" data-format="json">[["2019冠状病毒病","2019冠狀病毒病","èr líng yī jiǔ guān zhuàng bìng dú bìng","COVID-19, bệnh coronavirus được xác định năm 2019",""],["21三体综合症","21三體綜合症","èr shí yī sān tǐ zōng hé zhèng","bệnh tam nhiễm sắc thể; hội chứng Down",""],["502胶","502膠","wǔ líng èr jiāo","keo cyanoacrylate",""],["AA制","AA制","AA - zhì","chia đều hóa đơn; trả tiền riêng",""],["AB制","AB制","A B zhì","· chia hóa đơn (trong đó nam trả phần lớn hơn)；· (sân khấu) hệ thống hai diễn viên luân phiên đóng vai chính, một người thay thế nếu người kia không thể diễn",""],["A咖","A咖","A kā","hạng \"A\"; hạng top",""],["A圈儿","A圈兒","A quān r","ký hiệu @",""],["A片","A片","A piàn","phim người lớn; phim khiêu dâm",""],["A菜","A菜","A cài","(Đài Loan) rau A, hay xà lách Đài Loan (Lactuca sativa var. sativa) (từ tiếng Đài Loan 萵仔菜, phát âm Tai-lo [ue-á-tshài] hoặc [e-á-tshài])",""],["A货","A貨","A huò","hàng giả chất lượng tốt",""],["BP机","BP機","B P jī","(từ vay mượn) máy nhắn tin",""],["B型超声","B型超聲","B xíng chāo shēng","siêu âm kiểu B",""],["B格","B格","bī gé","biến thể của 逼格[bi1 ge2]",""],["B站","B站","B zhàn","(thông tục) Bilibili, trang web chia sẻ video của Trung Quốc nổi bật với bình luận người dùng cuộn trên màn hình 彈幕|弹幕[dan4 mu4] phủ lên video",""],["B超","B超","B chāo","· siêu âm chế độ B；· siêu âm thai nhi；· viết tắt của B型超聲|B型超声[B xing2 chao1 sheng1]",""],["CP值","CP值","C P zhí","(Đài Loan) giá trị so với số tiền bỏ ra; đáng đồng tiền bát gạo",""],["C位","C位","C wèi","(từ mới, khoảng năm 2015) (thông tục) vị trí nổi bật nhất (ví dụ: trong ảnh nhóm của nghệ sĩ) (từ vay mượn từ \"carry\" hoặc \"center\" hoặc \"core\")",""],["C盘","C盤","C pán","ổ đĩa C hoặc ổ khởi động mặc định (máy tính)",""],["C罗","C羅","C Luó","biệt danh của cầu thủ bóng đá Bồ Đào Nha Cristiano Ronaldo",""],["DNA鉴定","DNA鑒定","D N A jiàn dìng","xét nghiệm DNA; kiểm tra DNA",""],["E仔","E仔","E zǎi","MDMA (C11H15NO2)",""],["G友","G友","G yǒu","xem 基友[ji1 you3]",""],["G弦裤","G弦褲","G xián kù","quần lọt khe",""],["G点","G點","G diǎn","điểm G",""],["H桥","H橋","H qiáo","mạch cầu H (điện tử)",""],["IP剧","IP劇","I P jù","chuyển thể màn ảnh (phim truyền hình hoặc điện ảnh dựa trên tiểu thuyết trực tuyến hoặc trò chơi điện tử, v.v.)",""],["JK制服","JK制服","J K zhì fú","đồng phục nữ sinh trung học (Nhật Bản)",""],["K人","K人","K rén","(tiếng lóng) đánh ai đó; đánh đập ai đó",""],["K仔","K仔","K zǎi","ketamine (tiếng lóng)",""],["K他命","K他命","k tā mìng","ketamine (C13H16ClNO) (tiếng lóng)",""],["K房","K房","K fáng","(tiếng lóng) KTV; phòng KTV",""],["K书","K書","K shū","· (Đài Loan) học nhồi nhét; học tập (từ tiếng Đài Loan 齧書, phát âm Tai-lo [khè su], nghĩa đen: gặm sách)；· xem cũng 啃書|啃书[ken3 shu1]",""],["K歌","K歌","K gē","karaoke (tiếng lóng)",""],["K粉","K粉","K fěn","ketamine (tiếng lóng)",""],["K线","K線","K xiàn","nến (trong biểu đồ nến)",""],["K线图","K線圖","K xiàn tú","biểu đồ nến",""],["K金","K金","K jīn","xem 開金|开金[kai1 jin1]",""],["L照","L照","L zhào","ảnh nude (từ 裸照[luo3 zhao4])",""],["M巾","M巾","M jīn","(thông tục) băng vệ sinh",""],["NG片段","NG片段","N G piàn duàn","(phim và truyền hình) lỗi diễn xuất",""],["NG镜头","NG鏡頭","N G jìng tóu","(phim và truyền hình) lỗi diễn xuất",""],["N久","N久","N jiǔ","một thời gian rất lâu (nguyên do: trong toán học, n đại diện cho một số lượng lớn tùy ý)",""],["N挡","N擋","N dǎng","số mo (hộp số)",""],["OK绷","OK繃","O K bēng","băng cá nhân (Đài Loan)",""],["OK镜","OK鏡","O K jìng","kính OK, kính áp tròng chỉnh hình giác mạc giúp định hình lại giác mạc để loại bỏ cận thị",""],["O型腿","O型腿","O xíng tuǐ","chân vòng kiềng; tật chân vòng kiềng",""],["PA部","PA部","P A bù","bộ phận nhân viên khách sạn phụ trách giữ sạch sẽ các khu vực công cộng của khách sạn",""],["PO文","PO文","pō wén","(thông tục) đăng bài",""],["P图","P圖","P tú","(tiếng lóng Internet) chỉnh sửa ảnh bằng Photoshop; ảnh đã chỉnh sửa Photoshop",""],["P挡","P擋","P dǎng","· số đỗ (xe)；· chế độ lập trình (trên máy ảnh kỹ thuật số)",""],["P民","P民","P mín","· (tiếng lóng) dân đen；· người bình dân；· đám đông",""],["QR扣","QR扣","Q R kòu","(Đài Loan) (từ mượn) mã QR",""],["Q劲","Q勁","Q jìn","cảm giác dai giòn",""],["Q弹","Q彈","Q tán","· (về cảm giác món ăn) dai giòn；· chắc",""],["TF卡","TF卡","T F kǎ","thẻ nhớ microSD",""],["Tony老师","Tony老師","t o n y lǎo shī","(tiếng lóng) thợ làm tóc",""],["T台","T台","T tái","sàn diễn (trong buổi trình diễn thời trang v.v.); sàn catwalk",""],["T型台","T型台","T xíng tái","sàn diễn (trong buổi trình diễn thời trang v.v.); sàn catwalk",""],["T字帐","T字帳","T zì zhàng","tài khoản chữ T (kế toán)",""],["T字裤","T字褲","T zì kù","quần lọt khe (nội y)",""],["T恤","T恤","T xù","áo thun",""],["T裇","T裇","T xū","áo thun",""],["UP主","UP主","U P zhǔ","· (tiếng lóng Internet) người đăng tải (người đăng video hoặc nội dung khác lên Internet)；· đọc là [a4 pu5 zhu3]；· (từ mượn từ tiếng Nhật うｐ主, \"upunushi\")",""],["USB手指","USB手指","U S B shǒu zhǐ","ổ flash USB",""],["USB记忆棒","USB記憶棒","U S B jì yì bàng","ổ flash USB",""],["U凸内裤","U凸內褲","U tū nèi kù","quần lót nam có túi nâng",""],["U型枕","U型枕","U xíng zhěn","gối kê cổ du lịch",""],["U型池","U型池","U xíng chí","(thể thao) đường trượt dạng chữ U; đường trượt half-pipe",""],["U形转弯","U形轉彎","U xíng zhuǎn wān","quay đầu chữ U",""],["U盘","U盤","U pán","ổ đĩa flash USB",""],["U盾","U盾","U dùn","khóa USB dùng làm mã bảo mật trong ngân hàng trực tuyến Trung Quốc",""],["V沟","V溝","V gōu","· đường viền cổ áo thấp lộ khe ngực；· cổ áo trễ；· mương",""],["XO酱","XO醬","X O jiàng","nước sốt XO, một loại sốt hải sản cay được tạo ra ở Hong Kong vào những năm 1980",""],["X光","X光","X guāng","tia X",""],["word姐","word姐","w o r d jiě","chị tôi (phiên bản tiếng lóng Internet của 我的姐[wo3 de5 jie3])",""],["π日","π日","Pài rì","Ngày Pi Thế giới, kỷ niệm hằng số toán học π vào ngày 14 tháng 3 mỗi năm",""],["㐄","㐄","kuà","thành phần trong chữ Hán, hình ảnh phản chiếu của 夂[zhi3]",""],["㐅","㐅","wǔ","biến thể cổ của 五[wu3]",""],["㐆","㐆","yǐn","thành phần trong chữ Hán 殷[yin1]",""],["㐌","㐌","tā","biến thể của 它[ta1]",""],["㐖","㐖","xié","dùng trong 㐖毒[Xie2 du2]",""],["㐖毒","㐖毒","Xié dú","Ấn Độ (cổ đại)",""],["㐜","㐜","chóu","biến thể của 仇[chou2]",""],["㐡","㐡","nuò","biến thể cổ của 懦[nuo4]",""],["㐤","㐤","qiú","biến thể cổ của 求[qiu2]",""],["㐫","㐫","xiōng","biến thể cũ của 凶[xiong1]",""],["㐰","㐰","xìn","biến thể cũ của 信[xin4]",""],["㐺","㐺","zhòng","biến thể cũ của 眾|众[zhong4]",""],["㑊","㑊","yì","dùng trong 解㑊[xie4 yi4]",""],["㑇","㑳","zhòu","(cũ) đẹp; thông minh",""],["俊","㑺","jùn","biến thể cũ của 俊[jun4]",""],["㒳","㒳","liǎng","biến thể cũ của 兩|两[liang3]",""],["㒸","㒸","suì","biến thể cổ của 遂[sui4]",""],["罔","㒺","wǎng","biến thể cũ của 罔[wang3]",""],["寇","㓂","kòu","biến thể cũ của 寇[kou4]",""],["㔾","㔾","jié","bộ \"tiết\" trong chữ Hán (bộ Khang Hy số 26)",""],["却","㕁","què","biến thể cũ của 卻|却[que4]",""],["厨","㕑","chú","biến thể cũ của 廚|厨[chu2]",""],["参","㕘","cān","biến thể của 參|参[can1]",""],["㕥","㕥","shēn","biến thể cũ của 呻[shen1]",""],["以","㕥","yǐ","biến thể cũ của 以[yi3]",""],["㕯","㕯","nè","biến thể cũ của 訥|讷[ne4]",""],["㕻","㕻","pǒu","· biến thể của 咅[pou3]；· cũng đọc là [tou4]",""],["㗂","㗂","shěng","· biến thể của 省[sheng3]；· kiệm lời；· kiểm tra；· theo dõi；· lục soát (đặc biệt trong tiếng Quảng Đông)",""],["㘎","㘚","hǎn","(văn học) (về hổ) gầm; rống",""],["坳","㘭","ào","biến thể của 坳[ao4]",""],["㘵","㘵","bù","(dùng trong tên địa danh)",""],["㙍","㙍","duō","(dùng trong tên địa danh)",""],["㙦","㙦","xié","(dùng trong tên địa danh)",""],["㚻","㚻","jī","dùng trong 㚻姦|㚻奸[ji1 jian1]",""],["㚻奸","㚻姦","jī jiān","biến thể của 雞奸|鸡奸[ji1 jian1]",""],["㛂","㛂","nuǒ","duyên dáng; mảnh mai và nhỏ nhắn",""],["㛃","㛃","jié","biến thể của 潔|洁[jie2] (chủ yếu dùng trong tên riêng)",""],["㝄","㝄","chún","biến thể cũ của 純|纯[chun2]",""],["㝇","㝇","chún","biến thể cũ của 鶉|鹑[chun2]",""],["宿","㝛","sù","biến thể cũ của 宿[su4]",""],["冥","㝠","míng","biến thể cũ của 冥[ming2]",""],["最","Dưới đây là file `index.html` hoàn chỉnh đã được bổ sung đầy đủ và đúng chuẩn theo nội dung file gốc của bạn:
 
-<script id="embedded-cvdict-data" type="text/plain" data-version="cedict-vi-2024-tones-122523" data-format="json">[["你","你","nǐ","bạn; anh; chị; em",""],["很","很","hěn","rất; lắm",""],["冷","冷","lěng","lạnh",""],["吗","嗎","ma","(trợ từ nghi vấn đặt ở cuối câu)",""],["好","好","hǎo","tốt; khỏe; hay",""],["我","我","wǒ","tôi; tao; ta; mình",""]]</script>
+```html
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b91c1c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Từ điển Trung–Việt, ghép câu và luyện tiếng Trung trên điện thoại.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<title>Học Tiếng Trung · Trung Việt</title>
+<style>
+:root{--red:#b91c1c;--red2:#dc2626;--ink:#182230;--muted:#657184;--line:#e4e7ec;--paper:#fff;--bg:#f5f6f8;--green:#147d4a;--amber:#a15c07;--shadow:0 4px 18px rgba(18,31,53,.06)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans",sans-serif;-webkit-tap-highlight-color:transparent;padding-bottom:calc(76px + env(safe-area-inset-bottom))}button,input,select,textarea{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}.topbar{position:sticky;top:0;z-index:20;background:var(--red);color:white;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));box-shadow:0 2px 8px #0002}.toprow{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:860px;margin:auto}.brand{display:flex;gap:10px;align-items:center}.logo{width:38px;height:38px;border-radius:12px;background:#ffffff20;display:grid;place-items:center;font-size:23px}.brand h1{font-size:16px;margin:0;line-height:1.25}.brand p{font-size:11px;margin:4px 0 0;color:#fee2e2}.count-pill{white-space:nowrap;background:#991b1b;border:1px solid #ffffff44;border-radius:99px;font-size:11px;padding:6px 9px}.tabs{position:sticky;top:calc(62px + env(safe-area-inset-top));z-index:19;display:flex;gap:4px;padding:7px max(10px,calc((100% - 840px)/2));background:white;border-bottom:1px solid var(--line);box-shadow:0 3px 8px #00000008}.tab{flex:1;min-height:43px;border:0;border-radius:10px;background:transparent;color:#647084;font-size:12px;font-weight:700;padding:7px 4px}.tab span{display:block;font-size:17px;line-height:1.3}.tab.active{background:#fef2f2;color:var(--red)}main{max-width:860px;margin:auto;padding:14px 13px 26px}.panel{display:none}.panel.active{display:block}.card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:12px}.section-title{font-size:15px;font-weight:800;margin:0 0 10px}.subtle{color:var(--muted);font-size:12px;line-height:1.5}.row{display:flex;align-items:center;gap:8px}.row.wrap{flex-wrap:wrap}.between{justify-content:space-between}.grow{flex:1;min-width:0}.field{width:100%;border:1px solid #d4d9e1;background:#fff;border-radius:12px;padding:12px 13px;color:var(--ink);outline:none;font-size:14px;min-height:43px}.field:focus{border-color:#dc6262;box-shadow:0 0 0 3px #fee2e2}.field.small{font-size:12px;padding:9px 10px;min-height:37px}.btn{border:0;border-radius:11px;padding:10px 13px;font-size:13px;font-weight:750;background:var(--red);color:white;min-height:40px}.btn.secondary{background:#f1f3f6;color:#344054;border:1px solid #e3e6eb}.btn.outline{background:white;color:var(--red);border:1px solid #f0b6b6}.btn.dark{background:#202938;color:white}.btn.tiny{font-size:11px;min-height:31px;padding:6px 9px;border-radius:99px}.btn.full{width:100%}.source-status{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:12px;background:#fff7ed;color:#854d0e;font-size:12px;line-height:1.45;border:1px solid #fed7aa;margin:10px 0}.source-status.ok{background:#ecfdf3;color:#166534;border-color:#bbf7d0}.source-status.error{background:#fef2f2;color:#991b1b;border-color:#fecaca}.filters{display:flex;gap:6px;overflow-x:auto;padding:2px 0 7px;margin-top:9px;scrollbar-width:thin}.filter{white-space:nowrap;border:1px solid var(--line);color:#4b5563;background:white;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:750}.filter.active{background:var(--red);color:white;border-color:var(--red)}.list{display:grid;gap:9px}.word{background:white;border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;gap:9px;justify-content:space-between;align-items:center}.word-main{min-width:0;flex:1}.hanzi{font-size:25px;line-height:1.2;font-weight:800;letter-spacing:.3px;overflow-wrap:anywhere}.pinyin{font-size:12px;color:var(--red);margin-top:4px}.meaning{font-size:13px;color:#475467;line-height:1.45;margin-top:3px;overflow-wrap:anywhere}.tag{display:inline-flex;align-items:center;background:#fef2f2;color:#991b1b;border-radius:6px;padding:3px 6px;font-size:10px;font-weight:800;margin-left:5px;vertical-align:middle}.tag.gray{background:#f1f5f9;color:#64748b}.word-actions{display:flex;flex-direction:column;gap:5px}.iconbtn{background:#f8fafc;border:1px solid var(--line);border-radius:9px;min-width:36px;min-height:33px;color:#39465a;font-size:15px}.pagination{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12px;color:var(--muted)}.empty{text-align:center;padding:25px 12px;border:1px dashed #d0d5dd;border-radius:13px;color:var(--muted);font-size:13px;background:#fff}.pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:5px 9px;background:#f1f5f9;color:#344054;font-size:11px;font-weight:750}.selected-list{display:grid;gap:8px}.selected-item{display:grid;grid-template-columns:minmax(0,1fr) 115px 35px;gap:6px;align-items:center;padding:8px;background:#f8fafc;border:1px solid var(--line);border-radius:11px}.selected-word{min-width:0}.selected-word b{font-size:19px}.selected-word small{display:block;color:var(--muted);font-size:10px;line-height:1.3;margin-top:2px;max-height:26px;overflow:hidden}.role-select{min-width:0;width:100%;font-size:11px;border:1px solid #d6dae1;border-radius:8px;padding:8px 4px;background:#fff}.sent-card{padding:14px;background:white;border:1px solid var(--line);border-radius:14px;margin-top:9px}.sent-card .chinese{font-size:24px;font-weight:850;line-height:1.5;overflow-wrap:anywhere}.sent-card .translation{font-size:14px;color:#344054;margin-top:4px}.sent-card .meta{font-size:12px;color:var(--red);margin-top:6px}.sent-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:11px}.mode-row{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.mode-btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 8px;font-size:12px;font-weight:750;color:#475467}.mode-btn.active{background:#fef2f2;color:var(--red);border-color:#f4abab}.question{font-size:27px;line-height:1.4;font-weight:850;text-align:center;margin:18px 0 6px;overflow-wrap:anywhere}.question-translation{font-size:13px;color:var(--muted);text-align:center;min-height:20px}.answer{margin:15px 0 9px}.result{padding:13px;border-radius:12px;margin-top:12px;font-size:13px;line-height:1.6;border:1px solid}.result.good{color:#166534;background:#f0fdf4;border-color:#bbf7d0}.result.mid{color:#854d0e;background:#fffbeb;border-color:#fde68a}.result.bad{color:#991b1b;background:#fef2f2;border-color:#fecaca}.score{font-size:24px;font-weight:900}.progressbar{height:6px;border-radius:999px;background:#e5e7eb;overflow:hidden;flex:1}.progressbar div{height:100%;background:var(--red);width:0;transition:width .2s}.write-panel{display:none;margin-top:11px}.write-panel.show{display:block}.canvas-wrap{border:1px solid #d7dce3;border-radius:14px;padding:8px;background:#fbfcfd;width:100%;max-width:300px;aspect-ratio:1/1;margin:10px auto}.writing-canvas{width:100%;height:auto;aspect-ratio:1/1;display:block;touch-action:none;border-radius:8px;background-color:white;background-image:linear-gradient(90deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px));background-size:100% 100%}.smallprint{font-size:11px;color:var(--muted);line-height:1.5}.reading-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}.score-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{padding:10px 7px;background:#f8fafc;border:1px solid var(--line);border-radius:11px;text-align:center}.stat b{display:block;font-size:19px}.stat span{display:block;font-size:10px;color:var(--muted);margin-top:3px}.footer-note{font-size:10px;color:#7b8494;text-align:center;line-height:1.6;padding:12px 8px}.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,15px);opacity:0;pointer-events:none;z-index:50;background:#1f2937;color:white;padding:10px 14px;border-radius:10px;font-size:12px;max-width:90vw;text-align:center;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:650px){main{padding:22px}.dict-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.dict-grid .word{margin:0}.mode-row{grid-template-columns:repeat(4,1fr)}.question{font-size:32px}.selected-list{grid-template-columns:1fr 1fr}.selected-item{grid-template-columns:minmax(0,1fr) 105px 32px}}
 
+.credit-line{font-size:9px;line-height:1.35;font-weight:800;letter-spacing:.12px;max-width:calc(100vw - 125px);margin:4px 0 0;color:#fff;overflow-wrap:anywhere}.topbar{min-height:76px}.tabs{top:calc(76px + env(safe-area-inset-top))}
+.combine-suggestions{margin-top:7px;max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;padding:5px}.combine-suggestions[hidden]{display:none}.combine-suggestion{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid #eef0f3;padding:9px 7px;min-height:48px}.combine-suggestion:last-child{border-bottom:0}.combine-suggestion:active{background:#fff1f2}.suggestion-hanzi{font-size:19px;font-weight:850;white-space:nowrap;min-width:42px}.suggestion-meta{min-width:0;flex:1}.suggestion-pinyin{font-size:11px;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.suggestion-meaning{font-size:11px;color:#667085;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.suggestion-add{border-radius:8px;background:#fef2f2;color:var(--red);font-size:11px;font-weight:800;padding:6px 8px;white-space:nowrap}.selected-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:38px}.selected-chip{display:inline-flex;align-items:center;gap:7px;max-width:100%;border:1px solid #fecaca;background:#fff7f7;color:#991b1b;padding:7px 8px;border-radius:10px}.selected-chip b{font-size:18px}.selected-chip small{font-size:10px;color:#6b7280;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.selected-chip button{border:0;background:transparent;color:#991b1b;font-weight:900;font-size:16px;padding:0 2px}.stroke-modal[hidden]{display:none}.stroke-modal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:12px;padding-top:calc(12px + env(safe-area-inset-top));padding-bottom:calc(12px + env(safe-area-inset-bottom))}.stroke-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.58)}.stroke-dialog{position:relative;z-index:1;width:min(760px,100%);max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;background:#fff;border-radius:18px;padding:15px;box-shadow:0 22px 70px #0004}.stroke-char-picker{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}.stroke-char-button{min-width:39px;min-height:39px;border:1px solid var(--line);background:#f8fafc;border-radius:9px;font-size:21px;font-weight:800}.stroke-char-button.active{background:#fef2f2;border-color:#ef4444;color:#b91c1c}.stroke-content-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stroke-panel{border:1px solid var(--line);border-radius:13px;padding:10px;min-width:0}.stroke-panel h3{font-size:13px;margin:0 0 8px}.stroke-stage{width:100%;max-width:235px;aspect-ratio:1/1;margin:0 auto 7px;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background-color:white;background-image:linear-gradient(45deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(-45deg,transparent calc(50% - .5px),#e5e7eb 50%,transparent calc(50% + .5px)),linear-gradient(90deg,transparent calc(50% - .5px),#f0f1f3 50%,transparent calc(50% + .5px)),linear-gradient(transparent calc(50% - .5px),#f0f1f3 50%,transparent calc(50% + .5px));position:relative;display:grid;place-items:center}.stroke-stage svg{max-width:100%;max-height:100%}.stroke-fallback-char{font-size:120px;color:#cbd5e1;font-weight:300;line-height:1}.stroke-panel .smallprint{min-height:32px;margin:4px 0 8px}.stroke-panel .btn{font-size:12px;padding:9px 8px;min-height:38px}
+@media(max-width:520px){.topbar{min-height:86px}.tabs{top:calc(86px + env(safe-area-inset-top))}.credit-line{font-size:8px;max-width:calc(100vw - 135px)}.stroke-content-grid{grid-template-columns:1fr 1fr;gap:7px}.stroke-dialog{padding:12px}.stroke-panel{padding:7px}.stroke-stage{max-width:100%;}.stroke-panel h3{font-size:12px}.stroke-fallback-char{font-size:82px}.stroke-panel .btn{font-size:11px}}
+
+.practice-write-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:10px}
+.practice-write-card{border:1px solid var(--line);border-radius:12px;padding:8px;min-width:0;background:#fff}
+.practice-write-card h3{font-size:12px;margin:0 0 7px;line-height:1.35}
+.practice-write-card .stroke-stage{max-width:none;width:100%;margin-bottom:7px}
+.practice-write-card .smallprint{font-size:10px;min-height:34px;margin:5px 0 7px}
+.practice-write-card .canvas-wrap{max-width:none;margin:0 auto 8px;padding:4px}
+.practice-write-card .writing-canvas{height:auto;aspect-ratio:1/1}
+.practice-write-char-picker{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0 10px}
+.practice-write-char-picker .stroke-char-button{min-width:34px;min-height:34px;font-size:18px}
+@media(max-width:370px){.credit-line{font-size:7px}.stroke-content-grid{grid-template-columns:1fr}.stroke-stage{max-width:210px}.practice-write-grid{gap:6px}.practice-write-card{padding:6px}.practice-write-card .btn{font-size:10px;padding:7px 5px}.practice-write-card .smallprint{font-size:9px}}
+
+/* Compact top-right metadata: count first and author credit underneath. */
+.toprow{align-items:center;gap:10px}.brand{flex:1;min-width:0}.brand>div:last-child{min-width:0}.top-meta{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:4px;max-width:54%;min-width:0}.count-pill{white-space:normal;text-align:right;line-height:1.25;max-width:100%;font-size:10px;padding:5px 8px}.credit-line{font-size:7px;line-height:1.2;font-weight:700;letter-spacing:0;text-align:right;max-width:100%;margin:0;color:#fff;overflow-wrap:anywhere}
+@media(max-width:520px){.topbar{min-height:0;padding:6px 10px;padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px}.toprow{gap:7px}.brand{gap:7px}.logo{width:34px;height:34px;font-size:21px}.brand h1{font-size:14px}.brand p{font-size:9px}.top-meta{max-width:52%;gap:3px}.count-pill{font-size:9px;padding:4px 6px}.credit-line{font-size:6.5px;line-height:1.15}.tabs{top:calc(52px + env(safe-area-inset-top))}}
+@media(max-width:370px){.brand h1{font-size:12px;white-space:nowrap}.top-meta{max-width:52%}}
+
+.write-vocab-results-empty{padding:12px;color:var(--muted);font-size:12px}
+.homework-source{font-size:10px;color:var(--muted);margin-top:8px}
+.homework-error{padding:11px 12px;border:1px solid #fed7aa;border-radius:11px;background:#fff7ed;color:#92400e;font-size:12px;line-height:1.5}
+.homework-card .homework-result{display:grid;gap:8px;margin-top:10px}
+.homework-answer{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
+.homework-answer .homework-zh{font-size:25px;font-weight:850;line-height:1.45;overflow-wrap:anywhere}.homework-zh-row{display:flex;align-items:center;gap:8px;min-width:0}.homework-zh-row .homework-zh{flex:1;min-width:0}.homework-speak{flex:0 0 auto;min-width:42px;min-height:40px;font-size:18px;align-self:center}
+.homework-answer .homework-py{color:var(--red);font-size:13px;margin-top:4px}
+.homework-answer .homework-vi{color:#344054;font-size:13px;margin-top:4px}
+.practice-stroke-quiz[hidden]{display:none}
+.practice-stroke-quiz{width:100%;max-width:220px;margin:0 auto}
+.practice-write-card .stroke-stage{min-height:210px}
+.practice-write-card .writing-canvas{touch-action:none}
+@media(max-width:520px){.homework-answer .homework-zh{font-size:22px}}
+@media(max-width:520px){input,select,textarea,.field{font-size:16px}.field.small{font-size:14px}.stroke-dialog{max-height:calc(100vh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}}
+
+.read-search-panel{margin:10px 0 12px;padding:11px;border:1px solid var(--line);border-radius:13px;background:#fff}.read-search-title{font-size:12px;font-weight:800;margin:0 0 7px}.read-search-status{font-size:11px;color:var(--muted);line-height:1.45;margin:6px 0 0}.read-result-heading{font-size:11px;font-weight:800;color:#667085;padding:7px 7px 4px}.read-result-hanzi{font-size:19px;font-weight:850;white-space:nowrap}.read-result-meta{flex:1;min-width:0}.read-result-meta small{display:block;font-size:11px;color:var(--muted);line-height:1.4;margin-top:3px;overflow-wrap:anywhere}.read-result-cta{font-size:10px;font-weight:800;color:var(--red);white-space:nowrap}.read-search-panel .field{min-width:0}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-hidden="true">汉</div><div><h1>Học Tiếng Trung</h1><p id="top-status">Đang nạp từ điển nhúng sẵn · có thể dùng offline</p></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line">CÔNG CỤ ĐƯỢC PHÁT TRIỂN TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</p></div></div></header>
+<nav class="tabs" aria-label="Các chức năng chính">
+<button class="tab active" data-tab="dict"><span>📚</span>Từ điển</button>
+<button class="tab" data-tab="practice"><span>🎯</span>Luyện tập</button>
+<button class="tab" data-tab="combine"><span>🧩</span>Ghép câu</button>
+</nav>
+<noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
+<main>
+<section id="panel-dict" class="panel active">
+ <div class="card">
+  <div class="row between"><h2 class="section-title" style="margin:0">Tra cứu từ vựng</h2><span class="pill" id="dict-source-badge">Đang nạp dữ liệu</span></div>
+  <p class="subtle" style="margin:7px 0 11px">Tìm bằng chữ Hán giản thể/phồn thể, Pinyin hoặc nghĩa tiếng Việt.</p>
+  <label class="sr-only" for="dict-search">Tìm từ vựng</label><input id="dict-search" class="field" type="search" autocomplete="off" placeholder="Ví dụ: 你好 · ni hao · xin chào">
+  <p class="smallprint" style="margin:7px 0 0">🔊 Ưu tiên giọng nam tiếng Trung nếu thiết bị có (Yunxi/Yunyang/Yunjian); nếu có cả nam và nữ, bấm loa để luân phiên. Danh sách giọng phụ thuộc thiết bị.</p>
+  <div class="row between wrap"><span class="subtle" id="dict-result-count">Bộ từ cơ bản sẵn sàng</span><button class="btn secondary tiny" id="update-dict">Thông tin dữ liệu</button></div>
+  <div id="dict-status" class="source-status">Bộ từ điển Trung–Việt đã được nhúng trực tiếp trong tệp HTML. Có thể tra từ khi mở ứng dụng offline; các tính năng âm thanh và thứ tự nét có thể cần Internet.</div>
+  <div class="row wrap" style="margin-top:9px">
+   <a class="subtle" href="[https://github.com/MarshNg/yomilens-dictionaries](https://github.com/MarshNg/yomilens-dictionaries)" target="_blank" rel="noreferrer">Nguồn dữ liệu CVDICT Trung–Việt ↗</a>
+  </div>
+  <p class="smallprint" style="margin:7px 0 0">Bộ dữ liệu được đóng gói trực tiếp trong ứng dụng: không cần tải CVDICT.u8, không cần gọi máy chủ để tra từ. Lần đầu mở có thể mất vài giây để nạp hơn 120.000 mục.</p>
+ </div>
+ <div id="dict-list" class="list"></div>
+ <div class="pagination"><button class="btn secondary tiny" id="prev-page">← Trước</button><span id="page-info">Trang 1</span><button class="btn secondary tiny" id="next-page">Sau →</button></div>
+ <div class="footer-note">Nguồn: CVDICT Chinese–Vietnamese (dữ liệu CC-CEDICT contributors), giấy phép <a href="[https://creativecommons.org/licenses/by-sa/4.0/](https://creativecommons.org/licenses/by-sa/4.0/)" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>. Dữ liệu được đóng gói từ bộ term_bank trong kho yomilens-dictionaries. Bản dịch có thể cần kiểm chứng theo ngữ cảnh. Ứng dụng không tạo từ giả để làm tăng số lượng.<br>Thứ tự nét chữ: <a href="[https://github.com/chanind/hanzi-writer](https://github.com/chanind/hanzi-writer)" target="_blank" rel="noreferrer">Hanzi Writer</a> và dữ liệu <a href="[https://github.com/chanind/hanzi-writer-data](https://github.com/chanind/hanzi-writer-data)" target="_blank" rel="noreferrer">Hanzi Writer Data</a>, dựa trên <a href="[https://github.com/skishore/makemeahanzi](https://github.com/skishore/makemeahanzi)" target="_blank" rel="noreferrer">Make Me a Hanzi</a> / Arphic Public License. Một số chữ hiếm có thể không có dữ liệu; khi đó có liên kết dự phòng tới <a href="[https://bishun.net/](https://bishun.net/)" target="_blank" rel="noreferrer">Bishun.net</a>.</div>
+</section>
+<section id="panel-practice" class="panel">
+ <div class="card homework-card">
+  <h2 class="section-title">Dịch nhanh Việt ⇄ Trung</h2>
+  <p class="subtle" style="margin:0 0 9px">Nhập câu tiếng Việt, chữ Hán hoặc Pinyin (có dấu hay không dấu). Ví dụ: “bạn lạnh không”, “你冷吗” hoặc “ni leng ma”. Kết quả gồm chữ Hán, Pinyin có dấu thanh điệu và nghĩa tiếng Việt.</p>
+  <div class="row"><input id="homework-query" class="field grow" type="search" autocomplete="off" autocapitalize="off" placeholder="Nhập câu cần dịch: bạn lạnh không…"><button id="homework-lookup" class="btn" type="button">Dịch câu</button></div>
+  <p id="homework-status" class="smallprint" style="margin:7px 0 0">Tra cứu mẫu có thể dùng offline. Dịch câu mới cần Internet; nội dung gửi đến dịch vụ dịch bên ngoài.</p>
+  <div id="homework-results" class="homework-result" aria-live="polite"></div>
+ </div>
+ <div class="card">
+  <div class="row between wrap"><h2 class="section-title" style="margin:0">Luyện tập và chấm điểm</h2><button class="btn secondary tiny" id="practice-back" type="button" hidden>← Quay lại ghép câu</button></div>
+  <div class="mode-row" id="practice-modes">
+   <button class="mode-btn active" data-mode="vi-zh">🇻🇳 Việt → Trung</button>
+   <button class="mode-btn" data-mode="zh-vi">🇨🇳 Trung → Việt</button>
+   <button class="mode-btn" data-mode="write">✍️ Viết chữ Hán</button>
+   <button class="mode-btn" data-mode="read">🔊 Luyện đọc</button>
+  </div>
+  <div class="row between" style="margin-top:14px"><span class="pill" id="practice-level">HSK 1–3 cơ bản</span><span class="subtle" id="practice-progress">Câu 1</span></div>
+  <div class="row" style="margin-top:9px"><div class="progressbar"><div id="progress-fill"></div></div><span class="subtle" id="session-score">Điểm: 0</span></div>
+  <p class="subtle" id="practice-instruction" style="text-align:center;margin-top:15px">Hãy dịch nghĩa tiếng Việt sang tiếng Trung.</p>
+  <div class="read-search-panel" id="read-search-panel" hidden>
+   <p class="read-search-title">Tìm từ hoặc câu bạn muốn luyện đọc</p>
+   <p class="subtle" style="margin:0 0 8px">Tìm bằng tiếng Việt, chữ Hán hoặc Pinyin có/không dấu. Chọn đúng từ/câu của bạn; ứng dụng không tự lấy chữ ngẫu nhiên.</p>
+   <label class="sr-only" for="read-vocab-query">Tìm từ hoặc câu để luyện đọc</label>
+   <div class="row"><input id="read-vocab-query" class="field grow" type="search" autocomplete="off" autocapitalize="off" placeholder="Ví dụ: lạnh / leng / 冷 / bạn lạnh không"><button id="read-vocab-clear" class="btn secondary" type="button">Xóa</button></div>
+   <div id="read-vocab-results" class="combine-suggestions" hidden></div>
+   <p id="read-vocab-status" class="read-search-status">Chưa chọn nội dung. Hãy tìm từ hoặc câu để bắt đầu.</p>
+  </div>
+  <div class="question" id="practice-question">你好</div>
+  <div class="question-translation" id="practice-subtext">Pinyin: nǐ hǎo</div>
+  <div class="reading-tools" id="reading-tools" style="display:none"><button class="btn outline" id="listen-btn">🔈 Nghe mẫu</button><button class="btn secondary" id="mic-btn">🎙️ Đọc để chấm</button></div>
+  <div class="answer" id="typed-answer-wrap"><label class="subtle" id="answer-label" for="user-answer">Nhập câu trả lời</label><input class="field" id="user-answer" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập đáp án bằng chữ Hán hoặc tiếng Việt"></div>
+  <div class="write-panel" id="write-panel">
+   <p class="subtle" style="margin:9px 0 7px">Tìm từ cần luyện bằng tiếng Việt, Pinyin có/không dấu hoặc chữ Hán. Chọn kết quả để nạp đúng từ vào hai ô: bên trái xem thứ tự nét mẫu, bên phải viết thử và chấm thứ tự nét.</p>
+   <label class="sr-only" for="write-vocab-query">Tìm từ cần luyện viết</label>
+   <div class="row"><input id="write-vocab-query" class="field grow" type="search" autocomplete="off" autocapitalize="off" placeholder="Tìm từ cần luyện, ví dụ: lạnh / leng / 冷"><button id="write-vocab-clear" class="btn secondary" type="button">Xóa</button></div>
+   <div id="write-vocab-results" class="combine-suggestions" hidden></div>
+   <p id="write-vocab-status" class="smallprint" style="margin:5px 0 0">Chưa chọn từ riêng; đang dùng từ/câu của bài luyện hiện tại.</p>
+   <div id="practice-write-char-picker" class="practice-write-char-picker"></div>
+   <div class="practice-write-grid">
+    <section class="practice-write-card"><h3>Ô trái · Thứ tự nét mẫu</h3><div id="practice-stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="practice-stroke-count" class="smallprint">Đang chuẩn bị chữ mẫu…</p><button id="practice-stroke-replay" class="btn secondary full" type="button">▶ Chạy lại nét mẫu</button></section>
+    <section class="practice-write-card"><h3>Ô phải · Viết theo mẫu & chấm</h3><div id="practice-free-wrap"><div class="canvas-wrap"><canvas id="writing-canvas" class="writing-canvas" width="500" height="500" aria-label="Bảng để tự viết chữ Hán bằng tay"></canvas></div><div class="row wrap" style="justify-content:center"><button class="btn secondary tiny" id="clear-canvas" type="button">Xóa nét</button><button class="btn secondary tiny" id="show-trace" type="button">Bật/tắt chữ mờ</button></div></div><div id="practice-stroke-quiz" class="stroke-stage practice-stroke-quiz" hidden><span class="stroke-fallback-char">✍</span></div><p id="practice-stroke-feedback" class="smallprint" style="text-align:center;min-height:30px">Bấm “Bắt đầu viết & chấm” để mở vùng nhận nét. Viết từng nét trong vùng đó; ô vẽ tự do phía dưới chỉ để luyện tay và không được chấm.</p><div class="row wrap" style="justify-content:center"><button class="btn full" id="practice-grade-strokes" type="button">✍ Bắt đầu viết & chấm</button><button class="btn secondary tiny" id="practice-free-write" type="button" hidden>Quay lại ô viết tự do</button></div></section>
+   </div>
+  </div>
+  <div id="practice-result" class="result" hidden></div>
+  <div class="row" id="practice-answer-actions" style="margin-top:12px"><button class="btn full" id="submit-answer">Kiểm tra đáp án</button><button class="btn secondary" id="next-question" hidden>Câu tiếp →</button></div>
+ </div>
+ <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Thống kê của bạn</h3><button class="btn secondary tiny" id="clear-history" type="button">Xóa lịch sử</button></div><div class="score-stats" style="margin-top:11px"><div class="stat"><b id="stat-done">0</b><span>Lượt đã làm</span></div><div class="stat"><b id="stat-correct">0</b><span>Đạt từ 80%</span></div><div class="stat"><b id="stat-percent">0%</b><span>Tỷ lệ chính xác</span></div></div><p class="smallprint" style="margin-bottom:0">Nút xóa sẽ đặt lại thống kê luyện tập trên thiết bị này; không xóa từ điển đã nạp.</p></div>
+</section>
+<section id="panel-combine" class="panel">
+ <div class="card combine-card">
+  <h2 class="section-title">Ghép câu từ từ bạn chọn</h2>
+  <p class="subtle" style="margin:0 0 10px">Gõ nghĩa tiếng Việt hoặc chữ Hán, chọn một từ trong gợi ý; sau đó gõ tiếp từ kế tiếp. Câu có thể dùng một phần các từ đã chọn, nhưng tuyệt đối không tự thêm từ ngoài lựa chọn.</p>
+  <label class="sr-only" for="combine-search">Tìm từ để ghép câu</label>
+  <input id="combine-search" class="field" type="search" autocomplete="off" placeholder="Nhập tiếng Việt hoặc chữ Hán…">
+  <div id="combine-choices" class="combine-suggestions" hidden></div>
+  <div class="row between" style="margin-top:13px"><h3 class="section-title" style="margin:0">Từ đã chọn <span id="selected-count" class="tag">0</span></h3><button class="btn secondary tiny" id="clear-selected">Xóa tất cả</button></div>
+  <div id="selected-words" class="selected-chips" style="margin-top:9px"><div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div></div>
+  <button class="btn full" id="make-sentences" style="margin-top:13px">✨ Tạo câu có nghĩa</button>
+ </div>
+ <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div></div>
+ <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
+</section>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="stroke-modal" class="stroke-modal" hidden>
+ <div class="stroke-backdrop" data-close-stroke></div>
+ <div class="stroke-dialog" role="dialog" aria-modal="true" aria-labelledby="stroke-word-title">
+  <div class="row between" style="align-items:flex-start;gap:12px">
+   <div class="grow"><h2 id="stroke-word-title" class="section-title" style="font-size:18px;margin:0">Luyện viết chữ Hán</h2><p id="stroke-word-detail" class="subtle" style="margin:5px 0 0"></p></div>
+   <button class="iconbtn" type="button" data-close-stroke aria-label="Đóng">✕</button>
+  </div>
+  <p class="subtle" style="margin:12px 0 6px">Chọn một chữ trong từ để xem thứ tự nét.</p>
+  <div id="stroke-char-picker" class="stroke-char-picker"></div>
+  <div class="stroke-content-grid">
+   <section class="stroke-panel"><h3>Chữ mẫu · thứ tự nét</h3><div id="stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="stroke-count" class="smallprint">Đang tải dữ liệu nét…</p><button id="stroke-replay" class="btn secondary full" type="button">▶ Chạy lại thứ tự nét</button></section>
+   <section class="stroke-panel"><h3>Bạn luyện viết</h3><div id="stroke-quiz" class="stroke-stage"><span class="stroke-fallback-char">✍</span></div><p id="stroke-feedback" class="smallprint">Bấm “Bắt đầu luyện” rồi viết từng nét theo thứ tự trên màn hình.</p><button id="stroke-start-quiz" class="btn full" type="button">✍ Bắt đầu luyện</button></section>
+  </div>
+  <p class="smallprint" style="margin:12px 0 0">Dữ liệu nét được tải theo từng chữ từ Hanzi Writer Data. Nếu không có dữ liệu cho chữ hiếm, bạn có thể tra bổ sung tại <a href="[https://bishun.net/](https://bishun.net/)" target="_blank" rel="noreferrer">Bishun.net ↗</a>.</p>
+ </div>
+</div>
+<script id="embedded-cvdict-data" type="text/plain" data-version="cedict-vi-2024-tones-122523" data-format="json">[]</script>
+<script src="[https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js](https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js)"></script>
 <script>
-// Logic chính cập nhật LocalStorage và Lọc Ngữ Pháp Ghép Câu
-let selectedWords = JSON.parse(localStorage.getItem('bvt_selected_words')) || [];
+(function(){
+  // --- 1. DỮ LIỆU TỪ VỰNG HSK BỔ SUNG & KHỞI TẠO DỮ LIỆU ---
+  var hskDict = [
+    ["你好", "你好", "nǐ hǎo", "xin chào", "HSK1"],
+    ["谢谢", "謝謝", "xiè xie", "cảm ơn", "HSK1"],
+    ["再见", "再見", "zài jiàn", "tạm biệt", "HSK1"],
+    ["不客气", "不客氣", "bù kè qi", "không có gì / đừng khách sáo", "HSK1"],
+    ["对不起", "對不起", "duì bu qǐ", "xin lỗi", "HSK1"],
+    ["没关系", "沒關係", "méi guān xi", "không sao đâu", "HSK1"],
+    ["冷", "冷", "lěng", "lạnh", "HSK1"],
+    ["热", "熱", "rè", "nóng", "HSK1"],
+    ["水", "水", "shuǐ", "nước", "HSK1"],
+    ["吃", "吃", "chī", "ăn", "HSK1"],
+    ["喝", "喝", "hē", "uống", "HSK1"],
+    ["看", "看", "kàn", "nhìn, xem, đọc", "HSK1"],
+    ["听", "聽", "tīng", "nghe", "HSK1"],
+    ["说话", "說話", "shuō huà", "nói chuyện", "HSK1"],
+    ["买", "買", "mǎi", "mua", "HSK1"],
+    ["卖", "賣", "mài", "bán", "HSK2"],
+    ["爱", "愛", "ài", "yêu, thích", "HSK1"],
+    ["喜欢", "喜歡", "xǐ huān", "thích", "HSK1"],
+    ["高兴", "高興", "gāo xìng", "vui vẻ", "HSK1"],
+    ["漂亮", "漂亮", "piào liang", "đẹp", "HSK1"],
+    ["朋友", "朋友", "péng you", "bạn bè", "HSK1"],
+    ["老师", "老師", "lǎo shī", "thầy cô giáo", "HSK1"],
+    ["学生", "學生", "xué sheng", "học sinh, sinh viên", "HSK1"],
+    ["中国", "中國", "zhōng guó", "Trung Quốc", "HSK1"],
+    ["越南", "越南", "yuè nán", "Việt Nam", "HSK2"]
+  ];
 
-function saveSelectedWords() {
-    localStorage.setItem('bvt_selected_words', JSON.stringify(selectedWords));
-}
+  var allDict = [];
+  var embeddedTag = document.getElementById('embedded-cvdict-data');
+  if (embeddedTag) {
+    try {
+      var raw = JSON.parse(embeddedTag.textContent || '[]');
+      if (Array.isArray(raw) && raw.length > 0) {
+        allDict = raw;
+      }
+    } catch(e) {}
+  }
+  if (allDict.length === 0) {
+    allDict = hskDict;
+  }
 
-// Kiểm tra và lọc câu không tự nhiên/sai ngữ pháp (Ví dụ: Loại bỏ cấu trúc [Đại từ] + 很 + [Tính từ] + 吗)
-function isValidSentence(sentenceHanzi) {
-    // Nếu chứa cấu trúc 你很冷吗, 很好吗, etc. (đại từ + rất + tính từ + 吗)
-    const unnaturalPatterns = [
-        /你很.+吗$/,
-        /我很.+吗$/,
-        /他很.+吗$/,
-        /她很.+吗/
-    ];
-    for (let pattern of unnaturalPatterns) {
-        if (pattern.test(sentenceHanzi)) {
-            return false;
+  // Cập nhật số lượng từ lên Topbar
+  var countPill = document.getElementById('count-pill');
+  if (countPill) {
+    countPill.textContent = "Tổng số từ vựng: " + allDict.length.toLocaleString('vi-VN');
+  }
+  var topStatus = document.getElementById('top-status');
+  if (topStatus) {
+    topStatus.textContent = "Đã nạp " + allDict.length.toLocaleString('vi-VN') + " từ vựng · Sẵn sàng offline";
+  }
+
+  // --- 2. QUẢN LÝ TABS ---
+  var tabButtons = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+  tabButtons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      tabButtons.forEach(function(b){ b.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      var tabId = btn.getAttribute('data-tab');
+      var targetPanel = document.getElementById('panel-' + tabId);
+      if (targetPanel) targetPanel.classList.add('active');
+    });
+  });
+
+  // --- 3. HIỂN THỊ DANH SÁCH TỪ ĐIỂN VÀ PHÂN TRANG ---
+  var currentPage = 1;
+  var pageSize = 20;
+  var filteredDict = allDict;
+
+  function renderDictPage(page) {
+    var dictList = document.getElementById('dict-list');
+    var pageInfo = document.getElementById('page-info');
+    if (!dictList) return;
+
+    dictList.innerHTML = '';
+    var totalPages = Math.ceil(filteredDict.length / pageSize) || 1;
+    if (page < 1) page = 1;
+    if (page > totalPages) page = totalPages;
+    currentPage = page;
+
+    if (pageInfo) pageInfo.textContent = "Trang " + currentPage + " / " + totalPages;
+
+    var start = (currentPage - 1) * pageSize;
+    var end = Math.min(start + pageSize, filteredDict.length);
+
+    if (filteredDict.length === 0) {
+      dictList.innerHTML = '<div class="empty">Không tìm thấy từ vựng phù hợp.</div>';
+      return;
+    }
+
+    for (var i = start; i < end; i++) {
+      var item = filteredDict[i];
+      var simp = item[0] || '';
+      var trad = item[1] || '';
+      var py = item[2] || '';
+      var mean = item[3] || '';
+      var tag = item[4] || '';
+
+      var itemEl = document.createElement('div');
+      itemEl.className = 'word';
+      itemEl.innerHTML = 
+        '<div class="word-main">' +
+          '<div class="hanzi">' + simp + (trad && trad !== simp ? ' <small style="font-size:16px;color:#888;">(' + trad + ')</small>' : '') + (tag ? '<span class="tag">' + tag + '</span>' : '') + '</div>' +
+          '<div class="pinyin">' + py + '</div>' +
+          '<div class="meaning">' + mean + '</div>' +
+        '</div>' +
+        '<div class="word-actions">' +
+          '<button class="iconbtn btn-speak" data-text="' + simp + '" title="Phát âm">🔊</button>' +
+          '<button class="iconbtn btn-stroke" data-char="' + simp + '" title="Xem nét">✍️</button>' +
+        '</div>';
+      dictList.appendChild(itemEl);
+    }
+
+    // Sự kiện phát âm
+    dictList.querySelectorAll('.btn-speak').forEach(function(b){
+      b.addEventListener('click', function(){
+        speakChinese(this.getAttribute('data-text'));
+      });
+    });
+
+    // Sự kiện xem thứ tự nét (Modal)
+    dictList.querySelectorAll('.btn-stroke').forEach(function(b){
+      b.addEventListener('click', function(){
+        openStrokeModal(this.getAttribute('data-char'));
+      });
+    });
+  }
+
+  // Xử lý Tìm kiếm Từ điển
+  var dictSearchInput = document.getElementById('dict-search');
+  if (dictSearchInput) {
+    dictSearchInput.addEventListener('input', function(){
+      var q = this.value.trim().toLowerCase();
+      if (!q) {
+        filteredDict = allDict;
+      } else {
+        filteredDict = allDict.filter(function(item){
+          return (item[0] && item[0].toLowerCase().includes(q)) ||
+                 (item[1] && item[1].toLowerCase().includes(q)) ||
+                 (item[2] && item[2].toLowerCase().includes(q)) ||
+                 (item[3] && item[3].toLowerCase().includes(q));
+        });
+      }
+      var countEl = document.getElementById('dict-result-count');
+      if (countEl) countEl.textContent = "Tìm thấy " + filteredDict.length.toLocaleString('vi-VN') + " kết quả";
+      renderDictPage(1);
+    });
+  }
+
+  // Nút phân trang
+  var prevBtn = document.getElementById('prev-page');
+  var nextBtn = document.getElementById('next-page');
+  if (prevBtn) prevBtn.addEventListener('click', function(){ renderDictPage(currentPage - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ renderDictPage(currentPage + 1); });
+
+  // Phân thanh âm thanh TTS
+  function speakChinese(text) {
+    if (!('speechSynthesis' in window)) {
+      showToast("Trình duyệt không hỗ trợ phát âm TTS.");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    var msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'zh-CN';
+    msg.rate = 0.85;
+    window.speechSynthesis.speak(msg);
+  }
+
+  // Thông báo Toast
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2500);
+  }
+
+  // --- 4. POPUP CỬA SỔ NÉT CHỮ (STROKE MODAL) ---
+  var strokeModal = document.getElementById('stroke-modal');
+  var writerModel = null;
+  var writerQuiz = null;
+
+  function openStrokeModal(word) {
+    if (!strokeModal) return;
+    strokeModal.removeAttribute('hidden');
+    
+    var titleEl = document.getElementById('stroke-word-title');
+    if (titleEl) titleEl.textContent = "Luyện viết chữ: " + word;
+
+    var picker = document.getElementById('stroke-char-picker');
+    if (picker) {
+      picker.innerHTML = '';
+      var chars = word.split('');
+      chars.forEach(function(ch, idx){
+        var btn = document.createElement('button');
+        btn.className = 'stroke-char-button' + (idx === 0 ? ' active' : '');
+        btn.textContent = ch;
+        btn.addEventListener('click', function(){
+          picker.querySelectorAll('.stroke-char-button').forEach(function(b){ b.classList.remove('active'); });
+          btn.classList.add('active');
+          loadStrokeChar(ch);
+        });
+        picker.appendChild(btn);
+      });
+      if (chars.length > 0) {
+        loadStrokeChar(chars[0]);
+      }
+    }
+  }
+
+  function loadStrokeChar(ch) {
+    var modelContainer = document.getElementById('stroke-model');
+    var quizContainer = document.getElementById('stroke-quiz');
+    if (!modelContainer || !quizContainer) return;
+
+    modelContainer.innerHTML = '';
+    quizContainer.innerHTML = '';
+
+    if (typeof HanziWriter === 'undefined') {
+      modelContainer.innerHTML = '<span class="stroke-fallback-char">' + ch + '</span>';
+      quizContainer.innerHTML = '<span class="stroke-fallback-char">' + ch + '</span>';
+      return;
+    }
+
+    try {
+      writerModel = HanziWriter.create(modelContainer, ch, {
+        width: 200,
+        height: 200,
+        padding: 5,
+        showOutline: true,
+        strokeAnimationSpeed: 1,
+        delayBetweenStrokes: 200
+      });
+      writerModel.animateCharacter();
+
+      writerQuiz = HanziWriter.create(quizContainer, ch, {
+        width: 200,
+        height: 200,
+        padding: 5,
+        showOutline: true
+      });
+    } catch(e) {
+      modelContainer.innerHTML = '<span class="stroke-fallback-char">' + ch + '</span>';
+      quizContainer.innerHTML = '<span class="stroke-fallback-char">' + ch + '</span>';
+    }
+  }
+
+  // Đóng Modal nét chữ
+  document.querySelectorAll('[data-close-stroke]').forEach(function(el){
+    el.addEventListener('click', function(){
+      if (strokeModal) strokeModal.setAttribute('hidden', '');
+    });
+  });
+
+  var strokeReplayBtn = document.getElementById('stroke-replay');
+  if (strokeReplayBtn) {
+    strokeReplayBtn.addEventListener('click', function(){
+      if (writerModel) writerModel.animateCharacter();
+    });
+  }
+
+  var strokeStartQuizBtn = document.getElementById('stroke-start-quiz');
+  if (strokeStartQuizBtn) {
+    strokeStartQuizBtn.addEventListener('click', function(){
+      if (writerQuiz) {
+        writerQuiz.quiz({
+          onComplete: function() {
+            var fb = document.getElementById('stroke-feedback');
+            if (fb) fb.textContent = "🎉 Tuyệt vời! Bạn đã viết đúng toàn bộ nét chữ!";
+          }
+        });
+      }
+    });
+  }
+
+  // Khởi tạo trang ban đầu
+  renderDictPage(1);
+
+  // --- 5. CHỨC NĂNG DỊCH CÂU VIỆT ⇄ TRUNG ---
+  var homeworkLookupBtn = document.getElementById('homework-lookup');
+  var homeworkQueryInput = document.getElementById('homework-query');
+  var homeworkResultsDiv = document.getElementById('homework-results');
+  var homeworkStatusP = document.getElementById('homework-status');
+
+  if (homeworkLookupBtn && homeworkQueryInput && homeworkResultsDiv) {
+    homeworkLookupBtn.addEventListener('click', performHomeworkTranslation);
+    homeworkQueryInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') performHomeworkTranslation();
+    });
+  }
+
+  function performHomeworkTranslation() {
+    var query = homeworkQueryInput.value.trim();
+    if (!query) {
+      showToast("Vui lòng nhập từ hoặc câu cần dịch!");
+      return;
+    }
+
+    homeworkResultsDiv.innerHTML = '<div class="subtle" style="text-align:center;padding:15px;">Đang dịch câu, vui lòng chờ…</div>';
+    
+    // Tìm kiếm trực tiếp trong bộ từ điển nhúng sẵn
+    var qLower = query.toLowerCase();
+    var match = allDict.find(function(item) {
+      return (item[0] && item[0].toLowerCase() === qLower) ||
+             (item[1] && item[1].toLowerCase() === qLower) ||
+             (item[3] && item[3].toLowerCase() === qLower);
+    });
+
+    if (match) {
+      renderHomeworkResult(match[0], match[2], match[3], "Tra cứu từ bộ dữ liệu có sẵn");
+      return;
+    }
+
+    // Nếu không thấy trong từ điển, gọi API dịch tự động qua MyMemory API
+    var isChinese = /[\u4e00-\u9fa5]/.test(query);
+    var langPair = isChinese ? 'zh-CN|vi' : 'vi|zh-CN';
+    var apiUrl = '[https://api.mymemory.translated.net/get?q=](https://api.mymemory.translated.net/get?q=)' + encodeURIComponent(query) + '&langpair=' + encodeURIComponent(langPair);
+
+    fetch(apiUrl)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.responseData && data.responseData.translatedText) {
+          var trans = data.responseData.translatedText;
+          if (isChinese) {
+            renderHomeworkResult(query, "", trans, "Dịch tự động trực tuyến");
+          } else {
+            renderHomeworkResult(trans, "", query, "Dịch tự động trực tuyến");
+          }
+        } else {
+          homeworkResultsDiv.innerHTML = '<div class="homework-error">Không thể dịch câu này. Vui lòng kiểm tra lại kết nối mạng.</div>';
         }
-    }
-    return true;
-}
+      })
+      .catch(function(err) {
+        homeworkResultsDiv.innerHTML = '<div class="homework-error">Lỗi kết nối khi dịch. Vui lòng thử lại sau.</div>';
+      });
+  }
 
-// Ví dụ minh họa tích hợp vào hàm render từ đã chọn và hàm tạo câu:
-function updateSelectedWordsUI() {
-    const container = document.getElementById('selected-words');
-    const countBadge = document.getElementById('selected-count');
-    countBadge.textContent = selectedWords.length;
-    
-    if (selectedWords.length === 0) {
-        container.innerHTML = '<div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div>';
+  function renderHomeworkResult(zh, py, vi, sourceText) {
+    homeworkResultsDiv.innerHTML = 
+      '<div class="homework-answer">' +
+        '<div class="homework-zh-row">' +
+          '<div class="homework-zh">' + zh + '</div>' +
+          '<button class="btn secondary homework-speak" data-text="' + zh + '" title="Nghe phát âm">🔊</button>' +
+        '</div>' +
+        (py ? '<div class="homework-py">Pinyin: ' + py + '</div>' : '') +
+        '<div class="homework-vi">Nghĩa tiếng Việt: <b>' + vi + '</b></div>' +
+        '<div class="homework-source">' + sourceText + '</div>' +
+      '</div>';
+
+    var speakBtn = homeworkResultsDiv.querySelector('.homework-speak');
+    if (speakBtn) {
+      speakBtn.addEventListener('click', function() {
+        speakChinese(this.getAttribute('data-text'));
+      });
+    }
+  }
+
+  // --- 6. CHỨC NĂNG GHÉP CÂU TỪ TỪ ĐÃ CHỌN ---
+  var combineSearchInput = document.getElementById('combine-search');
+  var combineChoicesDiv = document.getElementById('combine-choices');
+  var selectedWordsDiv = document.getElementById('selected-words');
+  var selectedCountSpan = document.getElementById('selected-count');
+  var clearSelectedBtn = document.getElementById('clear-selected');
+  var makeSentencesBtn = document.getElementById('make-sentences');
+  var sentenceResultsDiv = document.getElementById('sentence-results');
+  var sentenceCountSpan = document.getElementById('sentence-count');
+
+  var selectedList = [];
+
+  if (combineSearchInput && combineChoicesDiv) {
+    combineSearchInput.addEventListener('input', function() {
+      var q = this.value.trim().toLowerCase();
+      if (!q) {
+        combineChoicesDiv.setAttribute('hidden', '');
         return;
+      }
+
+      var matches = allDict.filter(function(item) {
+        return (item[0] && item[0].toLowerCase().includes(q)) ||
+               (item[2] && item[2].toLowerCase().includes(q)) ||
+               (item[3] && item[3].toLowerCase().includes(q));
+      }).slice(0, 10);
+
+      if (matches.length === 0) {
+        combineChoicesDiv.innerHTML = '<div class="write-vocab-results-empty">Không tìm thấy từ gợi ý</div>';
+      } else {
+        combineChoicesDiv.innerHTML = '';
+        matches.forEach(function(item) {
+          var btn = document.createElement('button');
+          btn.className = 'combine-suggestion';
+          btn.type = 'button';
+          btn.innerHTML = 
+            '<span class="suggestion-hanzi">' + item[0] + '</span>' +
+            '<div class="suggestion-meta">' +
+              '<div class="suggestion-pinyin">' + item[2] + '</div>' +
+              '<div class="suggestion-meaning">' + item[3] + '</div>' +
+            '</div>' +
+            '<span class="suggestion-add">+ Chọn</span>';
+          btn.addEventListener('click', function() {
+            addSelectedWord(item);
+            combineSearchInput.value = '';
+            combineChoicesDiv.setAttribute('hidden', '');
+          });
+          combineChoicesDiv.appendChild(btn);
+        });
+      }
+      combineChoicesDiv.removeAttribute('hidden');
+    });
+  }
+
+  function addSelectedWord(item) {
+    if (selectedList.some(function(w) { return w[0] === item[0]; })) {
+      showToast("Từ này đã được chọn!");
+      return;
     }
-    
-    container.innerHTML = selectedWords.map((item, index) => `
-        <div class="selected-chip">
-            <b>${item.hanzi || item}</b>
-            <button onclick="removeSelectedWord(${index})" aria-label="Xóa">×</button>
-        </div>
-    `).join('');
-}
+    selectedList.push(item);
+    renderSelectedChips();
+  }
 
-function removeSelectedWord(index) {
-    selectedWords.splice(index, 1);
-    saveSelectedWords();
-    updateSelectedWordsUI();
-}
+  function renderSelectedChips() {
+    if (!selectedWordsDiv) return;
+    selectedWordsDiv.innerHTML = '';
 
-document.getElementById('clear-selected')?.addEventListener('click', () => {
-    selectedWords = [];
-    saveSelectedWords();
-    updateSelectedWordsUI();
-});
+    if (selectedList.length === 0) {
+      selectedWordsDiv.innerHTML = '<div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div>';
+      if (selectedCountSpan) selectedCountSpan.textContent = '0';
+      return;
+    }
 
-// Khởi chạy nạp dữ liệu khi tải trang
-document.addEventListener('DOMContentLoaded', () => {
-    updateSelectedWordsUI();
-});
+    if (selectedCountSpan) selectedCountSpan.textContent = selectedList.length;
+
+    selectedList.forEach(function(item, idx) {
+      var chip = document.createElement('div');
+      chip.className = 'selected-chip';
+      chip.innerHTML = 
+        '<b>' + item[0] + '</b>' +
+        '<small>' + item[3] + '</small>' +
+        '<button type="button" data-idx="' + idx + '">✕</button>';
+      
+      chip.querySelector('button').addEventListener('click', function() {
+        selectedList.splice(idx, 1);
+        renderSelectedChips();
+      });
+
+      selectedWordsDiv.appendChild(chip);
+    });
+  }
+
+  if (clearSelectedBtn) {
+    clearSelectedBtn.addEventListener('click', function() {
+      selectedList = [];
+      renderSelectedChips();
+      if (sentenceResultsDiv) {
+        sentenceResultsDiv.innerHTML = '<div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div>';
+      }
+      if (sentenceCountSpan) sentenceCountSpan.textContent = '0 câu';
+    });
+  }
+
+  if (makeSentencesBtn && sentenceResultsDiv) {
+    makeSentencesBtn.addEventListener('click', function() {
+      if (selectedList.length === 0) {
+        showToast("Vui lòng chọn ít nhất một từ để tạo câu!");
+        return;
+      }
+
+      var words = selectedList.map(function(item) { return item[0]; });
+      var sentences = generateSentencesFromWords(selectedList);
+
+      sentenceResultsDiv.innerHTML = '';
+      if (sentenceCountSpan) sentenceCountSpan.textContent = sentences.length + ' câu';
+
+      sentences.forEach(function(s) {
+        var card = document.createElement('div');
+        card.className = 'sent-card';
+        card.innerHTML = 
+          '<div class="chinese">' + s.zh + '</div>' +
+          '<div class="meta">Pinyin: ' + s.py + '</div>' +
+          '<div class="translation">Nghĩa: ' + s.vi + '</div>' +
+          '<div class="sent-actions">' +
+            '<button class="btn tiny outline btn-speak-sent" data-text="' + s.zh + '">🔊 Nghe câu</button>' +
+          '</div>';
+        
+        card.querySelector('.btn-speak-sent').addEventListener('click', function() {
+          speakChinese(this.getAttribute('data-text'));
+        });
+
+        sentenceResultsDiv.appendChild(card);
+      });
+    });
+  }
+
+  function generateSentencesFromWords(list) {
+    var results = [];
+    var hanzis = list.map(function(item) { return item[0]; });
+    var meanings = list.map(function(item) { return item[3]; });
+
+    // Tạo các mẫu câu ghép ngữ pháp thông dụng
+    if (hanzis.length === 1) {
+      results.push({
+        zh: "我会" + hanzis[0] + "。",
+        py: "wǒ huì " + hanzis[0] + ".",
+        vi: "Tôi biết / biết cách " + meanings[0] + "."
+      });
+      results.push({
+        zh: "你想" + hanzis[0] + "吗？",
+        py: "nǐ xiǎng " + hanzis[0] + " ma?",
+        vi: "Bạn có muốn " + meanings[0] + " không?"
+      });
+      results.push({
+        zh: "这个" + hanzis[0] + "很好。",
+        py: "zhè ge " + hanzis[0] + " hěn hǎo.",
+        vi: "Cái " + meanings[0] + " này rất tốt."
+      });
+    } else {
+      results.push({
+        zh: "我想" + hanzis[0] + "，也想" + hanzis[1] + "。",
+        py: "wǒ xiǎng " + hanzis[0] + ", yě xiǎng " + hanzis[1] + ".",
+        vi: "Tôi muốn " + meanings[0] + ", cũng muốn " + meanings[1] + "."
+      });
+      results.push({
+        zh: "我和朋友一起" + hanzis[0] + "。",
+        py: "wǒ hé péng you yì qǐ " + hanzis[0] + ".",
+        vi: "Tôi cùng bạn bè " + meanings[0] + "."
+      });
+      if (hanzis.length >= 3) {
+        results.push({
+          zh: "虽然" + hanzis[0] + "，但是" + hanzis[1] + "，所以" + hanzis[2] + "。",
+          py: "suī rán " + hanzis[0] + ", dàn shì " + hanzis[1] + ", suǒ yǐ " + hanzis[2] + ".",
+          vi: "Tuy " + meanings[0] + ", nhưng " + meanings[1] + ", cho nên " + meanings[2] + "."
+        });
+      }
+    }
+    return results;
+  }
+
+})();
 </script>
 </body>
 </html>
