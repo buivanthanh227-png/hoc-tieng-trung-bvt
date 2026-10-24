@@ -70,7 +70,7 @@
   <div class="row between"><h2 class="section-title" style="margin:0">Tra cứu từ vựng</h2><span class="pill" id="dict-source-badge">Đang nạp dữ liệu</span></div>
   <p class="subtle" style="margin:7px 0 11px">Tìm bằng chữ Hán giản thể/phồn thể, Pinyin hoặc nghĩa tiếng Việt.</p>
   <label class="sr-only" for="dict-search">Tìm từ vựng</label><input id="dict-search" class="field" type="search" autocomplete="off" placeholder="Ví dụ: 你好 · ni hao · xin chào">
-  <p class="smallprint" style="margin:7px 0 0">🔊 Nút loa luân phiên giọng nam → giọng nữ mỗi lần bấm. Giọng thực tế phụ thuộc các giọng tiếng Trung có trên thiết bị.</p>
+  <p class="smallprint" style="margin:7px 0 0">🔊 Ưu tiên giọng nam tiếng Trung nếu thiết bị có (Yunxi/Yunyang/Yunjian); nếu có cả nam và nữ, bấm loa để luân phiên. Danh sách giọng phụ thuộc thiết bị.</p>
   <div class="row between wrap"><span class="subtle" id="dict-result-count">Bộ từ cơ bản sẵn sàng</span><button class="btn secondary tiny" id="update-dict">Thông tin dữ liệu</button></div>
   <div id="dict-status" class="source-status">Bộ từ điển Trung–Việt đã được nhúng trực tiếp trong tệp HTML. Có thể tra từ khi mở ứng dụng offline; các tính năng âm thanh và thứ tự nét có thể cần Internet.</div>
   <div class="row wrap" style="margin-top:9px">
@@ -417,31 +417,40 @@ function speak(text,button=null){
   const synth=window.speechSynthesis;
   const voices=synth.getVoices();
   const zh=voices.filter(v=>/^zh([_-]|$)/i.test(v.lang)||/chinese|mandarin|普通话|中文/i.test(v.name));
-  // Chỉ nhận diện giọng nam có dấu hiệu rõ ràng; không giả lập giọng nam bằng cách hạ cao độ.
-  const maleVoice=zh.find(v=>/yunxi|yunyang|yunfeng|yunjian|男声|男性|(^|[\s_-])(male|man)([\s_-]|$)/i.test(v.name));
-  const femaleVoice=zh.find(v=>/xiaoxiao|xiaoyi|xiaohan|xiaomeng|xiaomo|xiaorui|xiaoshuang|ting.?ting|mei.?jia|huihui|female|woman|女声|女性/i.test(v.name));
+  // Tên một số giọng nam phổ biến của hệ thống (đặc biệt Microsoft/Windows).
+  // Không giả lập giọng nam bằng cách hạ cao độ vì cách đó làm sai âm tiếng Trung.
+  const maleVoice=zh.find(v=>/yunxi|yunyang|yunjian|yunfeng|yunhao|yunye|yunze|yunxia|yunxiao|kangkang|男声|男性|(^|[\s_-])(male|man)([\s_-]|$)/i.test(v.name));
+  const femaleVoice=zh.find(v=>/xiaoxiao|xiaoyi|xiaohan|xiaomeng|xiaomo|xiaorui|xiaoshuang|xiaozhen|xiaojun|xiaochen|xiaoqiu|ting.?ting|mei.?jia|huihui|female|woman|女声|女性/i.test(v.name));
   const hasRealPair=!!(maleVoice&&femaleVoice&&maleVoice!==femaleVoice);
-  let gender='female';
+  let gender='unknown';
   let voice=null;
   if(hasRealPair){
    gender=nextSpeechGender;
    voice=gender==='male'?maleVoice:femaleVoice;
    nextSpeechGender=gender==='male'?'female':'male';
-  }else{
-   // Nếu nền tảng không công bố được giọng nam tiếng Trung riêng, giữ giọng nữ tự nhiên đã có.
-   voice=femaleVoice||zh.find(v=>v!==maleVoice)||zh[0]||voices.find(v=>/^zh/i.test(v.lang))||null;
-   nextSpeechGender='female';
+  }else if(maleVoice){
+   // Nếu thiết bị chỉ có giọng nam được nhận diện, dùng giọng nam thay vì âm mặc định.
+   gender='male';voice=maleVoice;nextSpeechGender='female';
+  }else if(femaleVoice){
+   gender='female';voice=femaleVoice;nextSpeechGender='male';
    if(!warnedNoNaturalMaleVoice){
-    toast('Thiết bị chưa có giọng nam tiếng Trung phù hợp. Ứng dụng giữ giọng tự nhiên, không làm méo giọng bằng cách đổi cao độ.');
+    toast('Thiết bị chưa có giọng nam tiếng Trung phù hợp. Hãy cài thêm giọng Mandarin nam như Yunxi hoặc Yunyang nếu thiết bị hỗ trợ.');
+    warnedNoNaturalMaleVoice=true;
+   }
+  }else{
+   voice=zh.find(v=>/中国大陆|普通话|mandarin|mainland/i.test(v.name))||zh[0]||voices.find(v=>/^zh/i.test(v.lang))||null;
+   if(!warnedNoNaturalMaleVoice){
+    toast(voice?'Chưa nhận diện được giọng nam riêng trên thiết bị; đang dùng giọng tiếng Trung sẵn có.':'Trình duyệt chưa cung cấp danh sách giọng tiếng Trung. Thử đóng rồi mở lại trang sau khi bật giọng đọc tiếng Trung trong thiết bị.');
     warnedNoNaturalMaleVoice=true;
    }
   }
   synth.cancel();
   const u=new SpeechSynthesisUtterance(String(text));
-  u.lang='zh-CN';u.rate=.82;u.pitch=1;u.voice=voice;
+  u.lang=(voice&&voice.lang)||'zh-CN';u.rate=.82;u.pitch=1;
+  if(voice)u.voice=voice;
   if(button){
-   button.textContent=gender==='male'?'🔊♂':'🔊♀';
-   button.title=hasRealPair?(gender==='male'?'Đang dùng giọng nam tiếng Trung có sẵn trên thiết bị. Bấm lần nữa để nghe giọng nữ.':'Đang dùng giọng nữ tiếng Trung có sẵn trên thiết bị. Bấm lần nữa để nghe giọng nam.'):'Chỉ phát giọng Trung tự nhiên khả dụng. Thiết bị không cung cấp giọng nam riêng phù hợp; không giả lập bằng đổi cao độ.';
+   button.textContent=gender==='male'?'🔊♂':gender==='female'?'🔊♀':'🔊';
+   button.title=hasRealPair?(gender==='male'?'Đang dùng giọng nam tiếng Trung. Bấm lần nữa để nghe giọng nữ.':'Đang dùng giọng nữ tiếng Trung. Bấm lần nữa để nghe giọng nam.'):(gender==='male'?'Đang dùng giọng nam tiếng Trung có sẵn trên thiết bị.':gender==='female'?'Thiết bị hiện chỉ có giọng nữ tiếng Trung phù hợp.':'Đang dùng giọng tiếng Trung sẵn có trên thiết bị.');
   }
   synth.speak(u);
  }catch(e){toast('Không thể phát âm thanh trên thiết bị này.');}

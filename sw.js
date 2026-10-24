@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v13-cedict-vi-122k';
+const CACHE_NAME = 'hoc-trung-app-shell-v14-cedict-male-voice';
 const APP_FILES = ['./index.html', './manifest.webmanifest', './icon.svg', './sw.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 
