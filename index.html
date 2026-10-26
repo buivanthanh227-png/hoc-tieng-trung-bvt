@@ -58,6 +58,7 @@
 /* Image OCR and reflex conversation practice */
 .ocr-card .file-input-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
 .ocr-preview{display:block;max-width:100%;max-height:360px;object-fit:contain;margin:10px auto 0;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+.ocr-source-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px}.ocr-source-actions .btn{display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal;line-height:1.25;min-width:0;min-height:46px;padding:9px 7px}.ocr-file-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.ocr-preview-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}.ocr-preview-grid[hidden]{display:none!important}.ocr-selected-file{position:relative;display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:11px;padding:6px;background:#fff;gap:5px}.ocr-selected-file img{display:block;width:100%;height:92px;object-fit:contain;border-radius:7px;background:#f8fafc}.ocr-selected-file .ocr-file-name{font-size:10px;line-height:1.35;color:#475467;overflow-wrap:anywhere;max-height:42px;overflow:hidden}.ocr-selected-file .ocr-file-remove{position:absolute;right:8px;top:8px;border:0;border-radius:99px;background:#1f2937d9;color:#fff;width:26px;height:26px;font-weight:900}.ocr-batch-log{display:grid;gap:5px;margin:8px 0 12px}.ocr-batch-log[hidden]{display:none!important}.ocr-batch-log-item{display:flex;align-items:flex-start;gap:7px;border:1px solid var(--line);border-radius:9px;padding:8px;font-size:11px;line-height:1.4;background:#fff}.ocr-batch-log-item b{overflow-wrap:anywhere}.ocr-batch-log-item small{display:block;color:var(--muted);margin-top:2px}.ocr-batch-log-item.ok{border-color:#bbf7d0;background:#f0fdf4}.ocr-batch-log-item.warn{border-color:#fed7aa;background:#fff7ed}.ocr-batch-log-item.error{border-color:#fecaca;background:#fef2f2}@media(max-width:430px){.ocr-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ocr-selected-file img{height:84px}.ocr-source-actions .btn{font-size:12px}}
 .ocr-text{min-height:96px;resize:vertical;margin-top:9px;line-height:1.5}
 .ocr-word-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
 .ocr-word-item{display:flex;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff;min-width:0}
@@ -188,28 +189,35 @@
  </div>
  <div class="card ocr-card">
   <h3 class="section-title">📷 Lấy từ vựng từ ảnh hoặc chụp bằng điện thoại</h3>
-  <p class="subtle" style="margin:0 0 10px">Chọn ảnh chụp bài học/sách tiếng Trung hoặc mở camera. Khi đã cấu hình OCR online, ảnh sẽ được xử lý loại đường kẻ dài rồi gửi tới OCR.Space Engine 3 để nhận diện bảng/ô tốt hơn. Các từ đều bỏ chọn mặc định để tránh thêm nhầm; hãy kiểm tra trước khi đưa vào danh sách ghép câu. Nếu chưa cấu hình được máy chủ online, ứng dụng dùng OCR trên thiết bị làm phương án dự phòng.</p>
-  <div class="row wrap">
-   <label for="combine-image-input" class="btn">📷 Chọn ảnh / chụp ảnh</label>
-   <input id="combine-image-input" class="file-input-hidden" type="file" accept="image/*" capture="environment">
-   <button id="ocr-run-button" class="btn secondary" type="button" disabled>🔎 Quét chữ trong ảnh</button>
+  <p class="subtle" style="margin:0 0 10px">Bạn có thể chụp ảnh bằng camera hoặc bấm “Tải ảnh lên” để chọn nhiều ảnh cùng lúc trong thư viện. Ứng dụng quét tuần tự từng ảnh bằng OCR online, gom chữ nhận diện từ tất cả ảnh vào một ô để bạn kiểm tra rồi tách từ một lần. Các từ đều bỏ chọn mặc định để tránh thêm nhầm.</p>
+  <div class="ocr-source-actions">
+   <label for="combine-image-input" class="btn">📷 Chụp ảnh</label>
+   <input id="combine-image-input" class="ocr-file-input" type="file" accept="image/*" capture="environment">
+   <label for="combine-upload-input" class="btn secondary">🖼️ Tải ảnh lên (chọn nhiều ảnh)</label>
+   <input id="combine-upload-input" class="ocr-file-input" type="file" accept="image/*" multiple>
+  </div>
+  <div class="row wrap" style="margin-bottom:8px">
+   <button id="ocr-run-button" class="btn" type="button" disabled>🔎 Quét tất cả ảnh (0)</button>
+   <button id="ocr-clear-images" class="btn secondary" type="button" disabled>🗑️ Xóa ảnh đã chọn</button>
    <button id="ocr-segment-button" class="btn outline" type="button">✂️ Tách từ từ nội dung</button>
   </div>
-  <img id="ocr-image-preview" class="ocr-preview" alt="Ảnh dùng để trích xuất từ vựng" hidden>
+  <p id="ocr-image-selection-summary" class="smallprint" style="margin:0 0 7px">Chưa chọn ảnh. Bạn có thể chụp một ảnh hoặc tải lên nhiều ảnh cùng lúc từ thư viện điện thoại.</p>
+  <div id="ocr-image-preview" class="ocr-preview-grid" hidden aria-label="Các ảnh đã chọn"></div>
   <div id="ocr-status" class="source-status" role="status" aria-live="polite">Chọn ảnh rồi bấm quét. OCR online cần cấu hình máy chủ trung gian một lần; ảnh sẽ được gửi đến dịch vụ OCR.Space để xử lý. Khi chưa thiết lập, ứng dụng sẽ dùng OCR cục bộ.</div>
-  <p class="smallprint" style="margin:-2px 0 9px">OCR online: OCR.Space Engine 3 (miễn phí theo hạn mức). Ảnh đã chọn sẽ được nén và tải lên dịch vụ khi máy chủ online đã cấu hình; không tải ảnh lên nếu bạn không đồng ý. Nếu chưa cấu hình, ứng dụng chỉ quét trên thiết bị.</p>
+  <p class="smallprint" style="margin:-2px 0 9px">OCR online dùng một lượt API cho mỗi ảnh và áp dụng hạn mức miễn phí của OCR.Space. Các ảnh sẽ được xử lý lần lượt; ảnh được gửi đến dịch vụ OCR online. Nếu OCR online lỗi, ứng dụng sẽ thử OCR cục bộ cho riêng ảnh đó.</p>
   <div id="ocr-progress" class="ocr-progress" hidden role="progressbar" aria-label="Tiến trình nhận diện chữ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>
+  <div id="ocr-batch-log" class="ocr-batch-log" hidden aria-live="polite"></div>
   <div id="ocr-candidate-box" class="ocr-candidate-box" hidden>
    <p class="smallprint" style="margin:0 0 7px"><b>Hai lần quét cho kết quả khác nhau.</b> Chọn bản khớp với ảnh nhất; danh sách từ sẽ được tách lại theo bản đã chọn.</p>
    <div id="ocr-candidate-buttons" class="ocr-candidate-buttons"></div>
   </div>
   <label class="reflex-input-label" for="ocr-recognized-text">Văn bản nhận diện (có thể sửa trước khi tách từ)</label>
-  <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ ảnh sẽ hiện ở đây. Bạn cũng có thể dán văn bản tiếng Trung vào ô này rồi bấm Tách từ."></textarea>
+  <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ tất cả ảnh sẽ được gom vào đây. Bạn có thể sửa nội dung rồi bấm Tách từ một lần."></textarea>
   <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
   <div class="row wrap" style="margin-top:7px"><button id="ocr-select-all" class="btn secondary tiny" type="button" disabled>Chọn tất cả từ nhận diện</button><button id="ocr-clear-all" class="btn secondary tiny" type="button" disabled>Bỏ chọn tất cả</button></div>
   <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
   <button id="ocr-add-selected" class="btn full" type="button" style="margin-top:11px" disabled>＋ Thêm các từ đã tích vào danh sách ghép câu</button>
-  <p class="smallprint" style="margin:8px 0 0">OCR chạy trong trình duyệt bằng Tesseract.js, thử hai chế độ và một bản ảnh tăng tương phản; ảnh không được gửi đến AI của ứng dụng. Hai lượt quét có thể vẫn sai, nên văn bản thô và danh sách từ đều cần được kiểm tra. Các từ không tự được chọn; chỉ những từ bạn tích mới được thêm. OCR cần Internet ở lần tải công cụ/dữ liệu đầu tiên.</p>
+  <p class="smallprint" style="margin:8px 0 0">OCR online dùng OCR.Space Engine 3 qua máy chủ Worker. Mỗi ảnh là một yêu cầu riêng; hãy cân nhắc hạn mức nếu chọn nhiều ảnh. Nếu online thất bại, ứng dụng thử OCR cục bộ. Kết quả có thể sai nên hãy kiểm tra văn bản thô và danh sách từ; chỉ các từ bạn tích mới được thêm vào danh sách ghép câu.</p>
  </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div></div>
  <div class="card reflex-card" id="reflex-card">
@@ -327,6 +335,9 @@ let toastTimer = null;
 let hskMap = new Map();
 let ocrCurrentFile = null;
 let ocrCurrentObjectUrl = '';
+let ocrSelectedFiles = [];
+let ocrPreviewObjectUrls = [];
+let ocrActiveProgressRange = null;
 let ocrLoadPromise = null;
 let ocrLexiconMap = null;
 let ocrLexiconLengths = [];
@@ -1308,8 +1319,13 @@ async function decodeOcrImage(file){
 function canvasBlob(canvas,type,quality){
  return new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Không nén được ảnh để gửi OCR online.')),type,quality));
 }
-async function makeGridlineCleanedUpload(file){
- setOcrProgressPercent(8,'Đang chuẩn hóa ảnh và tìm các đường kẻ của bảng…');
+function reportOcrProgress(percent,message,range=null){
+ const p=range?(range.base+range.span*Math.max(0,Math.min(100,percent))/100):percent;
+ const prefix=range?('Ảnh '+range.index+'/'+range.total+' · '):'';
+ setOcrProgressPercent(p,prefix+message);
+}
+async function makeGridlineCleanedUpload(file,progressRange=null){
+ reportOcrProgress(8,'Đang chuẩn hóa ảnh và tìm các đường kẻ của bảng…',progressRange);
  const bitmap=await decodeOcrImage(file);
  try{
   const srcW=bitmap.width||bitmap.naturalWidth,srcH=bitmap.height||bitmap.naturalHeight;
@@ -1344,7 +1360,7 @@ async function makeGridlineCleanedUpload(file){
    }
    ctx.putImageData(img,0,0);
   }
-  setOcrProgressPercent(22,'Đã xử lý ảnh ('+rowsRemoved+' dòng kẻ ngang, '+colsRemoved+' cột kẻ dọc được làm sạch). Đang nén để gửi OCR online…');
+  reportOcrProgress(22,'Đã xử lý ảnh ('+rowsRemoved+' dòng kẻ ngang, '+colsRemoved+' cột kẻ dọc được làm sạch). Đang nén để gửi OCR online…',progressRange);
   let blob=await canvasBlob(canvas,'image/jpeg',.88);
   if(blob.size>930*1024)blob=await canvasBlob(canvas,'image/jpeg',.76);
   if(blob.size>990*1024){
@@ -1365,16 +1381,16 @@ function normalizeOnlineOcrText(text){
  t=t.split('\n').map(line=>line.replace(/^\s*\|/,'').replace(/\|\s*$/,'').replace(/\s*\|\s*/g,' ')).join('\n');
  return t.replace(/^\s*[-=|: +]{3,}\s*$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
 }
-async function runOnlineOcr(file){
+async function runOnlineOcr(file,progressRange=null){
  if(!isOnlineOcrConfigured())throw new Error('Chưa cấu hình địa chỉ Cloudflare Worker. Hãy làm theo README trong gói cập nhật; khóa API phải được lưu dưới dạng Worker Secret, không dán vào HTML.');
- const prepared=await makeGridlineCleanedUpload(file);
- setOcrProgressPercent(38,'Đang tải ảnh đã làm sạch lên OCR.Space Engine 3…');
+ const prepared=await makeGridlineCleanedUpload(file,progressRange);
+ reportOcrProgress(38,'Đang tải ảnh đã làm sạch lên OCR.Space Engine 3…',progressRange);
  const form=new FormData();form.append('file',prepared.blob,'chinese-vocabulary-cleaned.jpg');
  let controller=null,timer=null;
  try{
   if(window.AbortController){controller=new AbortController();timer=setTimeout(()=>controller.abort(),65000);}
   const response=await fetch(ONLINE_OCR_ENDPOINT,{method:'POST',body:form,signal:controller?controller.signal:undefined,cache:'no-store'});
-  setOcrProgressPercent(78,'Máy chủ online đã phản hồi. Đang kiểm tra văn bản nhận diện…');
+  reportOcrProgress(78,'Máy chủ online đã phản hồi. Đang kiểm tra văn bản nhận diện…',progressRange);
   let data;try{data=await response.json();}catch(_){throw new Error('Máy chủ OCR online trả về nội dung không hợp lệ. Kiểm tra Worker URL và trạng thái triển khai.');}
   if(!response.ok||!data||data.ok===false){throw new Error((data&&data.error)||('Máy chủ OCR online trả mã HTTP '+response.status+'.'));}
   const text=normalizeOnlineOcrText(data.text||'');
@@ -1493,7 +1509,8 @@ function updateOcrProgress(message,provider){
  const status=String(message?.status||'');
  const progress=Number(message?.progress);
  if(Number.isFinite(progress)&&progress>=0){
-  const pct=Math.max(0,Math.min(100,Math.round(((Math.max(0,Math.min(1,ocrPassIndex))+progress)/2)*100)));
+  const localPct=Math.max(0,Math.min(100,Math.round(((Math.max(0,Math.min(1,ocrPassIndex))+progress)/2)*100)));
+  const pct=ocrActiveProgressRange?Math.round(ocrActiveProgressRange.base+ocrActiveProgressRange.span*localPct/100):localPct;
   box.setAttribute('aria-valuenow',String(pct));
   fill.classList.toggle('indeterminate',pct===0);
   if(pct>0)fill.style.width=pct+'%';else fill.style.width='35%';
@@ -1508,11 +1525,13 @@ function updateOcrProgress(message,provider){
   'recognizing text':'Đang đọc chữ trong ảnh',
   'loading image':'Đang đọc tệp ảnh'
  }[status]||status||'Đang chuẩn bị nhận diện';
- const pctText=Number.isFinite(progress)&&progress>0?' · '+Math.round(((Math.max(0,Math.min(1,ocrPassIndex))+progress)/2)*100)+'%':'';
+ const localPctText=Number.isFinite(progress)&&progress>0?Math.round(((Math.max(0,Math.min(1,ocrPassIndex))+progress)/2)*100):null;
+ const pctText=localPctText!==null?' · '+Math.round(ocrActiveProgressRange?ocrActiveProgressRange.base+ocrActiveProgressRange.span*localPctText/100:localPctText)+'%':'';
  const hostText=provider?' ('+provider+')':'';
+ const batchPrefix=ocrActiveProgressRange?('Ảnh '+ocrActiveProgressRange.index+'/'+ocrActiveProgressRange.total+' · '):'';
  const extra=status==='loading language traineddata'?' · lần đầu có thể tải dữ liệu vài MB và cần chờ một lúc':'';
  const passText=' · lượt '+(ocrPassIndex+1)+'/2';
- $('ocr-status').textContent=statusVi+hostText+passText+pctText+extra+'. Không đóng trang trong khi xử lý.';
+ $('ocr-status').textContent=batchPrefix+statusVi+hostText+passText+pctText+extra+'. Không đóng trang trong khi xử lý.';
 }
 async function createOcrWorkerWithFallback(T){
  let lastError=null;
@@ -1546,16 +1565,53 @@ async function createOcrWorkerWithFallback(T){
  }
  throw new Error('Không thể khởi tạo bộ nhận diện từ cả hai nguồn. '+(lastError?.message||'')+' Hãy thử đổi mạng Wi-Fi/4G hoặc thử lại sau.');
 }
-$('combine-image-input').addEventListener('change',e=>{
- const file=e.target.files&&e.target.files[0];if(!file)return;
- if(!String(file.type||'').startsWith('image/')){toast('Hãy chọn tệp ảnh JPG, PNG, WebP hoặc ảnh được trình duyệt hỗ trợ.');return;}
- ocrCurrentFile=file;
- if(ocrCurrentObjectUrl)URL.revokeObjectURL(ocrCurrentObjectUrl);
- ocrCurrentObjectUrl=URL.createObjectURL(file);
- $('ocr-image-preview').src=ocrCurrentObjectUrl;$('ocr-image-preview').hidden=false;$('ocr-run-button').disabled=false;
- $('ocr-progress').hidden=true;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];$('ocr-recognized-text').value='';
- $('ocr-status').className='source-status';$('ocr-status').textContent='Đã chọn ảnh: '+file.name+'. Bấm “Quét chữ trong ảnh” để nhận diện chữ Hán.';
+function resetOcrOutputForNewSelection(){
+ $('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];activeOcrCandidate=0;
+ $('ocr-recognized-text').value='';detectedOcrWords=[];renderOcrWords();
+ $('ocr-progress').hidden=true;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
+ $('ocr-batch-log').hidden=true;$('ocr-batch-log').innerHTML='';
+}
+function sameOcrFile(a,b){return !!a&&!!b&&a.name===b.name&&a.size===b.size&&a.lastModified===b.lastModified&&a.type===b.type;}
+function renderOcrFileQueue(){
+ const gallery=$('ocr-image-preview');
+ for(const url of ocrPreviewObjectUrls){try{URL.revokeObjectURL(url);}catch(_){}}
+ ocrPreviewObjectUrls=[];
+ if(!ocrSelectedFiles.length){gallery.hidden=true;gallery.innerHTML='';$('ocr-image-selection-summary').textContent='Chưa chọn ảnh. Bạn có thể chụp một ảnh hoặc tải lên nhiều ảnh cùng lúc từ thư viện điện thoại.';$('ocr-run-button').disabled=true;$('ocr-run-button').textContent='🔎 Quét tất cả ảnh (0)';$('ocr-clear-images').disabled=true;ocrCurrentFile=null;return;}
+ gallery.hidden=false;
+ gallery.innerHTML=ocrSelectedFiles.map((file,i)=>{
+  const url=URL.createObjectURL(file);ocrPreviewObjectUrls.push(url);
+  const size=file.size<1024*1024?Math.max(1,Math.round(file.size/1024))+' KB':(file.size/(1024*1024)).toFixed(1)+' MB';
+  return `<div class="ocr-selected-file"><img src="${url}" alt="Xem trước ảnh ${i+1}"><button class="ocr-file-remove" type="button" data-remove-ocr-file="${i}" aria-label="Bỏ ảnh ${i+1}">×</button><div class="ocr-file-name"><b>Ảnh ${i+1}</b><br>${escapeHTML(file.name)}<br>${size}</div></div>`;
+ }).join('');
+ $('ocr-image-selection-summary').textContent='Đã chọn '+ocrSelectedFiles.length+' ảnh. Khi bấm quét, ứng dụng sẽ xử lý lần lượt từng ảnh rồi gom chữ nhận diện vào một ô.';
+ $('ocr-run-button').disabled=false;$('ocr-run-button').textContent='🔎 Quét tất cả ảnh ('+ocrSelectedFiles.length+')';$('ocr-clear-images').disabled=false;ocrCurrentFile=ocrSelectedFiles[ocrSelectedFiles.length-1];
+ gallery.querySelectorAll('[data-remove-ocr-file]').forEach(button=>button.addEventListener('click',()=>{
+  const idx=Number(button.dataset.removeOcrFile);if(!Number.isInteger(idx)||!ocrSelectedFiles[idx])return;
+  ocrSelectedFiles.splice(idx,1);renderOcrFileQueue();resetOcrOutputForNewSelection();
+  $('ocr-status').className='source-status';$('ocr-status').textContent=ocrSelectedFiles.length?'Đã cập nhật danh sách ảnh. Bấm “Quét tất cả ảnh” để nhận diện lại.':'Đã xóa hết ảnh đã chọn.';
+ }));
+}
+function addOcrFiles(fileList,source){
+ const incoming=Array.from(fileList||[]);if(!incoming.length)return;
+ const valid=incoming.filter(file=>String(file.type||'').startsWith('image/')||/\.(?:jpe?g|png|webp|gif|bmp|heic|heif|tiff?|avif)$/i.test(String(file.name||''))||!file.type);
+ const invalid=incoming.length-valid.length;
+ if(!valid.length){toast('Hãy chọn tệp ảnh JPG, PNG, HEIC hoặc định dạng ảnh trình duyệt hỗ trợ.');return;}
+ let added=0,duplicates=0;
+ for(const file of valid){if(ocrSelectedFiles.some(old=>sameOcrFile(old,file))){duplicates++;continue;}ocrSelectedFiles.push(file);added++;}
+ renderOcrFileQueue();resetOcrOutputForNewSelection();
+ $('ocr-status').className=invalid?'source-status':'source-status ok';
+ const sourceLabel=source==='camera'?'từ camera':'từ thư viện ảnh';
+ $('ocr-status').textContent='Đã thêm '+added+' ảnh '+sourceLabel+'. Tổng cộng '+ocrSelectedFiles.length+' ảnh trong danh sách.'+(duplicates?' Bỏ qua '+duplicates+' ảnh trùng.':'')+(invalid?' Bỏ qua '+invalid+' tệp không phải ảnh.':'')+' Bấm “Quét tất cả ảnh” để tiếp tục.';
+}
+$('combine-image-input').addEventListener('change',e=>{addOcrFiles(e.target.files,'camera');e.target.value='';});
+$('combine-upload-input').addEventListener('change',e=>{addOcrFiles(e.target.files,'library');e.target.value='';});
+$('ocr-clear-images').addEventListener('click',()=>{
+ ocrSelectedFiles=[];renderOcrFileQueue();resetOcrOutputForNewSelection();$('ocr-status').className='source-status';$('ocr-status').textContent='Đã xóa danh sách ảnh. Bạn có thể chụp hoặc tải ảnh lên để bắt đầu lại.';
 });
+function renderOcrBatchLog(entries){
+ const box=$('ocr-batch-log');if(!entries?.length){box.hidden=true;box.innerHTML='';return;}
+ box.hidden=false;box.innerHTML=entries.map((entry,i)=>`<div class="ocr-batch-log-item ${entry.status==='ok'?'ok':entry.status==='error'?'error':'warn'}"><span>${entry.status==='ok'?'✓':entry.status==='error'?'✕':'!'}</span><div><b>Ảnh ${i+1}: ${escapeHTML(entry.name)}</b><small>${escapeHTML(entry.detail)}</small></div></div>`).join('');
+}
 function normalizeOcrCandidateText(text){return String(text||'').replace(/\s+/g,'').replace(/[，。！？、,.!?;；:：]/g,'').trim();}
 function applyOcrCandidate(index){
  if(!ocrCandidates[index])return;
@@ -1586,65 +1642,71 @@ async function makeEnhancedOcrImage(file){
   return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Không tạo được ảnh tăng cường.')),'image/png'));
  }finally{try{bitmap?.close?.();}catch(_){}if(ownedUrl)URL.revokeObjectURL(ownedUrl);}
 }
-async function runLocalOcrTwoPasses(onlineFailureReason=''){
- let worker=null;
+async function runLocalOcrForFile(file,progressRange){
+ let worker=null;ocrActiveProgressRange=progressRange||null;
+ const report=(pct,msg)=>reportOcrProgress(pct,msg,progressRange);
  try{
+  report(5,'Đang tải bộ máy OCR cục bộ dự phòng…');
   const T=await loadTesseractScript();worker=await createOcrWorkerWithFallback(T);
-  ocrPassIndex=0;$('ocr-status').textContent='OCR cục bộ · lượt 1/2: đang đọc ảnh gốc…';setOcrProgressPercent(28);
+  ocrPassIndex=0;report(12,'OCR cục bộ lượt 1/2: đang đọc ảnh gốc…');
   try{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});}catch(e){console.warn('Không đặt được chế độ OCR 6:',e);}
-  const first=await worker.recognize(ocrCurrentFile),firstText=String(first?.data?.text||'').trim(),firstConfidence=Number(first?.data?.confidence||0);
-  $('ocr-status').textContent='OCR cục bộ · đang tăng độ tương phản và phóng lớn ảnh…';const enhanced=await makeEnhancedOcrImage(ocrCurrentFile);
-  ocrPassIndex=1;$('ocr-status').textContent='OCR cục bộ · lượt 2/2: đang quét ảnh tăng tương phản…';
+  const first=await worker.recognize(file),firstText=String(first?.data?.text||'').trim(),firstConfidence=Number(first?.data?.confidence||0);
+  report(55,'Đang tăng tương phản ảnh để thử lần hai…');const enhanced=await makeEnhancedOcrImage(file);
+  ocrPassIndex=1;report(62,'OCR cục bộ lượt 2/2: đang đọc ảnh đã tăng tương phản…');
   try{await worker.setParameters({tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'});}catch(e){console.warn('Không đặt được chế độ OCR 11:',e);}
   const second=await worker.recognize(enhanced),secondText=String(second?.data?.text||'').trim(),secondConfidence=Number(second?.data?.confidence||0);
-  const candidates=[{label:'Bản A · OCR cục bộ ảnh gốc',text:firstText,confidence:firstConfidence},{label:'Bản B · OCR cục bộ tăng tương phản',text:secondText,confidence:secondConfidence}].filter(c=>c.text);
-  if(!candidates.length)throw new Error('OCR cục bộ không nhận diện được chữ. Hãy sửa văn bản thủ công hoặc cấu hình OCR online trong README.');
-  let selected=0;if(candidates.length>1&&candidates[1].confidence>candidates[0].confidence)selected=1;
-  ocrCandidates=candidates;activeOcrCandidate=selected;renderOcrCandidates(candidates);
-  $('ocr-recognized-text').value=candidates[selected].text;segmentCurrentOcrText();
-  const localSuccess='Đã quét bằng OCR cục bộ dự phòng. Kết quả có thể kém chính xác hơn OCR online; hãy đối chiếu từng từ với ảnh.';
-  if(onlineFailureReason){$('ocr-status').className='source-status';setOcrProgressPercent(100,localSuccess+' Nguyên nhân OCR online thất bại: '+String(onlineFailureReason).slice(0,500)+'.');}
-  else{$('ocr-status').className='source-status ok';setOcrProgressPercent(100,localSuccess);}
- }finally{try{await worker?.terminate?.();}catch(_){}ocrPassIndex=0;}
+  const candidates=[{text:firstText,confidence:firstConfidence},{text:secondText,confidence:secondConfidence}].filter(c=>c.text);
+  if(!candidates.length)throw new Error('OCR cục bộ cũng không nhận diện được chữ.');
+  candidates.sort((a,b)=>b.confidence-a.confidence);return candidates[0].text;
+ }finally{try{await worker?.terminate?.();}catch(_){}ocrPassIndex=0;ocrActiveProgressRange=null;}
 }
 $('ocr-run-button').addEventListener('click',async()=>{
- if(!ocrCurrentFile){toast('Hãy chọn ảnh trước.');return;}
- const btn=$('ocr-run-button');btn.disabled=true;$('ocr-segment-button').disabled=true;
- let onlineFallbackReason='';
- $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.add('indeterminate');$('ocr-progress-fill').style.width='35%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];
+ const files=ocrSelectedFiles.slice();if(!files.length){toast('Hãy chụp ảnh hoặc tải lên ít nhất một ảnh trước.');return;}
+ const btn=$('ocr-run-button'),cameraInput=$('combine-image-input'),uploadInput=$('combine-upload-input');
+ btn.disabled=true;$('ocr-clear-images').disabled=true;cameraInput.disabled=true;uploadInput.disabled=true;$('ocr-segment-button').disabled=true;
+ $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];$('ocr-batch-log').hidden=false;$('ocr-batch-log').innerHTML='';
+ $('ocr-recognized-text').value='';detectedOcrWords=[];renderOcrWords();
+ const entries=[],textParts=[];let onlineCount=0,localCount=0,failedCount=0;
  try{
-  if(isOnlineOcrConfigured()){
-   try{
-    $('ocr-status').className='source-status';
-    const result=await runOnlineOcr(ocrCurrentFile);
-    ocrCandidates=[{label:'OCR online · OCR.Space Engine '+result.engine,text:result.text,confidence:0}];activeOcrCandidate=0;
-    $('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';
-    $('ocr-recognized-text').value=result.text;segmentCurrentOcrText();
-    const sizeKB=Math.max(1,Math.round(result.size/1024));
-    $('ocr-status').className='source-status ok';
-    $('ocr-status').textContent='Quét online thành công bằng OCR.Space Engine '+result.engine+(result.fallbackFromEngine3?' (tự chuyển từ Engine 3 sang Engine 2 vì Engine 3 không trả được kết quả).':'')+'. Ảnh đã nén còn '+sizeKB+' KB; đã làm sạch '+result.rowsRemoved+' dòng kẻ ngang và '+result.colsRemoved+' cột kẻ dọc. Hãy kiểm tra văn bản và tích đúng từ trước khi thêm. Ảnh được gửi đến dịch vụ OCR online.';
-    setOcrProgressPercent(100);
-    return;
-   }catch(remoteErr){
-    console.warn('Online OCR error; switching to local fallback:',remoteErr);
-    onlineFallbackReason=remoteErr?.message||String(remoteErr);
-    $('ocr-status').className='source-status';
-    $('ocr-status').textContent='OCR online chưa chạy được: '+onlineFallbackReason+'. Đang thử OCR cục bộ dự phòng…';
-    setOcrProgressPercent(16);
+  for(let i=0;i<files.length;i++){
+   const file=files[i];ocrCurrentFile=file;
+   const range={base:(i/files.length)*100,span:100/files.length,index:i+1,total:files.length};
+   $('ocr-status').className='source-status';reportOcrProgress(2,'Đang bắt đầu xử lý '+file.name+'…',range);
+   let text='',entry={name:file.name,status:'error',detail:''};
+   if(isOnlineOcrConfigured()){
+    try{
+     const result=await runOnlineOcr(file,range);text=result.text;onlineCount++;
+     entry={name:file.name,status:'ok',detail:'OCR online Engine '+result.engine+' · '+Math.max(1,Math.round(result.size/1024))+' KB sau nén · đã làm sạch '+result.rowsRemoved+' dòng kẻ ngang và '+result.colsRemoved+' cột kẻ dọc.'};
+    }catch(remoteErr){
+     const reason=remoteErr?.message||String(remoteErr);
+     entry={name:file.name,status:'warn',detail:'OCR online lỗi: '+reason+' Đang thử OCR cục bộ.'};
+     renderOcrBatchLog(entries.concat(entry));
+     try{text=await runLocalOcrForFile(file,range);localCount++;entry={name:file.name,status:'warn',detail:'Đã nhận diện bằng OCR cục bộ dự phòng; kết quả có thể kém chính xác hơn. Lý do online: '+reason};}
+     catch(localErr){failedCount++;entry={name:file.name,status:'error',detail:'OCR online lỗi: '+reason+' OCR cục bộ cũng lỗi: '+(localErr?.message||String(localErr))};}
+    }
+   }else{
+    const reason='URL OCR online chưa được cấu hình.';
+    try{text=await runLocalOcrForFile(file,range);localCount++;entry={name:file.name,status:'warn',detail:'Đã nhận diện bằng OCR cục bộ dự phòng vì chưa cấu hình online.'};}
+    catch(localErr){failedCount++;entry={name:file.name,status:'error',detail:reason+' '+(localErr?.message||String(localErr))};}
    }
-  }else{
-   onlineFallbackReason='Địa chỉ OCR online chưa được cấu hình trong bản HTML đang mở.';
-   $('ocr-status').className='source-status';
-   $('ocr-status').textContent=onlineFallbackReason+' Đang dùng OCR cục bộ dự phòng.';
-   setOcrProgressPercent(12);
+   if(text.trim())textParts.push('--- ANH '+(i+1)+' ---\n'+text.trim());
+   entries.push(entry);renderOcrBatchLog(entries);
+   reportOcrProgress(((i+1)/files.length)*100,'Đã xử lý '+(i+1)+'/'+files.length+' ảnh.',{base:0,span:100,index:i+1,total:files.length});
   }
-  await runLocalOcrTwoPasses(onlineFallbackReason);
+  if(!textParts.length)throw new Error('Không nhận diện được chữ từ ảnh nào. Xem chi tiết lỗi ở danh sách từng ảnh bên trên.');
+  $('ocr-recognized-text').value=textParts.join('\n\n');ocrCandidates=[];activeOcrCandidate=0;$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';
+  segmentCurrentOcrText();
+  const successCount=onlineCount+localCount;
+  const summary='Hoàn tất '+successCount+'/'+files.length+' ảnh: '+onlineCount+' ảnh quét online, '+localCount+' ảnh dùng OCR cục bộ dự phòng, '+failedCount+' ảnh thất bại. Chữ từ các ảnh thành công đã được gom vào ô văn bản; hãy kiểm tra rồi bấm “Tách từ từ nội dung” hoặc chọn từ bên dưới.';
+  $('ocr-status').className=failedCount||localCount?'source-status': 'source-status ok';
+  setOcrProgressPercent(100,summary);
  }catch(err){
-  $('ocr-status').className='source-status error';$('ocr-status').textContent='Không thể quét ảnh: '+(err?.message||String(err))+'. Bạn vẫn có thể dán/sửa chữ Hán trong ô văn bản rồi bấm “Tách từ từ nội dung”.';
+  $('ocr-status').className='source-status error';$('ocr-status').textContent='Không thể hoàn thành lượt quét: '+(err?.message||String(err))+'. Kiểm tra chi tiết theo từng ảnh bên trên; bạn vẫn có thể sửa văn bản thủ công.';
   $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
  }finally{
-  $('ocr-progress-fill').classList.remove('indeterminate');
-  try{btn.disabled=!ocrCurrentFile;$('ocr-segment-button').disabled=false;}catch(_){}
+  ocrActiveProgressRange=null;$('ocr-progress-fill').classList.remove('indeterminate');
+  cameraInput.disabled=false;uploadInput.disabled=false;$('ocr-clear-images').disabled=!ocrSelectedFiles.length;
+  btn.disabled=!ocrSelectedFiles.length;btn.textContent='🔎 Quét tất cả ảnh ('+ocrSelectedFiles.length+')';$('ocr-segment-button').disabled=false;
  }
 });
 $('ocr-segment-button').addEventListener('click',segmentCurrentOcrText);
