@@ -1586,7 +1586,7 @@ async function makeEnhancedOcrImage(file){
   return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Không tạo được ảnh tăng cường.')),'image/png'));
  }finally{try{bitmap?.close?.();}catch(_){}if(ownedUrl)URL.revokeObjectURL(ownedUrl);}
 }
-async function runLocalOcrTwoPasses(){
+async function runLocalOcrTwoPasses(onlineFailureReason=''){
  let worker=null;
  try{
   const T=await loadTesseractScript();worker=await createOcrWorkerWithFallback(T);
@@ -1602,12 +1602,15 @@ async function runLocalOcrTwoPasses(){
   let selected=0;if(candidates.length>1&&candidates[1].confidence>candidates[0].confidence)selected=1;
   ocrCandidates=candidates;activeOcrCandidate=selected;renderOcrCandidates(candidates);
   $('ocr-recognized-text').value=candidates[selected].text;segmentCurrentOcrText();
-  setOcrProgressPercent(100,'Đã quét bằng OCR cục bộ dự phòng. Kết quả có thể kém chính xác hơn OCR online; hãy đối chiếu từng từ với ảnh.');
+  const localSuccess='Đã quét bằng OCR cục bộ dự phòng. Kết quả có thể kém chính xác hơn OCR online; hãy đối chiếu từng từ với ảnh.';
+  if(onlineFailureReason){$('ocr-status').className='source-status';setOcrProgressPercent(100,localSuccess+' Nguyên nhân OCR online thất bại: '+String(onlineFailureReason).slice(0,500)+'.');}
+  else{$('ocr-status').className='source-status ok';setOcrProgressPercent(100,localSuccess);}
  }finally{try{await worker?.terminate?.();}catch(_){}ocrPassIndex=0;}
 }
 $('ocr-run-button').addEventListener('click',async()=>{
  if(!ocrCurrentFile){toast('Hãy chọn ảnh trước.');return;}
  const btn=$('ocr-run-button');btn.disabled=true;$('ocr-segment-button').disabled=true;
+ let onlineFallbackReason='';
  $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.add('indeterminate');$('ocr-progress-fill').style.width='35%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];
  try{
   if(isOnlineOcrConfigured()){
@@ -1619,21 +1622,23 @@ $('ocr-run-button').addEventListener('click',async()=>{
     $('ocr-recognized-text').value=result.text;segmentCurrentOcrText();
     const sizeKB=Math.max(1,Math.round(result.size/1024));
     $('ocr-status').className='source-status ok';
-    $('ocr-status').textContent='Quét online thành công bằng OCR.Space Engine '+result.engine+'. Ảnh đã nén còn '+sizeKB+' KB; đã làm sạch '+result.rowsRemoved+' dòng kẻ ngang và '+result.colsRemoved+' cột kẻ dọc. Hãy kiểm tra văn bản và tích đúng từ trước khi thêm. Ảnh được gửi đến dịch vụ OCR online.';
+    $('ocr-status').textContent='Quét online thành công bằng OCR.Space Engine '+result.engine+(result.fallbackFromEngine3?' (tự chuyển từ Engine 3 sang Engine 2 vì Engine 3 không trả được kết quả).':'')+'. Ảnh đã nén còn '+sizeKB+' KB; đã làm sạch '+result.rowsRemoved+' dòng kẻ ngang và '+result.colsRemoved+' cột kẻ dọc. Hãy kiểm tra văn bản và tích đúng từ trước khi thêm. Ảnh được gửi đến dịch vụ OCR online.';
     setOcrProgressPercent(100);
     return;
    }catch(remoteErr){
     console.warn('Online OCR error; switching to local fallback:',remoteErr);
+    onlineFallbackReason=remoteErr?.message||String(remoteErr);
     $('ocr-status').className='source-status';
-    $('ocr-status').textContent='OCR online chưa chạy được: '+(remoteErr?.message||String(remoteErr))+'. Đang thử OCR cục bộ dự phòng…';
+    $('ocr-status').textContent='OCR online chưa chạy được: '+onlineFallbackReason+'. Đang thử OCR cục bộ dự phòng…';
     setOcrProgressPercent(16);
    }
   }else{
+   onlineFallbackReason='Địa chỉ OCR online chưa được cấu hình trong bản HTML đang mở.';
    $('ocr-status').className='source-status';
-   $('ocr-status').textContent='Chưa cấu hình OCR online; đang dùng OCR cục bộ dự phòng. Để bật OCR.Space Engine 3 cho tất cả người dùng, làm theo README trong gói ZIP.';
+   $('ocr-status').textContent=onlineFallbackReason+' Đang dùng OCR cục bộ dự phòng.';
    setOcrProgressPercent(12);
   }
-  await runLocalOcrTwoPasses();
+  await runLocalOcrTwoPasses(onlineFallbackReason);
  }catch(err){
   $('ocr-status').className='source-status error';$('ocr-status').textContent='Không thể quét ảnh: '+(err?.message||String(err))+'. Bạn vẫn có thể dán/sửa chữ Hán trong ô văn bản rồi bấm “Tách từ từ nội dung”.';
   $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
