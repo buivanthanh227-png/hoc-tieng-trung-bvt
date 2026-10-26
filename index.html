@@ -247,15 +247,24 @@
     <div class="question" id="reflex-question-zh">你累吗？</div>
     <div class="reflex-prompt-vi" id="reflex-question-vi">Bạn có mệt không?</div>
    </div>
-   <label class="reflex-input-label" for="reflex-answer-input" id="reflex-answer-label">Bạn hãy trả lời bằng chữ Hán</label>
-   <input id="reflex-answer-input" class="field" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập câu trả lời bằng chữ Hán…">
-   <div class="reflex-controls">
-    <button id="reflex-mic-button" class="btn outline" type="button" hidden>🎙️ Bắt đầu thu âm</button>
-    <button id="reflex-mic-stop-button" class="btn secondary" type="button" hidden disabled>⏹️ Dừng thu âm & xem kết quả</button>
-    <button id="reflex-check-button" class="btn" type="button">Kiểm tra câu trả lời</button>
-    <button id="reflex-next-button" class="btn secondary" type="button" hidden>Câu tiếp theo →</button>
+   <div id="reflex-speech-method" class="reflex-answer-method" hidden style="margin-top:14px;padding:13px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--surface,#fff)">
+    <div style="font-weight:700;margin-bottom:5px">Cách 1 — Trả lời bằng giọng nói</div>
+    <p class="smallprint" style="margin:0 0 10px">Bấm bắt đầu, nói tiếng Trung, rồi bấm dừng. Ứng dụng sẽ tự nhận diện và hiện kết quả ngay bên dưới.</p>
+    <div class="reflex-controls" style="margin-top:0">
+     <button id="reflex-mic-button" class="btn outline" type="button" hidden>🎙️ Bắt đầu thu âm</button>
+     <button id="reflex-mic-stop-button" class="btn secondary" type="button" hidden disabled>⏹️ Dừng thu âm & xem kết quả</button>
+    </div>
+   </div>
+   <div id="reflex-typing-method" class="reflex-answer-method" style="margin-top:12px;padding:13px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--surface,#fff)">
+    <div style="font-weight:700;margin-bottom:7px">Cách 2 — Nhập câu trả lời bằng chữ Hán</div>
+    <label class="reflex-input-label" for="reflex-answer-input" id="reflex-answer-label">Bạn hãy trả lời bằng chữ Hán</label>
+    <input id="reflex-answer-input" class="field" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập câu trả lời bằng chữ Hán…">
+    <div class="reflex-controls">
+     <button id="reflex-check-button" class="btn" type="button">Kiểm tra câu trả lời</button>
+    </div>
    </div>
    <div id="reflex-feedback" class="result" hidden aria-live="polite"></div>
+   <div class="reflex-controls"><button id="reflex-next-button" class="btn secondary" type="button" hidden>Câu tiếp theo →</button></div>
   </div>
   <p id="reflex-status" class="reflex-status" role="status" aria-live="polite">Hãy chọn từ và bấm “Tạo câu có nghĩa” trước. Nếu bộ từ đủ tạo hỏi–đáp, bài luyện sẽ được tạo từ danh sách đó.</p>
   <p class="smallprint" style="margin:8px 0 0">Phần hỏi–đáp này dùng bộ mẫu ngữ pháp có kiểm soát, không phải mô hình AI tạo sinh trực tuyến. Nhận diện giọng nói tùy trình duyệt/thiết bị; một số trình duyệt gửi âm thanh đến dịch vụ nhận dạng của nhà cung cấp và cần Internet.</p>
@@ -1859,7 +1868,7 @@ function renderReflexQuestion(autoSpeak=false){
  $('reflex-question-vi').textContent=p.qVi||'';
  $('reflex-answer-label').textContent=reflexMode==='speak'?'Hãy trả lời bằng tiếng Trung qua micro (hoặc nhập bên dưới)':'Hãy nhập câu trả lời bằng chữ Hán';
  $('reflex-answer-input').value='';$('reflex-answer-input').placeholder=echo?'Nhập bản dịch bằng chữ Hán…':'Ví dụ: '+p.aZh.replace(/[。！？!?]+$/,'');
- $('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu thu âm';$('reflex-mic-stop-button').hidden=true;$('reflex-mic-stop-button').disabled=true;$('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
+ $('reflex-speech-method').hidden=reflexMode!=='speak';$('reflex-typing-method').hidden=false;$('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu thu âm';$('reflex-mic-stop-button').hidden=true;$('reflex-mic-stop-button').disabled=true;$('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
  $('reflex-play-question').textContent=echo?'🔊 Nghe câu mẫu':'🔊 AI đọc câu hỏi';
  $('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
  if(autoSpeak&&!echo){speak(p.qZh,$('reflex-play-question'));}
@@ -1918,7 +1927,7 @@ function stopReflexMicrophone(){
 }
 $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{
  reflexMode=btn.dataset.reflexMode;$('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b===btn));
- $('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-mic-stop-button').hidden=true;$('reflex-answer-label').textContent=reflexMode==='speak'?'Hãy trả lời bằng tiếng Trung qua micro (hoặc nhập bên dưới)':'Hãy nhập câu trả lời bằng chữ Hán';
+ $('reflex-speech-method').hidden=reflexMode!=='speak';$('reflex-typing-method').hidden=false;$('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-mic-stop-button').hidden=true;$('reflex-answer-label').textContent=reflexMode==='speak'?'Hãy trả lời bằng tiếng Trung qua micro (hoặc nhập bên dưới)':'Hãy nhập câu trả lời bằng chữ Hán';
  if(reflexQueue.length)renderReflexQuestion(reflexMode==='speak');
 }));
 $('reflex-start-button').addEventListener('click',()=>{
