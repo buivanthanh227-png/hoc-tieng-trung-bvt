@@ -75,6 +75,18 @@
 .reflex-status{font-size:12px;line-height:1.5;color:var(--muted);margin-top:8px}
 @media(max-width:520px){.ocr-word-grid{grid-template-columns:1fr}.reflex-controls .btn{min-width:42%}.reflex-card .question{font-size:24px}}
 
+
+/* Mobile stroke diagram: keep Hanzi Writer SVG inside the square stage. */
+.stroke-stage{min-width:0;min-height:0!important;height:auto;aspect-ratio:1/1;}
+.stroke-stage svg{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;}
+.practice-write-card .stroke-stage{min-height:0!important;height:auto;aspect-ratio:1/1;}
+@media(max-width:520px){.stroke-content-grid{align-items:start}.stroke-panel,.practice-write-card{min-width:0}.stroke-stage{width:100%;max-width:100%;overflow:hidden}.stroke-stage svg{width:100%!important;height:100%!important}}
+.ocr-progress{height:8px;border-radius:99px;background:#e5e7eb;overflow:hidden;margin:-2px 0 12px}
+.ocr-progress[hidden]{display:none!important}
+.ocr-progress-fill{height:100%;width:0%;background:var(--red);border-radius:99px;transition:width .2s ease}
+.ocr-progress-fill.indeterminate{width:35%;animation:ocr-indeterminate 1.15s ease-in-out infinite}
+@keyframes ocr-indeterminate{0%{transform:translateX(-110%)}100%{transform:translateX(320%)}}
+
 </style>
 </head>
 <body>
@@ -174,6 +186,7 @@
   </div>
   <img id="ocr-image-preview" class="ocr-preview" alt="Ảnh dùng để trích xuất từ vựng" hidden>
   <div id="ocr-status" class="source-status" role="status" aria-live="polite">Chọn một ảnh có chữ Hán. Lần đầu quét cần Internet để tải công cụ OCR và dữ liệu nhận dạng tiếng Trung.</div>
+  <div id="ocr-progress" class="ocr-progress" hidden role="progressbar" aria-label="Tiến trình nhận diện chữ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>
   <label class="reflex-input-label" for="ocr-recognized-text">Văn bản nhận diện (có thể sửa trước khi tách từ)</label>
   <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ ảnh sẽ hiện ở đây. Bạn cũng có thể dán văn bản tiếng Trung vào ô này rồi bấm Tách từ."></textarea>
   <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
@@ -1240,7 +1253,7 @@ function invalidateGeneratedSentences(){
  if(pill)pill.textContent='Chưa có bài';if(session)session.hidden=true;if(shuffle)shuffle.disabled=true;
  if(status)status.textContent='Danh sách từ vừa thay đổi; hãy tạo lại câu để bài phản xạ không dùng dữ liệu cũ.';
 }
-// ===== Image OCR: extract Chinese words locally, then let the learner select terms =====
+// ===== Image OCR v2: CDN fallback, timeout handling, progress, and mobile-friendly image preprocessing =====
 const OCR_ATOMIC_WORDS = new Set(('我 你 您 他 她 它 我们 你们 他们 她们 不 没 没有 是 有 吗 呢 了 的 很 也 都 在 和 爱 想 要 会 能 可以 喜欢 学习 工作 说 听 看 读 写 吃 喝 买 卖 去 来 回 做 住 坐 认识 知道 帮助 问 回答 告诉 给 找 等 开 关 今天 明天 昨天 现在 每天 中文 汉语 中国 北京 家 学校 医院 商店 饭店 书店 机场 水 茶 咖啡 米饭 苹果 水果 菜 东西 钱 书 手机 电脑 衣服 天气 音乐 电影 电视 爸爸 妈妈 老师 学生 同学 医生 朋友 孩子 累 冷 热 忙 高兴 好 大 小 多 少 漂亮 贵 便宜 快 慢 好吃').split(' '));
 function buildOcrLexicon(){
  if(ocrLexiconMap)return;
@@ -1313,13 +1326,91 @@ function segmentCurrentOcrText(){
 function loadTesseractScript(){
  if(window.Tesseract)return Promise.resolve(window.Tesseract);
  if(ocrLoadPromise)return ocrLoadPromise;
- ocrLoadPromise=new Promise((resolve,reject)=>{
-  const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';script.async=true;
-  script.onload=()=>window.Tesseract?resolve(window.Tesseract):reject(new Error('Thư viện OCR đã tải nhưng chưa sẵn sàng.'));
-  script.onerror=()=>reject(new Error('Không tải được công cụ OCR. Hãy kiểm tra Internet rồi thử lại.'));
-  document.head.appendChild(script);
- }).catch(err=>{ocrLoadPromise=null;throw err;});
+ ocrLoadPromise=(async()=>{
+  const sources=[
+   'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+   'https://unpkg.com/tesseract.js@5.1.1/dist/tesseract.min.js'
+  ];
+  let lastError=null;
+  for(const url of sources){
+   try{
+    $('ocr-status').textContent='Đang tải thư viện OCR từ máy chủ: '+(url.includes('jsdelivr')?'jsDelivr':'unpkg')+'…';
+    await new Promise((resolve,reject)=>{
+     const script=document.createElement('script');script.src=url;script.async=true;script.crossOrigin='anonymous';
+     const timer=setTimeout(()=>{script.remove();reject(new Error('Máy chủ tải thư viện phản hồi quá chậm.'));},20000);
+     script.onload=()=>{clearTimeout(timer);window.Tesseract?resolve():reject(new Error('Thư viện đã tải nhưng chưa khởi tạo.'));};
+     script.onerror=()=>{clearTimeout(timer);script.remove();reject(new Error('Không truy cập được '+(url.includes('jsdelivr')?'jsDelivr':'unpkg')+'.'));};
+     document.head.appendChild(script);
+    });
+    return window.Tesseract;
+   }catch(err){lastError=err;}
+  }
+  throw new Error((lastError?.message||'Không tải được Tesseract.js')+' Hãy kiểm tra kết nối Internet hoặc thử lại sau.');
+ })().catch(err=>{ocrLoadPromise=null;throw err;});
  return ocrLoadPromise;
+}
+const OCR_PROVIDERS=[
+ {name:'jsDelivr',workerPath:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/worker.min.js',langPath:'https://cdn.jsdelivr.net/npm/@tesseract.js-data/chi_sim@1.0.0/4.0.0_best_int'},
+ {name:'unpkg',workerPath:'https://unpkg.com/tesseract.js@5.1.1/dist/worker.min.js',langPath:'https://unpkg.com/@tesseract.js-data/chi_sim@1.0.0/4.0.0_best_int'}
+];
+function updateOcrProgress(message,provider){
+ const box=$('ocr-progress'),fill=$('ocr-progress-fill');
+ if(!box||!fill)return;
+ box.hidden=false;
+ const status=String(message?.status||'');
+ const progress=Number(message?.progress);
+ if(Number.isFinite(progress)&&progress>=0){
+  const pct=Math.max(0,Math.min(100,Math.round(progress*100)));
+  box.setAttribute('aria-valuenow',String(pct));
+  fill.classList.toggle('indeterminate',pct===0);
+  if(pct>0)fill.style.width=pct+'%';else fill.style.width='35%';
+ }else{
+  fill.classList.add('indeterminate');fill.style.width='35%';
+ }
+ const statusVi={
+  'loading tesseract core':'Đang tải bộ máy OCR',
+  'initializing tesseract':'Đang khởi tạo bộ máy OCR',
+  'loading language traineddata':'Đang tải dữ liệu nhận dạng chữ Trung',
+  'initializing api':'Đang chuẩn bị nhận diện chữ',
+  'recognizing text':'Đang đọc chữ trong ảnh',
+  'loading image':'Đang đọc tệp ảnh'
+ }[status]||status||'Đang chuẩn bị nhận diện';
+ const pctText=Number.isFinite(progress)&&progress>0?' · '+Math.round(progress*100)+'%':'';
+ const hostText=provider?' ('+provider+')':'';
+ const extra=status==='loading language traineddata'?' · lần đầu có thể tải dữ liệu vài MB và cần chờ một lúc':'';
+ $('ocr-status').textContent=statusVi+hostText+pctText+extra+'. Không đóng trang trong khi xử lý.';
+}
+async function createOcrWorkerWithFallback(T){
+ let lastError=null;
+ for(let i=0;i<OCR_PROVIDERS.length;i++){
+  const cfg=OCR_PROVIDERS[i];
+  $('ocr-status').textContent='Đang khởi tạo OCR qua '+cfg.name+' (nguồn '+(i+1)+'/'+OCR_PROVIDERS.length+').';
+  let workerPromise;
+  try{
+   workerPromise=T.createWorker('chi_sim',1,{
+    workerPath:cfg.workerPath,
+    langPath:cfg.langPath,
+    cachePath:'bvt-tesseract-v5-zh',
+    cacheMethod:'write',
+    gzip:true,
+    logger:m=>updateOcrProgress(m,cfg.name),
+    errorHandler:err=>{if(err)console.warn('Tesseract worker:',err);}
+   });
+   let timeoutId;
+   const timeoutPromise=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('Nguồn '+cfg.name+' không phản hồi trong 75 giây.')),75000);});
+   let worker;
+   try{worker=await Promise.race([workerPromise,timeoutPromise]);}
+   catch(err){
+    if(String(err?.message||'').includes('75 giây'))workerPromise.then(w=>w?.terminate?.()).catch(()=>{});
+    throw err;
+   }finally{clearTimeout(timeoutId);}
+   return worker;
+  }catch(err){
+   lastError=err;
+   $('ocr-status').textContent='Nguồn '+cfg.name+' chưa khởi tạo được OCR: '+(err?.message||String(err))+'. Đang thử máy chủ dự phòng…';
+  }
+ }
+ throw new Error('Không thể khởi tạo bộ nhận diện từ cả hai nguồn. '+(lastError?.message||'')+' Hãy thử đổi mạng Wi-Fi/4G hoặc thử lại sau.');
 }
 $('combine-image-input').addEventListener('change',e=>{
  const file=e.target.files&&e.target.files[0];if(!file)return;
@@ -1328,31 +1419,49 @@ $('combine-image-input').addEventListener('change',e=>{
  if(ocrCurrentObjectUrl)URL.revokeObjectURL(ocrCurrentObjectUrl);
  ocrCurrentObjectUrl=URL.createObjectURL(file);
  $('ocr-image-preview').src=ocrCurrentObjectUrl;$('ocr-image-preview').hidden=false;$('ocr-run-button').disabled=false;
+ $('ocr-progress').hidden=true;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
  $('ocr-status').className='source-status';$('ocr-status').textContent='Đã chọn ảnh: '+file.name+'. Bấm “Quét chữ trong ảnh” để nhận diện chữ Hán.';
 });
 $('ocr-run-button').addEventListener('click',async()=>{
  if(!ocrCurrentFile){toast('Hãy chọn ảnh trước.');return;}
  const btn=$('ocr-run-button');btn.disabled=true;$('ocr-segment-button').disabled=true;
- $('ocr-status').className='source-status';$('ocr-status').textContent='Đang tải công cụ nhận dạng chữ Trung… Lần đầu có thể cần tải dữ liệu ngôn ngữ.';
  let worker=null;
+ $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.add('indeterminate');$('ocr-progress-fill').style.width='35%';$('ocr-progress').setAttribute('aria-valuenow','0');
+ $('ocr-status').className='source-status';$('ocr-status').textContent='Bước 1/3: đang tải thư viện và dữ liệu nhận dạng chữ Trung. Lần đầu cần Internet; nếu máy chủ lỗi, ứng dụng sẽ tự thử nguồn dự phòng.';
  try{
   const T=await loadTesseractScript();
-  worker=await T.createWorker('chi_sim',1,{langPath:'https://tessdata.projectnaptha.com/4.0.0',logger:m=>{
-   if(!m||!m.status)return;
-   const pct=typeof m.progress==='number'?' '+Math.round(m.progress*100)+'%':'';
-   $('ocr-status').textContent='Đang quét ảnh: '+m.status+pct+'.';
-  }});
+  worker=await createOcrWorkerWithFallback(T);
+  $('ocr-status').textContent='Bộ nhận diện đã sẵn sàng. Đang chuẩn bị ảnh…';
+  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='5%';$('ocr-progress').setAttribute('aria-valuenow','5');
   let source=ocrCurrentFile;
   try{
-   if(window.createImageBitmap){const bmp=await createImageBitmap(ocrCurrentFile);const maxDim=1900;let canvas=null;if(Math.max(bmp.width,bmp.height)>maxDim){const ratio=maxDim/Math.max(bmp.width,bmp.height);canvas=document.createElement('canvas');canvas.width=Math.round(bmp.width*ratio);canvas.height=Math.round(bmp.height*ratio);canvas.getContext('2d').drawImage(bmp,0,0,canvas.width,canvas.height);source=await new Promise(resolve=>canvas.toBlob(blob=>resolve(blob||ocrCurrentFile),'image/jpeg',.9));}bmp.close?.();}
-  }catch(_){source=ocrCurrentFile;}
+   if(window.createImageBitmap){
+    const bmp=await createImageBitmap(ocrCurrentFile);const maxDim=1800;
+    if(Math.max(bmp.width,bmp.height)>maxDim){
+     const ratio=maxDim/Math.max(bmp.width,bmp.height);const canvas=document.createElement('canvas');
+     canvas.width=Math.round(bmp.width*ratio);canvas.height=Math.round(bmp.height*ratio);
+     const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Không thể xử lý ảnh trên thiết bị này.');
+     ctx.drawImage(bmp,0,0,canvas.width,canvas.height);
+     source=await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Không chuyển đổi được ảnh.')),'image/jpeg',.9));
+    }
+    bmp.close?.();
+   }
+  }catch(err){console.warn('Không thu nhỏ được ảnh, dùng ảnh gốc:',err);source=ocrCurrentFile;}
+  $('ocr-status').textContent='Bước 3/3: đang nhận diện chữ Trung trong ảnh…';
   const result=await worker.recognize(source);
   const recognized=String(result?.data?.text||'').trim();
+  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='100%';$('ocr-progress').setAttribute('aria-valuenow','100');
   $('ocr-recognized-text').value=recognized;
-  if(!recognized){detectedOcrWords=[];renderOcrWords();$('ocr-status').className='source-status error';$('ocr-status').textContent='OCR chưa nhận diện được chữ. Hãy dùng ảnh rõ hơn, chụp thẳng mặt giấy, tăng ánh sáng hoặc thử dán/sửa văn bản thủ công.';}
-  else{$('ocr-status').className='source-status ok';$('ocr-status').textContent='Đã nhận dạng xong. Đang tách từ từ văn bản; hãy rà soát kết quả trước khi đưa vào danh sách.';segmentCurrentOcrText();}
- }catch(err){$('ocr-status').className='source-status error';$('ocr-status').textContent='Không quét được ảnh: '+(err?.message||String(err))+'. Bạn vẫn có thể dán chữ Hán vào ô văn bản rồi bấm “Tách từ từ nội dung”.';}
- finally{try{await worker?.terminate?.();}catch(_){}btn.disabled=!ocrCurrentFile;$('ocr-segment-button').disabled=false;}
+  if(!recognized){detectedOcrWords=[];renderOcrWords();$('ocr-status').className='source-status error';$('ocr-status').textContent='Đã quét xong nhưng chưa nhận diện được chữ. Hãy chụp thẳng mặt giấy, tăng ánh sáng, tránh lóa hoặc dán/sửa văn bản thủ công.';}
+  else{$('ocr-status').className='source-status ok';$('ocr-status').textContent='Đã nhận diện xong chữ trong ảnh. Đang tách từ trong từ điển; hãy kiểm tra kết quả trước khi thêm vào danh sách.';segmentCurrentOcrText();}
+ }catch(err){
+  $('ocr-status').className='source-status error';
+  $('ocr-status').textContent='Quét ảnh thất bại: '+(err?.message||String(err))+'. Bạn vẫn có thể dán chữ Hán vào ô văn bản rồi bấm “Tách từ từ nội dung”.';
+  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
+ }finally{
+  try{await worker?.terminate?.();}catch(_){}
+  btn.disabled=!ocrCurrentFile;$('ocr-segment-button').disabled=false;
+ }
 });
 $('ocr-segment-button').addEventListener('click',segmentCurrentOcrText);
 $('ocr-recognized-text').addEventListener('input',()=>{ $('ocr-status').className='source-status';$('ocr-status').textContent='Nội dung đã thay đổi. Bấm “Tách từ từ nội dung” để cập nhật danh sách từ.'; });
