@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#b91c1c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="description" content="Từ điển Trung–Việt, ghép câu và luyện tiếng Trung trên điện thoại.">
+<meta name="description" content="Từ điển Trung–Việt, nhận từ từ ảnh, ghép câu và luyện phản xạ tiếng Trung.">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <title>Học Tiếng Trung · Trung Việt</title>
@@ -54,6 +54,27 @@
 @media(max-width:520px){input,select,textarea,.field{font-size:16px}.field.small{font-size:14px}.stroke-dialog{max-height:calc(100vh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}}
 
 .read-search-panel{margin:10px 0 12px;padding:11px;border:1px solid var(--line);border-radius:13px;background:#fff}.read-search-title{font-size:12px;font-weight:800;margin:0 0 7px}.read-search-status{font-size:11px;color:var(--muted);line-height:1.45;margin:6px 0 0}.read-result-heading{font-size:11px;font-weight:800;color:#667085;padding:7px 7px 4px}.read-result-hanzi{font-size:19px;font-weight:850;white-space:nowrap}.read-result-meta{flex:1;min-width:0}.read-result-meta small{display:block;font-size:11px;color:var(--muted);line-height:1.4;margin-top:3px;overflow-wrap:anywhere}.read-result-cta{font-size:10px;font-weight:800;color:var(--red);white-space:nowrap}.read-search-panel .field{min-width:0}
+
+/* Image OCR and reflex conversation practice */
+.ocr-card .file-input-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.ocr-preview{display:block;max-width:100%;max-height:360px;object-fit:contain;margin:10px auto 0;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+.ocr-text{min-height:96px;resize:vertical;margin-top:9px;line-height:1.5}
+.ocr-word-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.ocr-word-item{display:flex;align-items:flex-start;gap:8px;border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff;min-width:0}
+.ocr-word-item input{margin-top:4px;flex:0 0 auto;accent-color:var(--red)}
+.ocr-word-item .ocr-word-main{min-width:0;flex:1}
+.ocr-word-item b{font-size:19px;overflow-wrap:anywhere}
+.ocr-word-item small{display:block;font-size:10px;color:var(--muted);line-height:1.4;overflow-wrap:anywhere;margin-top:2px}
+.reflex-card{border:1px solid #f0c2c2}
+.reflex-card .question{margin:12px 0 5px}
+.reflex-question-box{padding:12px;border-radius:13px;background:#fff7f7;border:1px solid #fecaca;margin-top:12px}
+.reflex-prompt-vi{font-size:13px;line-height:1.5;color:#475467;text-align:center;margin-top:5px}
+.reflex-input-label{display:block;font-size:12px;font-weight:750;color:#475467;margin:12px 0 6px}
+.reflex-controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.reflex-controls .btn{flex:1 1 auto}
+.reflex-status{font-size:12px;line-height:1.5;color:var(--muted);margin-top:8px}
+@media(max-width:520px){.ocr-word-grid{grid-template-columns:1fr}.reflex-controls .btn{min-width:42%}.reflex-card .question{font-size:24px}}
+
 </style>
 </head>
 <body>
@@ -142,7 +163,55 @@
   <p class="smallprint" id="combine-save-status" aria-live="polite" style="margin:9px 0 0">Danh sách từ tự động lưu trên trình duyệt/thiết bị này và sẽ được khôi phục khi bạn mở lại cùng địa chỉ ứng dụng.</p>
   <button class="btn full" id="make-sentences" style="margin-top:13px">✨ Tạo câu có nghĩa</button>
  </div>
+ <div class="card ocr-card">
+  <h3 class="section-title">📷 Lấy từ vựng từ ảnh hoặc chụp bằng điện thoại</h3>
+  <p class="subtle" style="margin:0 0 10px">Chọn ảnh chụp bài học/sách tiếng Trung hoặc mở camera. Sau khi quét, kiểm tra văn bản và tích chọn những từ đúng trước khi thêm vào danh sách ghép câu.</p>
+  <div class="row wrap">
+   <label for="combine-image-input" class="btn">📷 Chọn ảnh / chụp ảnh</label>
+   <input id="combine-image-input" class="file-input-hidden" type="file" accept="image/*" capture="environment">
+   <button id="ocr-run-button" class="btn secondary" type="button" disabled>🔎 Quét chữ trong ảnh</button>
+   <button id="ocr-segment-button" class="btn outline" type="button">✂️ Tách từ từ nội dung</button>
+  </div>
+  <img id="ocr-image-preview" class="ocr-preview" alt="Ảnh dùng để trích xuất từ vựng" hidden>
+  <div id="ocr-status" class="source-status" role="status" aria-live="polite">Chọn một ảnh có chữ Hán. Lần đầu quét cần Internet để tải công cụ OCR và dữ liệu nhận dạng tiếng Trung.</div>
+  <label class="reflex-input-label" for="ocr-recognized-text">Văn bản nhận diện (có thể sửa trước khi tách từ)</label>
+  <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ ảnh sẽ hiện ở đây. Bạn cũng có thể dán văn bản tiếng Trung vào ô này rồi bấm Tách từ."></textarea>
+  <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
+  <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
+  <button id="ocr-add-selected" class="btn full" type="button" style="margin-top:11px" disabled>＋ Thêm các từ đã tích vào danh sách ghép câu</button>
+  <p class="smallprint" style="margin:8px 0 0">OCR chạy trong trình duyệt bằng Tesseract.js; ảnh không được gửi đến API AI của ứng dụng. Kết quả có thể sai với chữ viết tay, ảnh mờ hoặc chữ quá nhỏ, vì vậy hãy kiểm tra và bỏ tích các từ nhận diện nhầm. OCR cần Internet ở lần tải công cụ/dữ liệu đầu tiên.</p>
+ </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div></div>
+ <div class="card reflex-card" id="reflex-card">
+  <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ hỏi – đáp</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
+  <p class="subtle" style="margin:7px 0 10px">Tạo các lượt hỏi–đáp từ những từ bạn đã chọn. Mỗi lượt chỉ dùng từ trong danh sách đó; câu hỏi được xáo trộn để luyện nhiều vòng.</p>
+  <div class="mode-row" id="reflex-mode-row">
+   <button type="button" class="mode-btn active" data-reflex-mode="write">✍️ Phản xạ viết</button>
+   <button type="button" class="mode-btn" data-reflex-mode="speak">🎙️ Phản xạ nói</button>
+  </div>
+  <div class="reflex-controls">
+   <button id="reflex-start-button" class="btn" type="button">🌀 Tạo bài hỏi–đáp ngẫu nhiên</button>
+   <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 Xáo trộn câu hỏi</button>
+  </div>
+  <div id="reflex-session" hidden>
+   <div class="row between wrap" style="margin-top:13px"><span id="reflex-progress" class="pill">Câu 1/1</span><button id="reflex-play-question" class="btn secondary tiny" type="button">🔊 AI đọc câu hỏi</button></div>
+   <div class="reflex-question-box">
+    <p class="smallprint" id="reflex-question-label" style="text-align:center;margin:0">AI hỏi bằng tiếng Trung</p>
+    <div class="question" id="reflex-question-zh">你累吗？</div>
+    <div class="reflex-prompt-vi" id="reflex-question-vi">Bạn có mệt không?</div>
+   </div>
+   <label class="reflex-input-label" for="reflex-answer-input" id="reflex-answer-label">Bạn hãy trả lời bằng chữ Hán</label>
+   <input id="reflex-answer-input" class="field" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập câu trả lời bằng chữ Hán…">
+   <div class="reflex-controls">
+    <button id="reflex-mic-button" class="btn outline" type="button" hidden>🎙️ Trả lời bằng micro</button>
+    <button id="reflex-check-button" class="btn" type="button">Kiểm tra câu trả lời</button>
+    <button id="reflex-next-button" class="btn secondary" type="button" hidden>Câu tiếp theo →</button>
+   </div>
+   <div id="reflex-feedback" class="result" hidden aria-live="polite"></div>
+  </div>
+  <p id="reflex-status" class="reflex-status" role="status" aria-live="polite">Hãy chọn từ và bấm “Tạo câu có nghĩa” trước. Nếu bộ từ đủ tạo hỏi–đáp, bài luyện sẽ được tạo từ danh sách đó.</p>
+  <p class="smallprint" style="margin:8px 0 0">Phần hỏi–đáp này dùng bộ mẫu ngữ pháp có kiểm soát, không phải mô hình AI tạo sinh trực tuyến. Nhận diện giọng nói tùy trình duyệt/thiết bị; một số trình duyệt gửi âm thanh đến dịch vụ nhận dạng của nhà cung cấp và cần Internet.</p>
+ </div>
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
 </main>
@@ -226,6 +295,18 @@ let drawing = false;
 let lastPoint = null;
 let toastTimer = null;
 let hskMap = new Map();
+let ocrCurrentFile = null;
+let ocrCurrentObjectUrl = '';
+let ocrLoadPromise = null;
+let ocrLexiconMap = null;
+let ocrLexiconLengths = [];
+let detectedOcrWords = [];
+let reflexMode = 'write';
+let reflexAllPairs = [];
+let reflexQueue = [];
+let reflexIndex = 0;
+let reflexCurrentPair = null;
+let reflexHasAnswered = false;
 
 // Curated, genuine common vocabulary used immediately before the full CVDICT data loads.
 const seed = [
@@ -334,7 +415,7 @@ function searchScoreForRow(i,q){
  // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
  return best;
 }
-function setDictionary(rows,sourceName){dictionary=rows;searchIndex=dictionary.map(makeSearchRecord);$('count-pill').textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';$('dict-result-count').textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';$('dict-source-badge').textContent=sourceName;$('top-status').textContent=sourceName==='CVDICT đã lưu'?'Từ điển đã lưu trên thiết bị':'Tra từ · học ngữ pháp · luyện đọc';applyFilter();renderCombineChoices();}
+function setDictionary(rows,sourceName){dictionary=rows;ocrLexiconMap=null;ocrLexiconLengths=[];searchIndex=dictionary.map(makeSearchRecord);$('count-pill').textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';$('dict-result-count').textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';$('dict-source-badge').textContent=sourceName;$('top-status').textContent=sourceName==='CVDICT đã lưu'?'Từ điển đã lưu trên thiết bị':'Tra từ · học ngữ pháp · luyện đọc';applyFilter();renderCombineChoices();}
 function idbOpen(){return new Promise((resolve,reject)=>{if(!('indexedDB'in window))return reject(Error('IndexedDB không khả dụng'));const req=indexedDB.open('trung-viet-study',1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('dictionary'))db.createObjectStore('dictionary');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Không mở được IndexedDB'));req.onblocked=()=>reject(Error('IndexedDB đang bị một tab khác giữ mở'));});}
 async function idbGet(){const db=await idbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('dictionary','readonly'),req=tx.objectStore('dictionary').get('rows');req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();});}
 async function idbPut(rows){const db=await idbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('dictionary','readwrite');tx.objectStore('dictionary').put(rows,'rows');tx.oncomplete=()=>{db.close();resolve(true);};tx.onerror=()=>{const e=tx.error;db.close();reject(e||Error('Không lưu được dữ liệu'));};});}
@@ -503,11 +584,11 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
 function entryForWord(word){return dictionary.find(r=>r[0]===word||r[1]===word)||null;}
 function defaultRole(simp){return roleHints[simp]||'auto';}
 function addToCombine(index){const row=dictionary[index];if(!row)return;addCombineRow(row);}
-function addCombineRow(row){const simp=row[0];if(selectedCombine.has(simp)){toast('Từ này đã được chọn.');return;}selectedCombine.set(simp,{row:row,role:defaultRole(simp)});saveSelectedCombine();$('combine-search').value='';renderSelected();renderCombineChoices();toast('Đã thêm '+simp+' vào danh sách ghép câu.');}
+function addCombineRow(row){const simp=row[0];if(selectedCombine.has(simp)){toast('Từ này đã được chọn.');return;}selectedCombine.set(simp,{row:row,role:defaultRole(simp)});saveSelectedCombine();invalidateGeneratedSentences();$('combine-search').value='';renderSelected();renderCombineChoices();toast('Đã thêm '+simp+' vào danh sách ghép câu.');}
 $('combine-search').addEventListener('input',()=>renderCombineChoices());
 function renderCombineChoices(){const c=$('combine-choices');if(!c)return;const raw=$('combine-search').value.trim(),q=norm(raw);if(!q){c.hidden=true;c.innerHTML='';return;}const found=[];for(let i=0;i<dictionary.length;i++){const score=searchScoreForRow(i,q);if(score>0)found.push({i,score});}found.sort((a,b)=>b.score-a.score||a.i-b.i);const ids=found.slice(0,16).map(x=>x.i);c.hidden=false;if(!ids.length){c.innerHTML='<div class="empty">Không tìm thấy từ phù hợp. Hãy thử cách viết khác, từ đồng nghĩa hoặc chữ Hán.</div>';return;}c.innerHTML='';for(const i of ids){const r=dictionary[i];const btn=document.createElement('button');btn.type='button';btn.className='combine-suggestion';btn.dataset.combineAdd=String(i);btn.innerHTML=`<span class="suggestion-hanzi">${escapeHTML(r[0])}</span><span class="suggestion-meta"><span class="suggestion-pinyin">${escapeHTML(r[2])}</span><span class="suggestion-meaning">${escapeHTML(r[3])}</span></span><span class="suggestion-add">${selectedCombine.has(r[0])?'Đã chọn':'+ Chọn'}</span>`;btn.disabled=selectedCombine.has(r[0]);c.appendChild(btn);}}
-function renderSelected(){const c=$('selected-words');$('selected-count').textContent=selectedCombine.size;if(!selectedCombine.size){c.innerHTML='<div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div>';return;}c.innerHTML='';for(const [word,item] of selectedCombine){const chip=document.createElement('span');chip.className='selected-chip';chip.innerHTML=`<b>${escapeHTML(word)}</b><small>${escapeHTML(simpleGloss(item.row[3]))}</small><button type="button" data-remove-word="${escapeHTML(word)}" title="Bỏ từ ${escapeHTML(word)}" aria-label="Bỏ ${escapeHTML(word)}">×</button>`;c.appendChild(chip);}c.querySelectorAll('[data-remove-word]').forEach(btn=>btn.addEventListener('click',()=>{selectedCombine.delete(btn.dataset.removeWord);saveSelectedCombine();renderSelected();renderCombineChoices();}));}
-$('clear-selected').onclick=()=>{selectedCombine.clear();saveSelectedCombine();generatedSentences=[];renderSelected();renderCombineChoices();$('sentence-results').innerHTML='<div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div>';$('sentence-count').textContent='0 câu';};
+function renderSelected(){const c=$('selected-words');$('selected-count').textContent=selectedCombine.size;if(!selectedCombine.size){c.innerHTML='<div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div>';return;}c.innerHTML='';for(const [word,item] of selectedCombine){const chip=document.createElement('span');chip.className='selected-chip';chip.innerHTML=`<b>${escapeHTML(word)}</b><small>${escapeHTML(simpleGloss(item.row[3]))}</small><button type="button" data-remove-word="${escapeHTML(word)}" title="Bỏ từ ${escapeHTML(word)}" aria-label="Bỏ ${escapeHTML(word)}">×</button>`;c.appendChild(chip);}c.querySelectorAll('[data-remove-word]').forEach(btn=>btn.addEventListener('click',()=>{selectedCombine.delete(btn.dataset.removeWord);saveSelectedCombine();invalidateGeneratedSentences();renderSelected();renderCombineChoices();}));}
+$('clear-selected').onclick=()=>{selectedCombine.clear();saveSelectedCombine();invalidateGeneratedSentences();renderSelected();renderCombineChoices();};
 function effectiveRole(item){return item.role==='auto'?defaultRole(item.row[0]):item.role;}
 function rowForToken(word){const row=entryForWord(word);return row||[word,word,pinyinMap[word]||'',viMap[word]||word,''];}
 function token(word){const chosen=selectedCombine.get(word);const r=chosen?.row||rowForToken(word);return {zh:r[0],py:r[2]||pinyinMap[word]||'',vi:viMap[word]||simpleGloss(r[3])||word,selected:selectedCombine.has(word)};}
@@ -821,7 +902,7 @@ function buildSentences(){
  sentences.sort((a,b)=>b.words.length-a.words.length||a.priority-b.priority||a.zh.length-b.zh.length);
  return sentences.slice(0,12).map(({priority,...rest})=>rest);
 }
-$('make-sentences').onclick=()=>{generatedSentences=buildSentences();$('sentence-count').textContent=generatedSentences.length+' câu';const c=$('sentence-results');if(!generatedSentences.length){c.innerHTML='<div class="empty" style="margin-top:10px"><b>Chưa tìm được câu chắc chắn đúng từ các từ đã chọn.</b><br>Bộ ghép câu chỉ dùng các mẫu ngữ pháp và kết hợp từ thông dụng đã được kiểm soát. Nếu các từ chưa tạo thành câu tự nhiên, ứng dụng sẽ không đoán hoặc tự thêm từ. Hãy thử chọn thêm chủ ngữ, động từ/tính từ, tân ngữ hoặc trợ từ phù hợp.</div>';return;}c.innerHTML='';generatedSentences.forEach((s,i)=>{const div=document.createElement('article');div.className='sent-card';div.innerHTML=`<div class="row between"><span class="pill">Câu ${i+1}</span><button class="iconbtn" data-speak="${escapeHTML(s.zh.replace(/[。！？]/g,''))}" aria-label="Nghe câu">🔊</button></div><div class="chinese">${escapeHTML(s.zh)}</div><div class="meta">${escapeHTML(s.py||'Pinyin chưa có cho mọi từ')}</div><div class="translation">${escapeHTML(s.vi)}</div><p class="smallprint">Từ đã dùng: ${s.words.map(w=>escapeHTML(w)).join(' + ')}.</p><p class="smallprint">${escapeHTML(s.reason)}</p><div class="sent-actions"><button class="btn tiny" data-practice-sentence="${i}" data-kind="vi-zh">Luyện Việt → Trung</button><button class="btn outline tiny" data-practice-sentence="${i}" data-kind="zh-vi">Luyện Trung → Việt</button><button class="btn secondary tiny" data-practice-sentence="${i}" data-kind="read">Luyện đọc câu</button></div>`;c.appendChild(div);});c.querySelectorAll('[data-practice-sentence]').forEach(b=>b.onclick=()=>{const s=generatedSentences[Number(b.dataset.practiceSentence)];if(s){currentCustomSentence=s;practiceReturnTab='combine';practiceMode=b.dataset.kind;practiceChecked=false;sessionDone=0;sessionCorrect=0;updateModeButtons();loadPractice();switchTab('practice');}});};
+$('make-sentences').onclick=()=>{generatedSentences=buildSentences();refreshReflexDeck(true);$('sentence-count').textContent=generatedSentences.length+' câu';const c=$('sentence-results');if(!generatedSentences.length){c.innerHTML='<div class="empty" style="margin-top:10px"><b>Chưa tìm được câu chắc chắn đúng từ các từ đã chọn.</b><br>Bộ ghép câu chỉ dùng các mẫu ngữ pháp và kết hợp từ thông dụng đã được kiểm soát. Nếu các từ chưa tạo thành câu tự nhiên, ứng dụng sẽ không đoán hoặc tự thêm từ. Hãy thử chọn thêm chủ ngữ, động từ/tính từ, tân ngữ hoặc trợ từ phù hợp.</div>';return;}c.innerHTML='';generatedSentences.forEach((s,i)=>{const div=document.createElement('article');div.className='sent-card';div.innerHTML=`<div class="row between"><span class="pill">Câu ${i+1}</span><button class="iconbtn" data-speak="${escapeHTML(s.zh.replace(/[。！？]/g,''))}" aria-label="Nghe câu">🔊</button></div><div class="chinese">${escapeHTML(s.zh)}</div><div class="meta">${escapeHTML(s.py||'Pinyin chưa có cho mọi từ')}</div><div class="translation">${escapeHTML(s.vi)}</div><p class="smallprint">Từ đã dùng: ${s.words.map(w=>escapeHTML(w)).join(' + ')}.</p><p class="smallprint">${escapeHTML(s.reason)}</p><div class="sent-actions"><button class="btn tiny" data-practice-sentence="${i}" data-kind="vi-zh">Luyện Việt → Trung</button><button class="btn outline tiny" data-practice-sentence="${i}" data-kind="zh-vi">Luyện Trung → Việt</button><button class="btn secondary tiny" data-practice-sentence="${i}" data-kind="read">Luyện đọc câu</button></div>`;c.appendChild(div);});c.querySelectorAll('[data-practice-sentence]').forEach(b=>b.onclick=()=>{const s=generatedSentences[Number(b.dataset.practiceSentence)];if(s){currentCustomSentence=s;practiceReturnTab='combine';practiceMode=b.dataset.kind;practiceChecked=false;sessionDone=0;sessionCorrect=0;updateModeButtons();loadPractice();switchTab('practice');}});};
 function updateModeButtons(){
  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===practiceMode));
  const labels={'vi-zh':'Hãy dịch nghĩa tiếng Việt sang tiếng Trung.','zh-vi':'Hãy dịch câu tiếng Trung sang tiếng Việt.','write':'Tìm từ cần viết, xem mẫu nét bên trái rồi viết/chấm thứ tự nét bên phải.','read':'Tìm từ hoặc câu bạn muốn luyện; chọn nội dung rồi nghe mẫu và đọc theo.'};
@@ -1150,6 +1231,261 @@ function clearCanvas(){if(!canvasContext)return;const c=$('writing-canvas');canv
 function drawTrace(){if(!canvasContext)return;const c=$('writing-canvas');canvasContext.clearRect(0,0,c.width,c.height);if(showTrace&&traceChar){canvasContext.save();canvasContext.fillStyle='#e4e7ec';canvasContext.textAlign='center';canvasContext.textBaseline='middle';canvasContext.font='300 260px "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", sans-serif';canvasContext.fillText([...traceChar][0]||'',c.width/2,c.height/2+12);canvasContext.restore();}}
 function drawLine(a,b){if(!canvasContext)return;canvasContext.save();canvasContext.strokeStyle='#202938';canvasContext.lineWidth=9;canvasContext.lineCap='round';canvasContext.lineJoin='round';canvasContext.beginPath();canvasContext.moveTo(a.x,a.y);canvasContext.lineTo(b.x,b.y);canvasContext.stroke();canvasContext.restore();}
 $('clear-canvas').onclick=clearCanvas;$('show-trace').onclick=()=>{showTrace=!showTrace;drawTrace();};initCanvas();
+
+function invalidateGeneratedSentences(){
+ generatedSentences=[];reflexAllPairs=[];reflexQueue=[];reflexCurrentPair=null;reflexIndex=0;reflexHasAnswered=false;
+ const sc=$('sentence-count'),sr=$('sentence-results'),pill=$('reflex-count-pill'),session=$('reflex-session'),shuffle=$('reflex-shuffle-button'),status=$('reflex-status');
+ if(sc)sc.textContent='0 câu';
+ if(sr)sr.innerHTML='<div class="empty" style="margin-top:10px">Danh sách từ đã thay đổi. Bấm “Tạo câu có nghĩa” để tạo lại câu và bài phản xạ.</div>';
+ if(pill)pill.textContent='Chưa có bài';if(session)session.hidden=true;if(shuffle)shuffle.disabled=true;
+ if(status)status.textContent='Danh sách từ vừa thay đổi; hãy tạo lại câu để bài phản xạ không dùng dữ liệu cũ.';
+}
+// ===== Image OCR: extract Chinese words locally, then let the learner select terms =====
+const OCR_ATOMIC_WORDS = new Set(('我 你 您 他 她 它 我们 你们 他们 她们 不 没 没有 是 有 吗 呢 了 的 很 也 都 在 和 爱 想 要 会 能 可以 喜欢 学习 工作 说 听 看 读 写 吃 喝 买 卖 去 来 回 做 住 坐 认识 知道 帮助 问 回答 告诉 给 找 等 开 关 今天 明天 昨天 现在 每天 中文 汉语 中国 北京 家 学校 医院 商店 饭店 书店 机场 水 茶 咖啡 米饭 苹果 水果 菜 东西 钱 书 手机 电脑 衣服 天气 音乐 电影 电视 爸爸 妈妈 老师 学生 同学 医生 朋友 孩子 累 冷 热 忙 高兴 好 大 小 多 少 漂亮 贵 便宜 快 慢 好吃').split(' '));
+function buildOcrLexicon(){
+ if(ocrLexiconMap)return;
+ const map=new Map(), lengths=new Set();
+ const add=(term,row)=>{
+  const n=[...String(term||'')].length;
+  if(!term||n<1||n>6||!/^[\u3400-\u9fff]+$/.test(term))return;
+  if(!map.has(term))map.set(term,row);
+  lengths.add(n);
+ };
+ for(const row of dictionary){add(row[0],row);if(row[1]!==row[0])add(row[1],row);}
+ ocrLexiconMap=map;ocrLexiconLengths=[...lengths].sort((a,b)=>b-a);
+}
+function ocrWordScore(term){
+ const n=[...term].length;
+ if(OCR_ATOMIC_WORDS.has(term))return 11+n*.35;
+ if(n===1)return roleHints[term]?5.1:0.4;
+ if(n===2)return 8.5+(roleHints[term]?0.6:0);
+ if(n===3)return 6.4;
+ if(n===4)return 5.8;
+ if(n===5)return 4.7;
+ return 3.4;
+}
+function segmentChineseRun(run){
+ buildOcrLexicon();
+ const chars=[...run],n=chars.length;
+ const dp=new Array(n+1);dp[n]={score:0,tokens:[]};
+ for(let i=n-1;i>=0;i--){
+  let best={score:dp[i+1].score-1.2,tokens:dp[i+1].tokens};
+  for(const len of ocrLexiconLengths){
+   if(len>6||i+len>n)continue;
+   const term=chars.slice(i,i+len).join('');
+   const row=ocrLexiconMap.get(term);if(!row)continue;
+   const score=ocrWordScore(term)+dp[i+len].score;
+   if(score>best.score){best={score,tokens:[{word:row[0],row}].concat(dp[i+len].tokens)};}
+  }
+  dp[i]=best;
+ }
+ return dp[0].tokens;
+}
+function tokenizeChineseText(text){
+ const blocks=String(text||'').match(/[\u3400-\u9fff]+/g)||[];
+ const counts=new Map(),ordered=[];
+ for(const block of blocks){
+  for(const item of segmentChineseRun(block)){
+   const key=item.word;
+   if(counts.has(key))counts.get(key).count++;
+   else{const entry={word:key,row:item.row,count:1,checked:true};counts.set(key,entry);ordered.push(entry);}
+  }
+ }
+ return ordered;
+}
+function renderOcrWords(){
+ const box=$('ocr-word-list');const count=$('ocr-word-count');const add=$('ocr-add-selected');
+ if(!detectedOcrWords.length){box.innerHTML='<div class="empty" style="grid-column:1/-1">Không tìm thấy từ tiếng Trung trong văn bản. Hãy kiểm tra/sửa nội dung nhận diện rồi thử lại.</div>';count.textContent='0 từ';add.disabled=true;return;}
+ box.innerHTML=detectedOcrWords.map((w,i)=>`<label class="ocr-word-item"><input type="checkbox" data-ocr-word-index="${i}" ${w.checked?'checked':''}><span class="ocr-word-main"><b>${escapeHTML(w.word)}</b><small>${escapeHTML(w.row[2]||'')} · ${escapeHTML(simpleGloss(w.row[3]))}${w.count>1?' · xuất hiện '+w.count+' lần':''}</small></span></label>`).join('');
+ count.textContent=detectedOcrWords.length+' từ nhận diện';add.disabled=!detectedOcrWords.some(w=>w.checked);
+ box.querySelectorAll('[data-ocr-word-index]').forEach(ch=>ch.addEventListener('change',()=>{const i=Number(ch.dataset.ocrWordIndex);if(detectedOcrWords[i])detectedOcrWords[i].checked=ch.checked;add.disabled=!detectedOcrWords.some(w=>w.checked);}));
+}
+function segmentCurrentOcrText(){
+ const raw=$('ocr-recognized-text').value.trim();
+ if(!raw){detectedOcrWords=[];renderOcrWords();$('ocr-status').className='source-status error';$('ocr-status').textContent='Chưa có văn bản để tách từ. Hãy quét ảnh hoặc dán văn bản tiếng Trung vào ô.';return;}
+ try{
+  detectedOcrWords=tokenizeChineseText(raw).slice(0,100);
+  renderOcrWords();
+  if(detectedOcrWords.length){$('ocr-status').className='source-status ok';$('ocr-status').textContent='Đã tách được '+detectedOcrWords.length+' từ/cụm từ khác nhau. Hãy bỏ tích những từ nhận diện sai rồi mới thêm vào danh sách ghép câu.';}
+  else{$('ocr-status').className='source-status error';$('ocr-status').textContent='Không phát hiện từ tiếng Trung có trong từ điển. Bạn có thể sửa nội dung OCR hoặc thử ảnh rõ hơn.';}
+ }catch(err){$('ocr-status').className='source-status error';$('ocr-status').textContent='Không thể phân tách nội dung: '+(err?.message||String(err));}
+}
+function loadTesseractScript(){
+ if(window.Tesseract)return Promise.resolve(window.Tesseract);
+ if(ocrLoadPromise)return ocrLoadPromise;
+ ocrLoadPromise=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';script.async=true;
+  script.onload=()=>window.Tesseract?resolve(window.Tesseract):reject(new Error('Thư viện OCR đã tải nhưng chưa sẵn sàng.'));
+  script.onerror=()=>reject(new Error('Không tải được công cụ OCR. Hãy kiểm tra Internet rồi thử lại.'));
+  document.head.appendChild(script);
+ }).catch(err=>{ocrLoadPromise=null;throw err;});
+ return ocrLoadPromise;
+}
+$('combine-image-input').addEventListener('change',e=>{
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!String(file.type||'').startsWith('image/')){toast('Hãy chọn tệp ảnh JPG, PNG, WebP hoặc ảnh được trình duyệt hỗ trợ.');return;}
+ ocrCurrentFile=file;
+ if(ocrCurrentObjectUrl)URL.revokeObjectURL(ocrCurrentObjectUrl);
+ ocrCurrentObjectUrl=URL.createObjectURL(file);
+ $('ocr-image-preview').src=ocrCurrentObjectUrl;$('ocr-image-preview').hidden=false;$('ocr-run-button').disabled=false;
+ $('ocr-status').className='source-status';$('ocr-status').textContent='Đã chọn ảnh: '+file.name+'. Bấm “Quét chữ trong ảnh” để nhận diện chữ Hán.';
+});
+$('ocr-run-button').addEventListener('click',async()=>{
+ if(!ocrCurrentFile){toast('Hãy chọn ảnh trước.');return;}
+ const btn=$('ocr-run-button');btn.disabled=true;$('ocr-segment-button').disabled=true;
+ $('ocr-status').className='source-status';$('ocr-status').textContent='Đang tải công cụ nhận dạng chữ Trung… Lần đầu có thể cần tải dữ liệu ngôn ngữ.';
+ let worker=null;
+ try{
+  const T=await loadTesseractScript();
+  worker=await T.createWorker('chi_sim',1,{langPath:'https://tessdata.projectnaptha.com/4.0.0',logger:m=>{
+   if(!m||!m.status)return;
+   const pct=typeof m.progress==='number'?' '+Math.round(m.progress*100)+'%':'';
+   $('ocr-status').textContent='Đang quét ảnh: '+m.status+pct+'.';
+  }});
+  let source=ocrCurrentFile;
+  try{
+   if(window.createImageBitmap){const bmp=await createImageBitmap(ocrCurrentFile);const maxDim=1900;let canvas=null;if(Math.max(bmp.width,bmp.height)>maxDim){const ratio=maxDim/Math.max(bmp.width,bmp.height);canvas=document.createElement('canvas');canvas.width=Math.round(bmp.width*ratio);canvas.height=Math.round(bmp.height*ratio);canvas.getContext('2d').drawImage(bmp,0,0,canvas.width,canvas.height);source=await new Promise(resolve=>canvas.toBlob(blob=>resolve(blob||ocrCurrentFile),'image/jpeg',.9));}bmp.close?.();}
+  }catch(_){source=ocrCurrentFile;}
+  const result=await worker.recognize(source);
+  const recognized=String(result?.data?.text||'').trim();
+  $('ocr-recognized-text').value=recognized;
+  if(!recognized){detectedOcrWords=[];renderOcrWords();$('ocr-status').className='source-status error';$('ocr-status').textContent='OCR chưa nhận diện được chữ. Hãy dùng ảnh rõ hơn, chụp thẳng mặt giấy, tăng ánh sáng hoặc thử dán/sửa văn bản thủ công.';}
+  else{$('ocr-status').className='source-status ok';$('ocr-status').textContent='Đã nhận dạng xong. Đang tách từ từ văn bản; hãy rà soát kết quả trước khi đưa vào danh sách.';segmentCurrentOcrText();}
+ }catch(err){$('ocr-status').className='source-status error';$('ocr-status').textContent='Không quét được ảnh: '+(err?.message||String(err))+'. Bạn vẫn có thể dán chữ Hán vào ô văn bản rồi bấm “Tách từ từ nội dung”.';}
+ finally{try{await worker?.terminate?.();}catch(_){}btn.disabled=!ocrCurrentFile;$('ocr-segment-button').disabled=false;}
+});
+$('ocr-segment-button').addEventListener('click',segmentCurrentOcrText);
+$('ocr-recognized-text').addEventListener('input',()=>{ $('ocr-status').className='source-status';$('ocr-status').textContent='Nội dung đã thay đổi. Bấm “Tách từ từ nội dung” để cập nhật danh sách từ.'; });
+$('ocr-add-selected').addEventListener('click',()=>{
+ const rows=detectedOcrWords.filter(w=>w.checked);if(!rows.length){toast('Hãy tích chọn ít nhất một từ.');return;}
+ let added=0,exists=0;
+ for(const item of rows){const row=item.row;const key=row[0];if(selectedCombine.has(key)){exists++;continue;}selectedCombine.set(key,{row,role:roleHints[key]||defaultRole(key)});added++;}
+ saveSelectedCombine();if(added)invalidateGeneratedSentences();renderSelected();renderCombineChoices();
+ $('ocr-status').className='source-status ok';$('ocr-status').textContent='Đã thêm '+added+' từ vào danh sách ghép câu'+(exists?' · bỏ qua '+exists+' từ đã có':'')+'. Danh sách tự lưu trên thiết bị.';
+ toast('Đã thêm '+added+' từ từ ảnh.');
+});
+
+// ===== Reflex practice: controlled Q&A templates generated only from selected words =====
+const REFLEX_ADJECTIVES={累:'mệt',冷:'lạnh',热:'nóng',忙:'bận'};
+const REFLEX_OBJECTS={
+ 喜欢:['苹果','咖啡','茶','中文','汉语','猫','狗','电影','音乐','书','水果','水'],
+ 吃:['苹果','米饭','菜','水果'],喝:['水','茶','咖啡'],
+};
+const REFLEX_PLACES=['家','学校','医院','商店','饭店','书店','机场','北京','中国'];
+function createReflexPairs(){
+ const has=w=>selectedCombine.has(w);const pairs=[];const seen=new Set();
+ const add=(qTokens,aTokens,qVi,aVi,kind='dialogue')=>{
+  if(!qTokens.length||!aTokens.length||!qTokens.concat(aTokens).every(has))return;
+  const qZh=qTokens.join('')+'？',aZh=aTokens.join('')+'。';const key=qZh+'|'+aZh;if(seen.has(key))return;seen.add(key);
+  pairs.push({qZh,aZh,qVi,aVi,kind,py:pinyinForChinese(aZh)});
+ };
+ // Personal states: 你…吗？ -> 我… / 我不…
+ if(has('我')&&has('你')&&has('吗')){
+  for(const [adj,meaning] of Object.entries(REFLEX_ADJECTIVES))if(has(adj)){
+   add(['你',adj,'吗'],['我',adj],`Bạn có ${meaning} không?`,`Tôi ${meaning}.`);
+   if(has('不'))add(['你',adj,'吗'],['我','不',adj],`Bạn có ${meaning} không?`,`Tôi không ${meaning}.`);
+  }
+  if(has('很')&&has('高兴'))add(['你','很','高兴','吗'],['我','很','高兴'],'Bạn có vui không?','Tôi rất vui.');
+  // Likes and preferences with common, semantically compatible objects.
+  for(const obj of REFLEX_OBJECTS['喜欢'])if(has('喜欢')&&has(obj)){
+   add(['你','喜欢',obj,'吗'],['我','喜欢',obj],`Bạn có thích ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi thích ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
+   if(has('不'))add(['你','喜欢',obj,'吗'],['我','不','喜欢',obj],`Bạn có thích ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi không thích ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
+  }
+  if(has('爱'))add(['你','爱','我','吗'],['我','爱','你'],'Bạn có yêu tôi không?','Tôi yêu bạn.');
+  for(const [verb,objects] of Object.entries({想吃:['苹果','米饭','菜','水果'],想喝:['水','茶','咖啡']})){
+   const parts=verb==='想吃'?['想','吃']:['想','喝'];
+   for(const obj of objects)if(parts.every(has)&&has(obj))add(['你',...parts,obj,'吗'],['我',...parts,obj],`Bạn có muốn ${parts[1]==='吃'?'ăn':'uống'} ${simpleGloss(token(obj).vi||obj).toLowerCase()} không?`,`Tôi muốn ${parts[1]==='吃'?'ăn':'uống'} ${simpleGloss(token(obj).vi||obj).toLowerCase()}.`);
+  }
+  for(const modal of ['会','能','可以'])for(const lang of ['中文','汉语'])if(has(modal)&&has('说')&&has(lang)){
+   const meaning=modal==='会'?'biết':modal==='能'?'có thể':'có thể';
+   add(['你',modal,'说',lang,'吗'],['我',modal,'说',lang],`Bạn ${meaning} nói tiếng Trung không?`,`Tôi ${meaning} nói tiếng Trung.`);
+  }
+  for(const lang of ['中文','汉语'])if(has('学习')&&has(lang))add(['你','学习',lang,'吗'],['我','学习',lang],`Bạn có học tiếng Trung không?`,'Tôi học tiếng Trung.');
+  if(has('认识'))add(['你','认识','我','吗'],['我','认识','你'],'Bạn có quen tôi không?','Tôi quen bạn.');
+  if(has('知道'))add(['你','知道','吗'],['我','知道'],'Bạn có biết không?','Tôi biết.');
+  if(has('工作'))add(['你','工作','吗'],['我','工作'],'Bạn có đi làm không?','Tôi đi làm.');
+  for(const place of REFLEX_PLACES)if(has('在')&&has(place))add(['你','在',place,'吗'],['我','在',place],`Bạn có đang ở ${simpleGloss(token(place).vi||token(place).row?.[3]||place).toLowerCase()} không?`,`Tôi ở ${simpleGloss(token(place).vi||token(place).row?.[3]||place).toLowerCase()}.`);
+  for(const place of REFLEX_PLACES.filter(p=>p!=='家'))if(has('去')&&has(place))add(['你','去',place,'吗'],['我','去',place],`Bạn có đi ${simpleGloss(token(place).vi||token(place).row?.[3]||place).toLowerCase()} không?`,`Tôi đi ${simpleGloss(token(place).vi||token(place).row?.[3]||place).toLowerCase()}.`);
+  for(const obj of ['钱','手机','电脑','书','猫','狗','苹果'])if(has('有')&&has(obj))add(['你','有',obj,'吗'],['我','有',obj],`Bạn có ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi có ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
+  for(const obj of REFLEX_OBJECTS['吃'])if(has('吃')&&has(obj))add(['你','吃',obj,'吗'],['我','吃',obj],`Bạn có ăn ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi ăn ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
+  for(const obj of REFLEX_OBJECTS['喝'])if(has('喝')&&has(obj))add(['你','喝',obj,'吗'],['我','喝',obj],`Bạn có uống ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi uống ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
+ }
+ // If there are generated sentences but the selected vocabulary cannot make a Q&A pair,
+ // offer a strict translation/shadowing drill from those same sentences as a fallback.
+ if(!pairs.length&&generatedSentences.length){
+  for(const s of generatedSentences){
+   const clean=String(s.zh||'').replace(/[。！？!?]+$/,'');if(!clean)continue;
+   pairs.push({qZh:'',aZh:clean+'。',qVi:'Hãy diễn đạt câu này bằng tiếng Trung: '+String(s.vi||'').replace(/[。！？!?]+$/,''),aVi:s.vi||'',kind:'translate',py:s.py||pinyinForChinese(clean)});
+  }
+ }
+ return pairs;
+}
+function shuffleArray(arr){const copy=arr.slice();for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
+function refreshReflexDeck(shuffle=true){
+ reflexAllPairs=createReflexPairs();reflexQueue=shuffle?shuffleArray(reflexAllPairs):reflexAllPairs.slice();reflexIndex=0;reflexHasAnswered=false;
+ $('reflex-count-pill').textContent=reflexQueue.length?reflexQueue.length+' lượt hỏi–đáp':'Chưa tạo được bài';
+ $('reflex-shuffle-button').disabled=!reflexQueue.length;
+ if(!reflexQueue.length){$('reflex-session').hidden=true;$('reflex-status').textContent='Chưa đủ từ để tạo câu hỏi và câu trả lời. Hãy chọn thêm các từ như 我, 你, 吗 cùng động từ/tính từ và tân ngữ phù hợp rồi bấm “Tạo câu có nghĩa”.';return;}
+ $('reflex-status').textContent='Đã tạo '+reflexQueue.length+' lượt. Bài chỉ dùng các từ đã chọn; sau mỗi lượt có thể sang câu kế hoặc xáo trộn cả bài.';
+ $('reflex-session').hidden=false;renderReflexQuestion(reflexMode==='speak');
+}
+function renderReflexQuestion(autoSpeak=false){
+ if(!reflexQueue.length){$('reflex-session').hidden=true;return;}
+ reflexCurrentPair=reflexQueue[reflexIndex];reflexHasAnswered=false;
+ const p=reflexCurrentPair;const echo=p.kind==='translate';
+ $('reflex-progress').textContent=`Câu ${reflexIndex+1}/${reflexQueue.length}`;
+ $('reflex-question-label').textContent=echo?'Câu luyện từ câu đã tạo':'AI hỏi bằng tiếng Trung';
+ $('reflex-question-zh').textContent=p.qZh||'Dịch câu sang tiếng Trung';
+ $('reflex-question-zh').hidden=echo;
+ $('reflex-question-vi').textContent=p.qVi||'';
+ $('reflex-answer-label').textContent=reflexMode==='speak'?'Hãy trả lời bằng tiếng Trung qua micro (hoặc nhập bên dưới)':'Hãy nhập câu trả lời bằng chữ Hán';
+ $('reflex-answer-input').value='';$('reflex-answer-input').placeholder=echo?'Nhập bản dịch bằng chữ Hán…':'Ví dụ: '+p.aZh.replace(/[。！？!?]+$/,'');
+ $('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
+ $('reflex-play-question').textContent=echo?'🔊 Nghe câu mẫu':'🔊 AI đọc câu hỏi';
+ $('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
+ if(autoSpeak){const voiceText=echo?p.aZh:p.qZh;speak(voiceText,$('reflex-play-question'));}
+}
+function normaliseReflexAnswer(s){return String(s||'').normalize('NFKC').replace(/[\s，,。.!！?？、；;：:“”"'‘’（）()\[\]{}]/g,'').trim();}
+function evaluateReflexAnswer(raw,source='typed'){
+ if(!reflexCurrentPair)return;
+ const p=reflexCurrentPair;const input=normaliseReflexAnswer(raw);const expected=normaliseReflexAnswer(p.aZh);
+ const result=$('reflex-feedback');result.hidden=false;
+ if(!input){result.className='result mid';result.textContent='Bạn chưa trả lời. Hãy nhập câu chữ Hán hoặc thử bấm micro.';return;}
+ reflexHasAnswered=true;$('reflex-check-button').hidden=true;$('reflex-next-button').hidden=false;
+ if(input===expected){result.className='result good';result.innerHTML='<b>✅ Chính xác!</b><br>Đáp án: <b>'+escapeHTML(p.aZh)+'</b><br>Pinyin: '+escapeHTML(pinyinForChinese(p.aZh)||p.py||'')+'<br>'+escapeHTML(p.aVi||'');}
+ else{result.className='result mid';result.innerHTML='<b>Chưa khớp hoàn toàn.</b><br>Bạn trả lời: '+escapeHTML(raw)+'<br>Đáp án mẫu: <b>'+escapeHTML(p.aZh)+'</b><br>Pinyin: '+escapeHTML(pinyinForChinese(p.aZh)||p.py||'')+'<br>Nghĩa: '+escapeHTML(p.aVi||'')+(source==='speech'?'<br>Nhận diện giọng nói có thể nhầm ký tự; có thể sửa câu đã nhận diện rồi kiểm tra lại.':'');}
+}
+function startReflexMicrophone(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){const box=$('reflex-feedback');box.hidden=false;box.className='result mid';box.textContent='Trình duyệt này không hỗ trợ nhận diện giọng nói qua micro trong trang. Bạn vẫn có thể nhập câu vào ô trả lời; hãy thử Chrome hoặc Safari đã cập nhật và cấp quyền microphone.';return;}
+ try{
+  speechRecognition=new SR();speechRecognition.lang='zh-CN';speechRecognition.interimResults=false;speechRecognition.maxAlternatives=3;recording=true;
+  const btn=$('reflex-mic-button');btn.disabled=true;btn.textContent='⏹️ Đang nghe…';
+  speechRecognition.onresult=e=>{const transcript=e.results?.[0]?.[0]?.transcript||'';$('reflex-answer-input').value=transcript;recording=false;btn.disabled=false;btn.textContent='🎙️ Thu câu trả lời';evaluateReflexAnswer(transcript,'speech');};
+  speechRecognition.onerror=e=>{recording=false;btn.disabled=false;btn.textContent='🎙️ Thu câu trả lời';const box=$('reflex-feedback');box.hidden=false;box.className='result mid';box.textContent=e.error==='not-allowed'?'Bạn chưa cấp quyền microphone. Hãy cấp quyền cho trang GitHub Pages rồi thử lại.':'Không nhận được giọng nói. Kiểm tra Internet/quyền microphone hoặc nhập câu bằng chữ Hán.';};
+  speechRecognition.onend=()=>{recording=false;btn.disabled=false;btn.textContent='🎙️ Thu câu trả lời';};speechRecognition.start();
+ }catch(e){recording=false;$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Thu câu trả lời';toast('Không thể bật microphone. Hãy mở ứng dụng qua HTTPS và kiểm tra quyền trình duyệt.');}
+}
+$('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+ reflexMode=btn.dataset.reflexMode;$('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+ $('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-answer-label').textContent=reflexMode==='speak'?'Hãy trả lời bằng tiếng Trung qua micro (hoặc nhập bên dưới)':'Hãy nhập câu trả lời bằng chữ Hán';
+ if(reflexQueue.length)renderReflexQuestion(reflexMode==='speak');
+}));
+$('reflex-start-button').addEventListener('click',()=>{
+ if(selectedCombine.size<2){toast('Hãy chọn ít nhất 2 từ trước khi tạo bài phản xạ.');return;}
+ if(!generatedSentences.length){generatedSentences=buildSentences();$('sentence-count').textContent=generatedSentences.length+' câu';}
+ refreshReflexDeck(true);
+});
+$('reflex-shuffle-button').addEventListener('click',()=>refreshReflexDeck(true));
+$('reflex-play-question').addEventListener('click',()=>{if(!reflexCurrentPair)return;const p=reflexCurrentPair;speak(p.kind==='translate'?p.aZh:p.qZh,$('reflex-play-question'));});
+$('reflex-mic-button').addEventListener('click',startReflexMicrophone);
+$('reflex-check-button').addEventListener('click',()=>evaluateReflexAnswer($('reflex-answer-input').value,'typed'));
+$('reflex-answer-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('reflex-check-button').hidden){e.preventDefault();evaluateReflexAnswer($('reflex-answer-input').value,'typed');}});
+$('reflex-next-button').addEventListener('click',()=>{
+ if(reflexIndex+1>=reflexQueue.length){$('reflex-status').textContent='🎉 Đã hoàn thành vòng '+reflexQueue.length+' lượt. Bấm “Xáo trộn câu hỏi” để luyện lại với thứ tự mới.';$('reflex-next-button').hidden=true;$('reflex-shuffle-button').disabled=false;return;}
+ reflexIndex++;renderReflexQuestion(reflexMode==='speak');
+});
+
 restoreSelectedCombine();renderSelected();
 updateStats();updateModeButtons();loadPractice();init();
 // Offline app shell caching is available when hosted on HTTPS (not when opened as a file:// URL).

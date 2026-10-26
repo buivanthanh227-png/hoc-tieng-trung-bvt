@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Học Tiếng Trung Trung–Việt",
   "short_name": "Học Trung",
-  "description": "Từ điển Trung–Việt, luyện tập, luyện viết và ghép câu.",
+  "description": "Từ điển Trung–Việt, lấy từ từ ảnh, ghép câu và luyện phản xạ.",
   "lang": "vi-VN",
   "start_url": "./index.html",
   "scope": "./",
