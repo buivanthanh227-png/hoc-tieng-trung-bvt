@@ -1968,14 +1968,16 @@ function clearReflexRecognitionTimers(){
  if(reflexRecognitionRestartTimer){clearTimeout(reflexRecognitionRestartTimer);reflexRecognitionRestartTimer=null;}
  if(reflexRecognitionStopTimer){clearTimeout(reflexRecognitionStopTimer);reflexRecognitionStopTimer=null;}
 }
-function disposeReflexRecognition(rec,abort=true){
+
+function detachReflexRecognition(rec, abortNative=false){
  if(!rec)return;
- // Detach callbacks before aborting: some mobile browsers deliver a delayed onend/onerror
- // after abort(), and those late callbacks must not affect the next question.
+ // Detach every event before releasing the object. Late callbacks from WebKit must not
+ // write into a later answer/question.
  rec.onstart=null;rec.onaudiostart=null;rec.onspeechstart=null;rec.onspeechend=null;
  rec.onresult=null;rec.onerror=null;rec.onend=null;
- if(abort){try{rec.abort();}catch(_){} }
+ if(abortNative){try{rec.abort();}catch(_){} }
 }
+
 function resetReflexMicButtons(){
  reflexRecording=false;
  const startBtn=$('reflex-mic-button');if(startBtn){startBtn.disabled=false;startBtn.textContent='🎙️ Bắt đầu thu âm';}
@@ -1983,12 +1985,14 @@ function resetReflexMicButtons(){
  const liveMic=$('reflex-live-mic');if(liveMic){liveMic.disabled=false;liveMic.classList.remove('recording');liveMic.textContent='🎙️';}
  const stopBtn=$('reflex-mic-stop-button');if(stopBtn){stopBtn.hidden=true;stopBtn.disabled=true;}
 }
+
 function resetSpeakingStateForNewQuestion(){
- // Each question owns a new generation. Any late callback from the previous generation is ignored.
+ // Invalidate the previous question before releasing its native recognizer. Every event
+ // captures a generation number, so delayed iOS/Android callbacks are ignored.
  reflexRecognitionSession++;
  clearReflexRecognitionTimers();
  const old=reflexRecognition;reflexRecognition=null;reflexRecording=false;reflexRecognitionStopRequested=true;
- disposeReflexRecognition(old,true);
+ detachReflexRecognition(old,true);
  reflexRecognitionTranscript='';reflexRecognitionLiveText='';reflexRecognitionSegmentFinal='';reflexRecognitionSegmentLive='';
  reflexRecognitionError='';reflexRecognitionEmptyEnds=0;reflexRecognitionSegments=0;
  resetReflexMicButtons();
@@ -1997,142 +2001,132 @@ function resetSpeakingStateForNewQuestion(){
  const liveTranscript=$('reflex-live-transcript');if(liveTranscript)liveTranscript.textContent='Đang chờ bạn nói…';
  const feedback=$('reflex-feedback');if(feedback){feedback.hidden=true;feedback.className='result';feedback.textContent='';}
 }
+
 function invalidateReflexRecognition(){resetSpeakingStateForNewQuestion();}
+
 function showReflexSpeechFailure(message){
  const recognized=$('reflex-speech-recognized');const recognizedText=$('reflex-speech-recognized-text');
- recognized.hidden=false;recognizedText.textContent=message;
- const feedback=$('reflex-feedback');feedback.hidden=false;feedback.className='result mid';feedback.textContent=message;
- // A recognition failure must never lock the lesson: typed answer and next-question flow stay available.
+ if(recognized)recognized.hidden=false;if(recognizedText)recognizedText.textContent=message;
+ const feedback=$('reflex-feedback');if(feedback){feedback.hidden=false;feedback.className='result mid';feedback.textContent=message;}
+ // A microphone failure never locks the exercise: typed checking remains available.
  $('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
 }
-function appendReflexSpeechSegment(text){
- const clean=String(text||'').replace(/\s+/g,' ').trim();if(!clean)return;
- const prior=reflexRecognitionTranscript.trim();
- if(!prior){reflexRecognitionTranscript=clean;return;}
- // Avoid duplicated cumulative results when a mobile engine repeats the final transcript.
- if(prior===clean||prior.endsWith(' '+clean)||prior.startsWith(clean))return;
- if(clean.startsWith(prior)){reflexRecognitionTranscript=clean;return;}
- const overlapMax=Math.min(prior.length,clean.length,32);let overlap=0;
- for(let n=overlapMax;n>0;n--){if(prior.slice(-n)===clean.slice(0,n)){overlap=n;break;}}
- reflexRecognitionTranscript=(prior+(overlap?clean.slice(overlap):' '+clean)).trim();
+
+function updateReflexLiveTranscript(text=''){
+ const value=String(text||'').replace(/\s+/g,' ').trim();
+ reflexRecognitionLiveText=value;
+ const el=$('reflex-live-transcript');if(el)el.textContent=value||'Đang nghe…';
 }
-function updateReflexLiveTranscript(extra=''){
- const pending=extra===null?reflexRecognitionSegmentLive:extra;
- const combined=[reflexRecognitionTranscript,pending].map(x=>String(x||'').trim()).filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
- reflexRecognitionLiveText=combined;
- const el=$('reflex-live-transcript');if(el)el.textContent=combined||'Đang nghe…';
-}
-function finishReflexRecognition(session){
+
+function finishReflexRecognition(session, rec=null, alreadyEnded=false){
  if(session!==reflexRecognitionSession)return;
  clearReflexRecognitionTimers();
- const lingering=reflexRecognition;reflexRecognition=null;
- // If the browser did not deliver onend after stop(), release the native object defensively.
- disposeReflexRecognition(lingering,true);
+ const current=rec||reflexRecognition;
+ if(reflexRecognition===current)reflexRecognition=null;
+ // Do not call abort() on a recognizer that has already emitted onend. On iOS this can
+ // disturb the native speech service just as the next question is about to start.
+ detachReflexRecognition(current,!alreadyEnded);
  reflexRecording=false;reflexRecognitionStopRequested=true;
- const transcript=(reflexRecognitionTranscript||reflexRecognitionLiveText||'').trim();
+ const transcript=String(reflexRecognitionTranscript||reflexRecognitionLiveText||'').trim();
  resetReflexMicButtons();
  if(transcript){
-  $('reflex-speech-recognized').hidden=false;$('reflex-speech-recognized-text').textContent=transcript;
-  $('reflex-live-transcript').textContent=transcript;
+  const recognized=$('reflex-speech-recognized');if(recognized)recognized.hidden=false;
+  const recognizedText=$('reflex-speech-recognized-text');if(recognizedText)recognizedText.textContent=transcript;
+  const live=$('reflex-live-transcript');if(live)live.textContent=transcript;
   evaluateReflexAnswer(transcript,'speech');
  }else{
-  const msg=reflexRecognitionError==='not-allowed'?'Bạn chưa cấp quyền microphone. Hãy cấp quyền cho trang GitHub Pages rồi thử lại.':reflexRecognitionError==='network'?'Dịch vụ nhận diện giọng nói gặp lỗi mạng. Kiểm tra Internet rồi thử lại.':reflexRecognitionError==='audio-capture'?'Không truy cập được micro. Kiểm tra quyền micro và thử lại.':reflexRecognitionError==='service-not-allowed'?'Trình duyệt hoặc dịch vụ hiện không cho phép nhận diện giọng nói. Hãy kiểm tra quyền micro hoặc thử lại sau.':reflexRecognitionError==='no-speech'?'Không phát hiện được lời nói. Hãy thử lại hoặc nhập câu trả lời bằng chữ Hán.':'Chưa nhận diện được câu nói. Hãy bấm bắt đầu và nói lại một câu ngắn, rõ ràng.';
+  const code=reflexRecognitionError;
+  const msg=code==='not-allowed'?'Bạn chưa cấp quyền micro cho trang. Hãy cấp quyền rồi thử lại.':
+   code==='network'?'Dịch vụ nhận diện giọng nói gặp lỗi mạng. Kiểm tra Internet rồi thử lại.':
+   code==='audio-capture'?'Không truy cập được micro. Kiểm tra quyền micro và thử lại.':
+   code==='service-not-allowed'?'Trình duyệt hoặc dịch vụ hiện không cho phép nhận diện giọng nói. Bạn vẫn có thể nhập câu trả lời bằng chữ Hán.':
+   code==='no-speech'?'Không phát hiện được lời nói. Hãy bấm micro và nói ngay sau khi bắt đầu, hoặc nhập câu trả lời bằng chữ Hán.':
+   'Chưa nhận diện được câu nói. Bạn có thể thử micro lại hoặc nhập câu trả lời bằng chữ Hán.';
   showReflexSpeechFailure(msg);
  }
 }
-function startReflexRecognitionSegment(session){
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(session!==reflexRecognitionSession||!reflexRecording||reflexRecognitionStopRequested)return;
- if(!SR){reflexRecognitionError='service-not-allowed';finishReflexRecognition(session);return;}
- // Do not overlap two native recognizers. onend clears the old one before this function is called again.
- if(reflexRecognition)return;
- let rec;
- try{rec=new SR();}catch(e){reflexRecognitionError='service-not-allowed';finishReflexRecognition(session);return;}
- reflexRecognition=rec;reflexRecognitionSegmentFinal='';reflexRecognitionSegmentLive='';reflexRecognitionSegments++;
- rec.lang='zh-CN';
- // Keep one instance alive through ordinary pauses; if the platform forcibly ends it, onend below
- // starts a clean replacement for the SAME question after a cooldown.
- rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
- rec.onstart=()=>{if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;};
- rec.onresult=e=>{
-  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
-  let finalText='',interimText='';
-  const results=e.results||[];const startIndex=Number.isInteger(e.resultIndex)?Math.max(0,e.resultIndex):0;
-  for(let i=startIndex;i<results.length;i++){
-   const r=results[i];if(!r||!r[0])continue;
-   if(r.isFinal)finalText+=r[0].transcript||'';else interimText+=r[0].transcript||'';
-  }
-  if(finalText.trim())reflexRecognitionSegmentFinal=[reflexRecognitionSegmentFinal,finalText.trim()].filter(Boolean).join('').trim();
-  reflexRecognitionSegmentLive=[reflexRecognitionSegmentFinal,interimText.trim()].filter(Boolean).join('').trim();
-  updateReflexLiveTranscript(reflexRecognitionSegmentLive);
- };
- rec.onerror=e=>{
-  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
-  const code=e?.error||'';
-  // Mobile engines often emit no-speech/aborted just before onend. Let onend decide whether to restart.
-  if(code==='no-speech'||code==='aborted')return;
-  if(code==='not-allowed'||code==='service-not-allowed'||code==='network'||code==='audio-capture')reflexRecognitionError=code;
-  else if(code)reflexRecognitionError=code;
-  // A few mobile implementations fail to dispatch onend after a fatal error. Do not leave the
-  // active state locked: onend normally finishes first, otherwise this fallback releases it.
-  if(reflexRecognitionError){
-   if(reflexRecognitionRestartTimer){clearTimeout(reflexRecognitionRestartTimer);reflexRecognitionRestartTimer=null;}
-   reflexRecognitionRestartTimer=setTimeout(()=>{
-    reflexRecognitionRestartTimer=null;
-    if(session!==reflexRecognitionSession||!reflexRecording||reflexRecognition!==rec)return;
-    reflexRecognition=null;disposeReflexRecognition(rec,true);finishReflexRecognition(session);
-   },1800);
-  }
- };
- rec.onend=()=>{
-  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
-  reflexRecognition=null;
-  if(reflexRecognitionSegmentFinal)appendReflexSpeechSegment(reflexRecognitionSegmentFinal);
-  const hasFinal=!!reflexRecognitionSegmentFinal;
-  if(hasFinal)reflexRecognitionEmptyEnds=0;else reflexRecognitionEmptyEnds++;
-  updateReflexLiveTranscript('');
-  if(reflexRecognitionStopRequested){finishReflexRecognition(session);return;}
-  if(reflexRecognitionError){finishReflexRecognition(session);return;}
-  if(!reflexRecognitionTranscript&&reflexRecognitionEmptyEnds>=8){reflexRecognitionError='no-speech';finishReflexRecognition(session);return;}
-  if(reflexRecognitionSegments>=40){finishReflexRecognition(session);return;}
-  // Back off after empty endings; repeated immediate restarts can cause Safari/WebKit to stall on later turns.
-  const delay=hasFinal?650:Math.min(1800,750+reflexRecognitionEmptyEnds*180);
-  reflexRecognitionRestartTimer=setTimeout(()=>{
-   reflexRecognitionRestartTimer=null;
-   if(session===reflexRecognitionSession&&reflexRecording&&!reflexRecognitionStopRequested&&!reflexRecognition)startReflexRecognitionSegment(session);
-  },delay);
- };
- try{rec.start();}
- catch(e){
-  if(reflexRecognition===rec)reflexRecognition=null;
-  disposeReflexRecognition(rec,false);
-  reflexRecognitionError='service-not-allowed';finishReflexRecognition(session);
- }
-}
+
 function startReflexMicrophone(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR){showReflexSpeechFailure('Trình duyệt này không hỗ trợ nhận diện giọng nói. Hãy dùng Safari/Chrome mới nhất hoặc nhập câu trả lời bằng chữ Hán.');return;}
  if(reflexRecording)return;
- // Cancel app speech before opening the microphone so the recognizer does not capture its own TTS audio.
+ // Stop the application's TTS first so the microphone does not capture the sample voice.
  try{if(window.speechSynthesis)window.speechSynthesis.cancel();}catch(_){}
- // Reset the entire per-question state before creating a new native recognition session.
+ // Do a full per-attempt reset, then create exactly one fresh recognizer. Crucially, start()
+ // is called synchronously from the user's tap (not from setTimeout), which preserves the
+ // user activation required by some mobile Safari/WebKit builds.
  invalidateReflexRecognition();
  const session=reflexRecognitionSession;
- reflexRecognitionStopRequested=false;reflexRecognitionError='';reflexRecognitionTranscript='';reflexRecognitionLiveText='';reflexRecognitionEmptyEnds=0;reflexRecognitionSegments=0;
- reflexRecognitionSegmentFinal='';reflexRecognitionSegmentLive='';reflexHasAnswered=false;
+ reflexRecognitionStopRequested=false;reflexRecognitionError='';reflexRecognitionTranscript='';reflexRecognitionLiveText='';
+ reflexRecognitionSegmentFinal='';reflexRecognitionSegmentLive='';reflexRecognitionEmptyEnds=0;reflexRecognitionSegments=1;
+ reflexHasAnswered=false;
  $('reflex-next-button').hidden=true;$('reflex-check-button').hidden=false;
  reflexRecording=true;
  $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
  $('reflex-mic-button').disabled=true;$('reflex-mic-button').textContent='🎙️ Đang thu âm…';
  $('reflex-mic-overlay').hidden=false;$('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='🎙️';
- $('reflex-live-transcript').textContent='Đang nghe…';$('reflex-mic-instruction').textContent='Đang nghe. Nói tiếng Trung; khi nói xong, chạm vào biểu tượng micro để dừng.';
+ $('reflex-live-transcript').textContent='Đang nghe…';$('reflex-mic-instruction').textContent='Đang nghe tiếng Trung. Nói một câu rồi chạm vào micro để dừng nếu trình duyệt chưa tự kết thúc.';
  const box=$('reflex-feedback');box.hidden=true;box.textContent='';
- // Delay initial start slightly to let mobile Safari release the previous microphone pipeline.
- reflexRecognitionRestartTimer=setTimeout(()=>{
-  reflexRecognitionRestartTimer=null;
-  if(session===reflexRecognitionSession&&reflexRecording&&!reflexRecognitionStopRequested)startReflexRecognitionSegment(session);
- },250);
+ let rec;
+ try{rec=new SR();}
+ catch(e){reflexRecognitionError='service-not-allowed';finishReflexRecognition(session,null,true);return;}
+ reflexRecognition=rec;
+ rec.lang='zh-CN';
+ // A single utterance per attempt is more reliable on mobile Safari than repeatedly
+ // constructing recognizers in an automatic restart loop. A new question gets a new instance.
+ rec.continuous=false;rec.interimResults=true;rec.maxAlternatives=1;
+ rec.onstart=()=>{
+  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
+  $('reflex-mic-instruction').textContent='Đang thu âm… Nói câu tiếng Trung của bạn.';
+ };
+ rec.onspeechstart=()=>{
+  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
+  $('reflex-mic-instruction').textContent='Đã phát hiện giọng nói…';
+ };
+ rec.onresult=e=>{
+  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
+  // Rebuild the transcript from the recognizer's current result list. This avoids duplicating
+  // cumulative interim/final text when Safari and Chrome report different resultIndex values.
+  const results=e.results||[];let finals='',interims='';
+  for(let i=0;i<results.length;i++){
+   const r=results[i];const part=String(r&&r[0]&&r[0].transcript||'');
+   if(!part)continue;
+   if(r.isFinal)finals+=part;else interims+=part;
+  }
+  reflexRecognitionTranscript=finals.trim();
+  reflexRecognitionSegmentFinal=reflexRecognitionTranscript;
+  reflexRecognitionSegmentLive=interims.trim();
+  updateReflexLiveTranscript([finals,interims].filter(Boolean).join('').trim());
+ };
+ rec.onerror=e=>{
+  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
+  const code=String(e&&e.error||'');
+  if(code==='aborted'&&reflexRecognitionStopRequested)return;
+  reflexRecognitionError=code||'unknown';
+  // Some mobile engines report an error but never dispatch onend. Release this one session
+  // after a bounded wait; never auto-start another session behind the user's back.
+  if(reflexRecognitionRestartTimer)clearTimeout(reflexRecognitionRestartTimer);
+  reflexRecognitionRestartTimer=setTimeout(()=>{
+   reflexRecognitionRestartTimer=null;
+   if(session!==reflexRecognitionSession||!reflexRecording||reflexRecognition!==rec)return;
+   finishReflexRecognition(session,rec,false);
+  },1800);
+ };
+ rec.onend=()=>{
+  if(session!==reflexRecognitionSession||reflexRecognition!==rec)return;
+  reflexRecognition=null;
+  finishReflexRecognition(session,rec,true);
+ };
+ try{
+  // Intentionally no timer/delayed start: this is still inside the actual tap handler.
+  rec.start();
+ }catch(e){
+  if(reflexRecognition===rec)reflexRecognition=null;
+  reflexRecognitionError='service-not-allowed';
+  finishReflexRecognition(session,rec,false);
+ }
 }
+
 function stopReflexMicrophone(){
  if(!reflexRecording||reflexRecognitionStopRequested)return;
  reflexRecognitionStopRequested=true;
@@ -2140,17 +2134,14 @@ function stopReflexMicrophone(){
  $('reflex-mic-instruction').textContent='Đang hoàn tất nhận diện…';
  if(reflexRecognitionRestartTimer){clearTimeout(reflexRecognitionRestartTimer);reflexRecognitionRestartTimer=null;}
  const session=reflexRecognitionSession;const rec=reflexRecognition;
- if(rec){
-  // Never allow an absent onend event to leave the microphone overlay locked forever.
-  reflexRecognitionStopTimer=setTimeout(()=>{
-   if(session!==reflexRecognitionSession||!reflexRecording||!reflexRecognitionStopRequested)return;
-   const stalled=reflexRecognition;reflexRecognition=null;disposeReflexRecognition(stalled,true);finishReflexRecognition(session);
-  },2200);
-  try{rec.stop();}catch(e){const stalled=reflexRecognition;reflexRecognition=null;disposeReflexRecognition(stalled,true);finishReflexRecognition(session);}
- }else{
-  // If the browser ended naturally while the user tapped stop, finish without waiting forever.
-  finishReflexRecognition(session);
- }
+ if(!rec){finishReflexRecognition(session,null,true);return;}
+ // Fallback only for a broken native onend event. The normal path finishes inside onend.
+ reflexRecognitionStopTimer=setTimeout(()=>{
+  if(session!==reflexRecognitionSession||!reflexRecording||!reflexRecognitionStopRequested)return;
+  finishReflexRecognition(session,rec,false);
+ },2400);
+ try{rec.stop();}
+ catch(e){finishReflexRecognition(session,rec,false);}
 }
 $('reflex-live-mic').addEventListener('click',stopReflexMicrophone);
 $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{
