@@ -87,6 +87,17 @@
 .ocr-progress-fill.indeterminate{width:35%;animation:ocr-indeterminate 1.15s ease-in-out infinite}
 @keyframes ocr-indeterminate{0%{transform:translateX(-110%)}100%{transform:translateX(320%)}}
 
+
+.ocr-candidate-box{margin:9px 0;padding:10px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff}
+.ocr-candidate-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.ocr-candidate-button{min-width:0;text-align:left;border:1px solid #bfdbfe;border-radius:10px;background:white;color:#1e3a8a;padding:9px;font-size:12px;line-height:1.45;overflow-wrap:anywhere}
+.ocr-candidate-button.active{border-color:#2563eb;background:#dbeafe;box-shadow:0 0 0 1px #2563eb inset}
+.ocr-candidate-button b{display:block;margin-bottom:4px}
+@media(max-width:400px){.ocr-candidate-buttons{grid-template-columns:1fr}}
+/* iPhone Safari: make the Hanzi Writer drawing smaller than the frame and measure its real visible size. */
+.stroke-stage{display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;position:relative!important;min-width:0!important;overflow:hidden!important;}
+.stroke-stage>svg,.stroke-stage>canvas{display:block!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;width:calc(100% - 28px)!important;height:calc(100% - 28px)!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;margin:0 auto!important;left:0!important;right:0!important;top:0!important;bottom:0!important;transform:none!important;overflow:visible!important;}
+.stroke-stage>canvas{image-rendering:auto!important;touch-action:none!important;}
 </style>
 </head>
 <body>
@@ -177,7 +188,7 @@
  </div>
  <div class="card ocr-card">
   <h3 class="section-title">📷 Lấy từ vựng từ ảnh hoặc chụp bằng điện thoại</h3>
-  <p class="subtle" style="margin:0 0 10px">Chọn ảnh chụp bài học/sách tiếng Trung hoặc mở camera. Sau khi quét, kiểm tra văn bản và tích chọn những từ đúng trước khi thêm vào danh sách ghép câu.</p>
+  <p class="subtle" style="margin:0 0 10px">Chọn ảnh chụp bài học/sách tiếng Trung hoặc mở camera. Ứng dụng sẽ quét hai lượt (ảnh gốc và ảnh tăng tương phản); nếu kết quả khác nhau, chọn bản gần ảnh nhất. Các từ đều để bỏ chọn mặc định để tránh thêm nhầm; hãy rà soát trước khi đưa vào danh sách ghép câu.</p>
   <div class="row wrap">
    <label for="combine-image-input" class="btn">📷 Chọn ảnh / chụp ảnh</label>
    <input id="combine-image-input" class="file-input-hidden" type="file" accept="image/*" capture="environment">
@@ -187,12 +198,17 @@
   <img id="ocr-image-preview" class="ocr-preview" alt="Ảnh dùng để trích xuất từ vựng" hidden>
   <div id="ocr-status" class="source-status" role="status" aria-live="polite">Chọn một ảnh có chữ Hán. Lần đầu quét cần Internet để tải công cụ OCR và dữ liệu nhận dạng tiếng Trung.</div>
   <div id="ocr-progress" class="ocr-progress" hidden role="progressbar" aria-label="Tiến trình nhận diện chữ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>
+  <div id="ocr-candidate-box" class="ocr-candidate-box" hidden>
+   <p class="smallprint" style="margin:0 0 7px"><b>Hai lần quét cho kết quả khác nhau.</b> Chọn bản khớp với ảnh nhất; danh sách từ sẽ được tách lại theo bản đã chọn.</p>
+   <div id="ocr-candidate-buttons" class="ocr-candidate-buttons"></div>
+  </div>
   <label class="reflex-input-label" for="ocr-recognized-text">Văn bản nhận diện (có thể sửa trước khi tách từ)</label>
   <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ ảnh sẽ hiện ở đây. Bạn cũng có thể dán văn bản tiếng Trung vào ô này rồi bấm Tách từ."></textarea>
   <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
+  <div class="row wrap" style="margin-top:7px"><button id="ocr-select-all" class="btn secondary tiny" type="button" disabled>Chọn tất cả từ nhận diện</button><button id="ocr-clear-all" class="btn secondary tiny" type="button" disabled>Bỏ chọn tất cả</button></div>
   <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
   <button id="ocr-add-selected" class="btn full" type="button" style="margin-top:11px" disabled>＋ Thêm các từ đã tích vào danh sách ghép câu</button>
-  <p class="smallprint" style="margin:8px 0 0">OCR chạy trong trình duyệt bằng Tesseract.js; ảnh không được gửi đến API AI của ứng dụng. Kết quả có thể sai với chữ viết tay, ảnh mờ hoặc chữ quá nhỏ, vì vậy hãy kiểm tra và bỏ tích các từ nhận diện nhầm. OCR cần Internet ở lần tải công cụ/dữ liệu đầu tiên.</p>
+  <p class="smallprint" style="margin:8px 0 0">OCR chạy trong trình duyệt bằng Tesseract.js, thử hai chế độ và một bản ảnh tăng tương phản; ảnh không được gửi đến AI của ứng dụng. Hai lượt quét có thể vẫn sai, nên văn bản thô và danh sách từ đều cần được kiểm tra. Các từ không tự được chọn; chỉ những từ bạn tích mới được thêm. OCR cần Internet ở lần tải công cụ/dữ liệu đầu tiên.</p>
  </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div></div>
  <div class="card reflex-card" id="reflex-card">
@@ -314,6 +330,9 @@ let ocrLoadPromise = null;
 let ocrLexiconMap = null;
 let ocrLexiconLengths = [];
 let detectedOcrWords = [];
+let ocrCandidates = [];
+let activeOcrCandidate = 0;
+let ocrPassIndex = 0;
 let reflexMode = 'write';
 let reflexAllPairs = [];
 let reflexQueue = [];
@@ -587,12 +606,19 @@ function openStrokeModal(row){activeStrokeRow=row;const chars=[...String(row[0]|
 function closeStrokeModal(){if(!$('stroke-modal').hidden){$('stroke-modal').hidden=true;document.body.style.overflow='';try{strokeQuizWriter?.cancelQuiz?.();}catch(e){}strokeQuizWriter=null;strokeModelWriter=null;}}
 document.querySelectorAll('[data-close-stroke]').forEach(el=>el.addEventListener('click',closeStrokeModal));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeStrokeModal();});
 function updateStrokePicker(ch){$('stroke-char-picker').querySelectorAll('.stroke-char-button').forEach(b=>b.classList.toggle('active',b.textContent===ch));}
+function strokeWriterOptions(stageId){
+ const el=$(stageId),rect=el?.getBoundingClientRect();
+ const measured=Math.min(Number(rect?.width)||210,Number(rect?.height)||210);
+ // Leave an inset inside the stage; on narrow iPhones the previous fixed 210px SVG was being scaled into a smaller box.
+ const size=Math.max(90,Math.min(230,Math.floor(measured-30)));
+ return {width:size,height:size,padding:Math.max(3,Math.min(8,Math.round(size*.035))),renderer:'canvas'};
+}
 function loadStrokeCharacter(ch){activeStrokeChar=ch;updateStrokePicker(ch);strokeModelWriter=null;strokeQuizWriter=null;$('stroke-model').innerHTML='';$('stroke-quiz').innerHTML='<span class="stroke-fallback-char">✍</span>';$('stroke-count').textContent='Đang tải dữ liệu thứ tự nét…';$('stroke-feedback').textContent='Bấm “Bắt đầu luyện” rồi viết theo thứ tự nét.';$('stroke-start-quiz').disabled=false;$('stroke-replay').disabled=false;
  if(typeof HanziWriter==='undefined'){$('stroke-model').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(ch)}</span>`;$('stroke-count').textContent='Không tải được thư viện nét. Hãy kiểm tra Internet hoặc mở Bishun.net.';$('stroke-feedback').innerHTML='Nguồn dự phòng: <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>';$('stroke-start-quiz').disabled=true;$('stroke-replay').disabled=true;return;}
- try{strokeModelWriter=HanziWriter.create('stroke-model',ch,{width:210,height:210,padding:10,showOutline:true,strokeColor:'#b91c1c',outlineColor:'#cbd5e1',delayBetweenStrokes:360,strokeAnimationSpeed:1.15,onLoadCharDataSuccess:data=>{$('stroke-count').textContent='Tổng số nét: '+(data.strokes?.length||'?')+'. Xem chuyển động theo đúng thứ tự nét.';},onLoadCharDataError:()=>{$('stroke-count').textContent='Chưa có dữ liệu nét cho chữ này.';$('stroke-feedback').innerHTML='Hãy thử tra tại <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>';$('stroke-start-quiz').disabled=true;$('stroke-replay').disabled=true;}});strokeModelWriter.animateCharacter();}
+ try{strokeModelWriter=HanziWriter.create('stroke-model',ch,{...strokeWriterOptions('stroke-model'),showOutline:true,strokeColor:'#b91c1c',outlineColor:'#cbd5e1',delayBetweenStrokes:360,strokeAnimationSpeed:1.15,onLoadCharDataSuccess:data=>{$('stroke-count').textContent='Tổng số nét: '+(data.strokes?.length||'?')+'. Xem chuyển động theo đúng thứ tự nét.';},onLoadCharDataError:()=>{$('stroke-count').textContent='Chưa có dữ liệu nét cho chữ này.';$('stroke-feedback').innerHTML='Hãy thử tra tại <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>';$('stroke-start-quiz').disabled=true;$('stroke-replay').disabled=true;}});strokeModelWriter.animateCharacter();}
  catch(err){$('stroke-model').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(ch)}</span>`;$('stroke-count').textContent='Không thể nạp nét cho chữ này.';$('stroke-feedback').innerHTML='Tham khảo <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>';}}
 $('stroke-replay').addEventListener('click',()=>{if(strokeModelWriter){strokeModelWriter.cancelQuiz?.();strokeModelWriter.animateCharacter();}});
-$('stroke-start-quiz').addEventListener('click',()=>{if(typeof HanziWriter==='undefined')return;$('stroke-quiz').innerHTML='';$('stroke-feedback').textContent='Đang chờ bạn viết nét…';try{strokeQuizWriter=HanziWriter.create('stroke-quiz',activeStrokeChar,{width:210,height:210,padding:10,showCharacter:false,showOutline:false,showHintAfterMisses:2,strokeColor:'#15803d',drawingColor:'#202938',drawingWidth:5,onLoadCharDataError:()=>{$('stroke-feedback').textContent='Không có dữ liệu luyện viết cho chữ này. Hãy thử Bishun.net.';$('stroke-start-quiz').disabled=true;}});strokeQuizWriter.quiz({showHintAfterMisses:2,onCorrectStroke:data=>{$('stroke-feedback').textContent='Đúng nét '+(data.strokeNum+1)+'; còn '+data.strokesRemaining+' nét.';},onMistake:data=>{$('stroke-feedback').textContent='Chưa đúng nét '+(data.strokeNum+1)+'. Xem lại hoạt ảnh mẫu.';},onComplete:data=>{$('stroke-feedback').textContent='Hoàn thành chữ '+activeStrokeChar+'! Số lần viết sai: '+data.totalMistakes+'. Bấm Bắt đầu luyện để thử lại.';$('stroke-start-quiz').textContent='↻ Luyện lại';}});}catch(e){$('stroke-feedback').textContent='Không thể bắt đầu bài luyện cho chữ này.';}});
+$('stroke-start-quiz').addEventListener('click',()=>{if(typeof HanziWriter==='undefined')return;$('stroke-quiz').innerHTML='';$('stroke-feedback').textContent='Đang chờ bạn viết nét…';try{strokeQuizWriter=HanziWriter.create('stroke-quiz',activeStrokeChar,{...strokeWriterOptions('stroke-quiz'),showCharacter:false,showOutline:false,showHintAfterMisses:2,strokeColor:'#15803d',drawingColor:'#202938',drawingWidth:5,onLoadCharDataError:()=>{$('stroke-feedback').textContent='Không có dữ liệu luyện viết cho chữ này. Hãy thử Bishun.net.';$('stroke-start-quiz').disabled=true;}});strokeQuizWriter.quiz({showHintAfterMisses:2,onCorrectStroke:data=>{$('stroke-feedback').textContent='Đúng nét '+(data.strokeNum+1)+'; còn '+data.strokesRemaining+' nét.';},onMistake:data=>{$('stroke-feedback').textContent='Chưa đúng nét '+(data.strokeNum+1)+'. Xem lại hoạt ảnh mẫu.';},onComplete:data=>{$('stroke-feedback').textContent='Hoàn thành chữ '+activeStrokeChar+'! Số lần viết sai: '+data.totalMistakes+'. Bấm Bắt đầu luyện để thử lại.';$('stroke-start-quiz').textContent='↻ Luyện lại';}});}catch(e){$('stroke-feedback').textContent='Không thể bắt đầu bài luyện cho chữ này.';}});
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2400);}
 function entryForWord(word){return dictionary.find(r=>r[0]===word||r[1]===word)||null;}
 function defaultRole(simp){return roleHints[simp]||'auto';}
@@ -978,7 +1004,7 @@ function loadPracticeStrokeCharacter(ch){
  if(typeof HanziWriter==='undefined'){$('practice-stroke-count').textContent='Không tải được thư viện nét. Có thể xem thứ tự nét trên Bishun.net.';$('practice-stroke-model').insertAdjacentHTML('beforeend','<p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Mở Bishun.net ↗</a></p>');return;}
  try{
   $('practice-stroke-model').innerHTML='';
-  practiceStrokeWriter=HanziWriter.create('practice-stroke-model',ch,{width:190,height:190,padding:9,showOutline:true,strokeColor:'#b91c1c',outlineColor:'#cbd5e1',delayBetweenStrokes:360,strokeAnimationSpeed:1.1,
+  practiceStrokeWriter=HanziWriter.create('practice-stroke-model',ch,{...strokeWriterOptions('practice-stroke-model'),showOutline:true,strokeColor:'#b91c1c',outlineColor:'#cbd5e1',delayBetweenStrokes:360,strokeAnimationSpeed:1.1,
    onLoadCharDataSuccess:data=>{$('practice-stroke-count').textContent='Chữ '+ch+' · '+(data.strokes?.length||'?')+' nét. Dùng nút bên dưới để xem lại.';$('practice-stroke-replay').disabled=false;},
    onLoadCharDataError:()=>{$('practice-stroke-count').textContent='Nguồn nét không có dữ liệu cho chữ này hoặc đang mất kết nối.';$('practice-stroke-model').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(ch)}</span>`;$('practice-stroke-model').insertAdjacentHTML('beforeend','<p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Tra chữ này trên Bishun.net ↗</a></p>');$('practice-stroke-replay').disabled=true;}
   });
@@ -992,7 +1018,7 @@ function startPracticeStrokeQuiz(){
  if(typeof HanziWriter==='undefined'){toast('Không tải được bộ nhận diện nét. Hãy kết nối Internet rồi thử lại.');return;}
  try{practiceStrokeQuizWriter?.cancelQuiz?.();}catch(e){}
  $('practice-free-wrap').hidden=true;$('practice-stroke-quiz').hidden=false;$('practice-free-write').hidden=false;$('practice-grade-strokes').hidden=false;$('practice-grade-strokes').textContent='↻ Viết lại & chấm';$('practice-stroke-quiz').innerHTML='';$('practice-stroke-feedback').textContent='Đang tải mẫu nét. Hãy viết từng nét theo đúng thứ tự.';
- try{practiceStrokeQuizWriter=HanziWriter.create('practice-stroke-quiz',practiceTraceChar,{width:210,height:210,padding:9,showCharacter:false,showOutline:false,showHintAfterMisses:2,strokeColor:'#15803d',drawingColor:'#202938',drawingWidth:5,onLoadCharDataSuccess:data=>{practiceStrokeCount=data.strokes?.length||0;$('practice-stroke-feedback').textContent='Chữ '+practiceTraceChar+' có '+practiceStrokeCount+' nét. Viết lần lượt đúng thứ tự mẫu.';},onLoadCharDataError:()=>{$('practice-stroke-feedback').textContent='Không có dữ liệu chấm nét cho chữ này. Hãy thử chữ khác hoặc tra Bishun.net.';$('practice-stroke-quiz').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(practiceTraceChar)}</span><p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Tra chữ trên Bishun.net ↗</a></p>`;$('practice-grade-strokes').disabled=true;}});
+ try{practiceStrokeQuizWriter=HanziWriter.create('practice-stroke-quiz',practiceTraceChar,{...strokeWriterOptions('practice-stroke-quiz'),showCharacter:false,showOutline:false,showHintAfterMisses:2,strokeColor:'#15803d',drawingColor:'#202938',drawingWidth:5,onLoadCharDataSuccess:data=>{practiceStrokeCount=data.strokes?.length||0;$('practice-stroke-feedback').textContent='Chữ '+practiceTraceChar+' có '+practiceStrokeCount+' nét. Viết lần lượt đúng thứ tự mẫu.';},onLoadCharDataError:()=>{$('practice-stroke-feedback').textContent='Không có dữ liệu chấm nét cho chữ này. Hãy thử chữ khác hoặc tra Bishun.net.';$('practice-stroke-quiz').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(practiceTraceChar)}</span><p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Tra chữ trên Bishun.net ↗</a></p>`;$('practice-grade-strokes').disabled=true;}});
  practiceStrokeQuizWriter.quiz({showHintAfterMisses:2,onCorrectStroke:data=>{$('practice-stroke-feedback').textContent='Đúng thứ tự nét '+(data.strokeNum+1)+'/'+(practiceStrokeCount||'?')+'.';},onMistake:data=>{$('practice-stroke-feedback').textContent='Nét chưa đúng thứ tự hoặc hình dạng ở vị trí '+(data.strokeNum+1)+'. Hãy thử lại theo mẫu.';},onComplete:data=>{const mistakes=Number(data.totalMistakes||0);const score=practiceStrokeCount?Math.max(0,Math.round(100*(1-mistakes/(practiceStrokeCount+mistakes)))):(mistakes?0:100);$('practice-stroke-feedback').textContent='Hoàn thành chữ '+practiceTraceChar+' · Điểm thứ tự nét: '+score+'/100 · Số lần viết sai: '+mistakes+'. Điểm phản ánh quá trình theo nét mẫu, không đánh giá độ đẹp chữ.';$('practice-grade-strokes').textContent='↻ Viết lại & chấm';}});
  }catch(e){$('practice-stroke-feedback').textContent='Không thể bắt đầu chấm. Hãy tải lại trang hoặc thử lại sau.';}
 }
@@ -1301,17 +1327,17 @@ function tokenizeChineseText(text){
   for(const item of segmentChineseRun(block)){
    const key=item.word;
    if(counts.has(key))counts.get(key).count++;
-   else{const entry={word:key,row:item.row,count:1,checked:true};counts.set(key,entry);ordered.push(entry);}
+   else{const entry={word:key,row:item.row,count:1,checked:false};counts.set(key,entry);ordered.push(entry);}
   }
  }
  return ordered;
 }
 function renderOcrWords(){
  const box=$('ocr-word-list');const count=$('ocr-word-count');const add=$('ocr-add-selected');
- if(!detectedOcrWords.length){box.innerHTML='<div class="empty" style="grid-column:1/-1">Không tìm thấy từ tiếng Trung trong văn bản. Hãy kiểm tra/sửa nội dung nhận diện rồi thử lại.</div>';count.textContent='0 từ';add.disabled=true;return;}
+ if(!detectedOcrWords.length){box.innerHTML='<div class="empty" style="grid-column:1/-1">Không tìm thấy từ tiếng Trung trong văn bản. Hãy kiểm tra/sửa nội dung nhận diện rồi thử lại.</div>';count.textContent='0 từ';add.disabled=true;$('ocr-select-all').disabled=true;$('ocr-clear-all').disabled=true;return;}
  box.innerHTML=detectedOcrWords.map((w,i)=>`<label class="ocr-word-item"><input type="checkbox" data-ocr-word-index="${i}" ${w.checked?'checked':''}><span class="ocr-word-main"><b>${escapeHTML(w.word)}</b><small>${escapeHTML(w.row[2]||'')} · ${escapeHTML(simpleGloss(w.row[3]))}${w.count>1?' · xuất hiện '+w.count+' lần':''}</small></span></label>`).join('');
- count.textContent=detectedOcrWords.length+' từ nhận diện';add.disabled=!detectedOcrWords.some(w=>w.checked);
- box.querySelectorAll('[data-ocr-word-index]').forEach(ch=>ch.addEventListener('change',()=>{const i=Number(ch.dataset.ocrWordIndex);if(detectedOcrWords[i])detectedOcrWords[i].checked=ch.checked;add.disabled=!detectedOcrWords.some(w=>w.checked);}));
+ count.textContent=detectedOcrWords.length+' từ/cụm từ gợi ý';add.disabled=!detectedOcrWords.some(w=>w.checked);$('ocr-select-all').disabled=false;$('ocr-clear-all').disabled=!detectedOcrWords.some(w=>w.checked);
+ box.querySelectorAll('[data-ocr-word-index]').forEach(ch=>ch.addEventListener('change',()=>{const i=Number(ch.dataset.ocrWordIndex);if(detectedOcrWords[i])detectedOcrWords[i].checked=ch.checked;add.disabled=!detectedOcrWords.some(w=>w.checked);$('ocr-clear-all').disabled=!detectedOcrWords.some(w=>w.checked);}));
 }
 function segmentCurrentOcrText(){
  const raw=$('ocr-recognized-text').value.trim();
@@ -1360,7 +1386,7 @@ function updateOcrProgress(message,provider){
  const status=String(message?.status||'');
  const progress=Number(message?.progress);
  if(Number.isFinite(progress)&&progress>=0){
-  const pct=Math.max(0,Math.min(100,Math.round(progress*100)));
+  const pct=Math.max(0,Math.min(100,Math.round(((Math.max(0,Math.min(1,ocrPassIndex))+progress)/2)*100)));
   box.setAttribute('aria-valuenow',String(pct));
   fill.classList.toggle('indeterminate',pct===0);
   if(pct>0)fill.style.width=pct+'%';else fill.style.width='35%';
@@ -1375,10 +1401,11 @@ function updateOcrProgress(message,provider){
   'recognizing text':'Đang đọc chữ trong ảnh',
   'loading image':'Đang đọc tệp ảnh'
  }[status]||status||'Đang chuẩn bị nhận diện';
- const pctText=Number.isFinite(progress)&&progress>0?' · '+Math.round(progress*100)+'%':'';
+ const pctText=Number.isFinite(progress)&&progress>0?' · '+Math.round(((Math.max(0,Math.min(1,ocrPassIndex))+progress)/2)*100)+'%':'';
  const hostText=provider?' ('+provider+')':'';
  const extra=status==='loading language traineddata'?' · lần đầu có thể tải dữ liệu vài MB và cần chờ một lúc':'';
- $('ocr-status').textContent=statusVi+hostText+pctText+extra+'. Không đóng trang trong khi xử lý.';
+ const passText=' · lượt '+(ocrPassIndex+1)+'/2';
+ $('ocr-status').textContent=statusVi+hostText+passText+pctText+extra+'. Không đóng trang trong khi xử lý.';
 }
 async function createOcrWorkerWithFallback(T){
  let lastError=null;
@@ -1419,52 +1446,67 @@ $('combine-image-input').addEventListener('change',e=>{
  if(ocrCurrentObjectUrl)URL.revokeObjectURL(ocrCurrentObjectUrl);
  ocrCurrentObjectUrl=URL.createObjectURL(file);
  $('ocr-image-preview').src=ocrCurrentObjectUrl;$('ocr-image-preview').hidden=false;$('ocr-run-button').disabled=false;
- $('ocr-progress').hidden=true;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
+ $('ocr-progress').hidden=true;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];$('ocr-recognized-text').value='';
  $('ocr-status').className='source-status';$('ocr-status').textContent='Đã chọn ảnh: '+file.name+'. Bấm “Quét chữ trong ảnh” để nhận diện chữ Hán.';
 });
+function normalizeOcrCandidateText(text){return String(text||'').replace(/\s+/g,'').replace(/[，。！？、,.!?;；:：]/g,'').trim();}
+function applyOcrCandidate(index){
+ if(!ocrCandidates[index])return;
+ activeOcrCandidate=index;$('ocr-recognized-text').value=ocrCandidates[index].text;
+ $('ocr-candidate-buttons').querySelectorAll('[data-ocr-candidate]').forEach(b=>b.classList.toggle('active',Number(b.dataset.ocrCandidate)===index));
+ segmentCurrentOcrText();const candidate=ocrCandidates[index];
+ if($('ocr-status').classList.contains('ok'))$('ocr-status').textContent+=' Đang dùng '+candidate.label+'; độ tin cậy OCR do máy ước lượng: '+Math.round(candidate.confidence||0)+'%. Điểm này không bảo đảm chữ đúng; hãy so sánh với ảnh.';
+}
+function renderOcrCandidates(candidates){
+ const box=$('ocr-candidate-box'),buttons=$('ocr-candidate-buttons');ocrCandidates=candidates.filter(c=>String(c.text||'').trim());
+ const distinct=new Set(ocrCandidates.map(c=>normalizeOcrCandidateText(c.text)));
+ if(ocrCandidates.length<2||distinct.size<2){box.hidden=true;buttons.innerHTML='';activeOcrCandidate=0;return;}
+ box.hidden=false;buttons.innerHTML=ocrCandidates.map((c,i)=>`<button type="button" class="ocr-candidate-button${i===activeOcrCandidate?' active':''}" data-ocr-candidate="${i}"><b>${escapeHTML(c.label)} · ${Math.round(c.confidence||0)}%</b>${escapeHTML(c.text.slice(0,150)||'(không nhận ra chữ)')}</button>`).join('');
+ buttons.querySelectorAll('[data-ocr-candidate]').forEach(b=>b.addEventListener('click',()=>applyOcrCandidate(Number(b.dataset.ocrCandidate))));
+}
+async function makeEnhancedOcrImage(file){
+ let bitmap=null,ownedUrl='';
+ try{
+  if(window.createImageBitmap)bitmap=await createImageBitmap(file);
+  else{const url=URL.createObjectURL(file);ownedUrl=url;bitmap=await new Promise((resolve,reject)=>{const el=new Image();el.onload=()=>resolve(el);el.onerror=()=>reject(new Error('Không giải mã được ảnh trên trình duyệt.'));el.src=url;});}
+  const maxDim=Math.max(bitmap.width,bitmap.height),scale=Math.min(2.1,2300/maxDim);
+  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});if(!ctx)throw new Error('Thiết bị không hỗ trợ xử lý ảnh OCR.');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  const imageData=ctx.getImageData(0,0,canvas.width,canvas.height),data=imageData.data;
+  for(let i=0;i<data.length;i+=4){const gray=.299*data[i]+.587*data[i+1]+.114*data[i+2];const enhanced=Math.max(0,Math.min(255,(gray-128)*1.32+128));data[i]=data[i+1]=data[i+2]=enhanced;data[i+3]=255;}
+  ctx.putImageData(imageData,0,0);
+  return await new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error('Không tạo được ảnh tăng cường.')),'image/png'));
+ }finally{try{bitmap?.close?.();}catch(_){}if(ownedUrl)URL.revokeObjectURL(ownedUrl);}
+}
 $('ocr-run-button').addEventListener('click',async()=>{
  if(!ocrCurrentFile){toast('Hãy chọn ảnh trước.');return;}
- const btn=$('ocr-run-button');btn.disabled=true;$('ocr-segment-button').disabled=true;
- let worker=null;
- $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.add('indeterminate');$('ocr-progress-fill').style.width='35%';$('ocr-progress').setAttribute('aria-valuenow','0');
- $('ocr-status').className='source-status';$('ocr-status').textContent='Bước 1/3: đang tải thư viện và dữ liệu nhận dạng chữ Trung. Lần đầu cần Internet; nếu máy chủ lỗi, ứng dụng sẽ tự thử nguồn dự phòng.';
+ const btn=$('ocr-run-button');btn.disabled=true;$('ocr-segment-button').disabled=true;let worker=null;
+ $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.add('indeterminate');$('ocr-progress-fill').style.width='35%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];
+ $('ocr-status').className='source-status';$('ocr-status').textContent='Đang tải bộ nhận diện chữ Trung. Sau đó ứng dụng sẽ so sánh hai lượt quét: ảnh gốc và ảnh tăng độ tương phản.';
  try{
-  const T=await loadTesseractScript();
-  worker=await createOcrWorkerWithFallback(T);
-  $('ocr-status').textContent='Bộ nhận diện đã sẵn sàng. Đang chuẩn bị ảnh…';
-  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='5%';$('ocr-progress').setAttribute('aria-valuenow','5');
-  let source=ocrCurrentFile;
-  try{
-   if(window.createImageBitmap){
-    const bmp=await createImageBitmap(ocrCurrentFile);const maxDim=1800;
-    if(Math.max(bmp.width,bmp.height)>maxDim){
-     const ratio=maxDim/Math.max(bmp.width,bmp.height);const canvas=document.createElement('canvas');
-     canvas.width=Math.round(bmp.width*ratio);canvas.height=Math.round(bmp.height*ratio);
-     const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Không thể xử lý ảnh trên thiết bị này.');
-     ctx.drawImage(bmp,0,0,canvas.width,canvas.height);
-     source=await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Không chuyển đổi được ảnh.')),'image/jpeg',.9));
-    }
-    bmp.close?.();
-   }
-  }catch(err){console.warn('Không thu nhỏ được ảnh, dùng ảnh gốc:',err);source=ocrCurrentFile;}
-  $('ocr-status').textContent='Bước 3/3: đang nhận diện chữ Trung trong ảnh…';
-  const result=await worker.recognize(source);
-  const recognized=String(result?.data?.text||'').trim();
-  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='100%';$('ocr-progress').setAttribute('aria-valuenow','100');
-  $('ocr-recognized-text').value=recognized;
-  if(!recognized){detectedOcrWords=[];renderOcrWords();$('ocr-status').className='source-status error';$('ocr-status').textContent='Đã quét xong nhưng chưa nhận diện được chữ. Hãy chụp thẳng mặt giấy, tăng ánh sáng, tránh lóa hoặc dán/sửa văn bản thủ công.';}
-  else{$('ocr-status').className='source-status ok';$('ocr-status').textContent='Đã nhận diện xong chữ trong ảnh. Đang tách từ trong từ điển; hãy kiểm tra kết quả trước khi thêm vào danh sách.';segmentCurrentOcrText();}
- }catch(err){
-  $('ocr-status').className='source-status error';
-  $('ocr-status').textContent='Quét ảnh thất bại: '+(err?.message||String(err))+'. Bạn vẫn có thể dán chữ Hán vào ô văn bản rồi bấm “Tách từ từ nội dung”.';
-  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
- }finally{
-  try{await worker?.terminate?.();}catch(_){}
-  btn.disabled=!ocrCurrentFile;$('ocr-segment-button').disabled=false;
- }
+  const T=await loadTesseractScript();worker=await createOcrWorkerWithFallback(T);
+  ocrPassIndex=0;$('ocr-status').textContent='Lượt 1/2: đang đọc ảnh gốc…';
+  try{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});}catch(e){console.warn('Không đặt được chế độ OCR 6:',e);}
+  const first=await worker.recognize(ocrCurrentFile),firstText=String(first?.data?.text||'').trim(),firstConfidence=Number(first?.data?.confidence||0);
+  $('ocr-status').textContent='Đang tăng độ tương phản và phóng lớn ảnh để nhận diện chữ nhỏ…';const enhanced=await makeEnhancedOcrImage(ocrCurrentFile);
+  ocrPassIndex=1;$('ocr-status').textContent='Lượt 2/2: quét chế độ chữ rời và so sánh kết quả…';
+  try{await worker.setParameters({tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'});}catch(e){console.warn('Không đặt được chế độ OCR 11:',e);}
+  const second=await worker.recognize(enhanced),secondText=String(second?.data?.text||'').trim(),secondConfidence=Number(second?.data?.confidence||0);
+  ocrCandidates=[{label:'Bản A · ảnh gốc',text:firstText,confidence:firstConfidence},{label:'Bản B · tăng tương phản',text:secondText,confidence:secondConfidence}].filter(c=>c.text);
+  if(!ocrCandidates.length){$('ocr-recognized-text').value='';detectedOcrWords=[];renderOcrWords();$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='100%';$('ocr-progress').setAttribute('aria-valuenow','100');$('ocr-status').className='source-status error';$('ocr-status').textContent='Quét xong nhưng không nhận diện được chữ Trung. Hãy crop sát phần chữ, chụp rõ hơn hoặc sửa chữ thủ công trong ô văn bản.';return;}
+  activeOcrCandidate=0;if(ocrCandidates.length>1&&ocrCandidates[1].confidence>ocrCandidates[0].confidence)activeOcrCandidate=1;
+  $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='100%';$('ocr-progress').setAttribute('aria-valuenow','100');renderOcrCandidates(ocrCandidates);
+  $('ocr-recognized-text').value=ocrCandidates[activeOcrCandidate].text;segmentCurrentOcrText();
+  if(!$('ocr-candidate-box').hidden){if($('ocr-status').classList.contains('ok'))$('ocr-status').textContent='Hai lượt quét khác nhau. Hãy bấm Bản A/B để chọn kết quả giống ảnh nhất; sau đó kiểm tra danh sách từ trước khi thêm.';}
+  else if($('ocr-status').classList.contains('ok'))$('ocr-status').textContent='Đã quét bằng hai cấu hình OCR. Độ tin cậy ước lượng: '+Math.round(ocrCandidates[activeOcrCandidate].confidence||0)+'%. Hãy kiểm tra kết quả; điểm này không bảo đảm tất cả chữ đúng.';
+ }catch(err){$('ocr-status').className='source-status error';$('ocr-status').textContent='Quét ảnh thất bại: '+(err?.message||String(err))+'. Bạn vẫn có thể dán chữ Hán vào ô và bấm “Tách từ từ nội dung”.';$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');}
+ finally{try{await worker?.terminate?.();}catch(_){}ocrPassIndex=0;btn.disabled=!ocrCurrentFile;$('ocr-segment-button').disabled=false;}
 });
 $('ocr-segment-button').addEventListener('click',segmentCurrentOcrText);
-$('ocr-recognized-text').addEventListener('input',()=>{ $('ocr-status').className='source-status';$('ocr-status').textContent='Nội dung đã thay đổi. Bấm “Tách từ từ nội dung” để cập nhật danh sách từ.'; });
+$('ocr-recognized-text').addEventListener('input',()=>{ $('ocr-candidate-box').hidden=true;$('ocr-status').className='source-status';$('ocr-status').textContent='Nội dung đã sửa. Nếu ảnh có nhiều từ rời, hãy chèn dấu cách/xuống dòng giữa các từ rồi bấm “Tách từ từ nội dung” để tránh ghép nhầm ranh giới từ.'; });
+$('ocr-select-all').addEventListener('click',()=>{detectedOcrWords.forEach(w=>w.checked=true);renderOcrWords();});
+$('ocr-clear-all').addEventListener('click',()=>{detectedOcrWords.forEach(w=>w.checked=false);renderOcrWords();});
 $('ocr-add-selected').addEventListener('click',()=>{
  const rows=detectedOcrWords.filter(w=>w.checked);if(!rows.length){toast('Hãy tích chọn ít nhất một từ.');return;}
  let added=0,exists=0;

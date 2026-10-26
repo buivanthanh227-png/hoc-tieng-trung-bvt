@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v18-mobile-ocr-fix';
+const CACHE_NAME = 'hoc-trung-app-shell-v19-dual-ocr-canvas';
 const APP_FILES = ['./index.html', './manifest.webmanifest', './icon.svg', './sw.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 
