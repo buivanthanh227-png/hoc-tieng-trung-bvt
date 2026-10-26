@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v28-answer-clean-speech-restart';
+const CACHE_NAME = 'hoc-trung-app-shell-v29-typed-fallback-auto-speak';
 const APP_FILES = ['./index.html', './manifest.webmanifest', './icon.svg', './sw.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 self.addEventListener('install', event => { event.waitUntil((async () => { const cache = await caches.open(CACHE_NAME); for (const file of APP_FILES) { try { await cache.add(file); } catch (_) {} } await self.skipWaiting(); })()); });

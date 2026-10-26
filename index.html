@@ -1908,13 +1908,13 @@ function renderReflexQuestion(autoSpeak=false){
  $('reflex-speech-method').hidden=reflexMode!=='speak';$('reflex-typing-method').hidden=false;
  $('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu thu âm';
  $('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
- $('reflex-typing-title').textContent=reflexMode==='speak'?'Cách 2 — Nhập câu trả lời bằng chữ Hán':'Nhập câu trả lời bằng chữ Hán';
+ $('reflex-typing-title').textContent=reflexMode==='speak'?'Nếu không thu âm được, hãy nhập câu trả lời bằng chữ Hán':'Nhập câu trả lời bằng chữ Hán';
  $('reflex-play-question').textContent=echo?'🔊 Nghe câu mẫu':'🔊 AI đọc câu hỏi';
  $('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
  $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
  $('reflex-live-transcript').textContent='Đang chờ bạn nói…';
  $('reflex-mic-instruction').textContent='Nói tiếng Trung rồi chạm vào biểu tượng micro để dừng.';
- if(autoSpeak&&!echo){speak(p.qZh,$('reflex-play-question'));}
+ if(autoSpeak){const spokenText=echo?p.aZh:p.qZh;if(spokenText)speak(spokenText,$('reflex-play-question'));}
 }
 function normaliseReflexAnswer(s){return String(s||'').normalize('NFKC').replace(/[\s，,。.!！?？、；;：:“”"'‘’（）()\[\]{}]/g,'').trim();}
 function evaluateReflexAnswer(raw,source='typed'){
@@ -2027,7 +2027,7 @@ function startReflexMicrophone(){
  invalidateReflexRecognition();
  const session=reflexRecognitionSession;
  reflexRecognitionStopRequested=false;reflexRecognitionError='';reflexRecognitionTranscript='';reflexRecognitionLiveText='';reflexRecognitionEmptyEnds=0;reflexRecognitionSegments=0;reflexHasAnswered=false;
- $('reflex-next-button').hidden=true;$('reflex-check-button').hidden=reflexMode==='speak';
+ $('reflex-next-button').hidden=true;$('reflex-check-button').hidden=false;
  reflexRecording=true;
  $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
  $('reflex-mic-button').disabled=true;$('reflex-mic-button').textContent='🎙️ Đang thu âm…';
@@ -2049,7 +2049,7 @@ function stopReflexMicrophone(){
 $('reflex-live-mic').addEventListener('click',stopReflexMicrophone);
 $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{
  reflexMode=btn.dataset.reflexMode;$('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b===btn));
- $('reflex-speech-method').hidden=reflexMode!=='speak';$('reflex-typing-method').hidden=false;$('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-answer-label').textContent='Hãy nhập câu trả lời bằng chữ Hán';$('reflex-typing-title').textContent=reflexMode==='speak'?'Cách 2 — Nhập câu trả lời bằng chữ Hán':'Nhập câu trả lời bằng chữ Hán';
+ $('reflex-speech-method').hidden=reflexMode!=='speak';$('reflex-typing-method').hidden=false;$('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-answer-label').textContent='Hãy nhập câu trả lời bằng chữ Hán';$('reflex-typing-title').textContent=reflexMode==='speak'?'Nếu không thu âm được, hãy nhập câu trả lời bằng chữ Hán':'Nhập câu trả lời bằng chữ Hán';
  if(reflexQueue.length)renderReflexQuestion(reflexMode==='speak');
 }));
 $('reflex-start-button').addEventListener('click',()=>{
