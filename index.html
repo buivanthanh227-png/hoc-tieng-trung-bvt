@@ -99,6 +99,15 @@
 .stroke-stage{display:flex!important;align-items:center!important;justify-content:center!important;padding:0!important;position:relative!important;min-width:0!important;overflow:hidden!important;}
 .stroke-stage>svg,.stroke-stage>canvas{display:block!important;position:relative!important;inset:auto!important;flex:0 0 auto!important;width:calc(100% - 28px)!important;height:calc(100% - 28px)!important;max-width:none!important;max-height:none!important;min-width:0!important;min-height:0!important;margin:0 auto!important;left:0!important;right:0!important;top:0!important;bottom:0!important;transform:none!important;overflow:visible!important;}
 .stroke-stage>canvas{image-rendering:auto!important;touch-action:none!important;}
+
+/* Sentence builder: paginate long combinatorial results without a long single column. */
+.sentence-pagination{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 0;padding:8px;border:1px solid var(--line);border-radius:11px;background:#fafafa}
+.sentence-pagination .pager-info{font-size:11px;color:var(--muted);font-weight:700}
+.sentence-pagination .pager-actions{display:flex;align-items:center;gap:6px}
+.sentence-pagination .pager-actions button{min-width:38px}
+.sentence-pagination .pager-number{border:1px solid var(--line);background:#fff;color:#344054;border-radius:8px;padding:7px 9px;font-size:11px;font-weight:800}
+.sentence-pagination .pager-number.active{background:var(--red);border-color:var(--red);color:#fff}
+@media(max-width:520px){.sentence-pagination{align-items:flex-start}.sentence-pagination .pager-info{width:100%}.sentence-pagination .pager-actions{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -219,16 +228,16 @@
   <button id="ocr-add-selected" class="btn full" type="button" style="margin-top:11px" disabled>＋ Thêm các từ đã tích vào danh sách ghép câu</button>
   <p class="smallprint" style="margin:8px 0 0">OCR online dùng OCR.Space Engine 3 qua máy chủ Worker. Mỗi ảnh là một yêu cầu riêng; hãy cân nhắc hạn mức nếu chọn nhiều ảnh. Nếu online thất bại, ứng dụng thử OCR cục bộ. Kết quả có thể sai nên hãy kiểm tra văn bản thô và danh sách từ; chỉ các từ bạn tích mới được thêm vào danh sách ghép câu.</p>
  </div>
- <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div></div>
+ <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><p class="smallprint" style="margin:5px 0 8px">Hiển thị 10 câu mỗi trang. Dùng các nút chuyển trang để xem toàn bộ câu đã tạo.</p><div id="sentence-pagination-top" class="sentence-pagination" hidden></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div><div id="sentence-pagination-bottom" class="sentence-pagination" hidden></div></div>
  <div class="card reflex-card" id="reflex-card">
   <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ hỏi – đáp</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
-  <p class="subtle" style="margin:7px 0 10px">Tạo các lượt hỏi–đáp từ những từ bạn đã chọn. Mỗi lượt chỉ dùng từ trong danh sách đó; câu hỏi được xáo trộn để luyện nhiều vòng.</p>
+  <p class="subtle" style="margin:7px 0 10px">Tạo nhiều lượt hỏi–đáp và luyện dịch từ toàn bộ câu đã ghép. Chế độ viết yêu cầu nhập chữ Hán; chế độ nói dùng micro nếu trình duyệt hỗ trợ. Sau mỗi lượt, tiếp tục đến hết bài hoặc xáo trộn để luyện vòng mới.</p>
   <div class="mode-row" id="reflex-mode-row">
    <button type="button" class="mode-btn active" data-reflex-mode="write">✍️ Phản xạ viết</button>
    <button type="button" class="mode-btn" data-reflex-mode="speak">🎙️ Phản xạ nói</button>
   </div>
   <div class="reflex-controls">
-   <button id="reflex-start-button" class="btn" type="button">🌀 Tạo bài hỏi–đáp ngẫu nhiên</button>
+   <button id="reflex-start-button" class="btn" type="button">🌀 Tạo bài hội thoại & phản xạ</button>
    <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 Xáo trộn câu hỏi</button>
   </div>
   <div id="reflex-session" hidden>
@@ -314,6 +323,9 @@ let activeTab = 'dict';
 let combineScope = 'common';
 let selectedCombine = new Map();
 let generatedSentences = [];
+let sentencePage = 1;
+const SENTENCES_PER_PAGE = 10;
+let currentSentencePracticeDeck = [];
 let practiceMode = 'vi-zh';
 let practiceIndex = 0;
 let sessionDone = 0;
@@ -566,7 +578,7 @@ function renderDictionary(){const container=$('dict-list');container.innerHTML='
 $('page-info').textContent=`Trang ${total?currentPage:0}/${total?pages:0}`;$('prev-page').disabled=currentPage<=1;$('next-page').disabled=currentPage>=pages;$('dict-result-count').textContent=`${total.toLocaleString('vi-VN')} kết quả / ${dictionary.length.toLocaleString('vi-VN')} từ`;}
 $('dict-search').addEventListener('input',()=>{clearTimeout(window._dictTimer);window._dictTimer=setTimeout(applyFilter,100);});$('prev-page').onclick=()=>{currentPage=Math.max(1,currentPage-1);renderDictionary();window.scrollTo({top:0,behavior:'smooth'});};$('next-page').onclick=()=>{currentPage++;renderDictionary();window.scrollTo({top:0,behavior:'smooth'});};
 function switchTab(tab){activeTab=tab;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+tab));window.scrollTo({top:0,behavior:'smooth'});if(tab==='combine'){renderCombineChoices();renderSelected();}if(tab==='practice')$('practice-back').hidden=practiceReturnTab!=='combine';}
-document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b){if(b.dataset.tab==='practice'){practiceReturnTab=null;currentCustomSentence=null;}switchTab(b.dataset.tab);}});
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b){if(b.dataset.tab==='practice'){practiceReturnTab=null;currentCustomSentence=null;currentSentencePracticeDeck=[];}switchTab(b.dataset.tab);}});
 let warnedNoNaturalMaleVoice = false;
 function speak(text,button=null){
  if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined'){toast('Trình duyệt không hỗ trợ đọc văn bản.');return;}
@@ -951,9 +963,34 @@ function buildSentences(){
 
  // Keep the most informative well-formed candidates first. Never synthesize unselected lexical items.
  sentences.sort((a,b)=>b.words.length-a.words.length||a.priority-b.priority||a.zh.length-b.zh.length);
- return sentences.slice(0,12).map(({priority,...rest})=>rest);
+ return sentences.slice(0,500).map(({priority,...rest})=>rest);
 }
-$('make-sentences').onclick=()=>{generatedSentences=buildSentences();refreshReflexDeck(true);$('sentence-count').textContent=generatedSentences.length+' câu';const c=$('sentence-results');if(!generatedSentences.length){c.innerHTML='<div class="empty" style="margin-top:10px"><b>Chưa tìm được câu chắc chắn đúng từ các từ đã chọn.</b><br>Bộ ghép câu chỉ dùng các mẫu ngữ pháp và kết hợp từ thông dụng đã được kiểm soát. Nếu các từ chưa tạo thành câu tự nhiên, ứng dụng sẽ không đoán hoặc tự thêm từ. Hãy thử chọn thêm chủ ngữ, động từ/tính từ, tân ngữ hoặc trợ từ phù hợp.</div>';return;}c.innerHTML='';generatedSentences.forEach((s,i)=>{const div=document.createElement('article');div.className='sent-card';div.innerHTML=`<div class="row between"><span class="pill">Câu ${i+1}</span><button class="iconbtn" data-speak="${escapeHTML(s.zh.replace(/[。！？]/g,''))}" aria-label="Nghe câu">🔊</button></div><div class="chinese">${escapeHTML(s.zh)}</div><div class="meta">${escapeHTML(s.py||'Pinyin chưa có cho mọi từ')}</div><div class="translation">${escapeHTML(s.vi)}</div><p class="smallprint">Từ đã dùng: ${s.words.map(w=>escapeHTML(w)).join(' + ')}.</p><p class="smallprint">${escapeHTML(s.reason)}</p><div class="sent-actions"><button class="btn tiny" data-practice-sentence="${i}" data-kind="vi-zh">Luyện Việt → Trung</button><button class="btn outline tiny" data-practice-sentence="${i}" data-kind="zh-vi">Luyện Trung → Việt</button><button class="btn secondary tiny" data-practice-sentence="${i}" data-kind="read">Luyện đọc câu</button></div>`;c.appendChild(div);});c.querySelectorAll('[data-practice-sentence]').forEach(b=>b.onclick=()=>{const s=generatedSentences[Number(b.dataset.practiceSentence)];if(s){currentCustomSentence=s;practiceReturnTab='combine';practiceMode=b.dataset.kind;practiceChecked=false;sessionDone=0;sessionCorrect=0;updateModeButtons();loadPractice();switchTab('practice');}});};
+function renderSentencePagination(targetId){
+ const el=$(targetId);if(!el)return;
+ const totalPages=Math.max(1,Math.ceil(generatedSentences.length/SENTENCES_PER_PAGE));
+ if(generatedSentences.length<=SENTENCES_PER_PAGE){el.hidden=true;el.innerHTML='';return;}
+ el.hidden=false;const start=(sentencePage-1)*SENTENCES_PER_PAGE+1,end=Math.min(sentencePage*SENTENCES_PER_PAGE,generatedSentences.length);
+ const pageButtons=[];const lo=Math.max(1,sentencePage-2),hi=Math.min(totalPages,sentencePage+2);
+ if(lo>1)pageButtons.push('<button class="pager-number" data-sentence-page="1">1</button>');
+ if(lo>2)pageButtons.push('<span class="pager-info">…</span>');
+ for(let n=lo;n<=hi;n++)pageButtons.push(`<button class="pager-number ${n===sentencePage?'active':''}" data-sentence-page="${n}" ${n===sentencePage?'aria-current="page"':''}>${n}</button>`);
+ if(hi<totalPages-1)pageButtons.push('<span class="pager-info">…</span>');
+ if(hi<totalPages)pageButtons.push(`<button class="pager-number" data-sentence-page="${totalPages}">${totalPages}</button>`);
+ el.innerHTML=`<span class="pager-info">Trang ${sentencePage}/${totalPages} · câu ${start}–${end} trên ${generatedSentences.length}</span><div class="pager-actions"><button class="btn secondary tiny" data-sentence-prev ${sentencePage===1?'disabled':''}>← Trước</button>${pageButtons.join('')}<button class="btn secondary tiny" data-sentence-next ${sentencePage===totalPages?'disabled':''}>Sau →</button></div>`;
+ el.querySelectorAll('[data-sentence-page]').forEach(b=>b.addEventListener('click',()=>{sentencePage=Number(b.dataset.sentencePage);renderSentencePage();}));
+ el.querySelector('[data-sentence-prev]')?.addEventListener('click',()=>{if(sentencePage>1){sentencePage--;renderSentencePage();}});
+ el.querySelector('[data-sentence-next]')?.addEventListener('click',()=>{if(sentencePage<totalPages){sentencePage++;renderSentencePage();}});
+}
+function renderSentencePage(){
+ const c=$('sentence-results');if(!c)return;
+ if(!generatedSentences.length){c.innerHTML='<div class="empty" style="margin-top:10px"><b>Chưa tìm được câu chắc chắn đúng từ các từ đã chọn.</b><br>Bộ ghép câu dùng các mẫu ngữ pháp và kết hợp từ thông dụng đã được kiểm soát; không tự thêm từ ngoài danh sách. Hãy thử thêm chủ ngữ, động từ/tính từ, tân ngữ hoặc trợ từ phù hợp.</div>';renderSentencePagination('sentence-pagination-top');renderSentencePagination('sentence-pagination-bottom');return;}
+ const totalPages=Math.max(1,Math.ceil(generatedSentences.length/SENTENCES_PER_PAGE));sentencePage=Math.max(1,Math.min(sentencePage,totalPages));
+ const start=(sentencePage-1)*SENTENCES_PER_PAGE;const visible=generatedSentences.slice(start,start+SENTENCES_PER_PAGE);c.innerHTML='';
+ visible.forEach((s,localIndex)=>{const i=start+localIndex;const div=document.createElement('article');div.className='sent-card';div.innerHTML=`<div class="row between"><span class="pill">Câu ${i+1}</span><button class="iconbtn" data-speak="${escapeHTML(s.zh.replace(/[。！？]/g,''))}" aria-label="Nghe câu">🔊</button></div><div class="chinese">${escapeHTML(s.zh)}</div><div class="meta">${escapeHTML(s.py||'Pinyin chưa có cho mọi từ')}</div><div class="translation">${escapeHTML(s.vi)}</div><p class="smallprint">Từ đã dùng: ${s.words.map(w=>escapeHTML(w)).join(' + ')}.</p><div class="sent-actions"><button class="btn tiny" data-practice-sentence="${i}" data-kind="vi-zh">Luyện viết Việt → Trung</button><button class="btn outline tiny" data-practice-sentence="${i}" data-kind="zh-vi">Luyện dịch Trung → Việt</button><button class="btn secondary tiny" data-practice-sentence="${i}" data-kind="read">Luyện đọc câu</button></div>`;c.appendChild(div);});
+ renderSentencePagination('sentence-pagination-top');renderSentencePagination('sentence-pagination-bottom');
+ c.querySelectorAll('[data-practice-sentence]').forEach(b=>b.onclick=()=>{const idx=Number(b.dataset.practiceSentence);const s=generatedSentences[idx];if(s){currentSentencePracticeDeck=generatedSentences.slice();currentCustomSentence=s;practiceReturnTab='combine';practiceMode=b.dataset.kind;practiceChecked=false;practiceIndex=idx;sessionDone=0;sessionCorrect=0;updateModeButtons();loadPractice();switchTab('practice');}});
+}
+$('make-sentences').onclick=()=>{generatedSentences=buildSentences();sentencePage=1;currentSentencePracticeDeck=[];currentCustomSentence=null;refreshReflexDeck(true);$('sentence-count').textContent=generatedSentences.length+' câu';renderSentencePage();};
 function updateModeButtons(){
  document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===practiceMode));
  const labels={'vi-zh':'Hãy dịch nghĩa tiếng Việt sang tiếng Trung.','zh-vi':'Hãy dịch câu tiếng Trung sang tiếng Việt.','write':'Tìm từ cần viết, xem mẫu nét bên trái rồi viết/chấm thứ tự nét bên phải.','read':'Tìm từ hoặc câu bạn muốn luyện; chọn nội dung rồi nghe mẫu và đọc theo.'};
@@ -973,15 +1010,19 @@ function updateModeButtons(){
  $('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
  if(practiceMode!=='read'){$('user-answer').disabled=false;$('submit-answer').disabled=false;}
 }
-document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{const nextMode=b.dataset.mode;if(nextMode==='read'&&practiceMode!=='read'&&!(practiceReturnTab==='combine'&&currentCustomSentence))selectedReadTarget=null;practiceMode=nextMode;if(practiceReturnTab!=='combine')currentCustomSentence=null;practiceIndex=0;practiceChecked=false;updateModeButtons();loadPractice();}));
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{const nextMode=b.dataset.mode;if(nextMode==='read'&&practiceMode!=='read'&&!(practiceReturnTab==='combine'&&(currentCustomSentence||currentSentencePracticeDeck.length)))selectedReadTarget=null;practiceMode=nextMode;if(practiceReturnTab!=='combine'){currentCustomSentence=null;currentSentencePracticeDeck=[];}practiceIndex=0;practiceChecked=false;updateModeButtons();loadPractice();}));
 $('practice-back').addEventListener('click',()=>switchTab('combine'));
 function practicePool(){return buildSeed().filter(r=>r[4]==='HSK1'||r[4]==='HSK2'||r[4]==='HSK3');}
 function randomPractice(){const pool=practicePool();return pool[Math.floor(Math.random()*pool.length)]||buildSeed()[0];}
 function loadPractice(){
  resetPracticeStrokeQuiz();$('practice-back').hidden=practiceReturnTab!=='combine';practiceChecked=false;$('practice-result').hidden=true;$('next-question').hidden=true;$('submit-answer').hidden=false;$('user-answer').value='';
  updateModeButtons();
+ if(currentSentencePracticeDeck.length){
+  if(practiceIndex>=currentSentencePracticeDeck.length)practiceIndex=0;
+  currentCustomSentence=currentSentencePracticeDeck[practiceIndex]||currentSentencePracticeDeck[0];
+ }
  if(currentCustomSentence){
-  const s=currentCustomSentence;currentPractice={type:'sentence',row:null,sentence:s};$('practice-level').textContent=practiceMode==='read'?'Luyện đọc câu tự ghép':'Câu tự ghép';$('practice-progress').textContent='Câu tự ghép';
+  const s=currentCustomSentence;currentPractice={type:'sentence',row:null,sentence:s};$('practice-level').textContent=practiceMode==='read'?'Luyện đọc toàn bộ câu đã ghép':practiceMode==='zh-vi'?'Luyện dịch toàn bộ câu đã ghép':'Luyện viết toàn bộ câu đã ghép';$('practice-progress').textContent=currentSentencePracticeDeck.length?`Câu ${practiceIndex+1}/${currentSentencePracticeDeck.length}`:'Câu tự ghép';
   if(practiceMode==='zh-vi'){$('practice-question').textContent=s.zh;$('practice-subtext').textContent=s.py;$('user-answer').placeholder='Nhập nghĩa tiếng Việt…';}
   else if(practiceMode==='read'){$('practice-question').textContent=s.zh;$('practice-subtext').textContent='Pinyin: '+(s.py||'')+(s.vi?' · Nghĩa: '+s.vi:'');$('user-answer').placeholder='Nếu có thể, đọc để nhận diện hoặc nhập bản chép lời';}
   else{$('practice-question').textContent=s.vi;$('practice-subtext').textContent='Dịch câu này sang tiếng Trung';$('user-answer').placeholder='Nhập cả câu bằng chữ Hán';}
@@ -1043,7 +1084,7 @@ function scoreAnswer(user,expected,aliases=[]){const cand=[expected,...aliases].
 function showScore(score,expected,pinyin,meaning,notes=''){const box=$('practice-result');box.hidden=false;box.className='result '+(score>=80?'good':score>=50?'mid':'bad');box.innerHTML=`<div class="score">${score}/100</div><b>${score>=80?'Chính xác — tốt lắm!':score>=50?'Gần đúng — hãy xem lại đáp án.':'Chưa chính xác — thử ghi nhớ đáp án mẫu.'}</b><div style="margin-top:6px"><b>Đáp án:</b> ${escapeHTML(expected)}</div>${pinyin?`<div><b>Pinyin:</b> ${escapeHTML(pinyin)}</div>`:''}${meaning?`<div><b>Nghĩa:</b> ${escapeHTML(meaning)}</div>`:''}${notes?`<p style="margin:6px 0 0">${escapeHTML(notes)}</p>`:''}`;sessionDone++;if(score>=80)sessionCorrect++;$('session-score').textContent=`Điểm: ${sessionCorrect}/${sessionDone}`;$('progress-fill').style.width=Math.round(sessionCorrect/sessionDone*100)+'%';saveStats(score);updateStats();}
 function handleSubmit(){if(practiceChecked){nextPractice();return;}const user=$('user-answer').value.trim();if(practiceMode==='read'){handleReadSubmit(user);return;}if(!user){toast('Nhập câu trả lời trước khi chấm.');return;}const p=currentPractice;let score=0,expected='',py='',meaning='',notes='';if(p?.type==='sentence'){if(practiceMode==='zh-vi'){expected=p.sentence.vi;score=scoreAnswer(user,expected,[expected.replace(/[.!?。？！]+$/,''),p.sentence.zh]);py=p.sentence.py;meaning='Dịch từ câu tiếng Trung';}else{expected=p.sentence.zh;score=scoreAnswer(user,expected,[expected.replace(/[。！？]/g,''),p.sentence.py,keyPinyin(p.sentence.py)]);py=p.sentence.py;meaning=p.sentence.vi;}}else{const r=p.row;if(practiceMode==='vi-zh'||practiceMode==='write'){expected=r[0];const alternatives=[r[1],r[2],keyPinyin(r[2]),r[0]+' '+r[2]];score=scoreAnswer(user,expected,alternatives);py=r[2];meaning=r[3];if(practiceMode==='write'&&cleanAnswer(user)===cleanAnswer(expected))notes='Bạn đã nhập đúng chữ Hán. Ô vẽ tự do là luyện tay; dùng chế độ Chấm thứ tự nét để kiểm tra từng nét theo mẫu.';}else{expected=r[3];score=scoreAnswer(user,expected,[simpleGloss(r[3]),r[0]]);py=r[2];meaning=r[3];}}showScore(score,expected,py,meaning,notes);practiceChecked=true;$('submit-answer').hidden=true;$('next-question').hidden=false;}
 function handleReadSubmit(user){const target=currentPractice?.sentence?.zh||'';if(!target){toast('Chưa có câu đọc.');return;}const supported=!!(window.SpeechRecognition||window.webkitSpeechRecognition);if(user){const score=scoreAnswer(user,target,[target.replace(/[。！？]/g,'')]);showScore(score,target,currentPractice.sentence.py,currentPractice.sentence.vi,supported?'Điểm dựa trên mức độ khớp văn bản nhận diện/nhập; không phải phân tích chính xác thanh điệu.':'Trình duyệt không có nhận diện giọng nói tích hợp; điểm này dựa trên bản chép lời bạn nhập, không đánh giá phát âm thực tế.');practiceChecked=true;$('submit-answer').hidden=true;$('next-question').hidden=false;}else if(supported){startRecognition();}else{const box=$('practice-result');box.hidden=false;box.className='result mid';box.innerHTML='<b>Trình duyệt này không hỗ trợ nhận diện giọng nói trong trang.</b><p>Hãy bấm “Nghe mẫu”, tự đọc lại, sau đó nhập câu bạn vừa đọc để so văn bản. Trang không thể chấm chính xác thanh điệu/phát âm nếu không nhận được giọng nói.</p>';}}
-$('submit-answer').onclick=handleSubmit;$('next-question').onclick=()=>nextPractice();function nextPractice(){if(practiceMode==='read'){if(currentCustomSentence){currentCustomSentence=null;}practiceChecked=false;loadPractice();return;}practiceIndex++;if(currentCustomSentence){currentCustomSentence=null;}loadPractice();}
+$('submit-answer').onclick=handleSubmit;$('next-question').onclick=()=>nextPractice();function nextPractice(){if(currentSentencePracticeDeck.length){practiceIndex++;if(practiceIndex>=currentSentencePracticeDeck.length){practiceIndex=0;toast('Đã luyện hết '+currentSentencePracticeDeck.length+' câu. Bắt đầu lại từ câu đầu.');}currentCustomSentence=currentSentencePracticeDeck[practiceIndex];practiceChecked=false;loadPractice();return;}if(practiceMode==='read'){if(currentCustomSentence){currentCustomSentence=null;}practiceChecked=false;loadPractice();return;}practiceIndex++;if(currentCustomSentence){currentCustomSentence=null;}loadPractice();}
 $('listen-btn').onclick=()=>{const text=currentPractice?.sentence?.zh||currentPractice?.row?.[0]||$('practice-question').textContent;speak(text);};
 function startRecognition(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy nhập câu đọc vào ô trả lời.');return;}try{speechRecognition=new SR();speechRecognition.lang='zh-CN';speechRecognition.interimResults=false;speechRecognition.maxAlternatives=3;recording=true;$('mic-btn').textContent='⏹️ Đang nghe…';$('mic-btn').disabled=true;speechRecognition.onresult=e=>{const transcript=e.results?.[0]?.[0]?.transcript||'';$('user-answer').value=transcript;recording=false;$('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;handleReadSubmit(transcript);};speechRecognition.onerror=e=>{recording=false;$('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;toast(e.error==='not-allowed'?'Bạn chưa cấp quyền microphone.':'Không nhận được giọng nói. Hãy thử lại hoặc nhập câu vào ô.');};speechRecognition.onend=()=>{recording=false;$('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;};speechRecognition.start();}catch(e){recording=false;$('mic-btn').disabled=false;$('mic-btn').textContent='🎙️ Đọc để chấm';toast('Không thể bật nhận diện giọng nói. Hãy thử qua HTTPS.');}}
 $('mic-btn').onclick=()=>{if(recording&&speechRecognition){speechRecognition.stop();return;}startRecognition();};
@@ -1284,9 +1325,10 @@ function drawLine(a,b){if(!canvasContext)return;canvasContext.save();canvasConte
 $('clear-canvas').onclick=clearCanvas;$('show-trace').onclick=()=>{showTrace=!showTrace;drawTrace();};initCanvas();
 
 function invalidateGeneratedSentences(){
- generatedSentences=[];reflexAllPairs=[];reflexQueue=[];reflexCurrentPair=null;reflexIndex=0;reflexHasAnswered=false;
+ generatedSentences=[];sentencePage=1;currentSentencePracticeDeck=[];reflexAllPairs=[];reflexQueue=[];reflexCurrentPair=null;reflexIndex=0;reflexHasAnswered=false;
  const sc=$('sentence-count'),sr=$('sentence-results'),pill=$('reflex-count-pill'),session=$('reflex-session'),shuffle=$('reflex-shuffle-button'),status=$('reflex-status');
  if(sc)sc.textContent='0 câu';
+ ['sentence-pagination-top','sentence-pagination-bottom'].forEach(id=>{const el=$(id);if(el){el.hidden=true;el.innerHTML='';}});
  if(sr)sr.innerHTML='<div class="empty" style="margin-top:10px">Danh sách từ đã thay đổi. Bấm “Tạo câu có nghĩa” để tạo lại câu và bài phản xạ.</div>';
  if(pill)pill.textContent='Chưa có bài';if(session)session.hidden=true;if(shuffle)shuffle.disabled=true;
  if(status)status.textContent='Danh sách từ vừa thay đổi; hãy tạo lại câu để bài phản xạ không dùng dữ liệu cũ.';
@@ -1767,6 +1809,22 @@ function createReflexPairs(){
   for(const obj of REFLEX_OBJECTS['吃'])if(has('吃')&&has(obj))add(['你','吃',obj,'吗'],['我','吃',obj],`Bạn có ăn ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi ăn ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
   for(const obj of REFLEX_OBJECTS['喝'])if(has('喝')&&has(obj))add(['你','喝',obj,'吗'],['我','喝',obj],`Bạn có uống ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()} không?`,`Tôi uống ${simpleGloss(token(obj).vi||token(obj).row?.[3]||obj).toLowerCase()}.`);
  }
+ // Turn every generated sentence into a practice turn so writing/speaking covers the full result set, not just one sentence.
+ // Question/answer pairs are only created when the selected words include 吗 and a matching statement exists.
+ if(generatedSentences.length){
+  const byWords=new Map();
+  for(const s of generatedSentences){const clean=String(s.zh||'').replace(/[。！？!?]+$/,'');const ws=(s.words||[]).slice();if(!clean||!ws.length||!ws.every(has))continue;byWords.set(ws.join('|'),s);}
+  for(const s of generatedSentences){
+   const ws=(s.words||[]).slice();if(!ws.length||!ws.every(has))continue;
+   const clean=String(s.zh||'').replace(/[。！？!?]+$/,'');
+   if(/[？?]$/.test(s.zh||'')&&ws[ws.length-1]==='吗'){
+    const statement=byWords.get(ws.slice(0,-1).join('|'));
+    if(statement){const key='dialogue|'+clean+'|'+statement.zh;if(!seen.has(key)){seen.add(key);pairs.push({qZh:clean+'？',aZh:String(statement.zh).replace(/[。！？!?]+$/,'')+'。',qVi:s.vi||'Hãy trả lời câu hỏi này bằng tiếng Trung.',aVi:statement.vi||'',kind:'dialogue',py:statement.py||pinyinForChinese(statement.zh)});}}
+   }
+   const key='translate|'+clean;
+   if(!seen.has(key)){seen.add(key);pairs.push({qZh:'',aZh:clean+'。',qVi:'Hãy diễn đạt câu này bằng tiếng Trung: '+String(s.vi||'').replace(/[。！？!?]+$/,''),aVi:s.vi||'',kind:'translate',py:s.py||pinyinForChinese(clean)});}
+  }
+ }
  // If there are generated sentences but the selected vocabulary cannot make a Q&A pair,
  // offer a strict translation/shadowing drill from those same sentences as a fallback.
  if(!pairs.length&&generatedSentences.length){
@@ -1783,14 +1841,14 @@ function refreshReflexDeck(shuffle=true){
  $('reflex-count-pill').textContent=reflexQueue.length?reflexQueue.length+' lượt hỏi–đáp':'Chưa tạo được bài';
  $('reflex-shuffle-button').disabled=!reflexQueue.length;
  if(!reflexQueue.length){$('reflex-session').hidden=true;$('reflex-status').textContent='Chưa đủ từ để tạo câu hỏi và câu trả lời. Hãy chọn thêm các từ như 我, 你, 吗 cùng động từ/tính từ và tân ngữ phù hợp rồi bấm “Tạo câu có nghĩa”.';return;}
- $('reflex-status').textContent='Đã tạo '+reflexQueue.length+' lượt. Bài chỉ dùng các từ đã chọn; sau mỗi lượt có thể sang câu kế hoặc xáo trộn cả bài.';
+ $('reflex-status').textContent='Đã tạo '+reflexQueue.length+' lượt hỏi–đáp/luyện câu từ toàn bộ danh sách câu. Bài trộn các cặp hội thoại có câu hỏi–trả lời và bài dịch từng câu; chỉ dùng từ đã chọn. Xong một vòng, bấm Xáo trộn câu hỏi để luyện lại.';
  $('reflex-session').hidden=false;renderReflexQuestion(reflexMode==='speak');
 }
 function renderReflexQuestion(autoSpeak=false){
  if(!reflexQueue.length){$('reflex-session').hidden=true;return;}
  reflexCurrentPair=reflexQueue[reflexIndex];reflexHasAnswered=false;
  const p=reflexCurrentPair;const echo=p.kind==='translate';
- $('reflex-progress').textContent=`Câu ${reflexIndex+1}/${reflexQueue.length}`;
+ $('reflex-progress').textContent=`Lượt ${reflexIndex+1}/${reflexQueue.length}`;
  $('reflex-question-label').textContent=echo?'Câu luyện từ câu đã tạo':'AI hỏi bằng tiếng Trung';
  $('reflex-question-zh').textContent=p.qZh||'Dịch câu sang tiếng Trung';
  $('reflex-question-zh').hidden=echo;
@@ -1800,7 +1858,7 @@ function renderReflexQuestion(autoSpeak=false){
  $('reflex-mic-button').hidden=reflexMode!=='speak';$('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
  $('reflex-play-question').textContent=echo?'🔊 Nghe câu mẫu':'🔊 AI đọc câu hỏi';
  $('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
- if(autoSpeak){const voiceText=echo?p.aZh:p.qZh;speak(voiceText,$('reflex-play-question'));}
+ if(autoSpeak&&!echo){speak(p.qZh,$('reflex-play-question'));}
 }
 function normaliseReflexAnswer(s){return String(s||'').normalize('NFKC').replace(/[\s，,。.!！?？、；;：:“”"'‘’（）()\[\]{}]/g,'').trim();}
 function evaluateReflexAnswer(raw,source='typed'){
@@ -1830,7 +1888,7 @@ $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.add
 }));
 $('reflex-start-button').addEventListener('click',()=>{
  if(selectedCombine.size<2){toast('Hãy chọn ít nhất 2 từ trước khi tạo bài phản xạ.');return;}
- if(!generatedSentences.length){generatedSentences=buildSentences();$('sentence-count').textContent=generatedSentences.length+' câu';}
+ if(!generatedSentences.length){generatedSentences=buildSentences();sentencePage=1;$('sentence-count').textContent=generatedSentences.length+' câu';renderSentencePage();}
  refreshReflexDeck(true);
 });
 $('reflex-shuffle-button').addEventListener('click',()=>refreshReflexDeck(true));
