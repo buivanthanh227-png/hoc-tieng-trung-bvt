@@ -142,7 +142,7 @@
 @media(max-width:520px){.reading-mode-actions{grid-template-columns:1fr}.ocr-word-actions{margin-left:0}}
 
 
-/* v39: three reflex modes share one vertical selector and consistent active state */
+/* v40: writing reflex uses Vietnamese prompts from previously generated sentences */
 #reflex-mode-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:10px 0}
 #reflex-mode-row .mode-btn{display:block;width:100%;min-height:48px;text-align:left;padding:13px 14px;font-size:14px;line-height:1.35;white-space:normal}
 #reflex-mode-row .mode-btn.active{background:#fef2f2;color:var(--red);border-color:#f4abab;box-shadow:inset 3px 0 0 var(--red)}
@@ -270,7 +270,7 @@
  </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><p class="smallprint" style="margin:5px 0 8px">Hiển thị 10 câu mỗi trang. Dùng các nút chuyển trang để xem toàn bộ câu đã tạo.</p><div id="sentence-pagination-top" class="sentence-pagination" hidden></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div><div id="sentence-pagination-bottom" class="sentence-pagination" hidden></div></div>
  <div class="card reflex-card" id="reflex-card">
-  <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ hỏi – đáp</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
+  <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
   <p class="subtle" style="margin:7px 0 10px">Phản xạ viết là bài nhập câu trả lời bằng chữ Hán. Hai chế độ đọc bên dưới là bài riêng: AI đọc mẫu trước, bạn thu âm đọc lại và ứng dụng nhận dạng để chấm mức độ khớp với câu mẫu; không chuyển sang mục Luyện tập.</p>
   <div class="mode-row" id="reflex-mode-row" aria-label="Chọn chức năng phản xạ">
    <button type="button" class="mode-btn active" data-reflex-mode="write">✍️ Phản xạ viết</button>
@@ -279,8 +279,8 @@
   </div>
   <p class="smallprint" id="reading-mode-hint" style="margin:0 0 10px">Luyện đọc theo câu đã ghép; phần hỏi–đáp chỉ dùng khi tạo được cặp câu hỏi và câu trả lời.</p>
   <div class="reflex-controls">
-   <button id="reflex-start-button" class="btn" type="button">🌀 Tạo bài hội thoại & phản xạ</button>
-   <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 Xáo trộn câu hỏi</button>
+   <button id="reflex-start-button" class="btn" type="button">✍️ Tạo bài luyện viết từ câu đã ghép</button>
+   <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 Xáo trộn câu luyện viết</button>
   </div>
   <div id="reflex-session" hidden>
    <div class="row between wrap" style="margin-top:13px"><span id="reflex-progress" class="pill">Câu 1/1</span><button id="reflex-play-question" class="btn secondary tiny" type="button">🔊 AI đọc câu hỏi</button></div>
@@ -326,7 +326,7 @@
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
 </main>
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>Học tiếng Trung BVT · Phiên bản v39</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>Học tiếng Trung BVT · Phiên bản v40</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="stroke-modal" class="stroke-modal" hidden>
  <div class="stroke-backdrop" data-close-stroke></div>
@@ -1968,11 +1968,37 @@ function createReflexPairs(){
 }
 function shuffleArray(arr){const copy=arr.slice();for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
 function refreshReflexDeck(shuffle=true){
- reflexAllPairs=createReflexPairs();reflexQueue=shuffle?shuffleArray(reflexAllPairs):reflexAllPairs.slice();reflexIndex=0;reflexHasAnswered=false;
- $('reflex-count-pill').textContent=reflexQueue.length?reflexQueue.length+' lượt hỏi–đáp':'Chưa tạo được bài';
+ // Phản xạ viết phải dùng riêng danh sách câu tiếng Việt đã ghép trước đó,
+ // không trộn với câu hỏi–đáp sinh tự động từ từ vựng đã chọn.
+ if(reflexMode==='write'){
+  const writingPairs=[];const seenWriting=new Set();
+  for(const s of generatedSentences){
+   const zhRaw=String(s.zh||'').trim();
+   if(!zhRaw)continue;
+   const zh=/[。！？!?]$/.test(zhRaw)?zhRaw:zhRaw+'。';
+   const vi=String(s.vi||'').trim().replace(/[。！？!?]+$/,'');
+   const key=zh+'|'+vi;
+   if(seenWriting.has(key))continue;seenWriting.add(key);
+   writingPairs.push({kind:'translate',qZh:'',qVi:vi||'Hãy viết câu tiếng Trung tương ứng với câu đã ghép.',aZh:zh,aVi:vi,py:s.py||pinyinForChinese(zh)});
+  }
+  reflexAllPairs=writingPairs;
+ }else{
+  reflexAllPairs=createReflexPairs();
+ }
+ reflexQueue=shuffle?shuffleArray(reflexAllPairs):reflexAllPairs.slice();reflexIndex=0;reflexHasAnswered=false;
+ $('reflex-count-pill').textContent=reflexQueue.length?(reflexMode==='write'?reflexQueue.length+' câu luyện viết':reflexQueue.length+' lượt hỏi–đáp'):'Chưa tạo được bài';
  $('reflex-shuffle-button').disabled=!reflexQueue.length;
- if(!reflexQueue.length){$('reflex-session').hidden=true;$('reflex-status').textContent='Chưa đủ từ để tạo câu hỏi và câu trả lời. Hãy chọn thêm các từ như 我, 你, 吗 cùng động từ/tính từ và tân ngữ phù hợp rồi bấm “Tạo câu có nghĩa”.';return;}
- $('reflex-status').textContent='Đã tạo '+reflexQueue.length+' lượt hỏi–đáp/luyện câu từ toàn bộ danh sách câu. Bài trộn các cặp hội thoại có câu hỏi–trả lời và bài dịch từng câu; chỉ dùng từ đã chọn. Xong một vòng, bấm Xáo trộn câu hỏi để luyện lại.';
+ $('reflex-shuffle-button').textContent=reflexMode==='write'?'🔀 Xáo trộn câu luyện viết':'🔀 Xáo trộn câu hỏi';
+ if(!reflexQueue.length){
+  $('reflex-session').hidden=true;
+  $('reflex-status').textContent=reflexMode==='write'
+   ?'Chưa có câu tiếng Việt đã ghép để luyện viết. Hãy chọn từ, bấm “Tạo câu có nghĩa”, sau đó bấm “Tạo bài luyện viết từ câu đã ghép”.'
+   :'Chưa đủ từ để tạo câu hỏi và câu trả lời. Hãy chọn thêm các từ như 我, 你, 吗 cùng động từ/tính từ và tân ngữ phù hợp rồi bấm “Tạo câu có nghĩa”.';
+  return;
+ }
+ $('reflex-status').textContent=reflexMode==='write'
+  ?'Đã nạp '+reflexQueue.length+' câu tiếng Việt từ phần câu đã ghép. Mỗi lượt chỉ hiện tiếng Việt; hãy tự nhập câu tương ứng bằng chữ Hán rồi bấm chấm điểm.'
+  :'Đã tạo '+reflexQueue.length+' lượt hỏi–đáp/luyện câu từ toàn bộ danh sách câu. Bài trộn các cặp hội thoại có câu hỏi–trả lời và bài dịch từng câu; chỉ dùng từ đã chọn. Xong một vòng, bấm Xáo trộn câu hỏi để luyện lại.';
  $('reflex-session').hidden=false;renderReflexQuestion(isVoicePracticeMode());
 }
 function isVoicePracticeMode(){return ['speak','read-sentences','read-dialogue'].includes(reflexMode);}
@@ -1981,18 +2007,22 @@ function renderReflexQuestion(autoSpeak=false){
  invalidateReflexRecognition();
  if(!reflexQueue.length){$('reflex-session').hidden=true;return;}
  reflexCurrentPair=reflexQueue[reflexIndex];reflexHasAnswered=false;
- const p=reflexCurrentPair;const echo=p.kind==='translate';
+ const p=reflexCurrentPair;const writingMode=reflexMode==='write';const echo=p.kind==='translate';
+ const oldReadingAnswer=$('reflex-reading-answer');if(oldReadingAnswer)oldReadingAnswer.hidden=true;
  $('reflex-progress').textContent=`Lượt ${reflexIndex+1}/${reflexQueue.length}`;
- $('reflex-question-label').textContent=echo?'Câu luyện từ câu đã tạo':'AI hỏi bằng tiếng Trung';
- $('reflex-question-zh').textContent=p.qZh||'Dịch câu sang tiếng Trung';
- $('reflex-question-zh').hidden=echo;
+ $('reflex-question-box').hidden=false;
+ $('reflex-question-label').textContent=writingMode?'Hãy viết câu sau bằng chữ Hán':echo?'Câu luyện từ câu đã tạo':'AI hỏi bằng tiếng Trung';
+ $('reflex-question-zh').textContent=p.qZh||'';
+ $('reflex-question-zh').hidden=writingMode||echo;
  $('reflex-question-vi').textContent=p.qVi||'';
- $('reflex-answer-label').textContent='Hãy nhập câu trả lời bằng chữ Hán';
- $('reflex-answer-input').value='';$('reflex-answer-input').placeholder=echo?'Nhập bản dịch bằng chữ Hán…':'Ví dụ: '+(p.aZh||'').replace(/[。！？!?]+$/,'');
- $('reflex-speech-method').hidden=!isVoicePracticeMode();$('reflex-typing-method').hidden=isVoicePracticeMode();
- $('reflex-mic-button').hidden=!isVoicePracticeMode();$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu ghi âm';
+ $('reflex-answer-label').textContent=writingMode?'Nhập câu tiếng Trung tương ứng bằng chữ Hán':'Hãy nhập câu trả lời bằng chữ Hán';
+ $('reflex-answer-input').value='';$('reflex-answer-input').placeholder=writingMode?'Nhập câu tiếng Trung bằng chữ Hán…':echo?'Nhập bản dịch bằng chữ Hán…':'Ví dụ: '+(p.aZh||'').replace(/[。！？!?]+$/,'');
+ $('reflex-speech-method').hidden=writingMode||!isVoicePracticeMode();
+ $('reflex-typing-method').hidden=isVoicePracticeMode()&&!writingMode;
+ $('reflex-mic-button').hidden=writingMode||!isVoicePracticeMode();$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu ghi âm';
  $('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
- $('reflex-typing-title').textContent='Nhập câu trả lời bằng chữ Hán';
+ $('reflex-typing-title').textContent=writingMode?'Luyện viết: nhập câu tiếng Trung bằng chữ Hán':'Nhập câu trả lời bằng chữ Hán';
+ $('reflex-play-question').hidden=writingMode;
  $('reflex-play-question').textContent=echo?'🔊 Nghe câu mẫu':'🔊 AI đọc câu hỏi';
  $('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
  $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
@@ -2418,8 +2448,11 @@ $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.add
  invalidateReflexRecognition();reflexQueue=[];reflexCurrentPair=null;reflexHasAnswered=false;
  $('reflex-session').hidden=true;$('reflex-speech-method').hidden=true;$('reflex-typing-method').hidden=false;
  $('reflex-mic-button').hidden=true;$('reflex-check-button').hidden=false;
- $('reflex-status').textContent='Đang chọn Phản xạ viết. Hãy bấm “Tạo bài hội thoại & phản xạ” để bắt đầu bài nhập chữ Hán.';
- $('reflex-count-pill').textContent='Chưa có bài';
+ $('reflex-status').textContent='Đang chọn Phản xạ viết. Bài này sẽ lần lượt đưa ra nghĩa tiếng Việt của các câu đã ghép; bạn tự nhập câu tiếng Trung bằng chữ Hán để chấm điểm.';
+ $('reflex-start-button').textContent='✍️ Tạo bài luyện viết từ câu đã ghép';
+ $('reflex-shuffle-button').textContent='🔀 Xáo trộn câu luyện viết';
+ $('reflex-play-question').hidden=true;
+ $('reflex-count-pill').textContent='Chưa có bài luyện viết';
 }));
 $('reflex-start-button').addEventListener('click',()=>{
  if(selectedCombine.size<2){toast('Hãy chọn ít nhất 2 từ trước khi tạo bài phản xạ.');return;}
@@ -2483,6 +2516,7 @@ function renderDedicatedReadingTurn(index, speakPrompt=true){
 $('read-generated-sentences')?.addEventListener('click',()=>{
  if(!generatedSentences.length){toast('Hãy tạo câu trước khi luyện phản xạ đọc.');return;}
  reflexMode='read-sentences';
+ $('reflex-start-button').textContent='🌀 Tạo bài hội thoại & phản xạ';$('reflex-shuffle-button').textContent='🔀 Xáo trộn câu hỏi';
  reflexQueue=generatedSentences.map(s=>{const zh=String(s.zh||'').replace(/[。！？!?]+$/,'')+'。';return {kind:'shadow',qZh:zh,qVi:pinyinForChinese(zh),aZh:zh,aVi:s.vi||'',py:s.py||pinyinForChinese(zh)};});
  // Store Vietnamese meaning separately from pinyin for the AI sample line.
  reflexQueue=reflexQueue.map((p,i)=>({...p,qVi:generatedSentences[i]?.vi||''}));
@@ -2495,6 +2529,7 @@ $('read-generated-dialogue')?.addEventListener('click',()=>{
  const pairs=createReflexPairs().filter(p=>p.kind==='dialogue');
  if(!pairs.length){$('reading-mode-hint').textContent='Chưa tạo được cặp hỏi–đáp. Hãy thêm trợ từ 吗 (ma), chủ ngữ như 我/你 và động từ hoặc tính từ phù hợp.';toast('Chưa có cặp hỏi–đáp. Hãy bổ sung từ gợi ý.');return;}
  reflexMode='read-dialogue';
+ $('reflex-start-button').textContent='🌀 Tạo bài hội thoại & phản xạ';$('reflex-shuffle-button').textContent='🔀 Xáo trộn câu hỏi';
  $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b.dataset.reflexMode==='read-dialogue'));
  reflexQueue=pairs.map(p=>({...p,qZh:String(p.qZh||'').replace(/[。！？!?]+$/,'')+'？',aZh:String(p.aZh||'').replace(/[。！？!?]+$/,'')+'。'}));
  $('reflex-count-pill').textContent=reflexQueue.length+' cặp hỏi–đáp';renderDedicatedReadingTurn(0,true);
