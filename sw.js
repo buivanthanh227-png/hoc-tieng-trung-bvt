@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v38-separated-reflex-reading';
+const CACHE_NAME='hoc-trung-app-shell-v39-reflex-ui-typed-fallback';
 const APP_FILES = ['./index.html', './manifest.webmanifest', './icon.svg', './sw.js', './asr-worker.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 self.addEventListener('install', event => {

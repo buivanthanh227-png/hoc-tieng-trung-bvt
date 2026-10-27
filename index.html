@@ -141,6 +141,14 @@
 .app-footer-meta strong{color:var(--ink)}
 @media(max-width:520px){.reading-mode-actions{grid-template-columns:1fr}.ocr-word-actions{margin-left:0}}
 
+
+/* v39: three reflex modes share one vertical selector and consistent active state */
+#reflex-mode-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:10px 0}
+#reflex-mode-row .mode-btn{display:block;width:100%;min-height:48px;text-align:left;padding:13px 14px;font-size:14px;line-height:1.35;white-space:normal}
+#reflex-mode-row .mode-btn.active{background:#fef2f2;color:var(--red);border-color:#f4abab;box-shadow:inset 3px 0 0 var(--red)}
+#reflex-reading-answer{width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+#reflex-typing-method .reflex-controls{margin-top:9px}
+
 </style>
 </head>
 <body>
@@ -264,12 +272,10 @@
  <div class="card reflex-card" id="reflex-card">
   <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ hỏi – đáp</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
   <p class="subtle" style="margin:7px 0 10px">Phản xạ viết là bài nhập câu trả lời bằng chữ Hán. Hai chế độ đọc bên dưới là bài riêng: AI đọc mẫu trước, bạn thu âm đọc lại và ứng dụng nhận dạng để chấm mức độ khớp với câu mẫu; không chuyển sang mục Luyện tập.</p>
-  <div class="mode-row" id="reflex-mode-row">
+  <div class="mode-row" id="reflex-mode-row" aria-label="Chọn chức năng phản xạ">
    <button type="button" class="mode-btn active" data-reflex-mode="write">✍️ Phản xạ viết</button>
-  </div>
-  <div class="reading-mode-actions">
-   <button type="button" class="btn secondary" id="read-generated-sentences">📖 Phản xạ đọc theo câu đã tạo</button>
-   <button type="button" class="btn secondary" id="read-generated-dialogue">🗣️ Phản xạ đọc hỏi – đáp</button>
+   <button type="button" class="mode-btn" id="read-generated-sentences" data-reflex-mode="read-sentences">📖 Phản xạ đọc theo câu đã tạo</button>
+   <button type="button" class="mode-btn" id="read-generated-dialogue" data-reflex-mode="read-dialogue">🗣️ Phản xạ đọc hỏi – đáp</button>
   </div>
   <p class="smallprint" id="reading-mode-hint" style="margin:0 0 10px">Luyện đọc theo câu đã ghép; phần hỏi–đáp chỉ dùng khi tạo được cặp câu hỏi và câu trả lời.</p>
   <div class="reflex-controls">
@@ -278,7 +284,7 @@
   </div>
   <div id="reflex-session" hidden>
    <div class="row between wrap" style="margin-top:13px"><span id="reflex-progress" class="pill">Câu 1/1</span><button id="reflex-play-question" class="btn secondary tiny" type="button">🔊 AI đọc câu hỏi</button></div>
-   <div class="reflex-question-box">
+   <div class="reflex-question-box" id="reflex-question-box">
     <p class="smallprint" id="reflex-question-label" style="text-align:center;margin:0">AI hỏi bằng tiếng Trung</p>
     <div class="question" id="reflex-question-zh">你累吗？</div>
     <div class="reflex-prompt-vi" id="reflex-question-vi">Bạn có mệt không?</div>
@@ -320,7 +326,7 @@
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
 </main>
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>Học tiếng Trung BVT · Phiên bản v38</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>Học tiếng Trung BVT · Phiên bản v39</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="stroke-modal" class="stroke-modal" hidden>
  <div class="stroke-backdrop" data-close-stroke></div>
@@ -2274,7 +2280,7 @@ function completeReflexLocalResult(session,text){
  }else{
   const msg='Mô hình không nhận ra câu nói. Hãy thử lại, nói rõ hơn hoặc nhập câu trả lời bằng chữ Hán.';
   updateReflexLiveTranscript(msg);showReflexSpeechFailure(msg);
-  $('reflex-mic-instruction').textContent='Không có chữ nhận dạng. Bạn có thể đóng cửa sổ và nhập câu trả lời bằng chữ Hán.';
+  $('reflex-mic-instruction').textContent='Không có chữ nhận dạng. Đóng cửa sổ này rồi nhập chữ Hán ở Cách 2 bên dưới để chấm điểm và qua câu tiếp theo.';
  }
 }
 
@@ -2348,7 +2354,7 @@ async function startReflexMicrophone(){
    reflexRecognitionSession++;
    disposeCurrentReflexRecording();resetReflexMicButtons(true);
    showReflexSpeechFailure('Lỗi ghi âm từ micro điện thoại. Hãy thử lại hoặc nhập chữ Hán. '+detail);
-   $('reflex-mic-instruction').textContent='Ghi âm thất bại. Đóng cửa sổ để nhập chữ Hán hoặc thử lại.';
+   $('reflex-mic-instruction').textContent='Ghi âm thất bại. Đóng cửa sổ rồi nhập chữ Hán ở Cách 2 bên dưới để chấm điểm.';
   };
   recorder.onstop=()=>{
    if(session!==reflexRecognitionSession)return;
@@ -2378,7 +2384,7 @@ async function startReflexMicrophone(){
   const msg=err&&err.name==='NotAllowedError'?'Bạn chưa cấp quyền micro cho trang. Hãy cho phép micro trong cài đặt website rồi thử lại.':
    err&&err.name==='NotFoundError'?'Không tìm thấy micro trên thiết bị. Bạn vẫn có thể nhập chữ Hán để trả lời.':
    'Không mở được micro của điện thoại. Hãy kiểm tra quyền micro, đóng ứng dụng gọi/ghi âm khác rồi thử lại. '+String(err&&err.message||'');
-  showReflexSpeechFailure(msg);$('reflex-mic-instruction').textContent='Không mở được micro. Đóng cửa sổ này để nhập chữ Hán hoặc thử lại.';
+  showReflexSpeechFailure(msg);$('reflex-mic-instruction').textContent='Không mở được micro. Đóng cửa sổ rồi nhập chữ Hán ở Cách 2 bên dưới để chấm điểm.';
  }
 }
 
@@ -2405,9 +2411,15 @@ $('reflex-live-mic').addEventListener('click',()=>{
 });
 $('reflex-mic-close-button').addEventListener('click',()=>{$('reflex-mic-overlay').hidden=true;$('reflex-mic-close-button').hidden=true;});
 $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{
- reflexMode=btn.dataset.reflexMode;$('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b===btn));
- $('reflex-speech-method').hidden=!isVoicePracticeMode();$('reflex-typing-method').hidden=isVoicePracticeMode();$('reflex-mic-button').hidden=!isVoicePracticeMode();$('reflex-answer-label').textContent='Hãy nhập câu trả lời bằng chữ Hán';$('reflex-typing-title').textContent='Nhập câu trả lời bằng chữ Hán';
- if(reflexQueue.length)renderReflexQuestion(isVoicePracticeMode());
+ // The two reading modes have their own click handlers below; don't overwrite their dedicated deck.
+ if(btn.dataset.reflexMode!=='write')return;
+ reflexMode='write';
+ $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+ invalidateReflexRecognition();reflexQueue=[];reflexCurrentPair=null;reflexHasAnswered=false;
+ $('reflex-session').hidden=true;$('reflex-speech-method').hidden=true;$('reflex-typing-method').hidden=false;
+ $('reflex-mic-button').hidden=true;$('reflex-check-button').hidden=false;
+ $('reflex-status').textContent='Đang chọn Phản xạ viết. Hãy bấm “Tạo bài hội thoại & phản xạ” để bắt đầu bài nhập chữ Hán.';
+ $('reflex-count-pill').textContent='Chưa có bài';
 }));
 $('reflex-start-button').addEventListener('click',()=>{
  if(selectedCombine.size<2){toast('Hãy chọn ít nhất 2 từ trước khi tạo bài phản xạ.');return;}
@@ -2435,25 +2447,37 @@ function setReflexLine(el, zh, vi, prefix=''){
 }
 function renderDedicatedReadingTurn(index, speakPrompt=true){
  if(!reflexQueue.length)return;
+ invalidateReflexRecognition();
  reflexIndex=index;reflexCurrentPair=reflexQueue[index];reflexHasAnswered=false;
  const p=reflexCurrentPair;
+ const sentenceMode=reflexMode==='read-sentences';
  $('reflex-session').hidden=false;
  $('reflex-progress').textContent='Lượt '+(index+1)+'/'+reflexQueue.length;
- $('reflex-question-label').textContent=reflexMode==='read-sentences'?'AI đọc câu mẫu — bạn đọc lại':'AI đọc câu hỏi — bạn đọc câu trả lời';
+ // The sentence-repeat mode only shows the single "Bạn đọc" line because the AI sample is identical.
+ $('reflex-question-label').textContent=sentenceMode?'AI đọc câu mẫu trước':'AI đọc câu hỏi trước';
+ $('reflex-question-box').hidden=sentenceMode;
  $('reflex-question-zh').hidden=false;
  setReflexLine($('reflex-question-zh'),p.qZh,p.qVi);
  $('reflex-question-vi').textContent='';
  let answer=$('reflex-reading-answer');
- if(!answer){answer=document.createElement('div');answer.id='reflex-reading-answer';answer.style.cssText='margin-top:12px;padding:12px;border:1px solid #b2ddff;background:#eff8ff;border-radius:12px;text-align:center;font-size:22px;font-weight:800';$('reflex-question-vi').after(answer);}
+ if(!answer){answer=document.createElement('div');answer.id='reflex-reading-answer';answer.style.cssText='margin-top:12px;padding:12px;border:1px solid #b2ddff;background:#eff8ff;border-radius:12px;text-align:center;font-size:22px;font-weight:800';$('reflex-question-box').after(answer);}
  answer.hidden=false;setReflexLine(answer,p.aZh,p.aVi,'Bạn đọc:');
- $('reflex-speech-method').hidden=false;$('reflex-typing-method').hidden=true;
- $('reflex-speech-method').querySelector('div').textContent=reflexMode==='read-sentences'?'Thu âm đọc lại câu mẫu để chấm điểm':'Thu âm câu trả lời để chấm điểm';
+ $('reflex-speech-method').hidden=false;
+ $('reflex-typing-method').hidden=false;
+ $('reflex-speech-method').querySelector('div').textContent=sentenceMode?'Cách 1 — Thu âm đọc lại câu mẫu':'Cách 1 — Thu âm đọc câu trả lời';
+ $('reflex-typing-title').textContent=sentenceMode?'Cách 2 — Nhập lại câu mẫu bằng chữ Hán':'Cách 2 — Nhập câu trả lời bằng chữ Hán';
+ $('reflex-answer-label').textContent=sentenceMode?'Bạn đọc câu mẫu bằng chữ Hán để chấm điểm':'Nhập câu trả lời bằng chữ Hán để chấm điểm';
+ $('reflex-answer-input').value='';
+ $('reflex-answer-input').placeholder=sentenceMode?'Nhập lại câu mẫu bằng chữ Hán…':'Nhập câu trả lời bằng chữ Hán…';
  $('reflex-mic-button').hidden=false;$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu ghi âm';
- $('reflex-play-question').hidden=false;$('reflex-play-question').textContent=reflexMode==='read-sentences'?'🔊 Nghe câu mẫu':'🔊 Nghe câu hỏi';
+ $('reflex-play-question').hidden=false;$('reflex-play-question').textContent=sentenceMode?'🔊 Nghe câu mẫu':'🔊 Nghe câu hỏi';
  $('reflex-next-button').hidden=true;$('reflex-next-button').textContent=index+1>=reflexQueue.length?'Hoàn thành':'Câu tiếp theo →';
- $('reflex-check-button').hidden=true;$('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
+ $('reflex-check-button').hidden=false;$('reflex-check-button').textContent='Chấm điểm câu chữ Hán';
+ $('reflex-feedback').hidden=true;$('reflex-feedback').className='result';$('reflex-feedback').textContent='';
  $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
- $('reflex-status').textContent=reflexMode==='read-sentences'?'Hãy nghe AI đọc câu mẫu, bấm Bắt đầu ghi âm, đọc lại câu đó rồi dừng để nhận dạng và chấm điểm.':'Hãy nghe AI đọc câu hỏi, đọc câu trả lời mẫu đang hiển thị, rồi thu âm để nhận dạng và chấm điểm.';
+ $('reflex-status').textContent=sentenceMode
+  ?'AI sẽ đọc câu mẫu trước. Bạn có thể thu âm để chấm điểm hoặc nhập câu chữ Hán bên dưới nếu micro không hoạt động.'
+  :'AI sẽ đọc câu hỏi trước. Hãy đọc câu trả lời mẫu; bạn có thể thu âm hoặc nhập chữ Hán bên dưới nếu micro không hoạt động.';
  if(speakPrompt&&p.qZh)speak(p.qZh,$('reflex-play-question'));
 }
 $('read-generated-sentences')?.addEventListener('click',()=>{
@@ -2462,7 +2486,7 @@ $('read-generated-sentences')?.addEventListener('click',()=>{
  reflexQueue=generatedSentences.map(s=>{const zh=String(s.zh||'').replace(/[。！？!?]+$/,'')+'。';return {kind:'shadow',qZh:zh,qVi:pinyinForChinese(zh),aZh:zh,aVi:s.vi||'',py:s.py||pinyinForChinese(zh)};});
  // Store Vietnamese meaning separately from pinyin for the AI sample line.
  reflexQueue=reflexQueue.map((p,i)=>({...p,qVi:generatedSentences[i]?.vi||''}));
- $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b.dataset.reflexMode==='write'));
+ $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b.dataset.reflexMode==='read-sentences'));
  $('reflex-count-pill').textContent=reflexQueue.length+' câu đọc mẫu';
  $('reflex-session').hidden=false;renderDedicatedReadingTurn(0,true);$('reflex-session').scrollIntoView({behavior:'smooth',block:'start'});
 });
@@ -2471,6 +2495,7 @@ $('read-generated-dialogue')?.addEventListener('click',()=>{
  const pairs=createReflexPairs().filter(p=>p.kind==='dialogue');
  if(!pairs.length){$('reading-mode-hint').textContent='Chưa tạo được cặp hỏi–đáp. Hãy thêm trợ từ 吗 (ma), chủ ngữ như 我/你 và động từ hoặc tính từ phù hợp.';toast('Chưa có cặp hỏi–đáp. Hãy bổ sung từ gợi ý.');return;}
  reflexMode='read-dialogue';
+ $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b.dataset.reflexMode==='read-dialogue'));
  reflexQueue=pairs.map(p=>({...p,qZh:String(p.qZh||'').replace(/[。！？!?]+$/,'')+'？',aZh:String(p.aZh||'').replace(/[。！？!?]+$/,'')+'。'}));
  $('reflex-count-pill').textContent=reflexQueue.length+' cặp hỏi–đáp';renderDedicatedReadingTurn(0,true);
  $('reflex-session').scrollIntoView({behavior:'smooth',block:'start'});
