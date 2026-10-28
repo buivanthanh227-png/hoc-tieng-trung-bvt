@@ -250,7 +250,7 @@
    <button class="mode-btn" data-mode="write">✍️ Viết chữ Hán</button>
    <button class="mode-btn" data-mode="read">🔊 Luyện đọc</button>
   </div>
-  <div class="row between" style="margin-top:14px"><span class="pill" id="practice-level">HSK 1–3 cơ bản</span><span class="subtle" id="practice-progress">Câu 1</span></div>
+  <div class="row between" style="margin-top:14px"><span class="pill" id="practice-level">Luyện theo từ vựng</span><span class="subtle" id="practice-progress">Câu 1</span></div>
   <div class="row" style="margin-top:9px"><div class="progressbar"><div id="progress-fill"></div></div><span class="subtle" id="session-score">Điểm: 0</span></div>
   <p class="subtle" id="practice-instruction" style="text-align:center;margin-top:15px">Hãy dịch nghĩa tiếng Việt sang tiếng Trung.</p>
   <div class="read-search-panel" id="read-search-panel" hidden>
@@ -427,6 +427,8 @@ const keyPinyin = s => norm(String(s ?? '').replace(/[āáǎà]/g,'a').replace(/
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 let dictionary = [];
 let searchIndex = [];
+let practicePoolCache = null;
+let practiceSeedPoolCache = null;
 let activeLevel = 'all';
 let nextSpeechGender = 'male';
 let activeStrokeRow = null;
@@ -488,6 +490,7 @@ let reflexCurrentPair = null;
 let reflexHasAnswered = false;
 let reflexRecognition = null; // Biến tương thích cũ.
 let reflexBrowserRecognition = null;
+let reflexBrowserStartWatchdog = null;
 let reflexBrowserFinalTranscript = '';
 let reflexBrowserInterimTranscript = '';
 let reflexBrowserError = '';
@@ -636,7 +639,7 @@ function searchScoreForRow(i,q){
  // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
  return best;
 }
-function setDictionary(rows,sourceName){dictionary=rows;ocrLexiconMap=null;ocrLexiconLengths=[];searchIndex=dictionary.map(makeSearchRecord);$('count-pill').textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';$('dict-result-count').textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';$('dict-source-badge').textContent=sourceName;$('top-status').textContent=sourceName==='CVDICT đã lưu'?'Từ điển đã lưu trên thiết bị':'Tra từ · học ngữ pháp · luyện đọc';applyFilter();renderCombineChoices();}
+function setDictionary(rows,sourceName){dictionary=rows;practicePoolCache=null;ocrLexiconMap=null;ocrLexiconLengths=[];searchIndex=dictionary.map(makeSearchRecord);$('count-pill').textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';$('dict-result-count').textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';$('dict-source-badge').textContent=sourceName;$('top-status').textContent=sourceName==='CVDICT đã lưu'?'Từ điển đã lưu trên thiết bị':'Tra từ · học ngữ pháp · luyện đọc';applyFilter();renderCombineChoices();}
 function idbOpen(){return new Promise((resolve,reject)=>{if(!('indexedDB'in window))return reject(Error('IndexedDB không khả dụng'));const req=indexedDB.open('trung-viet-study',1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('dictionary'))db.createObjectStore('dictionary');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Không mở được IndexedDB'));req.onblocked=()=>reject(Error('IndexedDB đang bị một tab khác giữ mở'));});}
 async function idbGet(){const db=await idbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('dictionary','readonly'),req=tx.objectStore('dictionary').get('rows');req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();});}
 async function idbPut(rows){const db=await idbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('dictionary','readwrite');tx.objectStore('dictionary').put(rows,'rows');tx.oncomplete=()=>{db.close();resolve(true);};tx.onerror=()=>{const e=tx.error;db.close();reject(e||Error('Không lưu được dữ liệu'));};});}
@@ -1307,7 +1310,7 @@ function updateModeButtons(){
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{const nextMode=b.dataset.mode;if(nextMode==='read'&&practiceMode!=='read'&&!(practiceReturnTab==='combine'&&(currentCustomSentence||currentSentencePracticeDeck.length)))selectedReadTarget=null;practiceMode=nextMode;if(practiceReturnTab!=='combine'){currentCustomSentence=null;currentSentencePracticeDeck=[];}practiceIndex=0;practiceChecked=false;updateModeButtons();loadPractice();}));
 $('practice-back').addEventListener('click',()=>switchTab('combine'));
-function practicePool(){return buildSeed().filter(r=>r[4]==='HSK1'||r[4]==='HSK2'||r[4]==='HSK3');}
+function practicePool(){const valid=r=>Array.isArray(r)&&r[0]&&r[3]&&/[\u3400-\u9fff]/.test(String(r[0]));if(Array.isArray(dictionary)&&dictionary.length){if(!practicePoolCache||practicePoolCache.source!==dictionary)practicePoolCache={source:dictionary,rows:dictionary.filter(valid)};return practicePoolCache.rows;}if(!practiceSeedPoolCache)practiceSeedPoolCache=buildSeed().filter(valid);return practiceSeedPoolCache;}
 function randomPractice(){const pool=practicePool();return pool[Math.floor(Math.random()*pool.length)]||buildSeed()[0];}
 function loadPractice(){
  resetPracticeStrokeQuiz();$('practice-back').hidden=practiceReturnTab!=='combine';practiceChecked=false;$('practice-result').hidden=true;$('next-question').hidden=true;$('submit-answer').hidden=false;$('user-answer').value='';
@@ -1326,7 +1329,7 @@ function loadPractice(){
   if(s){currentPractice={type:'reading',row:null,sentence:s};$('practice-level').textContent=s.kind==='word'?'Luyện đọc từ đã chọn':'Luyện đọc câu đã chọn';$('practice-progress').textContent='Nội dung đã chọn';$('practice-question').textContent=s.zh;$('practice-subtext').textContent='Pinyin: '+(s.py||'Pinyin chưa có')+(s.vi?' · Nghĩa: '+s.vi:'');$('user-answer').placeholder='Đọc câu vừa chọn hoặc nhập bản chép lời…';}
   else{currentPractice=null;$('practice-level').textContent='Luyện đọc theo lựa chọn';$('practice-progress').textContent='Chưa chọn';$('practice-question').textContent='Chưa chọn từ hoặc câu';$('practice-subtext').textContent='Tìm và chọn nội dung ở ô phía trên để bắt đầu.';$('user-answer').placeholder='Chọn nội dung trước khi đọc';}
  }else{
-  const row=forcedPracticeRow||randomPractice();forcedPracticeRow=null;currentPractice={type:'word',row:row,sentence:null};$('practice-level').textContent=row[4]||'Từ vựng';$('practice-progress').textContent=`Câu ${practiceIndex+1}`;
+  const row=forcedPracticeRow||randomPractice();forcedPracticeRow=null;currentPractice={type:'word',row:row,sentence:null};$('practice-level').textContent=practiceMode==='vi-zh'?'Luyện viết Việt → Trung':practiceMode==='zh-vi'?'Luyện viết Trung → Việt':practiceMode==='write'?'Luyện viết chữ Hán':'Luyện theo từ đã chọn';$('practice-progress').textContent=`Câu ${practiceIndex+1}`;
   if(practiceMode==='vi-zh'||practiceMode==='write'){$('practice-question').textContent=row[3];$('practice-subtext').textContent=practiceMode==='write'?'Từ cần luyện · chọn chữ Hán bên dưới':'Viết/nhập bằng chữ Hán hoặc Pinyin';}
   else{$('practice-question').textContent=row[0];$('practice-subtext').textContent='Pinyin: '+row[2];}
  }
@@ -1410,45 +1413,81 @@ function handleSubmit(){if(practiceChecked){nextPractice();return;}const user=$(
 function handleReadSubmit(user){const target=currentPractice?.sentence?.zh||'';if(!target){toast('Chưa có câu đọc.');return;}const supported=!!(window.SpeechRecognition||window.webkitSpeechRecognition);if(user){const score=scoreAnswer(user,target,[target.replace(/[。！？]/g,'')]);showScore(score,target,currentPractice.sentence.py,currentPractice.sentence.vi,supported?'Điểm dựa trên mức độ khớp văn bản nhận diện/nhập; không phải phân tích chính xác thanh điệu.':'Trình duyệt không có nhận diện giọng nói tích hợp; điểm này dựa trên bản chép lời bạn nhập, không đánh giá phát âm thực tế.');practiceChecked=true;$('submit-answer').hidden=true;$('next-question').hidden=false;}else if(supported){startRecognition();}else{const box=$('practice-result');box.hidden=false;box.className='result mid';box.innerHTML='<b>Trình duyệt này không hỗ trợ nhận diện giọng nói trong trang.</b><p>Hãy bấm “Nghe mẫu”, tự đọc lại, sau đó nhập câu bạn vừa đọc để so văn bản. Trang không thể chấm chính xác thanh điệu/phát âm nếu không nhận được giọng nói.</p>';}}
 $('submit-answer').onclick=handleSubmit;$('next-question').onclick=()=>nextPractice();function nextPractice(){if(currentSentencePracticeDeck.length){practiceIndex++;if(practiceIndex>=currentSentencePracticeDeck.length){practiceIndex=0;toast('Đã luyện hết '+currentSentencePracticeDeck.length+' câu. Bắt đầu lại từ câu đầu.');}currentCustomSentence=currentSentencePracticeDeck[practiceIndex];practiceChecked=false;loadPractice();return;}if(practiceMode==='read'){if(currentCustomSentence){currentCustomSentence=null;}practiceChecked=false;loadPractice();return;}practiceIndex++;if(currentCustomSentence){currentCustomSentence=null;}loadPractice();}
 $('listen-btn').onclick=()=>{const text=currentPractice?.sentence?.zh||currentPractice?.row?.[0]||$('practice-question').textContent;speak(text);};
+let speechRecognitionStartTimer=null;
+let speechRecognitionEndTimer=null;
+function clearPracticeRecognitionTimers(){
+ if(speechRecognitionStartTimer){clearTimeout(speechRecognitionStartTimer);speechRecognitionStartTimer=null;}
+ if(speechRecognitionEndTimer){clearTimeout(speechRecognitionEndTimer);speechRecognitionEndTimer=null;}
+}
+function finishPracticeRecognition(recognition, transcript='', errorCode=''){
+ if(speechRecognition!==recognition)return;
+ clearPracticeRecognitionTimers();
+ speechRecognition=null;recording=false;
+ recognition.onstart=null;recognition.onresult=null;recognition.onerror=null;recognition.onend=null;
+ if(!recognition.__bvtEnded){try{recognition.abort();}catch(_){}}
+ $('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;
+ const cleaned=String(transcript||'').trim();
+ if(cleaned&&!recognition.__bvtHandled){recognition.__bvtHandled=true;$('user-answer').value=cleaned;handleReadSubmit(cleaned);}
+ if(!cleaned&&!recognition.__bvtHandled){
+  const message=errorCode==='not-allowed'?'Bạn chưa cấp quyền microphone.':errorCode==='network'?'Lỗi mạng khi nhận diện giọng nói. Hãy thử lại hoặc nhập câu vào ô.':errorCode==='start-timeout'?'Trình duyệt không khởi động được micro. Hãy bấm thử lại hoặc nhập câu vào ô.':'Không nhận được giọng nói. Hãy thử lại hoặc nhập câu vào ô.';
+  toast(message);
+ }
+}
 function startRecognition(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR){toast('Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy nhập câu đọc vào ô trả lời.');return;}
- // Always release a previous reading-practice recognizer before creating a new instance.
  const previous=speechRecognition;speechRecognition=null;
- if(previous){previous.onresult=null;previous.onerror=null;previous.onend=null;try{previous.abort();}catch(_){}}
+ clearPracticeRecognitionTimers();
+ if(previous){previous.onstart=null;previous.onresult=null;previous.onerror=null;previous.onend=null;try{previous.abort();}catch(_){}}
+ let recognition;
  try{
-  const recognition=new SR();speechRecognition=recognition;
+  recognition=new SR();recognition.__bvtEnded=false;recognition.__bvtHandled=false;speechRecognition=recognition;
   recognition.lang='zh-CN';recognition.interimResults=true;recognition.continuous=false;recognition.maxAlternatives=3;
-  recording=true;$('mic-btn').textContent='⏹️ Đang nghe…';$('mic-btn').disabled=false;
-  recognition.onresult=e=>{
+  let finalTranscript='';let errorCode='';
+  $('mic-btn').textContent='🎙️ Đang khởi động…';$('mic-btn').disabled=true;
+  recognition.onstart=()=>{
    if(speechRecognition!==recognition)return;
-   let transcript='';
+   if(speechRecognitionStartTimer){clearTimeout(speechRecognitionStartTimer);speechRecognitionStartTimer=null;}
+   recording=true;$('mic-btn').textContent='⏹️ Dừng thu âm';$('mic-btn').disabled=false;
+  };
+  recognition.onresult=e=>{
+   if(speechRecognition!==recognition||recognition.__bvtHandled)return;
+   let full='';
    for(let i=0;i<e.results.length;i++){
-    const r=e.results[i];if(r&&r[0]&&r.isFinal)transcript+=r[0].transcript;
+    const r=e.results[i];if(r&&r[0]&&r.isFinal)full+=r[0].transcript||'';
    }
-   if(transcript.trim()){
-    speechRecognition=null;recording=false;
-    $('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;
-    $('user-answer').value=transcript.trim();handleReadSubmit(transcript.trim());
+   if(full.trim()){
+    finalTranscript=full.trim();recognition.__bvtHandled=true;
+    $('user-answer').value=finalTranscript;handleReadSubmit(finalTranscript);
+    recording=false;$('mic-btn').textContent='⏳ Đang hoàn tất…';$('mic-btn').disabled=true;
     try{recognition.stop();}catch(_){}
+    if(speechRecognitionEndTimer)clearTimeout(speechRecognitionEndTimer);
+    speechRecognitionEndTimer=setTimeout(()=>finishPracticeRecognition(recognition,finalTranscript,errorCode),2600);
    }
   };
   recognition.onerror=e=>{
    if(speechRecognition!==recognition)return;
-   speechRecognition=null;recording=false;$('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;
-   toast(e.error==='not-allowed'?'Bạn chưa cấp quyền microphone.':e.error==='network'?'Lỗi mạng khi nhận diện giọng nói. Hãy thử lại hoặc nhập câu vào ô.':'Không nhận được giọng nói. Hãy thử lại hoặc nhập câu vào ô.');
+   errorCode=String(e&&e.error||'');
+   if(recognition.__bvtHandled){finishPracticeRecognition(recognition,finalTranscript,errorCode);return;}
+   if(speechRecognitionEndTimer)clearTimeout(speechRecognitionEndTimer);
+   speechRecognitionEndTimer=setTimeout(()=>finishPracticeRecognition(recognition,finalTranscript,errorCode),500);
   };
   recognition.onend=()=>{
+   recognition.__bvtEnded=true;
    if(speechRecognition!==recognition)return;
-   speechRecognition=null;recording=false;$('mic-btn').textContent='🎙️ Đọc để chấm';$('mic-btn').disabled=false;
+   finishPracticeRecognition(recognition,finalTranscript,errorCode);
   };
   recognition.start();
+  speechRecognitionStartTimer=setTimeout(()=>{
+   if(speechRecognition!==recognition||recording||recognition.__bvtHandled)return;
+   errorCode='start-timeout';finishPracticeRecognition(recognition,finalTranscript,errorCode);
+  },6500);
  }catch(e){
-  speechRecognition=null;recording=false;$('mic-btn').disabled=false;$('mic-btn').textContent='🎙️ Đọc để chấm';
-  toast('Không thể bật nhận diện giọng nói. Hãy thử qua HTTPS hoặc nhập câu trả lời.');
+  if(recognition&&speechRecognition===recognition){finishPracticeRecognition(recognition,'','start-timeout');}
+  else{$('mic-btn').disabled=false;$('mic-btn').textContent='🎙️ Đọc để chấm';toast('Không thể bật nhận diện giọng nói. Hãy thử qua HTTPS hoặc nhập câu trả lời.');}
  }
 }
-$('mic-btn').onclick=()=>{if(recording&&speechRecognition){try{speechRecognition.stop();}catch(_){}return;}startRecognition();};
+$('mic-btn').onclick=()=>{if(recording&&speechRecognition){recording=false;$('mic-btn').textContent='⏳ Đang hoàn tất…';$('mic-btn').disabled=true;try{speechRecognition.stop();}catch(_){}const active=speechRecognition;if(speechRecognitionEndTimer)clearTimeout(speechRecognitionEndTimer);speechRecognitionEndTimer=setTimeout(()=>finishPracticeRecognition(active,'',''),2600);return;}startRecognition();};
 let homeworkLookupToken=0;
 const OFFLINE_SENTENCE_TRANSLATIONS={
  'banlanhkhong':{zh:'你冷吗？',py:'Nǐ lěng ma?',vi:'Bạn lạnh không?'},
@@ -2288,6 +2327,7 @@ function evaluateReflexAnswer(raw,source='typed'){
  else{result.className='result mid';result.innerHTML='<b>Chưa khớp hoàn toàn.</b><br>Bạn trả lời: '+escapeHTML(raw)+'<br>Đáp án mẫu: <b>'+escapeHTML(p.aZh)+'</b><br>Pinyin: '+escapeHTML(pinyinForChinese(p.aZh)||p.py||'')+'<br>Nghĩa: '+escapeHTML(p.aVi||'')+(source==='speech'?'<br>Nhận diện giọng nói có thể nhầm ký tự; có thể sửa câu đã nhận diện rồi kiểm tra lại.':'');}
 }
 function clearReflexRecognitionTimers(){
+ if(reflexBrowserStartWatchdog){clearTimeout(reflexBrowserStartWatchdog);reflexBrowserStartWatchdog=null;}
  if(reflexRecognitionRestartTimer){clearTimeout(reflexRecognitionRestartTimer);reflexRecognitionRestartTimer=null;}
  if(reflexRecognitionStopTimer){clearTimeout(reflexRecognitionStopTimer);reflexRecognitionStopTimer=null;}
  if(reflexRecognitionNoResultTimer){clearTimeout(reflexRecognitionNoResultTimer);reflexRecognitionNoResultTimer=null;}
@@ -2322,6 +2362,9 @@ function disposeCurrentReflexRecording(){
 }
 
 function resetSpeakingStateForNewQuestion(){
+ // Clear speech synthesis state between turns; WebKit may omit onend and leave a stale playback flag.
+ speechPlaybackToken++;speechPlaybackActive=false;
+ try{if(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))speechSynthesis.cancel();}catch(_){}
  if(reflexAutoSpeakTimer){clearTimeout(reflexAutoSpeakTimer);reflexAutoSpeakTimer=null;}
  if(reflexSpeakWatchdog){clearTimeout(reflexSpeakWatchdog);reflexSpeakWatchdog=null;}
  // Increment the generation before stopping hardware: late dataavailable/onstop callbacks are ignored.
@@ -2592,11 +2635,12 @@ function finishReflexBrowserRecognition(session, recognition){
  if(reflexRecognitionRestartTimer){clearTimeout(reflexRecognitionRestartTimer);reflexRecognitionRestartTimer=null;}
  if(reflexRecognitionStopTimer){clearTimeout(reflexRecognitionStopTimer);reflexRecognitionStopTimer=null;}
  if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
+ if(reflexBrowserStartWatchdog){clearTimeout(reflexBrowserStartWatchdog);reflexBrowserStartWatchdog=null;}
  const transcript=String(reflexBrowserFinalTranscript||reflexBrowserInterimTranscript||'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim();
  const errorCode=reflexBrowserError;
  reflexBrowserRecognition=null;reflexRecording=false;
  recognition.onstart=null;recognition.onresult=null;recognition.onerror=null;recognition.onend=null;
- try{recognition.abort();}catch(_){} // Ensure any recognizer that failed to emit `end` releases the mic.
+ if(!recognition.__bvtEnded){try{recognition.abort();}catch(_){}} // Abort only if it never naturally ended; avoids re-locking mobile audio sessions.
  reflexRecognitionTranscript=transcript;reflexRecognitionLiveText=transcript;
  resetReflexMicButtons(true);
  const liveMic=$('reflex-live-mic');
@@ -2610,6 +2654,7 @@ function finishReflexBrowserRecognition(session, recognition){
   evaluateReflexAnswer(transcript,'speech');
  }else{
   const messages={
+   'start-timeout':'Trình duyệt không khởi động được micro. Hãy bấm ghi âm thử lại; nếu vẫn lỗi, nhập chữ Hán để chấm điểm.',
    'not-allowed':'Trình duyệt chưa được cấp quyền micro. Hãy cho phép micro trong cài đặt website rồi thử lại.',
    'service-not-allowed':'Dịch vụ nhận diện giọng nói của trình duyệt không khả dụng. Hãy kiểm tra Internet hoặc nhập chữ Hán bên dưới.',
    'network':'Nhận diện giọng nói bị lỗi kết nối. Hãy kiểm tra Internet, thử lại hoặc nhập chữ Hán bên dưới.',
@@ -2625,7 +2670,11 @@ function finishReflexBrowserRecognition(session, recognition){
 
 function startReflexMicrophone(){
  if(reflexRecording){stopReflexMicrophone(false);return;}
- if(speechPlaybackActive||(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))){toast('Hãy đợi câu mẫu đọc xong rồi bấm micro.');return;}
+ // On iOS/WebKit, speechSynthesis.onend may not fire every time. A direct mic tap resets that stale state.
+ if(reflexSpeakWatchdog){clearTimeout(reflexSpeakWatchdog);reflexSpeakWatchdog=null;}
+ if(reflexAutoSpeakTimer){clearTimeout(reflexAutoSpeakTimer);reflexAutoSpeakTimer=null;}
+ speechPlaybackToken++;speechPlaybackActive=false;
+ try{if(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))speechSynthesis.cancel();}catch(_){}
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR){
   showReflexSpeechFailure('Trình duyệt này không hỗ trợ nhận diện giọng nói tích hợp. Hãy dùng Chrome hoặc Safari mới qua HTTPS, hoặc nhập câu trả lời bằng chữ Hán.');
@@ -2652,10 +2701,11 @@ function startReflexMicrophone(){
  const box=$('reflex-feedback');box.hidden=true;box.textContent='';
  let recognition;
  try{
-  recognition=new SR();reflexBrowserRecognition=recognition;
+  recognition=new SR();reflexBrowserRecognition=recognition;recognition.__bvtEnded=false;
   recognition.lang='zh-CN';recognition.continuous=false;recognition.interimResults=true;recognition.maxAlternatives=5;
   recognition.onstart=()=>{
    if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
+   if(reflexBrowserStartWatchdog){clearTimeout(reflexBrowserStartWatchdog);reflexBrowserStartWatchdog=null;}
    reflexRecording=true;
    $('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='🎙️';$('reflex-live-mic').setAttribute('aria-label','Dừng nhận diện');
    $('reflex-mic-button').textContent='🎙️ Đang nghe…';
@@ -2689,11 +2739,18 @@ function startReflexMicrophone(){
    },1400);
   };
   recognition.onend=()=>{
+   recognition.__bvtEnded=true;
    if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
    reflexRecording=false;
    finishReflexBrowserRecognition(session,recognition);
   };
   recognition.start();
+  // Recover if Safari/Chrome accepts start() but never sends onstart.
+  reflexBrowserStartWatchdog=setTimeout(()=>{
+   if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition||!reflexRecording)return;
+   reflexBrowserError='start-timeout';
+   finishReflexBrowserRecognition(session,recognition);
+  },6500);
   $('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='🎙️';$('reflex-live-mic').setAttribute('aria-label','Dừng nhận diện');
   $('reflex-mic-button').textContent='🎙️ Đang nghe…';
   updateReflexLiveTranscript('Đang nghe… hãy nói tiếng Trung rõ ràng.');
