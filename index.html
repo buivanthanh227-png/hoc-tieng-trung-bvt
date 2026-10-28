@@ -162,10 +162,20 @@
 #practice-modes[hidden]{display:none!important}
 @media(max-width:700px){.tabs{justify-content:flex-start;padding-left:8px;padding-right:8px}.tab{flex:0 0 112px;min-width:112px;max-width:140px;font-size:10px;padding:7px 5px}}
 @media(min-width:701px){.tabs{gap:4px}.tab{min-width:100px}}
+
+  /* v41 UI cleanup: fixed slogan, quiet dictionary status, and one handwriting workspace. */
+  .brand .brand-slogan{font-size:9px;line-height:1.22;font-weight:750;letter-spacing:.04px;margin:4px 0 0;color:#fee2e2;white-space:nowrap}
+  .brand .brand-slogan span{display:block}
+  .brand #top-status[hidden],#dict-result-count[hidden],#dict-status[hidden]{display:none!important}
+  #sentence-build-status:empty{display:none!important}
+  .practice-write-grid{grid-template-columns:minmax(0,1fr)!important}
+  .practice-write-grid>.practice-write-card:first-child{display:none!important}
+  .practice-write-grid>.practice-write-card:last-child{width:100%;box-sizing:border-box}
+  @media(max-width:520px){.brand .brand-slogan{font-size:7.5px;line-height:1.2;margin-top:3px}}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-label="汉语">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p id="top-status">Đang nạp từ điển nhúng sẵn · có thể dùng offline</p></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
+<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-label="汉语">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p class="brand-slogan"><span>HỌC THÊM MỘT NGÔN NGỮ</span><span>SỐNG THÊM MỘT CUỘC ĐỜI</span></p><span id="top-status" hidden aria-hidden="true"></span></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
 <nav class="tabs" aria-label="Các chức năng chính">
 <button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN</button>
 <button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT–TRUNG</button>
@@ -182,8 +192,8 @@
   <div class="row between"><h2 class="section-title" style="margin:0">Tra cứu từ vựng</h2><span class="pill" id="dict-source-badge">Đang nạp dữ liệu</span></div>
   <p class="subtle" style="margin:7px 0 11px">Tìm bằng chữ Hán giản thể/phồn thể, Pinyin hoặc nghĩa tiếng Việt.</p>
   <label class="sr-only" for="dict-search">Tìm từ vựng</label><input id="dict-search" class="field" type="search" autocomplete="off" placeholder="Ví dụ: 你好 · ni hao · xin chào">
-  <div class="row between wrap"><span class="subtle" id="dict-result-count">Bộ từ cơ bản sẵn sàng</span><button class="btn secondary tiny" id="update-dict">Thông tin dữ liệu</button></div>
-  <div id="dict-status" class="source-status">Bộ từ điển Trung–Việt đã được nhúng trực tiếp trong tệp HTML. Có thể tra từ khi mở ứng dụng offline; các tính năng âm thanh và thứ tự nét có thể cần Internet.</div>
+  <div class="row between wrap"><span class="subtle" id="dict-result-count" hidden>Bộ từ cơ bản sẵn sàng</span><button class="btn secondary tiny" id="update-dict">Thông tin dữ liệu</button></div>
+  <div id="dict-status" class="source-status" hidden></div>
  </div>
  <div id="dict-list" class="list"></div>
  <div class="pagination"><button class="btn secondary tiny" id="prev-page">← Trước</button><span id="page-info">Trang 1</span><button class="btn secondary tiny" id="next-page">Sau →</button></div>
@@ -192,7 +202,7 @@
 <section id="panel-practice" class="panel">
  <div class="card homework-card" id="quick-translate-card">
   <h2 class="section-title">Dịch nhanh Việt ⇄ Trung</h2>
-  <p class="subtle" style="margin:0 0 9px">Nhập câu tiếng Việt, chữ Hán hoặc Pinyin (có dấu hay không dấu). Ví dụ: “bạn lạnh không”, “你冷吗” hoặc “ni leng ma”. Kết quả gồm chữ Hán, Pinyin có dấu thanh điệu và nghĩa tiếng Việt.</p>
+  <p class="subtle" style="margin:0 0 9px">Nhập câu tiếng Việt, chữ Hán hoặc Pinyin (có dấu hay không dấu). Kết quả gồm chữ Hán, Pinyin có dấu thanh điệu và nghĩa tiếng Việt.</p>
   <div class="row"><input id="homework-query" class="field grow" type="search" autocomplete="off" autocapitalize="off" placeholder="Nhập câu cần dịch: bạn lạnh không…"><button id="homework-lookup" class="btn" type="button">Dịch câu</button></div>
   <p id="homework-status" class="smallprint" style="margin:7px 0 0">Tra cứu mẫu có thể dùng offline. Dịch câu mới cần Internet; nội dung gửi đến dịch vụ dịch bên ngoài.</p>
   <div id="homework-results" class="homework-result" aria-live="polite"></div>
@@ -229,7 +239,7 @@
    <div id="practice-write-char-picker" class="practice-write-char-picker"></div>
    <div class="practice-write-grid">
     <section class="practice-write-card"><h3>Ô trái · Thứ tự nét mẫu</h3><div id="practice-stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="practice-stroke-count" class="smallprint">Đang chuẩn bị chữ mẫu…</p><button id="practice-stroke-replay" class="btn secondary full" type="button">▶ Chạy lại nét mẫu</button></section>
-    <section class="practice-write-card"><h3>Ô phải · Viết theo mẫu & chấm</h3><div id="practice-free-wrap"><div class="canvas-wrap"><canvas id="writing-canvas" class="writing-canvas" width="500" height="500" aria-label="Bảng để tự viết chữ Hán bằng tay"></canvas></div><div class="row wrap" style="justify-content:center"><button class="btn secondary tiny" id="clear-canvas" type="button">Xóa nét</button><button class="btn secondary tiny" id="show-trace" type="button">Bật/tắt chữ mờ</button></div></div><div id="practice-stroke-quiz" class="stroke-stage practice-stroke-quiz" hidden><span class="stroke-fallback-char">✍</span></div><p id="practice-stroke-feedback" class="smallprint" style="text-align:center;min-height:30px">Bấm “Bắt đầu viết & chấm” để mở vùng nhận nét. Viết từng nét trong vùng đó; ô vẽ tự do phía dưới chỉ để luyện tay và không được chấm.</p><div class="row wrap" style="justify-content:center"><button class="btn full" id="practice-grade-strokes" type="button">✍ Bắt đầu viết & chấm</button><button class="btn secondary tiny" id="practice-free-write" type="button" hidden>Quay lại ô viết tự do</button></div></section>
+    <section class="practice-write-card"><h3>Viết chữ Hán & chấm điểm</h3><div id="practice-free-wrap"><div class="canvas-wrap"><canvas id="writing-canvas" class="writing-canvas" width="500" height="500" aria-label="Bảng để tự viết chữ Hán bằng tay"></canvas></div><div class="row wrap" style="justify-content:center"><button class="btn secondary tiny" id="clear-canvas" type="button">Xóa nét</button><button class="btn secondary tiny" id="show-trace" type="button">Bật/tắt chữ mờ</button></div></div><div id="practice-stroke-quiz" class="stroke-stage practice-stroke-quiz" hidden><span class="stroke-fallback-char">✍</span></div><p id="practice-stroke-feedback" class="smallprint" style="text-align:center;min-height:30px">Bấm “Bắt đầu viết & chấm” để mở vùng nhận nét. Viết từng nét trong vùng đó; ô vẽ tự do phía dưới chỉ để luyện tay và không được chấm.</p><div class="row wrap" style="justify-content:center"><button class="btn full" id="practice-grade-strokes" type="button">✍ Bắt đầu viết & chấm</button><button class="btn secondary tiny" id="practice-free-write" type="button" hidden>Quay lại ô viết tự do</button></div></section>
    </div>
   </div>
   <div id="practice-result" class="result" hidden></div>
@@ -247,7 +257,7 @@
   <div class="row between" style="margin-top:13px"><h3 class="section-title" style="margin:0">Từ đã chọn <span id="selected-count" class="tag">0</span></h3><button class="btn secondary tiny" id="clear-selected">Xóa tất cả</button></div>
   <div id="selected-words" class="selected-chips" style="margin-top:9px"><div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div></div>
   <p class="smallprint" id="combine-save-status" aria-live="polite" style="margin:9px 0 0">Danh sách từ tự động lưu trên trình duyệt/thiết bị này và sẽ được khôi phục khi bạn mở lại cùng địa chỉ ứng dụng.</p>
-  <button class="btn full" id="make-sentences" style="margin-top:13px">✨ Tạo câu có nghĩa</button><div id="sentence-build-status" role="status" aria-live="polite">Chọn từ rồi bấm “Tạo câu có nghĩa”. Kết quả sẽ được báo ngay tại đây.</div>
+  <button class="btn full" id="make-sentences" style="margin-top:13px">✨ Tạo câu có nghĩa</button><div id="sentence-build-status" role="status" aria-live="polite"></div>
  </div>
  <div class="card ocr-card">
   <h3 class="section-title">📷 Lấy từ vựng từ ảnh hoặc chụp bằng điện thoại</h3>
@@ -280,7 +290,7 @@
   <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
 
  </div>
- <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><p class="smallprint" style="margin:5px 0 8px">Hiển thị 10 câu mỗi trang. Dùng các nút chuyển trang để xem toàn bộ câu đã tạo.</p><div id="sentence-pagination-top" class="sentence-pagination" hidden></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div><div id="sentence-pagination-bottom" class="sentence-pagination" hidden></div></div>
+ <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-pagination-top" class="sentence-pagination" hidden></div><div id="sentence-results"></div><div id="sentence-pagination-bottom" class="sentence-pagination" hidden></div></div>
  <div class="card reflex-card" id="reflex-card">
   <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
 
@@ -641,6 +651,7 @@ async function downloadDictionary(){
 }
 $('update-dict').addEventListener('click',()=>{
  const status=$('dict-status');
+ status.hidden=false;
  status.className='source-status ok';
  status.textContent='✅ Từ điển đã được nhúng trong ứng dụng: '+dictionary.length.toLocaleString('vi-VN')+' từ. Không cần tải thêm dữ liệu.';
 });
