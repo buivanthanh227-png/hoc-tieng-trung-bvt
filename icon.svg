@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
   <title id="title">汉语</title>
   <rect width="128" height="128" rx="26" fill="#b91c1c"/>
-  <text x="64" y="82" text-anchor="middle" font-size="43" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-weight="800" letter-spacing="-1" fill="#fff">汉语</text>
+  <text x="64" y="82" text-anchor="middle" font-size="43" font-family="Noto Sans CJK SC, PingFang SC, Microsoft YaHei, sans-serif" font-weight="800" letter-spacing="-1" fill="#ffea00">汉语</text>
 </svg>

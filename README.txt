@@ -28,3 +28,10 @@ Bản cập nhật tinh chỉnh v41 (28-10-2026):
 
 
 Tinh chỉnh giao diện (vẫn giữ nhãn v41): đã bỏ các đoạn giải thích dài dưới Ghép câu, OCR và Phản xạ; phần trạng thái ban đầu để trống và chỉ hiện thông báo khi thao tác cần phản hồi. Phần chọn ảnh chỉ hiện số ảnh đã chọn. Cache service worker được đổi tên để trình duyệt lấy nội dung mới.
+
+
+Tinh chỉnh giao diện và luyện viết (giữ nguyên nhãn v41):
+- Tăng cỡ chữ slogan, mở rộng khoảng cách giữa hai dòng nhưng vẫn nhỏ hơn tiêu đề chính.
+- Đổi chữ 汉语 trên logo sang vàng tươi; cập nhật SVG, PNG, Apple touch icon và cache token.
+- Khôi phục ô thứ tự nét mẫu trong mục Luyện viết chữ Hán. Bên cạnh là vùng viết theo thứ tự nét của Hanzi Writer; khi hoàn tất hiển thị điểm và số lần viết sai nét.
+- Ẩn ô vẽ tự do không chấm điểm trong chế độ luyện viết chữ Hán để thao tác khớp với chức năng xem nét mẫu ở Từ điển.
