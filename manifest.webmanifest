@@ -1,6 +1,6 @@
 {
-  "name": "HỌC TIẾNG TRUNG BVT",
-  "short_name": "HỌC TIẾNG TRUNG BVT",
+  "name": "HỌC TIẾNG TRUNG",
+  "short_name": "HỌC TIẾNG TRUNG",
   "description": "Từ điển Trung–Việt, dịch nhanh, luyện viết, luyện đọc và ghép câu.",
   "start_url": "./index.html",
   "scope": "./",
