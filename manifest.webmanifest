@@ -1,14 +1,11 @@
 {
-  "id": "./",
-  "name": "Học Tiếng Trung Trung–Việt",
-  "short_name": "Học Trung",
-  "description": "Từ điển Trung–Việt, lấy từ từ ảnh, ghép câu và luyện phản xạ.",
-  "lang": "vi-VN",
+  "name": "HỌC TIẾNG TRUNG BVT",
+  "short_name": "HỌC TIẾNG TRUNG BVT",
+  "description": "Từ điển Trung–Việt, dịch nhanh, luyện viết, luyện đọc và ghép câu.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "theme_color": "#b91c1c",
   "background_color": "#f5f6f8",
-  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "theme_color": "#b91c1c",
+  "lang": "vi"
 }
