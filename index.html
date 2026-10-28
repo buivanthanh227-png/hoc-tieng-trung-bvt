@@ -150,6 +150,10 @@
 #reflex-typing-method .reflex-controls{margin-top:9px}
 
 
+/* v41: small menu/credit refinements */
+.credit-line span{display:block}
+.tab .translate-icon{font-family:Arial,sans-serif;font-size:14px;font-weight:900;letter-spacing:-1px;line-height:1.55;color:inherit}
+
 /* v41: expose each practice mode as a top-level menu item */
 .tabs{overflow-x:auto;justify-content:center;scrollbar-width:thin;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
 .tab{flex:1 0 106px;min-width:106px;max-width:170px;white-space:normal;line-height:1.25;font-size:11px}
@@ -160,12 +164,12 @@
 </style>
 </head>
 <body>
-<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-hidden="true">汉</div><div><h1>HỌC TIẾNG TRUNG BVT</h1><p id="top-status">Đang nạp từ điển nhúng sẵn · có thể dùng offline</p></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line">CÔNG CỤ ĐƯỢC PHÁT TRIỂN TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</p></div></div></header>
+<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-hidden="true">汉</div><div><h1>HỌC TIẾNG TRUNG BVT</h1><p id="top-status">Đang nạp từ điển nhúng sẵn · có thể dùng offline</p></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
 <nav class="tabs" aria-label="Các chức năng chính">
 <button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN</button>
-<button class="tab" data-tab="translate" type="button"><span>🌐</span>DỊCH NHANH VIỆT–TRUNG</button>
+<button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT–TRUNG</button>
 <button class="tab" data-tab="vi-zh" type="button"><span>🇻🇳</span>LUYỆN VIẾT VIỆT → TRUNG</button>
-<button class="tab" data-tab="zh-vi" type="button"><span>🇨🇳</span>LUYỆN TẬP TRUNG → VIỆT</button>
+<button class="tab" data-tab="zh-vi" type="button"><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
 <button class="tab" data-tab="write" type="button"><span>✍️</span>LUYỆN VIẾT CHỮ HÁN</button>
 <button class="tab" data-tab="read" type="button"><span>🔊</span>LUYỆN ĐỌC CHỮ HÁN</button>
 <button class="tab" data-tab="combine" type="button"><span>🧩</span>GHÉP CÂU</button>
@@ -702,7 +706,7 @@ function switchTab(tab){
  $('quick-translate-card').hidden=!translating;
  $('practice-exercise-card').hidden=translating;
  $('practice-stats-card').hidden=translating;
- const titles={'vi-zh':'LUYỆN VIẾT VIỆT → TRUNG','zh-vi':'LUYỆN TẬP TRUNG → VIỆT','write':'LUYỆN VIẾT CHỮ HÁN','read':'LUYỆN ĐỌC CHỮ HÁN'};
+ const titles={'vi-zh':'LUYỆN VIẾT VIỆT → TRUNG','zh-vi':'LUYỆN VIẾT TRUNG → VIỆT','write':'LUYỆN VIẾT CHỮ HÁN','read':'LUYỆN ĐỌC CHỮ HÁN'};
  if(PRACTICE_NAV_MODES.has(tab))$('practice-section-title').textContent=titles[tab];
  $('practice-back').hidden=!(PRACTICE_NAV_MODES.has(tab)&&practiceReturnTab==='combine');
  window.scrollTo({top:0,behavior:'smooth'});
