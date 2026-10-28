@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="description" content="Học tiếng Trung BVT: từ điển Trung–Việt, dịch nhanh, luyện viết, luyện đọc và ghép câu.">
 <link rel="manifest" href="./manifest.webmanifest">
-<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="icon" href="./icon.svg?v=41-speech-fix-20261028" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./apple-touch-icon-v41.png?v=41-speech-fix-20261028">
 <title>HỌC TIẾNG TRUNG</title>
 <style>
 :root{--red:#b91c1c;--red2:#dc2626;--ink:#182230;--muted:#657184;--line:#e4e7ec;--paper:#fff;--bg:#f5f6f8;--green:#147d4a;--amber:#a15c07;--shadow:0 4px 18px rgba(18,31,53,.06)}
@@ -164,7 +165,7 @@
 </style>
 </head>
 <body>
-<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-hidden="true">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p id="top-status">Đang nạp từ điển nhúng sẵn · có thể dùng offline</p></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
+<header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-label="汉语">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p id="top-status">Đang nạp từ điển nhúng sẵn · có thể dùng offline</p></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
 <nav class="tabs" aria-label="Các chức năng chính">
 <button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN</button>
 <button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT–TRUNG</button>
@@ -181,13 +182,8 @@
   <div class="row between"><h2 class="section-title" style="margin:0">Tra cứu từ vựng</h2><span class="pill" id="dict-source-badge">Đang nạp dữ liệu</span></div>
   <p class="subtle" style="margin:7px 0 11px">Tìm bằng chữ Hán giản thể/phồn thể, Pinyin hoặc nghĩa tiếng Việt.</p>
   <label class="sr-only" for="dict-search">Tìm từ vựng</label><input id="dict-search" class="field" type="search" autocomplete="off" placeholder="Ví dụ: 你好 · ni hao · xin chào">
-  <p class="smallprint" style="margin:7px 0 0">🔊 Ưu tiên giọng nam tiếng Trung nếu thiết bị có (Yunxi/Yunyang/Yunjian); nếu có cả nam và nữ, bấm loa để luân phiên. Danh sách giọng phụ thuộc thiết bị.</p>
   <div class="row between wrap"><span class="subtle" id="dict-result-count">Bộ từ cơ bản sẵn sàng</span><button class="btn secondary tiny" id="update-dict">Thông tin dữ liệu</button></div>
   <div id="dict-status" class="source-status">Bộ từ điển Trung–Việt đã được nhúng trực tiếp trong tệp HTML. Có thể tra từ khi mở ứng dụng offline; các tính năng âm thanh và thứ tự nét có thể cần Internet.</div>
-  <div class="row wrap" style="margin-top:9px">
-   <a class="subtle" href="https://github.com/MarshNg/yomilens-dictionaries" target="_blank" rel="noreferrer">Nguồn dữ liệu CVDICT Trung–Việt ↗</a>
-  </div>
-  <p class="smallprint" style="margin:7px 0 0">Bộ dữ liệu được đóng gói trực tiếp trong ứng dụng: không cần tải CVDICT.u8, không cần gọi máy chủ để tra từ. Lần đầu mở có thể mất vài giây để nạp hơn 120.000 mục.</p>
  </div>
  <div id="dict-list" class="list"></div>
  <div class="pagination"><button class="btn secondary tiny" id="prev-page">← Trước</button><span id="page-info">Trang 1</span><button class="btn secondary tiny" id="next-page">Sau →</button></div>
@@ -307,12 +303,12 @@
    </div>
    <div id="reflex-speech-method" class="reflex-answer-method" hidden style="margin-top:14px;padding:13px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--surface,#fff)">
     <div style="font-weight:700;margin-bottom:5px">Cách 1 — Trả lời bằng giọng nói</div>
-    <p class="smallprint" style="margin:0 0 10px">Bấm biểu tượng micro để ghi âm bằng micro của điện thoại, chạm lần nữa để dừng. Ứng dụng sẽ nhận dạng tiếng Trung ngay trên thiết bị, không gửi bản ghi lên máy chủ. Lần đầu cần tải bộ nhận diện miễn phí khoảng vài chục MB.</p>
+    <p class="smallprint" style="margin:0 0 10px">Bấm micro để nhận diện tiếng Trung bằng bộ nhận diện có sẵn của trình duyệt. Chạm lần nữa để dừng; hệ thống cũng có thể tự kết thúc khi bạn ngừng nói. Tùy trình duyệt, nhận diện có thể cần Internet.</p>
     <div class="reflex-controls" style="margin-top:0">
      <button id="reflex-mic-button" class="btn outline" type="button" hidden>🎙️ Bắt đầu thu âm</button>
     </div>
     <div id="reflex-speech-recognized" class="reflex-speech-recognized" hidden aria-live="polite"><b>Chữ Hán nhận diện được</b><div id="reflex-speech-recognized-text" class="recognized-text"></div></div>
-    <p class="smallprint" style="margin:8px 0 0">Dùng chức năng nhận diện có sẵn của trình duyệt, không cần cài thêm dịch vụ hoặc cấu hình Cloudflare. Nếu nhận diện không hoạt động, bạn vẫn có thể nhập chữ Hán.</p>
+    <p class="smallprint" style="margin:8px 0 0">Ưu tiên nhận diện tích hợp của trình duyệt để giữ chất lượng nhận dạng tiếng Trung tốt hơn. Nếu trình duyệt không hỗ trợ hoặc không trả kết quả, bạn vẫn có thể nhập chữ Hán để chấm điểm.</p>
    </div>
    <div id="reflex-typing-method" class="reflex-answer-method" style="margin-top:12px;padding:13px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--surface,#fff)">
     <div id="reflex-typing-title" style="font-weight:700;margin-bottom:7px">Nhập câu trả lời bằng chữ Hán</div>
@@ -326,11 +322,11 @@
    <div id="reflex-mic-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="reflex-mic-title">
     <div class="mic-panel">
      <div id="reflex-mic-title" style="font-size:22px;font-weight:800">🎙️ Trả lời bằng tiếng Trung</div>
-     <p id="reflex-mic-instruction" class="smallprint">Bấm micro để ghi âm; chạm lại để dừng và nhận dạng trên điện thoại.</p>
+     <p id="reflex-mic-instruction" class="smallprint">Bấm micro để bắt đầu nhận diện tiếng Trung; chạm lại để dừng.</p>
      <button id="reflex-live-mic" type="button" aria-label="Bắt đầu ghi âm">🎙️</button>
      <div style="font-weight:700">Chữ Hán nhận diện được</div>
      <div id="reflex-live-transcript" aria-live="polite">Chữ nhận diện sẽ hiện ở đây khi trình duyệt trả kết quả.</div>
-     <p class="smallprint" style="margin:12px 0 0">Âm thanh được ghi và nhận dạng ngay trên thiết bị. Lần đầu cần Internet để tải mô hình miễn phí khoảng 40–60 MB; trình duyệt sẽ cố gắng lưu mô hình để dùng lại ở các lượt sau.</p>
+     <p class="smallprint" style="margin:12px 0 0">Tùy trình duyệt, nhận diện giọng nói có thể cần Internet và được xử lý bởi dịch vụ nhận diện của trình duyệt. Nếu không có kết quả, hãy thử lại hoặc nhập chữ Hán bên dưới.</p>
      <button id="reflex-mic-close-button" class="btn secondary" type="button" hidden style="margin-top:12px;width:100%">Đóng kết quả</button>
     </div>
    </div>
@@ -399,7 +395,7 @@ let practiceReturnTab = null;
 let practiceTraceChar = '';
 let filteredIndices = [];
 let currentPage = 1;
-const pageSize = 20;
+const pageSize = 10;
 let activeTab = 'dict';
 let combineScope = 'common';
 let selectedCombine = new Map();
@@ -444,7 +440,12 @@ let reflexQueue = [];
 let reflexIndex = 0;
 let reflexCurrentPair = null;
 let reflexHasAnswered = false;
-let reflexRecognition = null; // Chỉ còn dùng cho tương thích mã cũ; phản xạ nói không dùng Web Speech API nữa.
+let reflexRecognition = null; // Biến tương thích cũ.
+let reflexBrowserRecognition = null;
+let reflexBrowserFinalTranscript = '';
+let reflexBrowserInterimTranscript = '';
+let reflexBrowserError = '';
+let reflexBrowserStopRequested = false;
 let reflexRecording = false;
 // v37: ghi âm MediaRecorder; nếu module worker lỗi, tự chuyển sang nhận dạng dự phòng cục bộ.
 let reflexMediaRecorder = null;
@@ -2250,6 +2251,7 @@ function resetSpeakingStateForNewQuestion(){
  // Increment the generation before stopping hardware: late dataavailable/onstop callbacks are ignored.
  const invalidatedSession=reflexRecognitionSession;
  reflexRecognitionSession++;
+ abortReflexBrowserRecognition();
  cancelPendingReflexASR(invalidatedSession);
  clearReflexRecognitionTimers();
  reflexRecording=false;reflexRecognitionStopRequested=true;
@@ -2499,98 +2501,159 @@ async function transcribeReflexRecording(blob,session){
  }
 }
 
-async function startReflexMicrophone(){
- if(reflexRecording)return;
- if(reflexLocalAsrBusy){toast('Đang xử lý câu vừa thu âm. Vui lòng đợi kết quả xuất hiện.');return;}
- if(speechPlaybackActive||(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))){toast('Hãy đợi câu mẫu đọc xong rồi bấm micro.');return;}
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){
-  showReflexSpeechFailure('Trình duyệt này chưa hỗ trợ ghi âm trực tiếp. Hãy thử mở trang qua HTTPS trên Safari/Chrome mới hoặc nhập câu trả lời bằng chữ Hán.');return;
+function abortReflexBrowserRecognition(){
+ const old=reflexBrowserRecognition;
+ reflexBrowserRecognition=null;
+ if(old){
+  old.onstart=null;old.onresult=null;old.onerror=null;old.onend=null;
+  try{old.abort();}catch(_){}
  }
- // New generation/session for every microphone press; no SpeechRecognition object is used here.
+ reflexBrowserFinalTranscript='';reflexBrowserInterimTranscript='';reflexBrowserError='';reflexBrowserStopRequested=false;
+}
+
+function finishReflexBrowserRecognition(session, recognition){
+ if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
+ if(reflexRecognitionRestartTimer){clearTimeout(reflexRecognitionRestartTimer);reflexRecognitionRestartTimer=null;}
+ if(reflexRecognitionStopTimer){clearTimeout(reflexRecognitionStopTimer);reflexRecognitionStopTimer=null;}
+ if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
+ const transcript=String(reflexBrowserFinalTranscript||reflexBrowserInterimTranscript||'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim();
+ const errorCode=reflexBrowserError;
+ reflexBrowserRecognition=null;reflexRecording=false;
+ recognition.onstart=null;recognition.onresult=null;recognition.onerror=null;recognition.onend=null;
+ try{recognition.abort();}catch(_){} // Ensure any recognizer that failed to emit `end` releases the mic.
+ reflexRecognitionTranscript=transcript;reflexRecognitionLiveText=transcript;
+ resetReflexMicButtons(true);
+ const liveMic=$('reflex-live-mic');
+ if(liveMic){liveMic.disabled=!!transcript;liveMic.classList.remove('recording');liveMic.textContent=transcript?'✓':'🎙️';liveMic.setAttribute('aria-label',transcript?'Đã nhận dạng xong':'Bấm để thử nhận diện lại');}
+ const closeBtn=$('reflex-mic-close-button');if(closeBtn)closeBtn.hidden=false;
+ if(transcript){
+  updateReflexLiveTranscript(transcript);
+  const recognized=$('reflex-speech-recognized');if(recognized)recognized.hidden=false;
+  const recognizedText=$('reflex-speech-recognized-text');if(recognizedText)recognizedText.textContent=transcript;
+  $('reflex-mic-instruction').textContent='Đã nhận diện xong. Đóng cửa sổ này để xem điểm và chuyển câu tiếp theo.';
+  evaluateReflexAnswer(transcript,'speech');
+ }else{
+  const messages={
+   'not-allowed':'Trình duyệt chưa được cấp quyền micro. Hãy cho phép micro trong cài đặt website rồi thử lại.',
+   'service-not-allowed':'Dịch vụ nhận diện giọng nói của trình duyệt không khả dụng. Hãy kiểm tra Internet hoặc nhập chữ Hán bên dưới.',
+   'network':'Nhận diện giọng nói bị lỗi kết nối. Hãy kiểm tra Internet, thử lại hoặc nhập chữ Hán bên dưới.',
+   'no-speech':'Chưa nhận được tiếng nói. Hãy chạm micro để thử lại, nói rõ một câu tiếng Trung rồi chạm để dừng.',
+   'audio-capture':'Không truy cập được micro. Đóng ứng dụng đang dùng micro khác hoặc kiểm tra quyền của trình duyệt.',
+   'language-not-supported':'Bộ nhận diện của trình duyệt không hỗ trợ tiếng Trung trên thiết bị này. Bạn có thể nhập chữ Hán để chấm điểm.'
+  };
+  const msg=messages[errorCode]||'Trình duyệt không trả về chữ Hán. Hãy thử lại, kiểm tra Internet hoặc nhập câu trả lời bằng chữ Hán.';
+  updateReflexLiveTranscript(msg);showReflexSpeechFailure(msg);
+  $('reflex-mic-instruction').textContent='Không nhận diện được câu. Bạn có thể thử lại hoặc đóng cửa sổ và nhập chữ Hán ở phần bên dưới.';
+ }
+}
+
+function startReflexMicrophone(){
+ if(reflexRecording){stopReflexMicrophone(false);return;}
+ if(speechPlaybackActive||(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))){toast('Hãy đợi câu mẫu đọc xong rồi bấm micro.');return;}
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){
+  showReflexSpeechFailure('Trình duyệt này không hỗ trợ nhận diện giọng nói tích hợp. Hãy dùng Chrome hoặc Safari mới qua HTTPS, hoặc nhập câu trả lời bằng chữ Hán.');
+  $('reflex-mic-instruction').textContent='Không tìm thấy bộ nhận diện giọng nói của trình duyệt. Bạn vẫn có thể nhập chữ Hán để chấm điểm.';
+  return;
+ }
+ // Invalidate any previous native recognizer before opening a fresh instance for this question.
+ abortReflexBrowserRecognition();
  reflexRecognitionSession++;
  const session=reflexRecognitionSession;
  clearReflexRecognitionTimers();disposeCurrentReflexRecording();
  reflexRecognitionStopRequested=false;reflexRecognitionError='';reflexRecognitionTranscript='';reflexRecognitionLiveText='';
  reflexRecognitionSegmentFinal='';reflexRecognitionSegmentLive='';reflexRecognitionEmptyEnds=0;reflexRecognitionSegments=0;reflexRecognitionAttempt=0;
- reflexRecognitionHasSpeech=false;reflexRecognitionHasResult=false;reflexRecognitionLastResultAt=0;reflexHasAnswered=false;reflexRecording=true;
+ reflexRecognitionHasSpeech=false;reflexRecognitionHasResult=false;reflexRecognitionLastResultAt=0;
+ reflexBrowserFinalTranscript='';reflexBrowserInterimTranscript='';reflexBrowserError='';reflexBrowserStopRequested=false;
+ reflexHasAnswered=false;reflexRecording=true;
  $('reflex-next-button').hidden=true;$('reflex-check-button').hidden=false;
  $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
- $('reflex-mic-button').disabled=true;$('reflex-mic-button').textContent='🎙️ Đang mở micro…';
+ $('reflex-mic-button').disabled=true;$('reflex-mic-button').textContent='🎙️ Đang nhận diện…';
  $('reflex-mic-overlay').hidden=false;$('reflex-mic-close-button').hidden=true;
- $('reflex-live-mic').disabled=true;$('reflex-live-mic').classList.remove('recording');$('reflex-live-mic').textContent='⏳';$('reflex-live-mic').setAttribute('aria-label','Đang mở micro');
- updateReflexLiveTranscript('Đang xin quyền truy cập micro…');$('reflex-mic-instruction').textContent='Hãy cho phép trang sử dụng micro. Sau khi nút micro đỏ hiện ra, hãy nói tiếng Trung rồi chạm lại để dừng.';
+ $('reflex-live-mic').disabled=true;$('reflex-live-mic').classList.remove('recording');$('reflex-live-mic').textContent='⏳';$('reflex-live-mic').setAttribute('aria-label','Đang khởi động nhận diện');
+ updateReflexLiveTranscript('Đang khởi động bộ nhận diện giọng nói của trình duyệt…');
+ $('reflex-mic-instruction').textContent='Nói một câu tiếng Trung rồi chạm lại vào micro để dừng. Tùy trình duyệt, nhận diện có thể cần Internet.';
  const box=$('reflex-feedback');box.hidden=true;box.textContent='';
- let stream=null;
+ let recognition;
  try{
-  stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
-  if(session!==reflexRecognitionSession){stopReflexMediaTracks(stream);return;}
-  reflexMediaStream=stream;reflexMediaChunks=[];
-  let recorder;
-  const options=chooseReflexRecordingOptions();
-  try{recorder=options?new MediaRecorder(stream,options):new MediaRecorder(stream);}catch(_){recorder=new MediaRecorder(stream);}
-  reflexMediaRecorder=recorder;
-  recorder.ondataavailable=e=>{if(session===reflexRecognitionSession&&e.data&&e.data.size)reflexMediaChunks.push(e.data);};
-  recorder.onerror=e=>{
-   if(session!==reflexRecognitionSession)return;
-   clearReflexRecognitionTimers();
-   const detail=e&&e.error&&e.error.message?e.error.message:'';
-   reflexRecognitionSession++;
-   disposeCurrentReflexRecording();resetReflexMicButtons(true);
-   showReflexSpeechFailure('Lỗi ghi âm từ micro điện thoại. Hãy thử lại hoặc nhập chữ Hán. '+detail);
-   $('reflex-mic-instruction').textContent='Ghi âm thất bại. Đóng cửa sổ rồi nhập chữ Hán ở Cách 2 bên dưới để chấm điểm.';
+  recognition=new SR();reflexBrowserRecognition=recognition;
+  recognition.lang='zh-CN';recognition.continuous=false;recognition.interimResults=true;recognition.maxAlternatives=5;
+  recognition.onstart=()=>{
+   if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
+   reflexRecording=true;
+   $('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='🎙️';$('reflex-live-mic').setAttribute('aria-label','Dừng nhận diện');
+   $('reflex-mic-button').textContent='🎙️ Đang nghe…';
+   updateReflexLiveTranscript('Đang nghe… hãy nói tiếng Trung rõ ràng.');
   };
-  recorder.onstop=()=>{
-   if(session!==reflexRecognitionSession)return;
-   if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
-   const chunks=reflexMediaChunks.slice();reflexMediaChunks=[];
-   const blob=new Blob(chunks,{type:recorder.mimeType||((chunks[0]&&chunks[0].type)||'audio/mp4')});
-   if(reflexMediaRecorder===recorder)reflexMediaRecorder=null;
-   const activeStream=reflexMediaStream;reflexMediaStream=null;stopReflexMediaTracks(activeStream);
+  recognition.onresult=e=>{
+   if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
+   let finalText='',interimText='';
+   for(let i=0;i<e.results.length;i++){
+    const result=e.results[i];if(!result||!result[0])continue;
+    if(result.isFinal)finalText+=result[0].transcript||'';
+    else interimText+=result[0].transcript||'';
+   }
+   reflexBrowserFinalTranscript=finalText;reflexBrowserInterimTranscript=interimText;
+   reflexRecognitionHasResult=!!(finalText||interimText);reflexRecognitionLastResultAt=Date.now();
+   const display=(finalText+interimText).trim();
+   if(display)updateReflexLiveTranscript(display);
+  };
+  recognition.onerror=e=>{
+   if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
+   reflexBrowserError=String(e&&e.error||'');
+   if(reflexBrowserError==='aborted'&&reflexBrowserStopRequested)return;
+   if(reflexBrowserError&&reflexBrowserError!=='no-speech'){
+    const detail=reflexBrowserError==='network'?'Đang lỗi kết nối nhận diện…':reflexBrowserError==='not-allowed'?'Chưa có quyền micro…':'Đang xử lý lỗi nhận diện…';
+    updateReflexLiveTranscript(detail);
+   }
+   // A few browser builds emit an error without a reliable `end`; release the UI regardless.
+   if(reflexRecognitionRestartTimer)clearTimeout(reflexRecognitionRestartTimer);
+   reflexRecognitionRestartTimer=setTimeout(()=>{
+    if(session===reflexRecognitionSession&&reflexBrowserRecognition===recognition)finishReflexBrowserRecognition(session,recognition);
+   },1400);
+  };
+  recognition.onend=()=>{
+   if(session!==reflexRecognitionSession||reflexBrowserRecognition!==recognition)return;
    reflexRecording=false;
-   const liveMic=$('reflex-live-mic');if(liveMic){liveMic.disabled=true;liveMic.classList.remove('recording');liveMic.textContent='🧠';liveMic.setAttribute('aria-label','Đang nhận dạng bản ghi');}
-   const startBtn=$('reflex-mic-button');if(startBtn)startBtn.textContent='🧠 Đang nhận dạng…';
-   updateReflexLiveTranscript('Đã ghi âm xong. Đang nhận dạng trên điện thoại…');
-   if(blob.size<1000){completeReflexLocalResult(session,'');updateReflexLiveTranscript('Bản ghi quá ngắn hoặc micro không thu được âm thanh. Hãy thử lại và nói rõ hơn.');const t=$('reflex-speech-recognized-text');if(t)t.textContent='Bản ghi quá ngắn hoặc micro không thu được âm thanh. Hãy thử lại và nói rõ hơn.';return;}
-   transcribeReflexRecording(blob,session);
+   finishReflexBrowserRecognition(session,recognition);
   };
-  recorder.start(250);
-  $('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='🎙️';$('reflex-live-mic').setAttribute('aria-label','Dừng ghi âm và nhận dạng');
-  updateReflexLiveTranscript('Đang ghi âm từ micro điện thoại…');$('reflex-mic-instruction').textContent='Đang ghi âm. Hãy nói một câu tiếng Trung rồi chạm vào biểu tượng micro để dừng và nhận dạng.';
-  $('reflex-mic-button').textContent='🎙️ Đang ghi âm…';
-  // Short conversation sentences fit comfortably; prevent an accidental long recording on mobile.
-  reflexMediaRecordingTimer=setTimeout(()=>{if(session===reflexRecognitionSession&&reflexRecording)stopReflexMicrophone(true);},20000);
+  recognition.start();
+  $('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='🎙️';$('reflex-live-mic').setAttribute('aria-label','Dừng nhận diện');
+  $('reflex-mic-button').textContent='🎙️ Đang nghe…';
+  updateReflexLiveTranscript('Đang nghe… hãy nói tiếng Trung rõ ràng.');
+  reflexRecognitionStopTimer=setTimeout(()=>{
+   if(session===reflexRecognitionSession&&reflexBrowserRecognition===recognition&&reflexRecording)stopReflexMicrophone(true);
+  },20000);
  }catch(err){
-  if(stream)stopReflexMediaTracks(stream);
-  disposeCurrentReflexRecording();
   if(session!==reflexRecognitionSession)return;
-  reflexRecording=false;resetReflexMicButtons(true);
-  const msg=err&&err.name==='NotAllowedError'?'Bạn chưa cấp quyền micro cho trang. Hãy cho phép micro trong cài đặt website rồi thử lại.':
-   err&&err.name==='NotFoundError'?'Không tìm thấy micro trên thiết bị. Bạn vẫn có thể nhập chữ Hán để trả lời.':
-   'Không mở được micro của điện thoại. Hãy kiểm tra quyền micro, đóng ứng dụng gọi/ghi âm khác rồi thử lại. '+String(err&&err.message||'');
-  showReflexSpeechFailure(msg);$('reflex-mic-instruction').textContent='Không mở được micro. Đóng cửa sổ rồi nhập chữ Hán ở Cách 2 bên dưới để chấm điểm.';
+  reflexBrowserRecognition=null;reflexRecording=false;clearReflexRecognitionTimers();resetReflexMicButtons(true);
+  const msg='Không khởi động được nhận diện giọng nói của trình duyệt. Hãy thử lại qua HTTPS hoặc nhập chữ Hán để chấm điểm. '+String(err&&err.message||'');
+  showReflexSpeechFailure(msg);$('reflex-mic-instruction').textContent=msg;
  }
 }
 
 function stopReflexMicrophone(autoStop=false){
  if(!reflexRecording)return;
- const rec=reflexMediaRecorder;
- if(!rec||rec.state==='inactive'){
-  if(!autoStop)toast('Micro đang khởi tạo. Hãy đợi biểu tượng micro đỏ xuất hiện rồi chạm lại.');
-  return;
- }
- if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
- $('reflex-live-mic').disabled=true;$('reflex-live-mic').classList.remove('recording');$('reflex-live-mic').textContent='🧠';$('reflex-live-mic').setAttribute('aria-label','Đang xử lý bản ghi');
- $('reflex-mic-instruction').textContent=autoStop?'Đã đạt giới hạn 20 giây. Đang nhận dạng bản ghi…':'Đã dừng ghi âm. Đang nhận dạng cục bộ trên điện thoại…';
- updateReflexLiveTranscript('Đang xử lý bản ghi…');
- try{rec.stop();}catch(err){
+ const recognition=reflexBrowserRecognition;
+ if(!recognition){reflexRecording=false;resetReflexMicButtons(true);showReflexSpeechFailure('Phiên nhận diện đã kết thúc. Bạn có thể thử lại hoặc nhập chữ Hán.');return;}
+ if(reflexRecognitionStopTimer){clearTimeout(reflexRecognitionStopTimer);reflexRecognitionStopTimer=null;}
+ reflexBrowserStopRequested=true;
+ $('reflex-live-mic').disabled=true;$('reflex-live-mic').classList.remove('recording');$('reflex-live-mic').textContent='…';$('reflex-live-mic').setAttribute('aria-label','Đang hoàn tất nhận diện');
+ $('reflex-mic-instruction').textContent=autoStop?'Đã đạt giới hạn 20 giây. Đang hoàn tất nhận diện…':'Đang hoàn tất nhận diện câu vừa nói…';
+ updateReflexLiveTranscript((reflexBrowserFinalTranscript+reflexBrowserInterimTranscript).trim()||'Đang chờ kết quả nhận diện cuối cùng…');
+ try{recognition.stop();}catch(err){
   const session=reflexRecognitionSession;
-  reflexRecording=false;disposeCurrentReflexRecording();resetReflexMicButtons(true);
-  showReflexSpeechFailure('Không dừng được bản ghi. Hãy thử lại hoặc nhập chữ Hán.');
+  if(reflexBrowserRecognition===recognition)finishReflexBrowserRecognition(session,recognition);
  }
+ // Some browser builds fail to dispatch `end` after a manual stop; watchdog ensures the UI unlocks.
+ const session=reflexRecognitionSession;
+ reflexRecognitionRestartTimer=setTimeout(()=>{
+  if(session===reflexRecognitionSession&&reflexBrowserRecognition===recognition)finishReflexBrowserRecognition(session,recognition);
+ },2500);
 }
 $('reflex-live-mic').addEventListener('click',()=>{
  if(reflexRecording)stopReflexMicrophone(false);
- else if(!reflexLocalAsrBusy&&!reflexHasAnswered)startReflexMicrophone();
+ else if(!reflexHasAnswered)startReflexMicrophone();
 });
 $('reflex-mic-close-button').addEventListener('click',()=>{$('reflex-mic-overlay').hidden=true;$('reflex-mic-close-button').hidden=true;});
 $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{

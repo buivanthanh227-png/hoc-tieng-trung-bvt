@@ -1,24 +1,27 @@
-HOC TIENG TRUNG BVT — v35 GHI AM TAI MAY + NHAN DANG CUC BO
+HỌC TIẾNG TRUNG — v41
 
-MUC TIEU
-- Phan xa noi khong dung SpeechRecognition cua Safari/Chrome nua.
-- Nhan am thanh truc tiep tu micro dien thoai bang MediaRecorder.
-- Whisper tiny multilingual chay trong trinh duyet qua Web Worker/WASM, giu giao dien phan hoi tot hon khi dang nhan dang.
-- Khong gui file ghi am len may chu; khong can Cloudflare Workers AI, API key hay binding moi.
+Thay đổi chính:
+- Tiêu đề trình duyệt / tên ứng dụng hiển thị là HỌC TIẾNG TRUNG; logo đổi thành 汉语.
+- Bỏ mục menu chung “Luyện tập”; các chức năng được đưa thẳng lên thanh menu: Dịch nhanh Việt–Trung, Luyện viết Việt → Trung, Luyện viết Trung → Việt, Luyện viết chữ Hán, Luyện đọc chữ Hán.
+- Từ điển giữ nguyên. Phần Ghép câu dùng bộ lọc mẫu ngữ pháp, cặp từ tương thích và nghĩa tiếng Việt; kết quả xếp theo tổ hợp 2 từ trước, rồi 3 từ, 4 từ… và tối đa 2.000 câu.
+- Trong mỗi mục luyện tập chỉ hiện chức năng tương ứng; bộ nút chọn chế độ bên trong được ẩn để tránh trùng menu.
+- Thanh menu có thể cuộn ngang trên màn hình điện thoại để nhìn thấy đủ 7 mục.
 
-LAN DAU SU DUNG
-- Mo app qua HTTPS (GitHub Pages) va cho phep micro.
-- Lan dau can Internet de tai Transformers.js va mo hinh Whisper tiny; mo hinh quantized co tong dung luong tai xuong khoang 40–60 MB, tuy cac tep duoc phuc vu. Mang cham co the mat vai phut.
-- Trinh duyet se co gang luu mo hinh vao Cache API. He dieu hanh co the xoa cache khi thieu dung luong; neu bi xoa thi se tai lai.
-- Sau khi tai xong, am thanh duoc xu ly tren thiet bi. Khong gui ban ghi am len Cloudflare hay Hugging Face Inference API.
-- Whisper tiny la mo hinh nho de chay tren dien thoai, ket qua co the nham chu. Neu nhan sai, nguoi dung van co the nhap cau tra loi bang chu Han.
+Cập nhật GitHub Pages:
+1. Giải nén ZIP.
+2. Tải lên các tệp trong thư mục này vào cùng thư mục gốc đang lưu site: index.html, sw.js, asr-worker.js, ocr-worker.js, manifest.webmanifest, icon.svg, icon-v41-192.png, icon-v41-512.png, apple-touch-icon-v41.png.
+3. Sau khi cập nhật, tải lại trang. Nếu thiết bị còn lưu bản cũ do service worker, đóng tab và mở lại hoặc xóa dữ liệu trang web rồi mở lại.
 
-CAP NHAT GITHUB PAGES
-1. Giai nen ZIP.
-2. Thay index.html, sw.js va them asr-worker.js vao thu muc goc repository. Giu manifest.webmanifest va icon.svg nhu trong goi.
-3. Commit thay doi, mo lai GitHub Pages tren iPhone.
-4. Cho phep microphone. Vao Phan xa noi, bam Bat dau ghi am, noi 1 cau, cham icon mic lon de dung. Lan dau cho tai mo hinh xong; cac luot sau dung lai mo hinh neu cache con.
+Lưu ý:
+- Mục “Luyện viết Trung → Việt” là chế độ có sẵn trong v40: ứng dụng đưa câu Trung, người học nhập nghĩa tiếng Việt. Tên menu phản ánh đúng hướng làm bài hiện tại.
+- Đã kiểm tra cú pháp JavaScript và service worker; chưa kiểm thử trực tiếp trên từng thiết bị iPhone/Android.
 
-GHI CHU KY THUAT QUAN TRONG
-- Day khong phai ung dung ghi am Voice Memos nguyen ban cua iOS. Mot trang web khong the mo giao dien Voice Memos de ghi am roi tu dong lay ban ghi/van ban. V35 dung MediaRecorder de thu am tu microphone he thong, sau do nhan dang audio ngay tren thiet bi bang Transformers.js va onnx-community/whisper-tiny q8.
-- OCR Worker hien tai khong can doi.
+Bản cập nhật lần này giữ nhãn phiên bản v41. Bộ ghép câu là bộ kiểm tra theo quy tắc/ngữ liệu cài sẵn, không phải bộ phân tích ngữ nghĩa bằng AI trực tuyến; vẫn có thể cần rà soát các câu với từ đa nghĩa.
+
+
+Bản cập nhật tinh chỉnh v41 (28-10-2026):
+- Làm mới favicon/logo 汉语 và buộc trình duyệt tải icon có phiên bản mới.
+- Từ điển hiển thị 10 từ mỗi trang.
+- Gỡ các dòng hướng dẫn dài về giọng đọc và nguồn dữ liệu khỏi phần tra từ để giao diện gọn hơn.
+- Phản xạ đọc ưu tiên Web Speech API của trình duyệt (zh-CN), tạo phiên SpeechRecognition mới cho từng câu, hủy phiên cũ khi chuyển câu, gom kết quả cuối và có watchdog khi dừng để giảm lỗi treo giữa các lượt. Tính năng này tùy trình duyệt và có thể cần Internet; không sử dụng Whisper tiny làm đường chính vì kết quả nhận dạng tiếng Trung kém hơn trong thử nghiệm người dùng báo cáo.
+- Nhãn phiên bản hiển thị vẫn là v41; tên cache service worker được đổi để cập nhật bản mới.
