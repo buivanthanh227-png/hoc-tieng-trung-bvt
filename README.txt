@@ -25,3 +25,6 @@ Bản cập nhật tinh chỉnh v41 (28-10-2026):
 - Gỡ các dòng hướng dẫn dài về giọng đọc và nguồn dữ liệu khỏi phần tra từ để giao diện gọn hơn.
 - Phản xạ đọc ưu tiên Web Speech API của trình duyệt (zh-CN), tạo phiên SpeechRecognition mới cho từng câu, hủy phiên cũ khi chuyển câu, gom kết quả cuối và có watchdog khi dừng để giảm lỗi treo giữa các lượt. Tính năng này tùy trình duyệt và có thể cần Internet; không sử dụng Whisper tiny làm đường chính vì kết quả nhận dạng tiếng Trung kém hơn trong thử nghiệm người dùng báo cáo.
 - Nhãn phiên bản hiển thị vẫn là v41; tên cache service worker được đổi để cập nhật bản mới.
+
+
+Tinh chỉnh giao diện (vẫn giữ nhãn v41): đã bỏ các đoạn giải thích dài dưới Ghép câu, OCR và Phản xạ; phần trạng thái ban đầu để trống và chỉ hiện thông báo khi thao tác cần phản hồi. Phần chọn ảnh chỉ hiện số ảnh đã chọn. Cache service worker được đổi tên để trình duyệt lấy nội dung mới.

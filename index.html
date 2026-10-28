@@ -240,7 +240,7 @@
 <section id="panel-combine" class="panel">
  <div class="card combine-card">
   <h2 class="section-title">Ghép câu từ từ bạn chọn</h2>
-  <p class="subtle" style="margin:0 0 10px">Gõ nghĩa tiếng Việt hoặc chữ Hán, chọn một từ trong gợi ý; sau đó gõ tiếp từ kế tiếp. Ứng dụng xét tổ hợp 2 từ trước (A+B, A+C, B+C…), rồi tổ hợp 3 từ, 4 từ…; chỉ giữ cấu trúc khớp mẫu ngữ pháp tiếng Hán và cặp từ tương thích, đồng thời tạo nghĩa tiếng Việt từ dữ liệu từ điển. Không ghép hoán vị tùy tiện và không tự thêm từ ngoài lựa chọn.</p>
+
   <label class="sr-only" for="combine-search">Tìm từ để ghép câu</label>
   <input id="combine-search" class="field" type="search" autocomplete="off" placeholder="Nhập tiếng Việt hoặc chữ Hán…">
   <div id="combine-choices" class="combine-suggestions" hidden></div>
@@ -251,7 +251,7 @@
  </div>
  <div class="card ocr-card">
   <h3 class="section-title">📷 Lấy từ vựng từ ảnh hoặc chụp bằng điện thoại</h3>
-  <p class="subtle" style="margin:0 0 10px">Bạn có thể chụp ảnh bằng camera hoặc bấm “Tải ảnh lên” để chọn nhiều ảnh cùng lúc trong thư viện. Ứng dụng quét tuần tự từng ảnh bằng OCR online, gom chữ nhận diện từ tất cả ảnh vào một ô để bạn kiểm tra rồi tách từ một lần. Các từ đều bỏ chọn mặc định để tránh thêm nhầm.</p>
+
   <div class="ocr-source-actions">
    <label for="combine-image-input" class="btn">📷 Chụp ảnh</label>
    <input id="combine-image-input" class="ocr-file-input" type="file" accept="image/*" capture="environment">
@@ -263,10 +263,10 @@
    <button id="ocr-clear-images" class="btn secondary" type="button" disabled>🗑️ Xóa ảnh đã chọn</button>
    <button id="ocr-segment-button" class="btn outline" type="button">✂️ Tách từ từ nội dung</button>
   </div>
-  <p id="ocr-image-selection-summary" class="smallprint" style="margin:0 0 7px">Chưa chọn ảnh. Bạn có thể chụp một ảnh hoặc tải lên nhiều ảnh cùng lúc từ thư viện điện thoại.</p>
+  <p id="ocr-image-selection-summary" class="smallprint" style="margin:0 0 7px">Chưa chọn ảnh.</p>
   <div id="ocr-image-preview" class="ocr-preview-grid" hidden aria-label="Các ảnh đã chọn"></div>
-  <div id="ocr-status" class="source-status" role="status" aria-live="polite">Chọn ảnh rồi bấm quét. OCR online cần cấu hình máy chủ trung gian một lần; ảnh sẽ được gửi đến dịch vụ OCR.Space để xử lý. Khi chưa thiết lập, ứng dụng sẽ dùng OCR cục bộ.</div>
-  <p class="smallprint" style="margin:-2px 0 9px">OCR online dùng một lượt API cho mỗi ảnh và áp dụng hạn mức miễn phí của OCR.Space. Các ảnh sẽ được xử lý lần lượt; ảnh được gửi đến dịch vụ OCR online. Nếu OCR online lỗi, ứng dụng sẽ thử OCR cục bộ cho riêng ảnh đó.</p>
+  <div id="ocr-status" class="source-status" role="status" aria-live="polite"></div>
+
   <div id="ocr-progress" class="ocr-progress" hidden role="progressbar" aria-label="Tiến trình nhận diện chữ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>
   <div id="ocr-batch-log" class="ocr-batch-log" hidden aria-live="polite"></div>
   <div id="ocr-candidate-box" class="ocr-candidate-box" hidden>
@@ -278,18 +278,18 @@
   <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
   <div class="ocr-action-row"><button id="ocr-select-all" class="btn secondary tiny" type="button" disabled>Chọn tất cả</button><button id="ocr-clear-all" class="btn secondary tiny" type="button" disabled>Bỏ chọn</button><button id="ocr-add-selected" class="btn tiny" type="button" aria-label="Thêm các từ đã tích vào danh sách ghép câu" title="Thêm các từ đã tích vào danh sách ghép câu" disabled>＋ Thêm từ đã tích</button></div>
   <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
-  <p class="smallprint" style="margin:8px 0 0">OCR online dùng OCR.Space Engine 3 qua máy chủ Worker. Mỗi ảnh là một yêu cầu riêng; hãy cân nhắc hạn mức nếu chọn nhiều ảnh. Nếu online thất bại, ứng dụng thử OCR cục bộ. Kết quả có thể sai nên hãy kiểm tra văn bản thô và danh sách từ; chỉ các từ bạn tích mới được thêm vào danh sách ghép câu.</p>
+
  </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><p class="smallprint" style="margin:5px 0 8px">Hiển thị 10 câu mỗi trang. Dùng các nút chuyển trang để xem toàn bộ câu đã tạo.</p><div id="sentence-pagination-top" class="sentence-pagination" hidden></div><div id="sentence-results"><div class="empty" style="margin-top:10px">Câu sẽ hiện tại đây sau khi bạn chọn từ và bấm “Tạo câu có nghĩa”.</div></div><div id="sentence-pagination-bottom" class="sentence-pagination" hidden></div></div>
  <div class="card reflex-card" id="reflex-card">
   <div class="row between wrap"><h3 class="section-title" style="margin:0">🗣️ Luyện phản xạ</h3><span class="pill" id="reflex-count-pill">Chưa có bài</span></div>
-  <p class="subtle" style="margin:7px 0 10px">Phản xạ viết là bài nhập câu trả lời bằng chữ Hán. Hai chế độ đọc bên dưới là bài riêng: AI đọc mẫu trước, bạn thu âm đọc lại và ứng dụng nhận dạng để chấm mức độ khớp với câu mẫu; không chuyển sang mục Luyện tập.</p>
+
   <div class="mode-row" id="reflex-mode-row" aria-label="Chọn chức năng phản xạ">
    <button type="button" class="mode-btn active" data-reflex-mode="write">✍️ Phản xạ viết</button>
    <button type="button" class="mode-btn" id="read-generated-sentences" data-reflex-mode="read-sentences">📖 Phản xạ đọc theo câu đã tạo</button>
    <button type="button" class="mode-btn" id="read-generated-dialogue" data-reflex-mode="read-dialogue">🗣️ Phản xạ đọc hỏi – đáp</button>
   </div>
-  <p class="smallprint" id="reading-mode-hint" style="margin:0 0 10px">Luyện đọc theo câu đã ghép; phần hỏi–đáp chỉ dùng khi tạo được cặp câu hỏi và câu trả lời.</p>
+  <p class="smallprint" id="reading-mode-hint" style="margin:0 0 10px"></p>
   <div class="reflex-controls">
    <button id="reflex-start-button" class="btn" type="button">✍️ Tạo bài luyện viết từ câu đã ghép</button>
    <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 Xáo trộn câu luyện viết</button>
@@ -332,8 +332,8 @@
    </div>
    <div class="reflex-controls"><button id="reflex-next-button" class="btn secondary" type="button" hidden>Câu tiếp theo →</button></div>
   </div>
-  <p id="reflex-status" class="reflex-status" role="status" aria-live="polite">Hãy chọn từ và bấm “Tạo câu có nghĩa” trước. Nếu bộ từ đủ tạo hỏi–đáp, bài luyện sẽ được tạo từ danh sách đó.</p>
-  <p class="smallprint" style="margin:8px 0 0">Ghi âm và nhận dạng chạy trên thiết bị bằng mô hình cục bộ. Lần đầu cần Internet để tải mô hình miễn phí; bản ghi âm không được gửi lên máy chủ. Điểm phản xạ dựa trên độ khớp văn bản nhận dạng với câu mẫu, không phải đánh giá ngữ âm chuyên sâu.</p>
+  <p id="reflex-status" class="reflex-status" role="status" aria-live="polite"></p>
+
  </div>
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
@@ -1903,14 +1903,14 @@ function renderOcrFileQueue(){
  const gallery=$('ocr-image-preview');
  for(const url of ocrPreviewObjectUrls){try{URL.revokeObjectURL(url);}catch(_){}}
  ocrPreviewObjectUrls=[];
- if(!ocrSelectedFiles.length){gallery.hidden=true;gallery.innerHTML='';$('ocr-image-selection-summary').textContent='Chưa chọn ảnh. Bạn có thể chụp một ảnh hoặc tải lên nhiều ảnh cùng lúc từ thư viện điện thoại.';$('ocr-run-button').disabled=true;$('ocr-run-button').textContent='🔎 Quét tất cả ảnh (0)';$('ocr-clear-images').disabled=true;ocrCurrentFile=null;return;}
+ if(!ocrSelectedFiles.length){gallery.hidden=true;gallery.innerHTML='';$('ocr-image-selection-summary').textContent='Chưa chọn ảnh.';$('ocr-run-button').disabled=true;$('ocr-run-button').textContent='🔎 Quét tất cả ảnh (0)';$('ocr-clear-images').disabled=true;ocrCurrentFile=null;return;}
  gallery.hidden=false;
  gallery.innerHTML=ocrSelectedFiles.map((file,i)=>{
   const url=URL.createObjectURL(file);ocrPreviewObjectUrls.push(url);
   const size=file.size<1024*1024?Math.max(1,Math.round(file.size/1024))+' KB':(file.size/(1024*1024)).toFixed(1)+' MB';
   return `<div class="ocr-selected-file"><img src="${url}" alt="Xem trước ảnh ${i+1}"><button class="ocr-file-remove" type="button" data-remove-ocr-file="${i}" aria-label="Bỏ ảnh ${i+1}">×</button><div class="ocr-file-name"><b>Ảnh ${i+1}</b><br>${escapeHTML(file.name)}<br>${size}</div></div>`;
  }).join('');
- $('ocr-image-selection-summary').textContent='Đã chọn '+ocrSelectedFiles.length+' ảnh. Khi bấm quét, ứng dụng sẽ xử lý lần lượt từng ảnh rồi gom chữ nhận diện vào một ô.';
+ $('ocr-image-selection-summary').textContent='Đã chọn '+ocrSelectedFiles.length+' ảnh.';
  $('ocr-run-button').disabled=false;$('ocr-run-button').textContent='🔎 Quét tất cả ảnh ('+ocrSelectedFiles.length+')';$('ocr-clear-images').disabled=false;ocrCurrentFile=ocrSelectedFiles[ocrSelectedFiles.length-1];
  gallery.querySelectorAll('[data-remove-ocr-file]').forEach(button=>button.addEventListener('click',()=>{
   const idx=Number(button.dataset.removeOcrFile);if(!Number.isInteger(idx)||!ocrSelectedFiles[idx])return;
