@@ -194,6 +194,19 @@
   .practice-write-grid{grid-template-columns:1fr!important}
 }
 
+
+/* v41 compact cleanup: hide redundant dictionary-source/status controls. */
+#dict-source-badge,#update-dict,#dict-result-count,#dict-status{display:none!important}
+/* Mirror the dictionary stroke modal: same two-panel layout and square Hanzi Writer stages. */
+.practice-write-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+.practice-write-grid>.practice-write-card:first-child,.practice-write-grid>.practice-write-card:last-child{display:block!important;width:auto!important;min-width:0!important}
+.practice-write-card{padding:10px!important;min-width:0!important}
+.practice-write-card .stroke-stage{width:100%!important;max-width:100%!important;min-width:0!important;min-height:0!important;aspect-ratio:1/1!important;margin:0 auto 7px!important}
+.practice-write-card .practice-stroke-quiz{display:block!important;width:100%!important;max-width:100%!important;min-height:0!important;aspect-ratio:1/1!important;margin:0 auto 8px!important}
+#practice-free-wrap{display:none!important}
+@media(max-width:520px){.practice-write-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}.practice-write-card{padding:7px!important}.practice-write-card h3{font-size:11px!important}.practice-write-card .smallprint{font-size:9px!important;min-height:32px}}
+@media(max-width:370px){.practice-write-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}.practice-write-card{padding:5px!important}.practice-write-card .btn{font-size:10px!important;padding:7px 4px!important}}
+
 </style>
 </head>
 <body>
@@ -242,7 +255,7 @@
   <p class="subtle" id="practice-instruction" style="text-align:center;margin-top:15px">Hãy dịch nghĩa tiếng Việt sang tiếng Trung.</p>
   <div class="read-search-panel" id="read-search-panel" hidden>
    <p class="read-search-title">Tìm từ hoặc câu bạn muốn luyện đọc</p>
-   <p class="subtle" style="margin:0 0 8px">Tìm bằng tiếng Việt, chữ Hán hoặc Pinyin có/không dấu. Chọn đúng từ/câu của bạn; ứng dụng không tự lấy chữ ngẫu nhiên.</p>
+   <p class="subtle" style="margin:0 0 8px">Tìm bằng tiếng Việt, chữ Hán hoặc Pinyin có/không dấu.</p>
    <label class="sr-only" for="read-vocab-query">Tìm từ hoặc câu để luyện đọc</label>
    <div class="row"><input id="read-vocab-query" class="field grow" type="search" autocomplete="off" autocapitalize="off" placeholder="Ví dụ: lạnh / leng / 冷 / bạn lạnh không"><button id="read-vocab-clear" class="btn secondary" type="button">Xóa</button></div>
    <div id="read-vocab-results" class="combine-suggestions" hidden></div>
@@ -423,6 +436,7 @@ let strokeQuizWriter = null;
 let practiceStrokeWriter = null;
 let practiceStrokeQuizWriter = null;
 let practiceStrokeCount = 0;
+let practiceStrokeMistakes = 0;
 let practiceReturnTab = null;
 let practiceTraceChar = '';
 let filteredIndices = [];
@@ -1338,7 +1352,7 @@ function loadPracticeStrokeCharacter(ch){
  if(typeof HanziWriter==='undefined'){$('practice-stroke-count').textContent='Không tải được thư viện nét. Có thể xem thứ tự nét trên Bishun.net.';$('practice-stroke-model').insertAdjacentHTML('beforeend','<p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Mở Bishun.net ↗</a></p>');return;}
  try{
   $('practice-stroke-model').innerHTML='';
-  practiceStrokeWriter=HanziWriter.create('practice-stroke-model',ch,{...strokeWriterOptions('practice-stroke-model'),showOutline:true,strokeColor:'#b91c1c',outlineColor:'#cbd5e1',delayBetweenStrokes:360,strokeAnimationSpeed:1.1,
+  practiceStrokeWriter=HanziWriter.create('practice-stroke-model',ch,{...strokeWriterOptions('practice-stroke-model'),showOutline:true,strokeColor:'#b91c1c',outlineColor:'#cbd5e1',delayBetweenStrokes:360,strokeAnimationSpeed:1.15,
    onLoadCharDataSuccess:data=>{$('practice-stroke-count').textContent='Chữ '+ch+' · '+(data.strokes?.length||'?')+' nét. Dùng nút bên dưới để xem lại.';$('practice-stroke-replay').disabled=false;},
    onLoadCharDataError:()=>{$('practice-stroke-count').textContent='Nguồn nét không có dữ liệu cho chữ này hoặc đang mất kết nối.';$('practice-stroke-model').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(ch)}</span>`;$('practice-stroke-model').insertAdjacentHTML('beforeend','<p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Tra chữ này trên Bishun.net ↗</a></p>');$('practice-stroke-replay').disabled=true;}
   });
@@ -1346,15 +1360,44 @@ function loadPracticeStrokeCharacter(ch){
  }catch(err){$('practice-stroke-model').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(ch)}</span>`;$('practice-stroke-count').textContent='Không thể tải nét mẫu; hãy thử Bishun.net.';$('practice-stroke-replay').disabled=true;}
 }
 $('practice-stroke-replay').addEventListener('click',()=>{if(practiceStrokeWriter){practiceStrokeWriter.animateCharacter();}else{toast('Chưa có dữ liệu thứ tự nét cho chữ này.');}});
-function resetPracticeStrokeQuiz(){try{practiceStrokeQuizWriter?.cancelQuiz?.();}catch(e){}practiceStrokeQuizWriter=null;practiceStrokeCount=0;$('practice-grade-strokes').disabled=false;$('practice-stroke-quiz').hidden=false;$('practice-stroke-quiz').innerHTML='<span class="stroke-fallback-char">✍</span>';$('practice-free-wrap').hidden=true;$('practice-free-write').hidden=true;$('practice-grade-strokes').hidden=false;$('practice-grade-strokes').textContent='✍ Bắt đầu viết & chấm';$('practice-stroke-feedback').textContent='Bắt đầu viết theo thứ tự nét mẫu.';}
+function resetPracticeStrokeQuiz(){
+ try{practiceStrokeQuizWriter?.cancelQuiz?.();}catch(e){}
+ practiceStrokeQuizWriter=null;practiceStrokeCount=0;practiceStrokeMistakes=0;
+ $('practice-grade-strokes').disabled=false;$('practice-stroke-quiz').hidden=false;
+ $('practice-stroke-quiz').innerHTML='<span class="stroke-fallback-char">✍</span>';
+ $('practice-free-wrap').hidden=true;$('practice-free-write').hidden=true;
+ $('practice-grade-strokes').hidden=false;$('practice-grade-strokes').textContent='✍ Bắt đầu viết & chấm';
+ $('practice-stroke-feedback').textContent='Bắt đầu viết theo thứ tự nét mẫu.';
+}
 function startPracticeStrokeQuiz(){
  if(!practiceTraceChar){toast('Chưa có chữ Hán để luyện.');return;}
- if(typeof HanziWriter==='undefined'){toast('Không tải được bộ nhận diện nét. Hãy kết nối Internet rồi thử lại.');return;}
+ if(typeof HanziWriter==='undefined'){toast('Không tải được dữ liệu nét. Hãy kiểm tra kết nối rồi thử lại.');return;}
  try{practiceStrokeQuizWriter?.cancelQuiz?.();}catch(e){}
- $('practice-free-wrap').hidden=true;$('practice-stroke-quiz').hidden=false;$('practice-free-write').hidden=true;$('practice-grade-strokes').hidden=false;$('practice-grade-strokes').textContent='↻ Viết lại & chấm';$('practice-stroke-quiz').innerHTML='';$('practice-stroke-feedback').textContent='Đang tải mẫu nét. Hãy viết từng nét theo đúng thứ tự.';
- try{practiceStrokeQuizWriter=HanziWriter.create('practice-stroke-quiz',practiceTraceChar,{...strokeWriterOptions('practice-stroke-quiz'),showCharacter:false,showOutline:false,showHintAfterMisses:2,strokeColor:'#15803d',drawingColor:'#202938',drawingWidth:5,onLoadCharDataSuccess:data=>{practiceStrokeCount=data.strokes?.length||0;$('practice-stroke-feedback').textContent='Chữ '+practiceTraceChar+' có '+practiceStrokeCount+' nét. Viết lần lượt đúng thứ tự mẫu.';},onLoadCharDataError:()=>{$('practice-stroke-feedback').textContent='Không có dữ liệu chấm nét cho chữ này. Hãy thử chữ khác hoặc tra Bishun.net.';$('practice-stroke-quiz').innerHTML=`<span class="stroke-fallback-char">${escapeHTML(practiceTraceChar)}</span><p class="smallprint"><a target="_blank" rel="noreferrer" href="https://bishun.net/">Tra chữ trên Bishun.net ↗</a></p>`;$('practice-grade-strokes').disabled=true;}});
- practiceStrokeQuizWriter.quiz({showHintAfterMisses:2,onCorrectStroke:data=>{$('practice-stroke-feedback').textContent='Đúng thứ tự nét '+(data.strokeNum+1)+'/'+(practiceStrokeCount||'?')+'.';},onMistake:data=>{$('practice-stroke-feedback').textContent='Nét chưa đúng thứ tự hoặc hình dạng ở vị trí '+(data.strokeNum+1)+'. Hãy thử lại theo mẫu.';},onComplete:data=>{const mistakes=Number(data.totalMistakes||0);const score=practiceStrokeCount?Math.max(0,Math.round(100*(1-mistakes/(practiceStrokeCount+mistakes)))):(mistakes?0:100);$('practice-stroke-feedback').textContent='Hoàn thành chữ '+practiceTraceChar+' · Điểm thứ tự nét: '+score+'/100 · Số lần viết sai nét: '+mistakes+' · Tổng số nét: '+practiceStrokeCount+'.';$('practice-grade-strokes').textContent='↻ Viết lại & chấm';}});
- }catch(e){$('practice-stroke-feedback').textContent='Không thể bắt đầu chấm. Hãy tải lại trang hoặc thử lại sau.';}
+ practiceStrokeCount=0;practiceStrokeMistakes=0;
+ $('practice-free-wrap').hidden=true;$('practice-stroke-quiz').hidden=false;$('practice-free-write').hidden=true;
+ $('practice-grade-strokes').hidden=false;$('practice-grade-strokes').disabled=false;
+ $('practice-grade-strokes').textContent='✍ Bắt đầu viết & chấm';$('practice-stroke-quiz').innerHTML='';
+ $('practice-stroke-feedback').textContent='Đang chờ bạn viết nét…';
+ try{
+  /* Same writer options and quiz interaction as the dictionary’s “Bạn luyện viết”. */
+  practiceStrokeQuizWriter=HanziWriter.create('practice-stroke-quiz',practiceTraceChar,{
+   ...strokeWriterOptions('practice-stroke-quiz'),showCharacter:false,showOutline:false,showHintAfterMisses:2,
+   strokeColor:'#15803d',drawingColor:'#202938',drawingWidth:5,
+   onLoadCharDataSuccess:data=>{practiceStrokeCount=data.strokes?.length||0;$('practice-stroke-feedback').textContent='Chữ '+practiceTraceChar+' có '+practiceStrokeCount+' nét. Hãy viết theo thứ tự mẫu.';},
+   onLoadCharDataError:()=>{$('practice-stroke-feedback').textContent='Không có dữ liệu luyện viết cho chữ này. Hãy thử chữ khác hoặc tra Bishun.net.';$('practice-grade-strokes').disabled=true;}
+  });
+  practiceStrokeQuizWriter.quiz({showHintAfterMisses:2,
+   onCorrectStroke:data=>{$('practice-stroke-feedback').textContent='Đúng nét '+(data.strokeNum+1)+'; còn '+data.strokesRemaining+' nét. Số lần sai: '+practiceStrokeMistakes+'.';},
+   onMistake:data=>{practiceStrokeMistakes++;$('practice-stroke-feedback').textContent='Chưa đúng nét '+(data.strokeNum+1)+'. Số lần viết sai: '+practiceStrokeMistakes+'. Hãy thử lại theo mẫu.';},
+   onComplete:data=>{
+    const mistakes=Number.isFinite(Number(data.totalMistakes))?Number(data.totalMistakes):practiceStrokeMistakes;
+    practiceStrokeMistakes=mistakes;
+    const score=practiceStrokeCount?Math.max(0,Math.round(100*practiceStrokeCount/(practiceStrokeCount+mistakes))):(mistakes===0?100:0);
+    $('practice-stroke-feedback').textContent='Hoàn thành chữ '+practiceTraceChar+'! Điểm: '+score+'/100 · Số lần viết sai: '+mistakes+' · Tổng số nét: '+practiceStrokeCount+'.';
+    $('practice-grade-strokes').textContent='↻ Luyện lại';
+   }
+  });
+ }catch(e){$('practice-stroke-feedback').textContent='Không thể bắt đầu bài luyện cho chữ này. Hãy thử lại.';}
 }
 $('practice-grade-strokes').addEventListener('click',startPracticeStrokeQuiz);
 $('practice-free-write').addEventListener('click',()=>{resetPracticeStrokeQuiz();});
