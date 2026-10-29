@@ -336,8 +336,7 @@
   </div>
   <p class="smallprint" id="reading-mode-hint" style="margin:0 0 10px"></p>
   <div class="reflex-controls">
-   <button id="reflex-start-button" class="btn" type="button">✍️ Tạo bài luyện viết từ câu đã ghép</button>
-   <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 Xáo trộn câu luyện viết</button>
+   <button id="reflex-shuffle-button" class="btn secondary" type="button" disabled>🔀 XÁO TRỘN CÂU!</button>
   </div>
   <div id="reflex-session" hidden>
    <div class="row between wrap" style="margin-top:13px"><span id="reflex-progress" class="pill">Câu 1/1</span><button id="reflex-play-question" class="btn secondary tiny" type="button">🔊 AI đọc câu hỏi</button></div>
@@ -2257,17 +2256,17 @@ function refreshReflexDeck(shuffle=true){
  reflexQueue=shuffle?shuffleArray(reflexAllPairs):reflexAllPairs.slice();reflexIndex=0;reflexHasAnswered=false;
  $('reflex-count-pill').textContent=reflexQueue.length?(reflexMode==='write'?reflexQueue.length+' câu luyện viết':reflexQueue.length+' lượt hỏi–đáp'):'Chưa tạo được bài';
  $('reflex-shuffle-button').disabled=!reflexQueue.length;
- $('reflex-shuffle-button').textContent=reflexMode==='write'?'🔀 Xáo trộn câu luyện viết':'🔀 Xáo trộn câu hỏi';
+ $('reflex-shuffle-button').textContent='🔀 XÁO TRỘN CÂU!';
  if(!reflexQueue.length){
   $('reflex-session').hidden=true;
   $('reflex-status').textContent=reflexMode==='write'
-   ?'Chưa có câu tiếng Việt đã ghép để luyện viết. Hãy chọn từ, bấm “Tạo câu có nghĩa”, sau đó bấm “Tạo bài luyện viết từ câu đã ghép”.'
+   ?'Chưa có câu tiếng Việt để luyện viết. Hãy chọn từ và bấm “Tạo câu có nghĩa” trước.'
    :'Chưa đủ từ để tạo câu hỏi và câu trả lời. Hãy chọn thêm các từ như 我, 你, 吗 cùng động từ/tính từ và tân ngữ phù hợp rồi bấm “Tạo câu có nghĩa”.';
   return;
  }
  $('reflex-status').textContent=reflexMode==='write'
   ?'Đã nạp '+reflexQueue.length+' câu tiếng Việt từ phần câu đã ghép. Mỗi lượt chỉ hiện tiếng Việt; hãy tự nhập câu tương ứng bằng chữ Hán rồi bấm chấm điểm.'
-  :'Đã tạo '+reflexQueue.length+' lượt hỏi–đáp/luyện câu từ toàn bộ danh sách câu. Bài trộn các cặp hội thoại có câu hỏi–trả lời và bài dịch từng câu; chỉ dùng từ đã chọn. Xong một vòng, bấm Xáo trộn câu hỏi để luyện lại.';
+  :'Đã tạo '+reflexQueue.length+' lượt hỏi–đáp/luyện câu từ danh sách câu hiện có. Bấm “XÁO TRỘN CÂU!” để đổi thứ tự luyện.';
  $('reflex-session').hidden=false;renderReflexQuestion(isVoicePracticeMode());
 }
 function isVoicePracticeMode(){return ['speak','read-sentences','read-dialogue'].includes(reflexMode);}
@@ -2789,26 +2788,45 @@ $('reflex-live-mic').addEventListener('click',()=>{
  else if(!reflexHasAnswered)startReflexMicrophone();
 });
 $('reflex-mic-close-button').addEventListener('click',()=>{$('reflex-mic-overlay').hidden=true;$('reflex-mic-close-button').hidden=true;});
+function ensureReflexSourceSentences(){
+ if(!generatedSentences.length && selectedCombine.size>=2){
+  generatedSentences=buildSentences();sentencePage=1;
+  $('sentence-count').textContent=generatedSentences.length+' câu';
+  renderSentencePage();
+ }
+ return generatedSentences.length>0;
+}
 $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(btn=>btn.addEventListener('click',()=>{
- // The two reading modes have their own click handlers below; don't overwrite their dedicated deck.
+ // Dedicated reading modes have their own deck builders below.
  if(btn.dataset.reflexMode!=='write')return;
  reflexMode='write';
  $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b===btn));
  invalidateReflexRecognition();reflexQueue=[];reflexCurrentPair=null;reflexHasAnswered=false;
  $('reflex-session').hidden=true;$('reflex-speech-method').hidden=true;$('reflex-typing-method').hidden=false;
- $('reflex-mic-button').hidden=true;$('reflex-check-button').hidden=false;
- $('reflex-status').textContent='Đang chọn Phản xạ viết. Bài này sẽ lần lượt đưa ra nghĩa tiếng Việt của các câu đã ghép; bạn tự nhập câu tiếng Trung bằng chữ Hán để chấm điểm.';
- $('reflex-start-button').textContent='✍️ Tạo bài luyện viết từ câu đã ghép';
- $('reflex-shuffle-button').textContent='🔀 Xáo trộn câu luyện viết';
- $('reflex-play-question').hidden=true;
- $('reflex-count-pill').textContent='Chưa có bài luyện viết';
+ $('reflex-mic-button').hidden=true;$('reflex-check-button').hidden=false;$('reflex-play-question').hidden=true;
+ $('reflex-shuffle-button').textContent='🔀 XÁO TRỘN CÂU!';
+ if(!ensureReflexSourceSentences()){
+  $('reflex-status').textContent='Hãy chọn ít nhất 2 từ rồi bấm “Tạo câu có nghĩa”. Khi có câu, bài luyện viết sẽ tự xuất hiện tại đây.';
+  $('reflex-count-pill').textContent='Chưa có bài luyện viết';$('reflex-shuffle-button').disabled=true;return;
+ }
+ // Selecting “Phản xạ viết” immediately creates and displays the first exercise.
+ refreshReflexDeck(true);
 }));
-$('reflex-start-button').addEventListener('click',()=>{
- if(selectedCombine.size<2){toast('Hãy chọn ít nhất 2 từ trước khi tạo bài phản xạ.');return;}
- if(!generatedSentences.length){generatedSentences=buildSentences();sentencePage=1;$('sentence-count').textContent=generatedSentences.length+' câu';renderSentencePage();}
+$('reflex-shuffle-button').addEventListener('click',()=>{
+ $('reflex-shuffle-button').textContent='🔀 XÁO TRỘN CÂU!';
+ if(reflexMode==='read-sentences'||reflexMode==='read-dialogue'){
+  // Keep the dedicated reading UI intact; only reshuffle its current mode's queue.
+  if(!reflexQueue.length)return;
+  reflexQueue=shuffleArray(reflexQueue);reflexIndex=0;reflexHasAnswered=false;
+  $('reflex-shuffle-button').disabled=false;
+  renderDedicatedReadingTurn(0,true);
+  return;
+ }
+ if(!ensureReflexSourceSentences()){
+  toast('Hãy chọn từ và bấm “Tạo câu có nghĩa” trước khi xáo trộn.');return;
+ }
  refreshReflexDeck(true);
 });
-$('reflex-shuffle-button').addEventListener('click',()=>refreshReflexDeck(true));
 $('reflex-play-question').addEventListener('click',()=>{if(!reflexCurrentPair)return;const p=reflexCurrentPair;speak((reflexMode==='read-sentences'||reflexMode==='read-dialogue')?p.qZh:(p.kind==='translate'?p.aZh:p.qZh),$('reflex-play-question'));});
 $('reflex-mic-button').addEventListener('click',startReflexMicrophone);
 
@@ -2816,7 +2834,7 @@ $('reflex-check-button').addEventListener('click',()=>evaluateReflexAnswer($('re
 $('reflex-answer-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('reflex-check-button').hidden){e.preventDefault();evaluateReflexAnswer($('reflex-answer-input').value,'typed');}});
 $('reflex-next-button').addEventListener('click',()=>{
  if(reflexMode==='read-sentences'||reflexMode==='read-dialogue')return;
- if(reflexIndex+1>=reflexQueue.length){$('reflex-status').textContent='🎉 Đã hoàn thành vòng '+reflexQueue.length+' lượt. Bấm “Xáo trộn câu hỏi” để luyện lại với thứ tự mới.';$('reflex-next-button').hidden=true;$('reflex-shuffle-button').disabled=false;return;}
+ if(reflexIndex+1>=reflexQueue.length){$('reflex-status').textContent='🎉 Đã hoàn thành vòng '+reflexQueue.length+' lượt. Bấm “XÁO TRỘN CÂU!” để luyện lại với thứ tự mới.';$('reflex-next-button').hidden=true;$('reflex-shuffle-button').disabled=false;return;}
  reflexIndex++;renderReflexQuestion(isVoicePracticeMode());
 });
 
@@ -2865,23 +2883,23 @@ function renderDedicatedReadingTurn(index, speakPrompt=true){
 $('read-generated-sentences')?.addEventListener('click',()=>{
  if(!generatedSentences.length){toast('Hãy tạo câu trước khi luyện phản xạ đọc.');return;}
  reflexMode='read-sentences';
- $('reflex-start-button').textContent='🌀 Tạo bài hội thoại & phản xạ';$('reflex-shuffle-button').textContent='🔀 Xáo trộn câu hỏi';
+ $('reflex-shuffle-button').textContent='🔀 XÁO TRỘN CÂU!';
  reflexQueue=generatedSentences.map(s=>{const zh=String(s.zh||'').replace(/[。！？!?]+$/,'')+'。';return {kind:'shadow',qZh:zh,qVi:pinyinForChinese(zh),aZh:zh,aVi:s.vi||'',py:s.py||pinyinForChinese(zh)};});
  // Store Vietnamese meaning separately from pinyin for the AI sample line.
  reflexQueue=reflexQueue.map((p,i)=>({...p,qVi:generatedSentences[i]?.vi||''}));
  $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b.dataset.reflexMode==='read-sentences'));
  $('reflex-count-pill').textContent=reflexQueue.length+' câu đọc mẫu';
- $('reflex-session').hidden=false;renderDedicatedReadingTurn(0,true);$('reflex-session').scrollIntoView({behavior:'smooth',block:'start'});
+ $('reflex-shuffle-button').disabled=!reflexQueue.length;$('reflex-session').hidden=false;renderDedicatedReadingTurn(0,true);$('reflex-session').scrollIntoView({behavior:'smooth',block:'start'});
 });
 $('read-generated-dialogue')?.addEventListener('click',()=>{
  if(!generatedSentences.length){toast('Hãy tạo câu trước khi luyện phản xạ hỏi–đáp.');return;}
  const pairs=createReflexPairs().filter(p=>p.kind==='dialogue');
  if(!pairs.length){$('reading-mode-hint').textContent='Chưa tạo được cặp hỏi–đáp. Hãy thêm trợ từ 吗 (ma), chủ ngữ như 我/你 và động từ hoặc tính từ phù hợp.';toast('Chưa có cặp hỏi–đáp. Hãy bổ sung từ gợi ý.');return;}
  reflexMode='read-dialogue';
- $('reflex-start-button').textContent='🌀 Tạo bài hội thoại & phản xạ';$('reflex-shuffle-button').textContent='🔀 Xáo trộn câu hỏi';
+ $('reflex-shuffle-button').textContent='🔀 XÁO TRỘN CÂU!';
  $('reflex-mode-row').querySelectorAll('[data-reflex-mode]').forEach(b=>b.classList.toggle('active',b.dataset.reflexMode==='read-dialogue'));
  reflexQueue=pairs.map(p=>({...p,qZh:String(p.qZh||'').replace(/[。！？!?]+$/,'')+'？',aZh:String(p.aZh||'').replace(/[。！？!?]+$/,'')+'。'}));
- $('reflex-count-pill').textContent=reflexQueue.length+' cặp hỏi–đáp';renderDedicatedReadingTurn(0,true);
+ $('reflex-count-pill').textContent=reflexQueue.length+' cặp hỏi–đáp';$('reflex-shuffle-button').disabled=!reflexQueue.length;renderDedicatedReadingTurn(0,true);
  $('reflex-session').scrollIntoView({behavior:'smooth',block:'start'});
 });
 // Reading-aloud mode: the standard next button must advance within the current dedicated deck.
