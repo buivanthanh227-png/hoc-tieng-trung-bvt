@@ -35,3 +35,10 @@ Tinh chỉnh giao diện và luyện viết (giữ nguyên nhãn v41):
 - Đổi chữ 汉语 trên logo sang vàng tươi; cập nhật SVG, PNG, Apple touch icon và cache token.
 - Khôi phục ô thứ tự nét mẫu trong mục Luyện viết chữ Hán. Bên cạnh là vùng viết theo thứ tự nét của Hanzi Writer; khi hoàn tất hiển thị điểm và số lần viết sai nét.
 - Ẩn ô vẽ tự do không chấm điểm trong chế độ luyện viết chữ Hán để thao tác khớp với chức năng xem nét mẫu ở Từ điển.
+
+
+Cập nhật v41 (29-10-2026):
+- Tách “NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH” thành menu riêng ngay sau Từ điển và trước Dịch nhanh Việt–Trung. Chụp/tải nhiều ảnh, OCR, chọn/tích từ và thêm vào Ghép câu vẫn dùng chung danh sách từ đã chọn.
+- Trong Ghép câu chỉ còn công cụ ghép câu và luyện phản xạ; vùng OCR không còn nằm trong menu này.
+- Trên máy tính, giới hạn vùng vẽ Hanzi Writer trong Luyện viết chữ Hán về kích thước tương ứng với vùng luyện viết trong Từ điển, để tọa độ nét khớp với vị trí chuột. CSS sửa chỉ áp dụng desktop; bố cục trên điện thoại giữ nguyên.
+- Đổi tên cache service worker để thiết bị lấy bản HTML mới.

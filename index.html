@@ -207,12 +207,27 @@
 @media(max-width:520px){.practice-write-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}.practice-write-card{padding:7px!important}.practice-write-card h3{font-size:11px!important}.practice-write-card .smallprint{font-size:9px!important;min-height:32px}}
 @media(max-width:370px){.practice-write-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}.practice-write-card{padding:5px!important}.practice-write-card .btn{font-size:10px!important;padding:7px 4px!important}}
 
+
+/* v41 desktop pointer alignment fix: keep the practice Hanzi Writer canvas at the same
+   rendered size as the accurate dictionary-writing modal. Mobile layout remains unchanged. */
+@media (min-width:701px){
+  .practice-write-card .stroke-stage,
+  .practice-write-card .practice-stroke-quiz{
+    width:min(100%,235px)!important;
+    max-width:235px!important;
+    height:auto!important;
+    aspect-ratio:1/1!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+}
 </style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-label="汉语">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p class="brand-slogan"><span>HỌC THÊM MỘT NGÔN NGỮ</span><span>SỐNG THÊM MỘT CUỘC ĐỜI</span></p><span id="top-status" hidden aria-hidden="true"></span></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
 <nav class="tabs" aria-label="Các chức năng chính">
 <button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN</button>
+<button class="tab" data-tab="ocr" type="button"><span>🖼️</span>NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</button>
 <button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT–TRUNG</button>
 <button class="tab" data-tab="vi-zh" type="button"><span>🇻🇳</span>LUYỆN VIẾT VIỆT → TRUNG</button>
 <button class="tab" data-tab="zh-vi" type="button"><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
@@ -233,6 +248,39 @@
  <div id="dict-list" class="list"></div>
  <div class="pagination"><button class="btn secondary tiny" id="prev-page">← Trước</button><span id="page-info">Trang 1</span><button class="btn secondary tiny" id="next-page">Sau →</button></div>
  <div class="footer-note">Nguồn: CVDICT Chinese–Vietnamese (dữ liệu CC-CEDICT contributors), giấy phép <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>. Dữ liệu được đóng gói từ bộ term_bank trong kho yomilens-dictionaries. Bản dịch có thể cần kiểm chứng theo ngữ cảnh. Ứng dụng không tạo từ giả để làm tăng số lượng.<br>Thứ tự nét chữ: <a href="https://github.com/chanind/hanzi-writer" target="_blank" rel="noreferrer">Hanzi Writer</a> và dữ liệu <a href="https://github.com/chanind/hanzi-writer-data" target="_blank" rel="noreferrer">Hanzi Writer Data</a>, dựa trên <a href="https://github.com/skishore/makemeahanzi" target="_blank" rel="noreferrer">Make Me a Hanzi</a> / Arphic Public License. Một số chữ hiếm có thể không có dữ liệu; khi đó có liên kết dự phòng tới <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net</a>.</div>
+</section>
+<section id="panel-ocr" class="panel">
+ <div class="card ocr-card">
+  <h2 class="section-title">📷 NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</h2>
+
+  <div class="ocr-source-actions">
+   <label for="combine-image-input" class="btn">📷 Chụp ảnh</label>
+   <input id="combine-image-input" class="ocr-file-input" type="file" accept="image/*" capture="environment">
+   <label for="combine-upload-input" class="btn secondary">🖼️ Tải ảnh lên (chọn nhiều ảnh)</label>
+   <input id="combine-upload-input" class="ocr-file-input" type="file" accept="image/*" multiple>
+  </div>
+  <div class="row wrap" style="margin-bottom:8px">
+   <button id="ocr-run-button" class="btn" type="button" disabled>🔎 Quét tất cả ảnh (0)</button>
+   <button id="ocr-clear-images" class="btn secondary" type="button" disabled>🗑️ Xóa ảnh đã chọn</button>
+   <button id="ocr-segment-button" class="btn outline" type="button">✂️ Tách từ từ nội dung</button>
+  </div>
+  <p id="ocr-image-selection-summary" class="smallprint" style="margin:0 0 7px">Chưa chọn ảnh.</p>
+  <div id="ocr-image-preview" class="ocr-preview-grid" hidden aria-label="Các ảnh đã chọn"></div>
+  <div id="ocr-status" class="source-status" role="status" aria-live="polite"></div>
+
+  <div id="ocr-progress" class="ocr-progress" hidden role="progressbar" aria-label="Tiến trình nhận diện chữ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>
+  <div id="ocr-batch-log" class="ocr-batch-log" hidden aria-live="polite"></div>
+  <div id="ocr-candidate-box" class="ocr-candidate-box" hidden>
+   <p class="smallprint" style="margin:0 0 7px"><b>Hai lần quét cho kết quả khác nhau.</b> Chọn bản khớp với ảnh nhất; danh sách từ sẽ được tách lại theo bản đã chọn.</p>
+   <div id="ocr-candidate-buttons" class="ocr-candidate-buttons"></div>
+  </div>
+  <label class="reflex-input-label" for="ocr-recognized-text">Văn bản nhận diện (có thể sửa trước khi tách từ)</label>
+  <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ tất cả ảnh sẽ được gom vào đây. Bạn có thể sửa nội dung rồi bấm Tách từ một lần."></textarea>
+  <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
+  <div class="ocr-action-row"><button id="ocr-select-all" class="btn secondary tiny" type="button" disabled>Chọn tất cả</button><button id="ocr-clear-all" class="btn secondary tiny" type="button" disabled>Bỏ chọn</button><button id="ocr-add-selected" class="btn tiny" type="button" aria-label="Thêm các từ đã tích vào danh sách ghép câu" title="Thêm các từ đã tích vào danh sách ghép câu" disabled>＋ Thêm từ đã tích</button></div>
+  <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
+
+ </div>
 </section>
 <section id="panel-practice" class="panel">
  <div class="card homework-card" id="quick-translate-card">
@@ -293,37 +341,6 @@
   <div id="selected-words" class="selected-chips" style="margin-top:9px"><div class="empty">Các từ bạn chọn sẽ hiện ở đây.</div></div>
   <p class="smallprint" id="combine-save-status" aria-live="polite" style="margin:9px 0 0">Danh sách từ tự động lưu trên trình duyệt/thiết bị này và sẽ được khôi phục khi bạn mở lại cùng địa chỉ ứng dụng.</p>
   <button class="btn full" id="make-sentences" style="margin-top:13px">✨ Tạo câu có nghĩa</button><div id="sentence-build-status" role="status" aria-live="polite"></div>
- </div>
- <div class="card ocr-card">
-  <h3 class="section-title">📷 Lấy từ vựng từ ảnh hoặc chụp bằng điện thoại</h3>
-
-  <div class="ocr-source-actions">
-   <label for="combine-image-input" class="btn">📷 Chụp ảnh</label>
-   <input id="combine-image-input" class="ocr-file-input" type="file" accept="image/*" capture="environment">
-   <label for="combine-upload-input" class="btn secondary">🖼️ Tải ảnh lên (chọn nhiều ảnh)</label>
-   <input id="combine-upload-input" class="ocr-file-input" type="file" accept="image/*" multiple>
-  </div>
-  <div class="row wrap" style="margin-bottom:8px">
-   <button id="ocr-run-button" class="btn" type="button" disabled>🔎 Quét tất cả ảnh (0)</button>
-   <button id="ocr-clear-images" class="btn secondary" type="button" disabled>🗑️ Xóa ảnh đã chọn</button>
-   <button id="ocr-segment-button" class="btn outline" type="button">✂️ Tách từ từ nội dung</button>
-  </div>
-  <p id="ocr-image-selection-summary" class="smallprint" style="margin:0 0 7px">Chưa chọn ảnh.</p>
-  <div id="ocr-image-preview" class="ocr-preview-grid" hidden aria-label="Các ảnh đã chọn"></div>
-  <div id="ocr-status" class="source-status" role="status" aria-live="polite"></div>
-
-  <div id="ocr-progress" class="ocr-progress" hidden role="progressbar" aria-label="Tiến trình nhận diện chữ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="ocr-progress-fill" class="ocr-progress-fill"></div></div>
-  <div id="ocr-batch-log" class="ocr-batch-log" hidden aria-live="polite"></div>
-  <div id="ocr-candidate-box" class="ocr-candidate-box" hidden>
-   <p class="smallprint" style="margin:0 0 7px"><b>Hai lần quét cho kết quả khác nhau.</b> Chọn bản khớp với ảnh nhất; danh sách từ sẽ được tách lại theo bản đã chọn.</p>
-   <div id="ocr-candidate-buttons" class="ocr-candidate-buttons"></div>
-  </div>
-  <label class="reflex-input-label" for="ocr-recognized-text">Văn bản nhận diện (có thể sửa trước khi tách từ)</label>
-  <textarea id="ocr-recognized-text" class="field ocr-text" rows="4" placeholder="Chữ nhận diện từ tất cả ảnh sẽ được gom vào đây. Bạn có thể sửa nội dung rồi bấm Tách từ một lần."></textarea>
-  <div class="row between wrap" style="margin-top:10px"><b style="font-size:12px">Các từ tách được</b><span class="subtle" id="ocr-word-count">0 từ</span></div>
-  <div class="ocr-action-row"><button id="ocr-select-all" class="btn secondary tiny" type="button" disabled>Chọn tất cả</button><button id="ocr-clear-all" class="btn secondary tiny" type="button" disabled>Bỏ chọn</button><button id="ocr-add-selected" class="btn tiny" type="button" aria-label="Thêm các từ đã tích vào danh sách ghép câu" title="Thêm các từ đã tích vào danh sách ghép câu" disabled>＋ Thêm từ đã tích</button></div>
-  <div id="ocr-word-list" class="ocr-word-grid"><div class="empty" style="grid-column:1/-1">Chưa có danh sách từ. Hãy quét ảnh hoặc dán văn bản rồi tách từ.</div></div>
-
  </div>
  <div class="card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Câu gợi ý</h3><span class="subtle" id="sentence-count">0 câu</span></div><div id="sentence-pagination-top" class="sentence-pagination" hidden></div><div id="sentence-results"></div><div id="sentence-pagination-bottom" class="sentence-pagination" hidden></div></div>
  <div class="card reflex-card" id="reflex-card">
