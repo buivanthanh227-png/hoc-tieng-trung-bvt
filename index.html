@@ -2287,7 +2287,7 @@ function renderReflexQuestion(autoSpeak=false){
  $('reflex-answer-label').textContent=writingMode?'Nhập câu tiếng Trung tương ứng bằng chữ Hán':'Hãy nhập câu trả lời bằng chữ Hán';
  $('reflex-answer-input').value='';$('reflex-answer-input').placeholder=writingMode?'Nhập câu tiếng Trung bằng chữ Hán…':echo?'Nhập bản dịch bằng chữ Hán…':'Ví dụ: '+(p.aZh||'').replace(/[。！？!?]+$/,'');
  $('reflex-speech-method').hidden=writingMode||!isVoicePracticeMode();
- $('reflex-typing-method').hidden=isVoicePracticeMode()&&!writingMode;
+ $('reflex-typing-method').hidden=false; // Luôn giữ Cách 2 để người học có thể nhập chữ Hán ở mọi chế độ phản xạ.
  $('reflex-mic-button').hidden=writingMode||!isVoicePracticeMode();$('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='🎙️ Bắt đầu ghi âm';
  $('reflex-check-button').hidden=false;$('reflex-next-button').hidden=true;
  $('reflex-typing-title').textContent=writingMode?'Luyện viết: nhập câu tiếng Trung bằng chữ Hán':'Nhập câu trả lời bằng chữ Hán';

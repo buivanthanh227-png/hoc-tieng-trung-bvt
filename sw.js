@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME='hoc-trung-app-shell-v41-no-hsk-recognition-restart-20261028';
+const CACHE_NAME='hoc-trung-app-shell-v41-typing-fallback-20261029';
 const APP_FILES = ['./index.html', './manifest.webmanifest', './icon.svg', './icon.svg?v=41-gold-logo-stroke-practice-20261028', './icon-v41-192.png', './icon-v41-192.png?v=41-gold-logo-stroke-practice-20261028', './icon-v41-512.png', './icon-v41-512.png?v=41-gold-logo-stroke-practice-20261028', './apple-touch-icon-v41.png', './apple-touch-icon-v41.png?v=41-gold-logo-stroke-practice-20261028', './sw.js', './asr-worker.js', './ocr-worker.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 self.addEventListener('install', event => {
