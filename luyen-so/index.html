@@ -33,25 +33,32 @@
     button, input { font: inherit; }
     button { touch-action: manipulation; }
     .app {
-      width: 100%;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      background: var(--card);
-      border-radius: 18px;
+      width: 100%; max-width: 520px; margin: 0 auto; padding: 18px;
+      display: flex; flex-direction: column; gap: 14px;
+      background: var(--card); border-radius: 18px;
       box-shadow: 0 8px 24px rgba(0,0,0,.08);
     }
     header { text-align: center; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
     h1 { margin: 0; color: var(--primary); font-size: 1.3rem; line-height: 1.35; }
-    .subheading { margin-top: 4px; color: var(--muted); font-size: .78rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .mode-menu {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+    }
+    .mode-btn {
+      min-width: 0; min-height: 52px; padding: 9px 8px;
+      border: 1px solid var(--line); border-radius: 11px;
+      background: #f9fafb; color: #374151;
+      font-size: .88rem; font-weight: 700; line-height: 1.3; text-align: left;
+    }
+    .mode-btn.active {
+      border-color: var(--primary); background: #eef2ff; color: var(--primary);
+      box-shadow: inset 0 0 0 1px var(--primary);
+    }
     .range-box {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
       padding: 10px 12px; background: #f9fafb; border: 1px solid var(--line); border-radius: 12px;
     }
-    .range-box label, .settings-row label { color: var(--muted); font-size: .86rem; font-weight: 650; }
+    .range-box label, .settings-row label, .field-label { color: var(--muted); font-size: .86rem; font-weight: 650; }
     .range-inputs { display: flex; align-items: center; gap: 7px; }
     .range-inputs input {
       width: 76px; min-height: 40px; padding: 7px 5px; text-align: center;
@@ -62,25 +69,14 @@
       width: 68px; min-height: 38px; padding: 6px; text-align: center;
       border: 1px solid #d1d5db; border-radius: 8px; background: white;
     }
-    .voice-status {
-      padding: 8px 10px; border-radius: 9px; background: #eff6ff; color: #1d4ed8;
-      font-size: .78rem; line-height: 1.45;
-    }
-    .voice-status.warning { background: #fff7ed; color: #9a3412; }
-    .tabs { display: flex; gap: 4px; padding: 4px; border-radius: 11px; background: #f3f4f6; }
-    .tab-btn {
-      flex: 1; min-width: 0; min-height: 42px; padding: 8px 3px; border: 0; border-radius: 8px;
-      background: transparent; color: var(--muted); font-size: .82rem; font-weight: 700;
-    }
-    .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,.08); }
     .display-card {
       min-height: 178px; padding: 22px 12px; display: flex; flex-direction: column;
       align-items: center; justify-content: center; text-align: center; position: relative;
       background: #f9fafb; border: 2px solid var(--line); border-radius: 15px;
     }
-    .num-display { color: var(--primary); font-size: clamp(2.5rem, 12vw, 3.4rem); font-weight: 850; line-height: 1.15; overflow-wrap: anywhere; }
-    .zh-display { margin-top: 8px; font-size: 1.65rem; font-weight: 600; line-height: 1.4; }
-    .pinyin-display { margin-top: 3px; color: var(--green); font-size: 1.05rem; line-height: 1.5; }
+    .num-display { color: var(--primary); font-size: clamp(2.4rem, 11vw, 3.3rem); font-weight: 850; line-height: 1.15; overflow-wrap: anywhere; }
+    .zh-display { margin-top: 8px; font-size: 1.65rem; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+    .pinyin-display { margin-top: 3px; color: var(--green); font-size: 1.05rem; line-height: 1.5; overflow-wrap: anywhere; }
     .feedback { min-height: 1.4em; margin-top: 7px; font-size: .98rem; font-weight: 700; line-height: 1.4; }
     .feedback.correct { color: var(--green); }
     .feedback.wrong { color: var(--red); }
@@ -91,69 +87,66 @@
       justify-content: center; gap: 6px; border: 0; border-radius: 11px; font-size: .94rem;
       font-weight: 750; line-height: 1.25;
     }
-    .btn:active, .tab-btn:active { transform: scale(.985); }
+    .btn:active, .mode-btn:active { transform: scale(.985); }
     .btn-primary { background: var(--primary); color: white; }
     .btn-primary:active { background: var(--primary-dark); }
     .btn-secondary { background: #e0e7ff; color: var(--primary); }
     .hidden { display: none !important; }
+    .field-group { display: flex; flex-direction: column; gap: 7px; }
+    .field-input {
+      width: 100%; min-height: 48px; padding: 10px 12px;
+      border: 2px solid #d1d5db; border-radius: 10px; background: #fff;
+      text-align: center; font-size: 1.2rem; font-weight: 650;
+    }
+    .field-input:focus, .quiz-input-group input:focus { outline: none; border-color: var(--primary); }
     .quiz-input-group { display: flex; gap: 8px; }
     .quiz-input-group input {
       flex: 1; min-width: 0; min-height: 46px; padding: 9px; border: 2px solid #d1d5db;
       border-radius: 10px; text-align: center; font-size: 1.15rem;
     }
-    .quiz-input-group input:focus { outline: none; border-color: var(--primary); }
     .score { text-align: center; color: var(--muted); font-size: .88rem; }
     .score strong:first-child { color: var(--green); }
     .score strong:last-child { color: var(--red); }
-    .open-help { color: var(--muted); font-size: .76rem; line-height: 1.5; text-align: center; }
-    .js-boot-notice {
-      max-width: 480px; margin: 0 auto 10px; padding: 13px 14px;
-      border: 1px solid #f59e0b; border-radius: 12px; background: #fffbeb;
-      color: #78350f; font-size: .88rem; line-height: 1.55;
-    }
-    .js-boot-notice strong { display: block; margin-bottom: 4px; }
-    .js-boot-notice code { overflow-wrap: anywhere; }
     @media (max-width: 360px) {
       .app { padding: 13px; gap: 11px; }
       h1 { font-size: 1.18rem; }
-      .tab-btn { font-size: .75rem; }
+      .mode-btn { font-size: .8rem; padding: 8px 6px; }
       .btn { font-size: .84rem; }
       .range-inputs input { width: 65px; }
     }
   </style>
 </head>
 <body>
-  <div id="jsBootNotice" class="js-boot-notice" role="status">
-    <strong>Trình xem tệp có thể đang chặn JavaScript</strong>
-    Nếu các nút không hoạt động, đây là chế độ xem trước tệp của ứng dụng nhắn tin chứ chưa phải trình duyệt đầy đủ. Tệp HTML không thể tự bật JavaScript hoặc tự chuyển sang Safari/Chrome. Hãy mở phiên bản website bằng liên kết HTTPS; hướng dẫn đưa file này lên GitHub Pages nằm trong gói đi kèm.
-  </div>
   <main class="app">
     <header>
       <h1>Luyện Số Tiếng Trung</h1>
-      <div class="subheading">Phát âm tiếng Phổ thông · Giọng nam hoặc nữ tùy thiết bị</div>
     </header>
 
-    <div class="range-box">
+    <nav class="mode-menu" aria-label="7 chế độ luyện số">
+      <button type="button" class="mode-btn active" id="mode-single">1. Đọc số bạn nhập</button>
+      <button type="button" class="mode-btn" id="mode-asc">2. Đọc số tăng dần</button>
+      <button type="button" class="mode-btn" id="mode-desc">3. Đọc số giảm dần</button>
+      <button type="button" class="mode-btn" id="mode-random">4. Đọc số ngẫu nhiên</button>
+      <button type="button" class="mode-btn" id="mode-quiz">5. Đọc số kiểm tra</button>
+      <button type="button" class="mode-btn" id="mode-year">6. Đọc số năm sinh</button>
+      <button type="button" class="mode-btn" id="mode-phone">7. Đọc số điện thoại</button>
+    </nav>
+
+    <section id="rangeSettings" class="range-box hidden">
       <label for="minNum">Phạm vi số:</label>
       <div class="range-inputs">
-        <input type="number" id="minNum" value="1" min="0" max="999999" inputmode="numeric" aria-label="Số bắt đầu">
+        <input type="number" id="minNum" value="1" min="0" max="999999" step="1" inputmode="numeric" aria-label="Số bắt đầu">
         <span>–</span>
-        <input type="number" id="maxNum" value="100" min="0" max="999999" inputmode="numeric" aria-label="Số kết thúc">
+        <input type="number" id="maxNum" value="100" min="0" max="999999" step="1" inputmode="numeric" aria-label="Số kết thúc">
       </div>
-    </div>
+    </section>
 
-    <div class="settings-row">
-      <label for="delaySec">Khoảng nghỉ (giây):</label>
-      <input type="number" id="delaySec" value="3" min="1" max="10" inputmode="numeric">
-    </div>
+    <section id="delaySettings" class="settings-row hidden">
+      <label for="delaySec">Khoảng nghỉ giữa các số (giây):</label>
+      <input type="number" id="delaySec" value="3" min="1" max="10" step="1" inputmode="numeric">
+    </section>
 
-    <div id="voiceStatus" class="voice-status" role="status" aria-live="polite">Đang kiểm tra giọng đọc tiếng Trung…</div>
-
-    <nav class="tabs" aria-label="Chế độ luyện tập">
-      <button type="button" class="tab-btn active" id="tab-seq">1. Thứ tự</button>
-      <button type="button" class="tab-btn" id="tab-rand">2. Ngẫu nhiên</button>
-      <button type="button" class="tab-btn" id="tab-quiz">3. Kiểm tra</button>
-    </nav>
+    <div id="voiceStatus" class="sr-only" role="status" aria-live="polite"></div>
 
     <section class="display-card" aria-live="polite">
       <div id="displayNum" class="num-display">--</div>
@@ -162,54 +155,81 @@
       <div id="feedbackText" class="feedback"></div>
     </section>
 
-    <section id="controls-seq" class="controls">
+    <!-- 1. Đọc số nhập vào -->
+    <section id="controls-single" class="controls">
+      <div class="field-group">
+        <label class="field-label" for="singleNum">Nhập số bạn muốn nghe (0–999.999):</label>
+        <input class="field-input" type="number" id="singleNum" value="1" min="0" max="999999" step="1" inputmode="numeric">
+      </div>
+      <button type="button" class="btn btn-primary" id="btnSpeakSingle">🔊 Nghe phát âm số này</button>
+    </section>
+
+    <!-- 2 và 3. Đọc tăng/giảm dần -->
+    <section id="controls-sequence" class="controls hidden">
       <div class="btn-row">
-        <button type="button" class="btn btn-primary" id="btnSeqStart">▶ Bắt đầu đọc</button>
-        <button type="button" class="btn btn-secondary" id="btnSeqStop">Dừng</button>
+        <button type="button" class="btn btn-primary" id="btnSequenceStart">▶ Bắt đầu đọc tăng dần</button>
+        <button type="button" class="btn btn-secondary" id="btnSequenceStop">Dừng</button>
       </div>
     </section>
 
-    <section id="controls-rand" class="controls hidden">
+    <!-- 4. Đọc ngẫu nhiên -->
+    <section id="controls-random" class="controls hidden">
       <div class="btn-row">
-        <button type="button" class="btn btn-primary" id="btnRandStart">▶ Tự động chạy</button>
+        <button type="button" class="btn btn-primary" id="btnRandStart">▶ Tự động đọc số</button>
         <button type="button" class="btn btn-secondary" id="btnRandStop">Dừng</button>
       </div>
       <div class="btn-row">
-        <button type="button" class="btn btn-secondary" id="btnRandNext">Số mới</button>
+        <button type="button" class="btn btn-secondary" id="btnRandNext">Số ngẫu nhiên mới</button>
         <button type="button" class="btn btn-secondary" id="btnRandReveal">Hiện đáp án</button>
       </div>
     </section>
 
+    <!-- 5. Kiểm tra -->
     <section id="controls-quiz" class="controls hidden">
       <button type="button" class="btn btn-primary" id="btnQuizStart">🔊 Phát số ngẫu nhiên</button>
       <div class="quiz-input-group">
-        <input type="number" id="quizInput" placeholder="Nhập số nghe được…" inputmode="numeric">
+        <input type="number" id="quizInput" placeholder="Nhập số nghe được…" step="1" inputmode="numeric">
         <button type="button" class="btn btn-primary" id="btnQuizSubmit">Gửi</button>
       </div>
       <div class="score">Đúng: <strong id="scoreCorrect">0</strong> &nbsp;|&nbsp; Sai: <strong id="scoreWrong">0</strong></div>
     </section>
 
-    <div class="open-help">Khi mở bằng website HTTPS, ứng dụng chạy trong trình duyệt. Nếu mở tệp đính kèm trong Zalo mà các nút không phản hồi, hãy dùng liên kết website thay cho tệp HTML.</div>
+    <!-- 6. Đọc năm sinh -->
+    <section id="controls-year" class="controls hidden">
+      <div class="field-group">
+        <label class="field-label" for="birthYear">Nhập năm sinh gồm 4 chữ số:</label>
+        <input class="field-input" type="text" id="birthYear" value="1990" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off">
+      </div>
+      <button type="button" class="btn btn-primary" id="btnSpeakYear">🔊 Nghe năm sinh</button>
+    </section>
+
+    <!-- 7. Đọc số điện thoại -->
+    <section id="controls-phone" class="controls hidden">
+      <div class="field-group">
+        <label class="field-label" for="phoneNumber">Nhập số điện thoại:</label>
+        <input class="field-input" type="tel" id="phoneNumber" value="0912345678" maxlength="20" inputmode="numeric" autocomplete="tel" placeholder="Nhập số điện thoại">
+      </div>
+      <button type="button" class="btn btn-primary" id="btnSpeakPhone">🔊 Nghe số điện thoại</button>
+    </section>
+
   </main>
 
   <script>
   (() => {
     'use strict';
 
-    const bootNotice = document.getElementById('jsBootNotice');
-    if (bootNotice) bootNotice.remove();
-
     const $ = (id) => document.getElementById(id);
     const zhDigits = ['零','一','二','三','四','五','六','七','八','九'];
     const pyDigits = ['líng','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
     const sectionUnits = ['', '十', '百', '千'];
     const sectionPinyin = ['', 'shí', 'bǎi', 'qiān'];
+    const allModes = ['single', 'asc', 'desc', 'random', 'quiz', 'year', 'phone'];
 
-    let currentMode = 'seq';
+    let currentMode = 'single';
     let isRunning = false;
     let timer = null;
     let currentNumber = null;
-    let seqCurrent = 1;
+    let sequenceCurrent = 1;
     let score = { correct: 0, wrong: 0 };
     let chineseVoice = null;
     let runToken = 0;
@@ -223,11 +243,10 @@
     function loadChineseVoice() {
       if (!('speechSynthesis' in window)) {
         chineseVoice = null;
-        setVoiceStatus('Trình duyệt này không hỗ trợ phát âm. Hãy mở tệp bằng Safari hoặc Chrome mới nhất.', true);
+        setVoiceStatus('Trình duyệt này không hỗ trợ phát âm. Hãy mở bằng Safari hoặc Chrome mới nhất.', true);
         return null;
       }
       const voices = window.speechSynthesis.getVoices() || [];
-      // Chỉ chọn giọng tiếng Trung; ưu tiên Phổ thông Trung Quốc đại lục, sau đó là Phổ thông Đài Loan.
       const chineseVoices = voices.filter(v => /^zh([_-]|$)/i.test(v.lang || ''));
       chineseVoice = chineseVoices.find(v => /^zh[-_]CN$/i.test(v.lang || ''))
         || chineseVoices.find(v => /^zh[-_]Hans([-_]CN)?$/i.test(v.lang || ''))
@@ -236,9 +255,9 @@
         || null;
 
       if (chineseVoice) {
-        setVoiceStatus('Đã tìm thấy giọng tiếng Trung: ' + chineseVoice.name + '. Có thể là giọng nam hoặc nữ tùy thiết bị.');
+        setVoiceStatus('Đã tìm thấy giọng tiếng Trung: ' + chineseVoice.name + '. Giọng nam hoặc nữ tùy thiết bị.');
       } else if (voices.length > 0) {
-        setVoiceStatus('Thiết bị chưa có giọng đọc tiếng Trung. Hãy cài thêm giọng Chinese / 中文 trong cài đặt chuyển văn bản thành giọng nói, rồi mở lại trang.', true);
+        setVoiceStatus('Thiết bị chưa có giọng đọc tiếng Trung. Hãy cài thêm giọng Chinese / 中文 trong cài đặt chuyển văn bản thành giọng nói.', true);
       } else {
         setVoiceStatus('Đang chờ Safari/Chrome tải danh sách giọng tiếng Trung. Chạm nút phát âm sau khi trang tải xong.', true);
       }
@@ -248,15 +267,14 @@
     if ('speechSynthesis' in window) {
       loadChineseVoice();
       window.speechSynthesis.addEventListener?.('voiceschanged', loadChineseVoice);
-      // Tương thích với một số bản Safari cũ.
       window.speechSynthesis.onvoiceschanged = loadChineseVoice;
-      // Một vài trình duyệt trên điện thoại công bố danh sách giọng chậm hơn lúc tải trang.
       setTimeout(loadChineseVoice, 500);
+      setTimeout(loadChineseVoice, 1500);
     }
 
     function sectionToChinese(section, omitLeadingOneForTen = true) {
       if (section === 0) return { zh: '', py: '' };
-      let digits = String(section).padStart(4, '0').split('').map(Number);
+      const digits = String(section).padStart(4, '0').split('').map(Number);
       let zh = '';
       let py = '';
       let zeroPending = false;
@@ -274,7 +292,6 @@
           py += (py ? ' ' : '') + 'líng';
           zeroPending = false;
         }
-        // Trong một số có hàng chục ở đầu, bỏ chữ 一 trước 十: 十一, 十二...
         if (!(omitLeadingOneForTen && unitIndex === 1 && digit === 1 && !started)) {
           zh += zhDigits[digit];
           py += (py ? ' ' : '') + pyDigits[digit];
@@ -290,9 +307,7 @@
 
     function numberToChinese(value) {
       const num = Math.trunc(Number(value));
-      if (!Number.isFinite(num) || num < 0 || num > 999999) {
-        return { zh: String(value), pinyin: '' };
-      }
+      if (!Number.isFinite(num) || num < 0 || num > 999999) return { zh: String(value), pinyin: '' };
       if (num === 0) return { zh: '零', pinyin: 'líng' };
 
       const wan = Math.floor(num / 10000);
@@ -306,10 +321,7 @@
         zh = high.zh + '万';
         pinyin = high.py + ' wàn';
         if (rest > 0) {
-          if (rest < 1000) {
-            zh += '零';
-            pinyin += ' líng';
-          }
+          if (rest < 1000) { zh += '零'; pinyin += ' líng'; }
           zh += low.zh;
           pinyin += ' ' + low.py;
         }
@@ -318,6 +330,24 @@
         pinyin = low.py;
       }
       return { zh, pinyin };
+    }
+
+    function digitSequenceToChinese(digits, addYearWord = false, useYaoForOne = false) {
+      // Chỉ chế độ số điện thoại bật useYaoForOne để đọc 1 thành 幺 (yāo).
+      // Năm sinh mặc định vẫn đọc 1 là 一 (yī).
+      const chars = digits.split('').map(d => {
+        if (useYaoForOne && d === '1') return '幺';
+        return zhDigits[Number(d)];
+      });
+      const pinyin = digits.split('').map(d => {
+        if (useYaoForOne && d === '1') return 'yāo';
+        return pyDigits[Number(d)];
+      }).join(' ');
+      return {
+        zh: chars.join('') + (addYearWord ? '年' : ''),
+        pinyin: pinyin + (addYearWord ? ' nián' : ''),
+        spoken: chars.join('，') + (addYearWord ? '年' : '')
+      };
     }
 
     function getRange() {
@@ -340,28 +370,26 @@
       return sec * 1000;
     }
 
-    function updateDisplay(num, hideAnswer = false) {
+    function setDisplay(original, zh, pinyin, hideAnswer = false) {
       $('feedbackText').textContent = '';
       $('feedbackText').className = 'feedback';
-      if (hideAnswer) {
-        $('displayNum').textContent = '???';
-        $('displayZh').textContent = '🔊 正在听…';
-        $('displayPinyin').textContent = '';
-      } else {
-        const data = numberToChinese(num);
-        $('displayNum').textContent = String(num);
-        $('displayZh').textContent = data.zh;
-        $('displayPinyin').textContent = data.pinyin;
-      }
+      $('displayNum').textContent = hideAnswer ? '???' : String(original);
+      $('displayZh').textContent = hideAnswer ? '🔊 正在听…' : zh;
+      $('displayPinyin').textContent = hideAnswer ? '' : pinyin;
+    }
+
+    function updateNumberDisplay(num, hideAnswer = false) {
+      const data = numberToChinese(num);
+      setDisplay(num, data.zh, data.pinyin, hideAnswer);
     }
 
     function cancelSpeechOnly() {
       if ('speechSynthesis' in window) {
-        try { window.speechSynthesis.cancel(); } catch (_) { /* Không làm gián đoạn giao diện. */ }
+        try { window.speechSynthesis.cancel(); } catch (_) { /* Giữ giao diện ổn định. */ }
       }
     }
 
-    function speakNumber(num, callback, token = runToken) {
+    function speakChineseText(textToSpeak, callback = null, token = runToken) {
       if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
         setVoiceStatus('Trình duyệt không hỗ trợ đọc văn bản. Hãy mở bằng Safari hoặc Chrome mới nhất.', true);
         if (callback) callback(false);
@@ -370,13 +398,12 @@
 
       loadChineseVoice();
       if (!chineseVoice) {
-        setVoiceStatus('Không phát âm để tránh đọc sai ngôn ngữ: thiết bị chưa cung cấp giọng tiếng Trung. Hãy cài giọng Chinese / 中文 trong cài đặt hệ thống.', true);
+        setVoiceStatus('Không phát âm để tránh đọc sai ngôn ngữ: thiết bị chưa cung cấp giọng tiếng Trung. Hãy cài giọng Chinese / 中文.', true);
         if (callback) callback(false);
         return;
       }
 
       cancelSpeechOnly();
-      const textToSpeak = numberToChinese(num).zh; // Luôn đọc chữ Hán, không gửi chữ số Ả Rập cho bộ đọc.
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
       utterance.lang = 'zh-CN';
       utterance.voice = chineseVoice;
@@ -393,20 +420,18 @@
       };
       utterance.onend = () => finish(true);
       utterance.onerror = (event) => {
-        // Khi người dùng chủ động dừng, token đã đổi và callback cũ sẽ bị bỏ qua.
         if (token === runToken && event && event.error !== 'canceled' && event.error !== 'interrupted') {
           setVoiceStatus('Không phát được âm thanh. Hãy kiểm tra âm lượng và giọng Chinese / 中文 của thiết bị.', true);
         }
         finish(false);
       };
 
-      // Một số WebView/Safari cũ không gọi onend ổn định; watchdog giúp nút chạy không bị treo.
       watchdog = setTimeout(() => finish(true), Math.max(5000, textToSpeak.length * 900));
       try {
         window.speechSynthesis.speak(utterance);
       } catch (error) {
         finish(false);
-        setVoiceStatus('Trình duyệt không thể khởi động giọng đọc tiếng Trung. Hãy thử mở trực tiếp bằng Safari/Chrome.', true);
+        setVoiceStatus('Trình duyệt không thể khởi động giọng đọc tiếng Trung. Hãy mở trực tiếp bằng Safari/Chrome.', true);
       }
     }
 
@@ -416,19 +441,23 @@
       if (timer) clearTimeout(timer);
       timer = null;
       cancelSpeechOnly();
-      $('btnSeqStart').textContent = '▶ Bắt đầu đọc';
-      $('btnRandStart').textContent = '▶ Tự động chạy';
+      $('btnSequenceStart').textContent = currentMode === 'desc' ? '▶ Bắt đầu đọc giảm dần' : '▶ Bắt đầu đọc tăng dần';
+      $('btnRandStart').textContent = '▶ Tự động đọc số';
     }
 
     function switchMode(mode) {
       stopAll();
       currentMode = mode;
-      $('tab-seq').classList.toggle('active', mode === 'seq');
-      $('tab-rand').classList.toggle('active', mode === 'rand');
-      $('tab-quiz').classList.toggle('active', mode === 'quiz');
-      $('controls-seq').classList.toggle('hidden', mode !== 'seq');
-      $('controls-rand').classList.toggle('hidden', mode !== 'rand');
+      allModes.forEach(item => $('mode-' + item).classList.toggle('active', item === mode));
+      $('rangeSettings').classList.toggle('hidden', !['asc','desc','random','quiz'].includes(mode));
+      $('delaySettings').classList.toggle('hidden', !['asc','desc','random'].includes(mode));
+      $('controls-single').classList.toggle('hidden', mode !== 'single');
+      $('controls-sequence').classList.toggle('hidden', !['asc','desc'].includes(mode));
+      $('controls-random').classList.toggle('hidden', mode !== 'random');
       $('controls-quiz').classList.toggle('hidden', mode !== 'quiz');
+      $('controls-year').classList.toggle('hidden', mode !== 'year');
+      $('controls-phone').classList.toggle('hidden', mode !== 'phone');
+      $('btnSequenceStart').textContent = mode === 'desc' ? '▶ Bắt đầu đọc giảm dần' : '▶ Bắt đầu đọc tăng dần';
       $('displayNum').textContent = '--';
       $('displayZh').textContent = '';
       $('displayPinyin').textContent = '';
@@ -436,26 +465,41 @@
       currentNumber = null;
     }
 
-    function startSeq() {
+    function speakSingleNumber() {
+      stopAll();
+      const raw = $('singleNum').value.trim();
+      const num = Number(raw);
+      if (raw === '' || !Number.isInteger(num) || num < 0 || num > 999999) {
+        $('feedbackText').textContent = 'Vui lòng nhập số nguyên từ 0 đến 999.999.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+      const data = numberToChinese(num);
+      setDisplay(num, data.zh, data.pinyin);
+      speakChineseText(data.zh, null, runToken);
+    }
+
+    function startSequence() {
       if (isRunning) { stopAll(); return; }
       const { min, max } = getRange();
-      seqCurrent = min;
+      const descending = currentMode === 'desc';
+      sequenceCurrent = descending ? max : min;
       isRunning = true;
       const token = ++runToken;
-      $('btnSeqStart').textContent = 'Tạm dừng';
+      $('btnSequenceStart').textContent = 'Tạm dừng';
 
       const step = () => {
-        if (!isRunning || token !== runToken || seqCurrent > max) {
-          if (token === runToken) stopAll();
-          return;
-        }
-        const number = seqCurrent;
-        updateDisplay(number);
-        speakNumber(number, (ok) => {
+        if (!isRunning || token !== runToken) return;
+        const inRange = descending ? sequenceCurrent >= min : sequenceCurrent <= max;
+        if (!inRange) { stopAll(); return; }
+        const number = sequenceCurrent;
+        updateNumberDisplay(number);
+        speakChineseText(numberToChinese(number).zh, (ok) => {
           if (!isRunning || token !== runToken) return;
           if (!ok) { stopAll(); return; }
-          seqCurrent++;
-          if (seqCurrent <= max) timer = setTimeout(step, getDelay());
+          sequenceCurrent += descending ? -1 : 1;
+          const hasNext = descending ? sequenceCurrent >= min : sequenceCurrent <= max;
+          if (hasNext) timer = setTimeout(step, getDelay());
           else stopAll();
         }, token);
       };
@@ -469,11 +513,11 @@
 
     function showRandomNumber(hideAnswer, auto = false, token = runToken) {
       currentNumber = chooseRandomNumber();
-      updateDisplay(currentNumber, hideAnswer);
-      speakNumber(currentNumber, (ok) => {
+      updateNumberDisplay(currentNumber, hideAnswer);
+      speakChineseText(numberToChinese(currentNumber).zh, (ok) => {
         if (auto && token === runToken && isRunning) {
           if (!ok) { stopAll(); return; }
-          updateDisplay(currentNumber, false);
+          updateNumberDisplay(currentNumber, false);
           timer = setTimeout(() => {
             if (isRunning && token === runToken) showRandomNumber(true, true, token);
           }, getDelay());
@@ -481,7 +525,7 @@
       }, token);
     }
 
-    function startRand() {
+    function startRandom() {
       if (isRunning) { stopAll(); return; }
       isRunning = true;
       const token = ++runToken;
@@ -489,24 +533,24 @@
       showRandomNumber(true, true, token);
     }
 
-    function nextRandManual() {
+    function nextRandomManual() {
       stopAll();
       showRandomNumber(false, false, runToken);
     }
 
-    function revealAnswer() {
+    function revealRandomAnswer() {
       if (currentNumber !== null) {
         stopAll();
-        updateDisplay(currentNumber, false);
+        updateNumberDisplay(currentNumber, false);
       }
     }
 
     function startQuizNext() {
       stopAll();
       currentNumber = chooseRandomNumber();
-      updateDisplay(currentNumber, true);
+      updateNumberDisplay(currentNumber, true);
       $('quizInput').value = '';
-      speakNumber(currentNumber, null, runToken);
+      speakChineseText(numberToChinese(currentNumber).zh, null, runToken);
     }
 
     function checkQuizAnswer() {
@@ -517,10 +561,10 @@
         $('feedbackText').className = 'feedback wrong';
         return;
       }
-      const val = Number.parseInt(raw, 10);
+      const val = Number(raw);
       const answer = currentNumber;
-      updateDisplay(answer, false);
-      if (val === answer) {
+      updateNumberDisplay(answer, false);
+      if (Number.isInteger(val) && val === answer) {
         $('feedbackText').textContent = '✓ Chính xác!';
         $('feedbackText').className = 'feedback correct';
         score.correct++;
@@ -534,28 +578,59 @@
       currentNumber = null;
     }
 
-    $('tab-seq').addEventListener('click', () => switchMode('seq'));
-    $('tab-rand').addEventListener('click', () => switchMode('rand'));
-    $('tab-quiz').addEventListener('click', () => switchMode('quiz'));
-    $('btnSeqStart').addEventListener('click', startSeq);
-    $('btnSeqStop').addEventListener('click', stopAll);
-    $('btnRandStart').addEventListener('click', startRand);
+    function speakBirthYear() {
+      stopAll();
+      const year = $('birthYear').value.trim();
+      if (!/^\d{4}$/.test(year)) {
+        $('feedbackText').textContent = 'Vui lòng nhập năm sinh gồm đúng 4 chữ số.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+      const data = digitSequenceToChinese(year, true);
+      setDisplay(year, data.zh, data.pinyin);
+      speakChineseText(data.spoken, null, runToken);
+    }
+
+    function speakPhoneNumber() {
+      stopAll();
+      const phone = $('phoneNumber').value.replace(/\D/g, '');
+      $('phoneNumber').value = phone;
+      if (!/^\d{3,20}$/.test(phone)) {
+        $('feedbackText').textContent = 'Vui lòng nhập số điện thoại gồm 3–20 chữ số.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+      const data = digitSequenceToChinese(phone, false, true);
+      setDisplay(phone, data.zh, data.pinyin);
+      speakChineseText(data.spoken, null, runToken);
+    }
+
+    // Đổi chế độ bằng cách chạm vào một trong bảy mục.
+    allModes.forEach(mode => $('mode-' + mode).addEventListener('click', () => switchMode(mode)));
+    $('btnSpeakSingle').addEventListener('click', speakSingleNumber);
+    $('singleNum').addEventListener('keydown', event => { if (event.key === 'Enter') speakSingleNumber(); });
+    $('btnSequenceStart').addEventListener('click', startSequence);
+    $('btnSequenceStop').addEventListener('click', stopAll);
+    $('btnRandStart').addEventListener('click', startRandom);
     $('btnRandStop').addEventListener('click', stopAll);
-    $('btnRandNext').addEventListener('click', nextRandManual);
-    $('btnRandReveal').addEventListener('click', revealAnswer);
+    $('btnRandNext').addEventListener('click', nextRandomManual);
+    $('btnRandReveal').addEventListener('click', revealRandomAnswer);
     $('btnQuizStart').addEventListener('click', startQuizNext);
     $('btnQuizSubmit').addEventListener('click', checkQuizAnswer);
-    $('quizInput').addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') checkQuizAnswer();
-    });
+    $('quizInput').addEventListener('keydown', event => { if (event.key === 'Enter') checkQuizAnswer(); });
+    $('btnSpeakYear').addEventListener('click', speakBirthYear);
+    $('birthYear').addEventListener('keydown', event => { if (event.key === 'Enter') speakBirthYear(); });
+    $('birthYear').addEventListener('input', () => { $('birthYear').value = $('birthYear').value.replace(/\D/g, '').slice(0, 4); });
+    $('btnSpeakPhone').addEventListener('click', speakPhoneNumber);
+    $('phoneNumber').addEventListener('input', () => { $('phoneNumber').value = $('phoneNumber').value.replace(/\D/g, '').slice(0, 20); });
+    $('phoneNumber').addEventListener('keydown', event => { if (event.key === 'Enter') speakPhoneNumber(); });
 
-    // Khi rời tab/đưa trình duyệt xuống nền, dừng bộ hẹn giờ và bộ đọc để tránh treo khi quay lại.
     document.addEventListener('visibilitychange', () => {
       if (document.hidden && isRunning) stopAll();
     });
 
-    // Safari iOS và Chrome Android cần thao tác chạm của người dùng mới cho phép phát âm.
-    // Âm thanh chỉ được kích hoạt từ các nút điều khiển ở trên.
+    // Chế độ mặc định: đọc một số do người học nhập.
+    switchMode('single');
   })();
   </script>
 </body>
