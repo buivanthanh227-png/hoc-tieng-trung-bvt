@@ -120,3 +120,11 @@ CẬP NHẬT GIAO DIỆN TỪ ĐIỂN — 30/10/2026
 - Thu gọn thẻ từ điển: chữ Hán, Pinyin và nghĩa trên hàng đầu; bốn nút nghe, thêm vào ghép câu, xem thứ tự nét và liên kết từ vựng nằm ngang hàng thứ hai.
 - Bổ sung điều hướng trang ở cả phía trên và phía dưới danh sách từ.
 - Nút “Liên kết từ vựng” hiển thị các mục có chung chữ Hán (đối với từ đơn) và/hoặc nghĩa tiếng Việt liên quan; bấm vào một mục liên quan sẽ đưa mục đó vào ô tra cứu từ điển.
+
+
+CAP NHAT GIAO DIEN v42 - 30/10/2026 (TOI UU THEO Y KIEN NGUOI DUNG)
+- Rà soát ghi chú nhỏ: lược bỏ hướng dẫn lặp lại hoặc không cần thiết; giữ các lưu ý quan trọng về quyền micro, Internet, xử lý âm thanh trên thiết bị, định dạng tệp, lưu dữ liệu, nguồn dữ liệu và giới hạn sử dụng.
+- Ghép câu: mỗi thẻ câu hiển thị chữ Hán, Pinyin và nghĩa tiếng Việt trên cùng một hàng; bỏ dòng liệt kê từ đã dùng và ghi chú lọc mẫu.
+- Giữ ba thao tác luyện viết, luyện dịch và luyện đọc dưới mỗi câu, đồng thời thu nhỏ nút để giảm chiều cao thẻ.
+- Thêm nút mũi tên nổi ở góc dưới bên phải; bấm để cuộn về đầu trang.
+- Giữ nguyên mã phiên bản ứng dụng v42; cập nhật tên bộ nhớ đệm Service Worker để thiết bị tải giao diện mới.
