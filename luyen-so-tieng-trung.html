@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Luyện Số Tiếng Trung V10</title>
+  <style>
+    :root {
+      --ink: #122a57;
+      --muted: #6680a8;
+      --blue: #1877ee;
+      --green: #20a66a;
+      --purple: #6554db;
+      --orange: #f28a24;
+      --pink: #e83c68;
+      --teal: #069eaa;
+      --deep-purple: #6422d1;
+      --line: #dce7f6;
+      --surface: #ffffff;
+      --page: #f5f8fe;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: max(10px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+      color: var(--ink);
+      background: linear-gradient(145deg, #f7faff 0%, #f2f7ff 52%, #fbfcff 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button { touch-action: manipulation; }
+    .app { width: min(100%, 1520px); margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+
+    /* Header */
+    .app-header {
+      position: relative;
+      min-height: 112px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 230px 16px;
+      border-bottom: 1px solid #e1eaf7;
+    }
+    .title-row { display: inline-flex; align-items: center; justify-content: center; gap: 18px; min-width: 0; }
+    .brand-logo {
+      width: 82px; height: 82px; flex: 0 0 82px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      color: #ffd84d;
+      background: radial-gradient(circle at 35% 28%, #ff3c32 0%, #f01820 65%, #cf0d19 100%);
+      border: 3px solid #ffbd24;
+      box-shadow: 0 5px 15px rgba(199, 36, 30, .18), inset 0 0 0 2px rgba(255,255,255,.16);
+      font-family: "Noto Sans CJK SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+      font-size: 49px; font-weight: 900; line-height: 1;
+    }
+    h1 { margin: 0; color: #17499f; font-size: clamp(2rem, 4.2vw, 3rem); font-weight: 850; letter-spacing: -.035em; line-height: 1.12; }
+    .credit {
+      position: absolute; top: 19px; right: 5px;
+      margin: 0; color: #e5252e; font-size: .56rem; font-weight: 700;
+      letter-spacing: .015em; line-height: 1.3; text-align: right;
+    }
+
+    /* Seven mode tiles */
+    .mode-menu { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 19px 20px; }
+    .mode-btn {
+      --mode: var(--blue); --tint: #edf6ff; --border: #b9dcff;
+      grid-column: span 3;
+      position: relative; min-width: 0; min-height: 148px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; padding: 18px 12px 16px;
+      border: 1.5px solid var(--border); border-radius: 17px;
+      color: var(--ink); background: linear-gradient(140deg, var(--tint), color-mix(in srgb, var(--tint) 45%, #fff));
+      cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+    .mode-btn:nth-child(n+5) { grid-column: span 4; }
+    .mode-btn .mode-number {
+      position: absolute; left: 15px; top: 14px;
+      width: 60px; height: 60px; display: grid; place-items: center;
+      border-radius: 50%; background: var(--mode); color: #fff;
+      font-size: 2rem; font-weight: 850; line-height: 1;
+    }
+    .mode-btn .mode-icon { color: var(--mode); font-size: 2.65rem; font-weight: 800; line-height: 1.1; }
+    .mode-btn .mode-label { color: var(--ink); font-size: clamp(1rem, 1.42vw, 1.28rem); font-weight: 800; line-height: 1.2; text-align: center; }
+    .mode-btn.active { border: 3px solid var(--mode); box-shadow: 0 5px 15px color-mix(in srgb, var(--mode) 16%, transparent); transform: translateY(-1px); }
+    .mode-btn:active { transform: scale(.985); }
+    .mode-single { --mode: #1877ee; --tint: #eaf4ff; --border: #b6dcff; }
+    .mode-asc { --mode: #21a56b; --tint: #eaf9f1; --border: #b8e9d0; }
+    .mode-desc { --mode: #6554db; --tint: #f0edff; --border: #d2caff; }
+    .mode-random { --mode: #f28a24; --tint: #fff4e8; --border: #ffdfba; }
+    .mode-quiz { --mode: #e83c68; --tint: #fff0f3; --border: #ffc6d2; }
+    .mode-year { --mode: #069eaa; --tint: #eafafd; --border: #b7eaf0; }
+    .mode-phone { --mode: #6422d1; --tint: #f2edff; --border: #d4c6ff; }
+
+    /* Main activity panel */
+    .workspace {
+      --mode: var(--blue); --tint: #edf6ff; --border: #c5e0ff;
+      overflow: hidden; border: 1.5px solid var(--border); border-radius: 23px;
+      background: rgba(255,255,255,.88); box-shadow: 0 8px 24px rgba(35, 72, 130, .045);
+    }
+    .workspace[data-mode="single"] { --mode: #1877ee; --tint: #edf6ff; --border: #c5e0ff; }
+    .workspace[data-mode="asc"] { --mode: #21a56b; --tint: #eaf9f1; --border: #c0ead4; }
+    .workspace[data-mode="desc"] { --mode: #6554db; --tint: #f0edff; --border: #d7d0ff; }
+    .workspace[data-mode="random"] { --mode: #f28a24; --tint: #fff4e8; --border: #ffe2c1; }
+    .workspace[data-mode="quiz"] { --mode: #e83c68; --tint: #fff0f3; --border: #ffd0da; }
+    .workspace[data-mode="year"] { --mode: #069eaa; --tint: #eafafd; --border: #c3edf0; }
+    .workspace[data-mode="phone"] { --mode: #6422d1; --tint: #f2edff; --border: #ddd2ff; }
+    .workspace-header {
+      min-height: 91px; display: flex; align-items: center; gap: 20px;
+      padding: 16px 30px; background: linear-gradient(100deg, var(--tint), rgba(255,255,255,.68));
+      border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, #fff);
+    }
+    .workspace-mark {
+      width: 68px; height: 68px; display: grid; place-items: center; flex: 0 0 68px;
+      border-radius: 50%; background: var(--mode); color: white; font-size: 2.6rem; font-weight: 800;
+      box-shadow: 0 4px 9px color-mix(in srgb, var(--mode) 20%, transparent);
+    }
+    .workspace-header h2 { margin: 0; color: color-mix(in srgb, var(--mode) 75%, #182d50); font-size: clamp(1.45rem, 2.1vw, 2rem); font-weight: 850; line-height: 1.2; }
+    .workspace-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+    .workspace-toolbar { display: grid; grid-template-columns: minmax(360px, 1.05fr) minmax(360px, 1.2fr); gap: 15px; align-items: stretch; }
+    .settings-cluster {
+      min-width: 0; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(110px, .8fr);
+      gap: 14px; padding: 13px; border: 1px solid #e1eaf7; border-radius: 14px; background: #f8faff;
+    }
+    .range-box, .settings-row {
+      min-width: 0; display: flex; flex-direction: column; justify-content: center; align-items: stretch; gap: 9px;
+      padding: 0; border: 0; background: transparent;
+    }
+    .range-box label, .settings-row label, .field-label { color: #26436d; font-size: .98rem; font-weight: 750; }
+    .range-inputs { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; }
+    .range-inputs span { color: #8195b3; font-weight: 700; }
+    .range-inputs input, .settings-row input {
+      width: 100%; min-width: 0; min-height: 54px; padding: 10px 13px; color: #1d3153;
+      border: 1.5px solid #d8e3f2; border-radius: 11px; background: #fff; font-size: 1.15rem; font-weight: 650;
+      box-shadow: inset 0 1px 2px rgba(25, 54, 95, .025);
+    }
+    .settings-row input { text-align: left; }
+    .range-inputs input:focus, .settings-row input:focus, .field-input:focus, .quiz-input-group input:focus { outline: 3px solid color-mix(in srgb, var(--mode) 16%, transparent); border-color: var(--mode); }
+    .action-cluster { min-width: 0; display: flex; align-items: stretch; }
+    .controls { min-width: 0; width: 100%; display: flex; flex-direction: row; flex-wrap: wrap; align-items: stretch; gap: 12px; }
+    .controls.hidden, .hidden { display: none !important; }
+    .btn {
+      min-width: 0; min-height: 62px; flex: 1 1 145px; padding: 12px 14px; display: flex; align-items: center; justify-content: center; gap: 9px;
+      border: 1px solid transparent; border-radius: 13px; font-size: 1rem; font-weight: 800; line-height: 1.2; cursor: pointer;
+      transition: transform .12s ease, filter .12s ease, box-shadow .12s ease;
+    }
+    .btn:active { transform: scale(.985); filter: brightness(.97); }
+    .btn-primary { background: var(--mode); color: #fff; box-shadow: 0 4px 10px color-mix(in srgb, var(--mode) 16%, transparent); }
+    .btn-secondary { color: #2863bd; background: #eaf2ff; border-color: #c8dcff; }
+    .field-group { min-width: 170px; flex: 1 1 220px; display: flex; flex-direction: column; gap: 8px; }
+    .field-input { width: 100%; min-height: 54px; padding: 11px 14px; border: 1.5px solid #d8e3f2; border-radius: 11px; background: white; color: #1d3153; font-size: 1.15rem; font-weight: 650; }
+    .quiz-input-group { min-width: 230px; flex: 1 1 290px; display: flex; gap: 9px; }
+    .quiz-input-group input { min-width: 0; min-height: 62px; flex: 1; padding: 10px 14px; border: 1.5px solid #d8e3f2; border-radius: 12px; text-align: center; background: #fff; font-size: 1.2rem; }
+    .score { width: 100%; flex-basis: 100%; padding: 2px 4px; text-align: center; color: var(--muted); font-size: .95rem; font-weight: 650; }
+    .score strong:first-child { color: #16955f; }
+    .score strong:last-child { color: #df3e5f; }
+
+    /* Number display and progress */
+    .display-card {
+      position: relative; min-height: 210px; padding: 25px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; border: 1.5px solid #dce8f7; border-radius: 17px; background: linear-gradient(145deg, #f8fbff, #fff);
+    }
+    .num-display { color: #143a80; font-size: clamp(2.8rem, 7vw, 4.4rem); font-weight: 900; line-height: 1.08; overflow-wrap: anywhere; }
+    .zh-display { margin-top: 10px; color: #1d3153; font-size: clamp(1.45rem, 3vw, 2rem); font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+    .pinyin-display { margin-top: 5px; color: #128b67; font-size: clamp(1rem, 2vw, 1.24rem); font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+    .feedback { min-height: 1.45em; margin-top: 9px; font-size: 1rem; font-weight: 800; line-height: 1.4; }
+    .feedback.correct { color: #15945e; }
+    .feedback.wrong { color: #df3e5f; }
+    .progress-stats { padding: 0 2px; }
+    .stats-labels { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .stat-card { min-width: 0; min-height: 78px; display: flex; align-items: center; gap: 13px; padding: 12px 16px; border: 1px solid #e0eaf7; border-radius: 13px; background: #fbfdff; }
+    .stat-icon { width: 43px; height: 43px; flex: 0 0 43px; display: grid; place-items: center; border-radius: 50%; color: #fff; background: var(--mode); font-size: 1.25rem; font-weight: 850; }
+    .stat-card small { display: block; color: #7589a9; font-size: .82rem; font-weight: 650; }
+    .stat-card strong { display: block; margin-top: 3px; color: #1a376c; font-size: 1.25rem; font-weight: 850; }
+    .progress-meta { display: flex; justify-content: space-between; gap: 10px; margin: 12px 1px 7px; color: #7085a6; font-size: .88rem; font-weight: 650; }
+    .progress-track { height: 10px; overflow: hidden; border-radius: 99px; background: #e9eef7; }
+    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--mode), color-mix(in srgb, var(--mode) 65%, #fff)); transition: width .18s ease; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 1050px) {
+      body { padding-left: 14px; padding-right: 14px; }
+      .app { gap: 17px; }
+      .mode-menu { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 13px; }
+      .mode-btn, .mode-btn:nth-child(n+5) { grid-column: span 1; min-height: 124px; }
+      .mode-btn .mode-number { width: 48px; height: 48px; font-size: 1.55rem; }
+      .mode-btn .mode-icon { font-size: 2.2rem; }
+      .workspace-toolbar { grid-template-columns: 1fr; }
+      .workspace-header { min-height: 80px; }
+      .workspace-mark { width: 58px; height: 58px; flex-basis: 58px; font-size: 2.2rem; }
+    }
+    @media (max-width: 620px) {
+      body { padding: max(8px, env(safe-area-inset-top)) 10px max(14px, env(safe-area-inset-bottom)); }
+      .app { gap: 13px; }
+      .app-header { min-height: 95px; padding: 12px 4px 19px; flex-direction: column; gap: 3px; }
+      .title-row { gap: 11px; }
+      .brand-logo { width: 57px; height: 57px; flex-basis: 57px; border-width: 2px; font-size: 34px; }
+      h1 { font-size: clamp(1.55rem, 6.7vw, 2.2rem); }
+      .credit { position: static; align-self: flex-end; margin-top: 0; font-size: .48rem; }
+      .mode-menu { gap: 9px; }
+      .mode-btn, .mode-btn:nth-child(n+5) { min-height: 113px; padding: 12px 7px 10px; gap: 9px; border-radius: 14px; }
+      .mode-btn .mode-number { left: 8px; top: 8px; width: 34px; height: 34px; font-size: 1.12rem; }
+      .mode-btn .mode-icon { font-size: 1.85rem; }
+      .mode-btn .mode-label { font-size: .87rem; }
+      .workspace { border-radius: 17px; }
+      .workspace-header { min-height: 67px; gap: 12px; padding: 11px 14px; }
+      .workspace-mark { width: 46px; height: 46px; flex-basis: 46px; font-size: 1.8rem; }
+      .workspace-header h2 { font-size: 1.25rem; }
+      .workspace-body { padding: 12px; gap: 13px; }
+      .settings-cluster { grid-template-columns: minmax(0, 1.4fr) minmax(88px, .7fr); gap: 8px; padding: 10px; }
+      .range-box label, .settings-row label, .field-label { font-size: .83rem; }
+      .range-inputs { gap: 4px; }
+      .range-inputs input, .settings-row input { min-height: 47px; padding: 8px 7px; font-size: 1rem; }
+      .controls { gap: 8px; }
+      .btn { min-height: 52px; flex-basis: 135px; padding: 10px 9px; font-size: .9rem; }
+      .field-group { min-width: 100%; }
+      .field-input { min-height: 49px; font-size: 1.05rem; }
+      .quiz-input-group { min-width: 100%; }
+      .quiz-input-group input { min-height: 52px; font-size: 1.05rem; }
+      .display-card { min-height: 176px; padding: 21px 12px; }
+      .num-display { font-size: clamp(2.5rem, 12vw, 3.4rem); }
+      .zh-display { font-size: 1.45rem; }
+      .pinyin-display { font-size: .98rem; }
+      .stats-labels { gap: 6px; }
+      .stat-card { min-height: 67px; gap: 7px; padding: 8px 7px; }
+      .stat-icon { width: 31px; height: 31px; flex-basis: 31px; font-size: .95rem; }
+      .stat-card small { font-size: .67rem; }
+      .stat-card strong { font-size: .98rem; }
+      .progress-meta { font-size: .76rem; }
+    }
+    @media (max-width: 370px) {
+      .mode-menu { grid-template-columns: 1fr 1fr; }
+      .mode-btn .mode-label { font-size: .79rem; }
+      .settings-cluster { grid-template-columns: 1fr; }
+      .range-inputs input { min-width: 0; }
+      .stats-labels { grid-template-columns: 1fr; }
+      .stat-card { min-height: 54px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <div class="title-row">
+        <div class="brand-logo" role="img" aria-label="Chữ Hán Trung, nghĩa là giữa hoặc trung tâm">中</div>
+        <h1>Luyện Số Tiếng Trung</h1>
+      </div>
+      <p class="credit">CÔNG CỤ ĐƯỢC PHÁT TRIỂN TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</p>
+    </header>
+
+    <nav class="mode-menu" aria-label="7 chế độ luyện số">
+      <button type="button" class="mode-btn mode-single active" id="mode-single"><span class="mode-number">1</span><span class="mode-icon" aria-hidden="true">⌨</span><span class="mode-label">Đọc số bạn nhập</span></button>
+      <button type="button" class="mode-btn mode-asc" id="mode-asc"><span class="mode-number">2</span><span class="mode-icon" aria-hidden="true">↗</span><span class="mode-label">Đọc số tăng dần</span></button>
+      <button type="button" class="mode-btn mode-desc" id="mode-desc"><span class="mode-number">3</span><span class="mode-icon" aria-hidden="true">↘</span><span class="mode-label">Đọc số giảm dần</span></button>
+      <button type="button" class="mode-btn mode-random" id="mode-random"><span class="mode-number">4</span><span class="mode-icon" aria-hidden="true">⚄</span><span class="mode-label">Đọc số ngẫu nhiên</span></button>
+      <button type="button" class="mode-btn mode-quiz" id="mode-quiz"><span class="mode-number">5</span><span class="mode-icon" aria-hidden="true">✓</span><span class="mode-label">Đọc số kiểm tra</span></button>
+      <button type="button" class="mode-btn mode-year" id="mode-year"><span class="mode-number">6</span><span class="mode-icon" aria-hidden="true">▦</span><span class="mode-label">Đọc số năm sinh</span></button>
+      <button type="button" class="mode-btn mode-phone" id="mode-phone"><span class="mode-number">7</span><span class="mode-icon" aria-hidden="true">☎</span><span class="mode-label">Đọc số điện thoại</span></button>
+    </nav>
+
+    <section class="workspace" id="workspace" data-mode="single">
+      <div class="workspace-header">
+        <div class="workspace-mark" id="activeModeMark" aria-hidden="true">⌨</div>
+        <h2 id="activeModeHeading">Đọc số bạn nhập</h2>
+      </div>
+      <div class="workspace-body">
+        <div class="workspace-toolbar">
+          <div class="settings-cluster hidden" id="settingsCluster">
+            <section id="rangeSettings" class="range-box hidden">
+              <label for="minNum">Phạm vi số</label>
+              <div class="range-inputs">
+                <input type="number" id="minNum" value="1" min="0" max="999999" step="1" inputmode="numeric" aria-label="Số bắt đầu">
+                <span>–</span>
+                <input type="number" id="maxNum" value="100" min="0" max="999999" step="1" inputmode="numeric" aria-label="Số kết thúc">
+              </div>
+            </section>
+            <section id="delaySettings" class="settings-row hidden">
+              <label for="delaySec">Thời gian (giây)</label>
+              <input type="number" id="delaySec" value="5" min="0.1" step="0.1" inputmode="decimal" aria-label="Thời gian giữa các số">
+            </section>
+          </div>
+
+          <div class="action-cluster">
+            <!-- 1. Đọc số nhập vào -->
+            <section id="controls-single" class="controls">
+              <div class="field-group">
+                <label class="field-label" for="singleNum">Nhập số bạn muốn nghe</label>
+                <input class="field-input" type="number" id="singleNum" value="1" min="0" max="999999" step="1" inputmode="numeric">
+              </div>
+              <button type="button" class="btn btn-primary" id="btnSpeakSingle">▶ Nghe phát âm</button>
+            </section>
+
+            <!-- 2 và 3. Đọc tăng/giảm dần -->
+            <section id="controls-sequence" class="controls hidden">
+              <button type="button" class="btn btn-primary" id="btnSequenceStart">▶ Bắt đầu đọc tăng dần</button>
+              <button type="button" class="btn btn-secondary" id="btnSequenceStop">Ⅱ Dừng</button>
+            </section>
+
+            <!-- 4. Đọc ngẫu nhiên: rút số không lặp lại trong mỗi lượt -->
+            <section id="controls-random" class="controls hidden">
+              <button type="button" class="btn btn-primary" id="btnRandStart">▶ Bắt đầu</button>
+              <button type="button" class="btn btn-secondary" id="btnRandStop">Ⅱ Tạm dừng</button>
+              <button type="button" class="btn btn-secondary" id="btnRandNext">⤨ Số ngẫu nhiên mới</button>
+            </section>
+
+            <!-- 5. Kiểm tra -->
+            <section id="controls-quiz" class="controls hidden">
+              <button type="button" class="btn btn-primary" id="btnQuizStart">🔊 Phát số ngẫu nhiên</button>
+              <div class="quiz-input-group">
+                <input type="number" id="quizInput" placeholder="Nhập số nghe được…" step="1" inputmode="numeric" aria-label="Nhập số nghe được">
+                <button type="button" class="btn btn-primary" id="btnQuizSubmit">Gửi</button>
+              </div>
+              <div class="score">Đúng: <strong id="scoreCorrect">0</strong> &nbsp;|&nbsp; Sai: <strong id="scoreWrong">0</strong></div>
+            </section>
+
+            <!-- 6. Đọc năm sinh -->
+            <section id="controls-year" class="controls hidden">
+              <div class="field-group">
+                <label class="field-label" for="birthYear">Nhập năm sinh</label>
+                <input class="field-input" type="text" id="birthYear" value="1990" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="off">
+              </div>
+              <button type="button" class="btn btn-primary" id="btnSpeakYear">▶ Nghe năm sinh</button>
+            </section>
+
+            <!-- 7. Đọc số điện thoại -->
+            <section id="controls-phone" class="controls hidden">
+              <div class="field-group">
+                <label class="field-label" for="phoneNumber">Nhập số điện thoại</label>
+                <input class="field-input" type="tel" id="phoneNumber" value="0912345678" maxlength="20" inputmode="numeric" autocomplete="tel" placeholder="Nhập số điện thoại">
+              </div>
+              <button type="button" class="btn btn-primary" id="btnSpeakPhone">▶ Nghe số điện thoại</button>
+            </section>
+          </div>
+        </div>
+
+        <div id="voiceStatus" class="sr-only" role="status" aria-live="polite"></div>
+
+        <section class="display-card" aria-live="polite">
+          <div id="displayNum" class="num-display">--</div>
+          <div id="displayZh" class="zh-display"></div>
+          <div id="displayPinyin" class="pinyin-display"></div>
+          <div id="feedbackText" class="feedback"></div>
+        </section>
+
+        <section id="progressStats" class="progress-stats hidden" aria-live="polite">
+          <div class="stats-labels">
+            <div class="stat-card"><span class="stat-icon">⚄</span><div><small>Đã đọc</small><strong id="statsRead">0</strong></div></div>
+            <div class="stat-card"><span class="stat-icon">▤</span><div><small>Tổng số trong phạm vi</small><strong id="statsTotal">100</strong></div></div>
+            <div class="stat-card"><span class="stat-icon">✓</span><div><small>Còn lại</small><strong id="statsRemaining">100</strong></div></div>
+          </div>
+          <div class="progress-meta"><span id="progressCaption">Tiến độ</span><span id="progressStatus">Chưa bắt đầu</span></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (() => {
+    'use strict';
+
+    const $ = (id) => document.getElementById(id);
+    const zhDigits = ['零','一','二','三','四','五','六','七','八','九'];
+    const pyDigits = ['líng','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'];
+    const sectionUnits = ['', '十', '百', '千'];
+    const sectionPinyin = ['', 'shí', 'bǎi', 'qiān'];
+    const allModes = ['single', 'asc', 'desc', 'random', 'quiz', 'year', 'phone'];
+
+    let currentMode = 'single';
+    let isRunning = false;
+    let timer = null;
+    let currentNumber = null;
+    let sequenceCurrent = 1;
+    let score = { correct: 0, wrong: 0 };
+    let chineseVoice = null;
+    let runToken = 0;
+
+    // Trạng thái riêng của chế độ 5: rút số không lặp trong một lượt kiểm tra.
+    let quizCurrentNumber = null;
+    let quizAnswered = false;
+    let quizSessionInitialized = false;
+    let quizDeckMin = null;
+    let quizDeckMax = null;
+    let quizDeckRemaining = 0;
+    let quizAvailableCount = 0;
+    let quizSwapMap = new Map();
+    let quizDrawnFlags = new Uint8Array(1000000);
+    let quizAdvanceTimer = null;
+
+    function setVoiceStatus(message, warning = false) {
+      const el = $('voiceStatus');
+      el.textContent = message;
+      el.classList.toggle('warning', warning);
+    }
+
+    function loadChineseVoice() {
+      if (!('speechSynthesis' in window)) {
+        chineseVoice = null;
+        setVoiceStatus('Trình duyệt này không hỗ trợ phát âm. Hãy mở bằng Safari hoặc Chrome mới nhất.', true);
+        return null;
+      }
+      const voices = window.speechSynthesis.getVoices() || [];
+      const chineseVoices = voices.filter(v => /^zh([_-]|$)/i.test(v.lang || ''));
+      chineseVoice = chineseVoices.find(v => /^zh[-_]CN$/i.test(v.lang || ''))
+        || chineseVoices.find(v => /^zh[-_]Hans([-_]CN)?$/i.test(v.lang || ''))
+        || chineseVoices.find(v => /^zh[-_]TW$/i.test(v.lang || ''))
+        || chineseVoices.find(v => /^zh([-_]|$)/i.test(v.lang || ''))
+        || null;
+
+      if (chineseVoice) {
+        setVoiceStatus('Đã tìm thấy giọng tiếng Trung: ' + chineseVoice.name + '. Giọng nam hoặc nữ tùy thiết bị.');
+      } else if (voices.length > 0) {
+        setVoiceStatus('Thiết bị chưa có giọng đọc tiếng Trung. Hãy cài thêm giọng Chinese / 中文 trong cài đặt chuyển văn bản thành giọng nói.', true);
+      } else {
+        setVoiceStatus('Đang chờ Safari/Chrome tải danh sách giọng tiếng Trung. Chạm nút phát âm sau khi trang tải xong.', true);
+      }
+      return chineseVoice;
+    }
+
+    if ('speechSynthesis' in window) {
+      loadChineseVoice();
+      window.speechSynthesis.addEventListener?.('voiceschanged', loadChineseVoice);
+      window.speechSynthesis.onvoiceschanged = loadChineseVoice;
+      setTimeout(loadChineseVoice, 500);
+      setTimeout(loadChineseVoice, 1500);
+    }
+
+    function sectionToChinese(section, omitLeadingOneForTen = true) {
+      if (section === 0) return { zh: '', py: '' };
+      const digits = String(section).padStart(4, '0').split('').map(Number);
+      let zh = '';
+      let py = '';
+      let zeroPending = false;
+      let started = false;
+
+      for (let i = 0; i < 4; i++) {
+        const digit = digits[i];
+        const unitIndex = 3 - i;
+        if (digit === 0) {
+          if (started && digits.slice(i + 1).some(n => n !== 0)) zeroPending = true;
+          continue;
+        }
+        if (zeroPending) {
+          zh += '零';
+          py += (py ? ' ' : '') + 'líng';
+          zeroPending = false;
+        }
+        if (!(omitLeadingOneForTen && unitIndex === 1 && digit === 1 && !started)) {
+          zh += zhDigits[digit];
+          py += (py ? ' ' : '') + pyDigits[digit];
+        }
+        if (unitIndex > 0) {
+          zh += sectionUnits[unitIndex];
+          py += (py ? ' ' : '') + sectionPinyin[unitIndex];
+        }
+        started = true;
+      }
+      return { zh, py };
+    }
+
+    function numberToChinese(value) {
+      const num = Math.trunc(Number(value));
+      if (!Number.isFinite(num) || num < 0 || num > 999999) return { zh: String(value), pinyin: '' };
+      if (num === 0) return { zh: '零', pinyin: 'líng' };
+
+      const wan = Math.floor(num / 10000);
+      const rest = num % 10000;
+      const high = sectionToChinese(wan);
+      const low = sectionToChinese(rest, wan === 0);
+      let zh = '';
+      let pinyin = '';
+
+      if (wan > 0) {
+        zh = high.zh + '万';
+        pinyin = high.py + ' wàn';
+        if (rest > 0) {
+          if (rest < 1000) { zh += '零'; pinyin += ' líng'; }
+          zh += low.zh;
+          pinyin += ' ' + low.py;
+        }
+      } else {
+        zh = low.zh;
+        pinyin = low.py;
+      }
+      return { zh, pinyin };
+    }
+
+    function digitSequenceToChinese(digits, addYearWord = false, useYaoForOne = false) {
+      // Chỉ chế độ số điện thoại bật useYaoForOne để đọc 1 thành 幺 (yāo).
+      // Năm sinh mặc định vẫn đọc 1 là 一 (yī).
+      const chars = digits.split('').map(d => {
+        if (useYaoForOne && d === '1') return '幺';
+        return zhDigits[Number(d)];
+      });
+      const pinyin = digits.split('').map(d => {
+        if (useYaoForOne && d === '1') return 'yāo';
+        return pyDigits[Number(d)];
+      }).join(' ');
+      return {
+        zh: chars.join('') + (addYearWord ? '年' : ''),
+        pinyin: pinyin + (addYearWord ? ' nián' : ''),
+        spoken: chars.join('，') + (addYearWord ? '年' : '')
+      };
+    }
+
+    function getRange() {
+      let min = Number.parseInt($('minNum').value, 10);
+      let max = Number.parseInt($('maxNum').value, 10);
+      if (!Number.isFinite(min)) min = 1;
+      if (!Number.isFinite(max)) max = 100;
+      min = Math.max(0, Math.min(999999, min));
+      max = Math.max(0, Math.min(999999, max));
+      // Không phụ thuộc thứ tự nhập: 75–30 cũng được hiểu là 30–75.
+      // Giữ nguyên giá trị hiển thị người dùng đã nhập; chỉ chuẩn hóa khi xử lý.
+      if (min > max) [min, max] = [max, min];
+      return { min, max };
+    }
+
+    function getDelay() {
+      const raw = Number($('delaySec').value);
+      // Mặc định 5 giây; cho phép người dùng tự chọn thời gian nghỉ.
+      // Giới hạn kỹ thuật theo setTimeout của trình duyệt để tránh tràn số.
+      const maxSeconds = 2147483.647;
+      const sec = Number.isFinite(raw) ? Math.max(0.1, Math.min(maxSeconds, raw)) : 5;
+      $('delaySec').value = String(sec);
+      return Math.round(sec * 1000);
+    }
+
+    function setDisplay(original, zh, pinyin, hideAnswer = false) {
+      $('feedbackText').textContent = '';
+      $('feedbackText').className = 'feedback';
+      $('displayNum').textContent = hideAnswer ? '???' : String(original);
+      $('displayZh').textContent = hideAnswer ? '🔊 正在听…' : zh;
+      $('displayPinyin').textContent = hideAnswer ? '' : pinyin;
+    }
+
+    function updateNumberDisplay(num, hideAnswer = false) {
+      const data = numberToChinese(num);
+      setDisplay(num, data.zh, data.pinyin, hideAnswer);
+    }
+
+    function cancelSpeechOnly() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (_) { /* Giữ giao diện ổn định. */ }
+      }
+    }
+
+    function speakChineseText(textToSpeak, callback = null, token = runToken) {
+      if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+        setVoiceStatus('Trình duyệt không hỗ trợ đọc văn bản. Hãy mở bằng Safari hoặc Chrome mới nhất.', true);
+        if (callback) callback(false);
+        return;
+      }
+
+      loadChineseVoice();
+      if (!chineseVoice) {
+        setVoiceStatus('Không phát âm để tránh đọc sai ngôn ngữ: thiết bị chưa cung cấp giọng tiếng Trung. Hãy cài giọng Chinese / 中文.', true);
+        if (callback) callback(false);
+        return;
+      }
+
+      cancelSpeechOnly();
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'zh-CN';
+      utterance.voice = chineseVoice;
+      utterance.rate = 0.82;
+      utterance.pitch = 1;
+      let finished = false;
+      let watchdog = null;
+
+      const finish = (ok) => {
+        if (finished) return;
+        finished = true;
+        if (watchdog) clearTimeout(watchdog);
+        if (token === runToken && callback) callback(ok);
+      };
+      utterance.onend = () => finish(true);
+      utterance.onerror = (event) => {
+        if (token === runToken && event && event.error !== 'canceled' && event.error !== 'interrupted') {
+          setVoiceStatus('Không phát được âm thanh. Hãy kiểm tra âm lượng và giọng Chinese / 中文 của thiết bị.', true);
+        }
+        finish(false);
+      };
+
+      watchdog = setTimeout(() => finish(true), Math.max(5000, textToSpeak.length * 900));
+      try {
+        window.speechSynthesis.speak(utterance);
+      } catch (error) {
+        finish(false);
+        setVoiceStatus('Trình duyệt không thể khởi động giọng đọc tiếng Trung. Hãy mở trực tiếp bằng Safari/Chrome.', true);
+      }
+    }
+
+    function stopAll() {
+      isRunning = false;
+      runToken++;
+      if (timer) clearTimeout(timer);
+      timer = null;
+      if (quizAdvanceTimer) clearTimeout(quizAdvanceTimer);
+      quizAdvanceTimer = null;
+      cancelSpeechOnly();
+      $('btnSequenceStart').textContent = currentMode === 'desc' ? '▶ Bắt đầu đọc giảm dần' : '▶ Bắt đầu đọc tăng dần';
+      $('btnRandStart').textContent = '▶ Tự động đọc số';
+    }
+
+    function updateProgressStats() {
+      const stats = $('progressStats');
+      if (!stats) return;
+      const show = currentMode === 'random' || currentMode === 'quiz';
+      stats.classList.toggle('hidden', !show);
+      if (!show) return;
+
+      const { min, max } = getRange();
+      const total = max - min + 1;
+      let remaining = total;
+
+      if (currentMode === 'random') {
+        if (randomDeckInitialized) {
+          ensureRandomDeck();
+          remaining = randomAvailableCount;
+        }
+      } else {
+        if (quizSessionInitialized) {
+          ensureQuizDeck();
+          remaining = quizAvailableCount;
+        }
+      }
+
+      const read = Math.max(0, total - remaining);
+      $('statsRead').textContent = String(read);
+      $('statsTotal').textContent = String(total);
+      $('statsRemaining').textContent = String(remaining);
+      $('progressFill').style.width = (total ? (read / total) * 100 : 0) + '%';
+      $('progressStatus').textContent = remaining === 0 ? 'Đã hoàn thành' : (read === 0 ? 'Chưa bắt đầu' : 'Đang thực hiện');
+    }
+
+    function switchMode(mode) {
+      stopAll();
+      currentMode = mode;
+      allModes.forEach(item => $('mode-' + item).classList.toggle('active', item === mode));
+      const modeInfo = {
+        single: ['⌨', 'Đọc số bạn nhập'],
+        asc: ['↗', 'Đọc số tăng dần'],
+        desc: ['↘', 'Đọc số giảm dần'],
+        random: ['⚄', 'Đọc số ngẫu nhiên'],
+        quiz: ['✓', 'Đọc số kiểm tra'],
+        year: ['▦', 'Đọc số năm sinh'],
+        phone: ['☎', 'Đọc số điện thoại']
+      }[mode] || ['中', 'Luyện số'];
+      $('activeModeMark').textContent = modeInfo[0];
+      $('activeModeHeading').textContent = modeInfo[1];
+      $('workspace').dataset.mode = mode;
+      $('rangeSettings').classList.toggle('hidden', !['asc','desc','random','quiz'].includes(mode));
+      $('delaySettings').classList.toggle('hidden', !['asc','desc','random','quiz'].includes(mode));
+      $('settingsCluster').classList.toggle('hidden', !['asc','desc','random','quiz'].includes(mode));
+      $('controls-single').classList.toggle('hidden', mode !== 'single');
+      $('controls-sequence').classList.toggle('hidden', !['asc','desc'].includes(mode));
+      $('controls-random').classList.toggle('hidden', mode !== 'random');
+      $('controls-quiz').classList.toggle('hidden', mode !== 'quiz');
+      $('controls-year').classList.toggle('hidden', mode !== 'year');
+      $('controls-phone').classList.toggle('hidden', mode !== 'phone');
+      $('btnSequenceStart').textContent = mode === 'desc' ? '▶ Bắt đầu đọc giảm dần' : '▶ Bắt đầu đọc tăng dần';
+      $('displayNum').textContent = '--';
+      $('displayZh').textContent = '';
+      $('displayPinyin').textContent = '';
+      $('feedbackText').textContent = '';
+      currentNumber = null;
+      updateProgressStats();
+    }
+
+    function speakSingleNumber() {
+      stopAll();
+      const raw = $('singleNum').value.trim();
+      const num = Number(raw);
+      if (raw === '' || !Number.isInteger(num) || num < 0 || num > 999999) {
+        $('feedbackText').textContent = 'Vui lòng nhập số nguyên từ 0 đến 999.999.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+      const data = numberToChinese(num);
+      setDisplay(num, data.zh, data.pinyin);
+      speakChineseText(data.zh, null, runToken);
+    }
+
+    function startSequence() {
+      if (isRunning) { stopAll(); return; }
+      const { min, max } = getRange();
+      const descending = currentMode === 'desc';
+      sequenceCurrent = descending ? max : min;
+      isRunning = true;
+      const token = ++runToken;
+      $('btnSequenceStart').textContent = 'Tạm dừng';
+
+      const step = () => {
+        if (!isRunning || token !== runToken) return;
+        const inRange = descending ? sequenceCurrent >= min : sequenceCurrent <= max;
+        if (!inRange) { stopAll(); return; }
+        const number = sequenceCurrent;
+        updateNumberDisplay(number);
+        speakChineseText(numberToChinese(number).zh, (ok) => {
+          if (!isRunning || token !== runToken) return;
+          if (!ok) { stopAll(); return; }
+          sequenceCurrent += descending ? -1 : 1;
+          const hasNext = descending ? sequenceCurrent >= min : sequenceCurrent <= max;
+          if (hasNext) timer = setTimeout(step, getDelay());
+          else stopAll();
+        }, token);
+      };
+      step();
+    }
+
+    // Bộ rút số không hoàn lại dành riêng cho chế độ 4 (lô tô).
+    // Dùng Fisher–Yates dạng lười để không phải tạo mảng rất lớn trên điện thoại.
+    let randomDeckInitialized = false;
+    let randomDeckMin = null;
+    let randomDeckMax = null;
+    let randomRemaining = 0;
+    let randomAvailableCount = 0;
+    let randomSwapMap = new Map();
+    // Theo dõi những số đã xuất hiện trong lượt hiện tại. Dùng 1 byte cho
+    // mỗi số từ 0 đến 999.999 để không bị lặp kể cả khi người dùng đổi phạm vi
+    // giữa chừng; bộ nhớ chỉ khoảng 1 MB trên điện thoại.
+    let randomDrawnFlags = null;
+
+    function resetRandomDeck(clearHistory = false) {
+      const { min, max } = getRange();
+      randomDeckMin = min;
+      randomDeckMax = max;
+      randomRemaining = max - min + 1;
+      randomSwapMap = new Map();
+      if (clearHistory || !randomDrawnFlags) randomDrawnFlags = new Uint8Array(1000000);
+      randomAvailableCount = 0;
+      for (let number = min; number <= max; number++) {
+        if (!randomDrawnFlags[number]) randomAvailableCount++;
+      }
+      randomDeckInitialized = true;
+      updateProgressStats();
+    }
+
+    function ensureRandomDeck() {
+      const { min, max } = getRange();
+      if (!randomDeckInitialized) {
+        resetRandomDeck(true);
+      } else if (min !== randomDeckMin || max !== randomDeckMax) {
+        // Đổi phạm vi sẽ tạo danh sách ứng viên mới, nhưng vẫn giữ dấu các
+        // số đã đọc để không có số nào lặp lại trong cùng lượt chơi.
+        resetRandomDeck(false);
+      }
+    }
+
+    function drawUniqueRandomNumber() {
+      ensureRandomDeck();
+      // Mỗi ứng viên trong phạm vi hiện tại chỉ được rút khỏi bộ một lần.
+      // Nếu đã xuất hiện ở phạm vi trước đó của cùng lượt, bỏ qua ứng viên đó.
+      while (randomRemaining > 0) {
+        const pickedIndex = Math.floor(Math.random() * randomRemaining);
+        const lastIndex = randomRemaining - 1;
+        const pickedValue = randomSwapMap.has(pickedIndex)
+          ? randomSwapMap.get(pickedIndex) : pickedIndex;
+        const lastValue = randomSwapMap.has(lastIndex)
+          ? randomSwapMap.get(lastIndex) : lastIndex;
+
+        if (pickedIndex !== lastIndex) randomSwapMap.set(pickedIndex, lastValue);
+        randomSwapMap.delete(lastIndex);
+        randomRemaining--;
+
+        const number = randomDeckMin + pickedValue;
+        if (randomDrawnFlags[number]) continue;
+        randomDrawnFlags[number] = 1;
+        randomAvailableCount--;
+        updateProgressStats();
+        return number;
+      }
+      return null;
+    }
+
+    function showRandomFinished() {
+      $('feedbackText').textContent = 'Đã đọc hết các số trong phạm vi.';
+      $('feedbackText').className = 'feedback correct';
+      updateProgressStats();
+    }
+
+    function showRandomNumber(hideAnswer, auto = false, token = runToken) {
+      const nextNumber = drawUniqueRandomNumber();
+      if (nextNumber === null) {
+        stopAll();
+        showRandomFinished();
+        return;
+      }
+
+      currentNumber = nextNumber;
+      updateNumberDisplay(currentNumber, hideAnswer);
+      speakChineseText(numberToChinese(currentNumber).zh, (ok) => {
+        if (token !== runToken) return;
+        if (auto && isRunning) {
+          if (!ok) { stopAll(); return; }
+          updateNumberDisplay(currentNumber, false);
+        }
+
+        // Khi đã đọc hết ứng viên (kể cả các số đã được đánh dấu từ một
+        // phạm vi trước trong cùng lượt), dừng hẳn và không tự quay vòng.
+        if (randomAvailableCount === 0) {
+          if (auto && isRunning) stopAll();
+          showRandomFinished();
+          return;
+        }
+
+        if (auto && isRunning) {
+          timer = setTimeout(() => {
+            if (isRunning && token === runToken) showRandomNumber(true, true, token);
+          }, getDelay());
+        }
+      }, token);
+    }
+
+    function startRandom() {
+      if (isRunning) { stopAll(); return; }
+      ensureRandomDeck();
+      // Không tự chạy vòng mới khi hết số. Chỉ khi người dùng chủ động bấm
+      // Start lần nữa sau khi đã kết thúc thì mới tạo một lượt mới.
+      if (randomAvailableCount <= 0) {
+        // Một lượt mới chỉ bắt đầu khi người dùng chủ động nhấn Start.
+        resetRandomDeck(true);
+      }
+      isRunning = true;
+      const token = ++runToken;
+      $('btnRandStart').textContent = 'Tạm dừng';
+      showRandomNumber(true, true, token);
+    }
+
+    function nextRandomManual() {
+      stopAll();
+      ensureRandomDeck();
+      showRandomNumber(false, false, runToken);
+    }
+
+    // Bộ rút số không hoàn lại riêng cho chế độ 5.
+    // Dùng Fisher–Yates dạng lười để không cần tạo mảng tối đa 1.000.000 phần tử.
+    function resetQuizDeck(clearHistory = false) {
+      const { min, max } = getRange();
+      quizDeckMin = min;
+      quizDeckMax = max;
+      quizDeckRemaining = max - min + 1;
+      quizSwapMap = new Map();
+      if (clearHistory) quizDrawnFlags = new Uint8Array(1000000);
+      quizAvailableCount = 0;
+      for (let number = min; number <= max; number++) {
+        if (!quizDrawnFlags[number]) quizAvailableCount++;
+      }
+      quizSessionInitialized = true;
+      updateProgressStats();
+    }
+
+    function ensureQuizDeck() {
+      const { min, max } = getRange();
+      if (!quizSessionInitialized) {
+        resetQuizDeck(true);
+      } else if (min !== quizDeckMin || max !== quizDeckMax) {
+        // Khi đổi phạm vi, số đã hỏi trong lượt này vẫn được ghi nhớ.
+        resetQuizDeck(false);
+      }
+    }
+
+    function drawUniqueQuizNumber() {
+      ensureQuizDeck();
+      if (quizAvailableCount <= 0) return null;
+
+      while (quizDeckRemaining > 0) {
+        const pickedIndex = Math.floor(Math.random() * quizDeckRemaining);
+        const lastIndex = quizDeckRemaining - 1;
+        const pickedValue = quizSwapMap.has(pickedIndex)
+          ? quizSwapMap.get(pickedIndex) : pickedIndex;
+        const lastValue = quizSwapMap.has(lastIndex)
+          ? quizSwapMap.get(lastIndex) : lastIndex;
+
+        if (pickedIndex !== lastIndex) quizSwapMap.set(pickedIndex, lastValue);
+        quizSwapMap.delete(lastIndex);
+        quizDeckRemaining--;
+
+        const number = quizDeckMin + pickedValue;
+        if (quizDrawnFlags[number]) continue;
+        quizDrawnFlags[number] = 1;
+        quizAvailableCount--;
+        updateProgressStats();
+        return number;
+      }
+      return null;
+    }
+
+    function showQuizFinished() {
+      quizCurrentNumber = null;
+      quizAnswered = false;
+      $('btnQuizStart').textContent = '▶ Bắt đầu lượt mới';
+      $('feedbackText').textContent = 'Đã kiểm tra hết các số trong phạm vi.';
+      $('feedbackText').className = 'feedback correct';
+      updateProgressStats();
+    }
+
+    function issueQuizQuestion() {
+      const nextNumber = drawUniqueQuizNumber();
+      if (nextNumber === null) {
+        showQuizFinished();
+        return;
+      }
+
+      quizCurrentNumber = nextNumber;
+      quizAnswered = false;
+      currentNumber = nextNumber;
+      $('btnQuizStart').textContent = '🔊 Phát lại số hiện tại';
+      $('quizInput').value = '';
+      updateNumberDisplay(nextNumber, true);
+      const token = ++runToken;
+      speakChineseText(numberToChinese(nextNumber).zh, null, token);
+    }
+
+    function startQuizNext() {
+      // Nếu câu hiện tại chưa trả lời, nút chỉ phát lại câu đó, không rút số mới.
+      if (quizCurrentNumber !== null && !quizAnswered) {
+        const token = ++runToken;
+        speakChineseText(numberToChinese(quizCurrentNumber).zh, null, token);
+        return;
+      }
+
+      // Nếu người dùng đã trả lời và đang chờ tự chuyển câu, không cho bấm
+      // để bỏ qua thời gian nghỉ hoặc tạo thêm câu hỏi.
+      if (quizCurrentNumber !== null && quizAnswered && quizAdvanceTimer) return;
+
+      // Chỉ bắt đầu lượt mới khi người dùng chủ động bấm nút sau khi đã hết số.
+      if (quizSessionInitialized && quizAvailableCount <= 0) {
+        resetQuizDeck(true);
+      } else {
+        ensureQuizDeck();
+      }
+      issueQuizQuestion();
+    }
+
+    function advanceQuizAfterDelay() {
+      quizAdvanceTimer = null;
+      if (currentMode !== 'quiz') return;
+      if (!quizAnswered) return;
+      // Nếu người dùng đổi phạm vi trong lúc chờ, cập nhật tập số còn lại
+      // nhưng vẫn loại trừ mọi số đã được hỏi trong lượt hiện tại.
+      ensureQuizDeck();
+
+      if (quizAvailableCount <= 0) {
+        showQuizFinished();
+        return;
+      }
+      issueQuizQuestion();
+    }
+
+    function checkQuizAnswer() {
+      if (quizCurrentNumber === null || quizAnswered) return;
+      const raw = $('quizInput').value.trim();
+      if (raw === '') {
+        $('feedbackText').textContent = 'Vui lòng nhập số bạn nghe được.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+
+      const val = Number(raw);
+      const answer = quizCurrentNumber;
+      quizAnswered = true;
+      currentNumber = null;
+      updateNumberDisplay(answer, false);
+      if (Number.isInteger(val) && val === answer) {
+        $('feedbackText').textContent = '✓ Chính xác!';
+        $('feedbackText').className = 'feedback correct';
+        score.correct++;
+      } else {
+        $('feedbackText').textContent = '✗ Sai rồi! Đáp án đúng: ' + answer;
+        $('feedbackText').className = 'feedback wrong';
+        score.wrong++;
+      }
+      $('scoreCorrect').textContent = score.correct;
+      $('scoreWrong').textContent = score.wrong;
+
+      // Sau khi chấm điểm, chờ đúng khoảng giây người dùng cài rồi mới hỏi số mới.
+      // Câu cuối cùng cũng chờ đủ thời gian để người dùng xem kết quả, sau đó dừng.
+      if (quizAdvanceTimer) clearTimeout(quizAdvanceTimer);
+      quizAdvanceTimer = setTimeout(advanceQuizAfterDelay, getDelay());
+    }
+
+    function speakBirthYear() {
+      stopAll();
+      const year = $('birthYear').value.trim();
+      if (!/^\d{4}$/.test(year)) {
+        $('feedbackText').textContent = 'Vui lòng nhập năm sinh gồm đúng 4 chữ số.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+      const data = digitSequenceToChinese(year, true);
+      setDisplay(year, data.zh, data.pinyin);
+      speakChineseText(data.spoken, null, runToken);
+    }
+
+    function speakPhoneNumber() {
+      stopAll();
+      const phone = $('phoneNumber').value.replace(/\D/g, '');
+      $('phoneNumber').value = phone;
+      if (!/^\d{3,20}$/.test(phone)) {
+        $('feedbackText').textContent = 'Vui lòng nhập số điện thoại gồm 3–20 chữ số.';
+        $('feedbackText').className = 'feedback wrong';
+        return;
+      }
+      const data = digitSequenceToChinese(phone, false, true);
+      setDisplay(phone, data.zh, data.pinyin);
+      speakChineseText(data.spoken, null, runToken);
+    }
+
+    // Đổi chế độ bằng cách chạm vào một trong bảy mục.
+    allModes.forEach(mode => $('mode-' + mode).addEventListener('click', () => switchMode(mode)));
+    $('btnSpeakSingle').addEventListener('click', speakSingleNumber);
+    $('singleNum').addEventListener('keydown', event => { if (event.key === 'Enter') speakSingleNumber(); });
+    $('btnSequenceStart').addEventListener('click', startSequence);
+    $('btnSequenceStop').addEventListener('click', stopAll);
+    $('btnRandStart').addEventListener('click', startRandom);
+    $('btnRandStop').addEventListener('click', stopAll);
+    $('btnRandNext').addEventListener('click', nextRandomManual);
+    $('btnQuizStart').addEventListener('click', startQuizNext);
+    $('btnQuizSubmit').addEventListener('click', checkQuizAnswer);
+    $('quizInput').addEventListener('keydown', event => { if (event.key === 'Enter') checkQuizAnswer(); });
+    ['minNum', 'maxNum'].forEach(id => $(id).addEventListener('change', () => {
+      if (currentMode === 'random' && randomDeckInitialized) ensureRandomDeck();
+      if (currentMode === 'quiz' && quizSessionInitialized) ensureQuizDeck();
+      updateProgressStats();
+    }));
+    $('btnSpeakYear').addEventListener('click', speakBirthYear);
+    $('birthYear').addEventListener('keydown', event => { if (event.key === 'Enter') speakBirthYear(); });
+    $('birthYear').addEventListener('input', () => { $('birthYear').value = $('birthYear').value.replace(/\D/g, '').slice(0, 4); });
+    $('btnSpeakPhone').addEventListener('click', speakPhoneNumber);
+    $('phoneNumber').addEventListener('input', () => { $('phoneNumber').value = $('phoneNumber').value.replace(/\D/g, '').slice(0, 20); });
+    $('phoneNumber').addEventListener('keydown', event => { if (event.key === 'Enter') speakPhoneNumber(); });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && isRunning) stopAll();
+    });
+
+    // Chế độ mặc định: đọc một số do người học nhập.
+    switchMode('single');
+  })();
+  
+  </script>
+
+<script>
+(function(){
+ const sendHeight=function(){
+  try{parent.postMessage({type:'bvt-number-app-resize',height:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body?document.body.scrollHeight:0))},'*');}catch(_){}
+ };
+ if(window.ResizeObserver){const observer=new ResizeObserver(sendHeight);observer.observe(document.documentElement);if(document.body)observer.observe(document.body);}
+ window.addEventListener('load',sendHeight);
+ window.addEventListener('resize',sendHeight);
+ document.addEventListener('click',function(){setTimeout(sendHeight,120);},true);
+ window.addEventListener('message',function(event){if(event.data&&event.data.type==='bvt-number-app-measure')sendHeight();});
+ setTimeout(sendHeight,200);setTimeout(sendHeight,900);
+})();
+</script>
+</body>
+</html>

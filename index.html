@@ -222,12 +222,12 @@
   }
 }
 
-/* v42: vertical left navigation with a compact mobile drawer. */
-.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;max-width:1180px;margin:0 auto;align-items:start;min-height:calc(100vh - 76px)}
-.app-shell .tabs{position:sticky;top:calc(76px + env(safe-area-inset-top));height:calc(100vh - 76px - env(safe-area-inset-top));overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:5px;padding:12px 10px;background:#fff;border-right:1px solid var(--line);border-bottom:0;box-shadow:2px 0 8px #00000005}
+/* v42: aligned left navigation + content column; compact drawer on mobile. */
+.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);grid-template-areas:"nav content";gap:0;max-width:1180px;margin:0 auto;align-items:start;min-height:calc(100vh - 20px)}
+.app-shell #main-tabs{grid-area:nav;align-self:start;position:sticky;top:calc(76px + 12px);width:220px;height:calc(100vh - 100px);max-height:calc(100vh - 100px);overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:5px;padding:12px 10px;background:#fff;border-right:1px solid var(--line);border-bottom:0;box-shadow:2px 0 8px #00000005}
 .app-shell .tab{flex:0 0 auto;width:100%;max-width:none;min-width:0;min-height:44px;text-align:left;display:flex;align-items:center;gap:9px;padding:9px 10px;font-size:11px;line-height:1.35;border-radius:10px}
 .app-shell .tab span{display:inline-flex;flex:0 0 23px;width:23px;align-items:center;justify-content:center;font-size:16px;line-height:1.2}
-.app-shell main{width:100%;max-width:none;min-width:0;padding:18px 18px 28px}
+.app-shell>main{grid-area:content;grid-column:2;grid-row:1;align-self:start;width:100%;max-width:none;min-width:0;min-height:calc(100vh - 20px);margin:0;padding:12px 18px 28px}
 .menu-toggle{display:none}
 .voice-translate-card{max-width:760px;margin:0 auto 14px}
 .voice-language-row{display:grid;gap:5px;margin:12px 0}
@@ -236,15 +236,19 @@
 .voice-translate-mic.recording{background:#991b1b;animation:voicePulse 1.5s infinite}
 .voice-result-block{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:13px;background:#fbfcfd}
 .voice-result-text{min-height:58px;margin-top:8px;padding:11px;border-radius:10px;background:#fff;border:1px solid #e7eaf0;font-size:16px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap}
+.number-practice-host{max-width:100%;padding:12px;}
+.number-practice-frame{display:block;width:100%;height:1100px;min-height:700px;border:0;border-radius:12px;background:#f5f8fe;overflow:hidden;}
 @keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 #b91c1c22}50%{box-shadow:0 0 0 8px #b91c1c12}}
 @media(max-width:700px){
  body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
  .app-shell{display:block;min-height:0}
  .menu-toggle{display:block;width:calc(100% - 20px);margin:9px 10px 0;min-height:40px;border:1px solid #e6caca;border-radius:10px;background:#fff;color:#991b1b;font-size:12px;font-weight:800;text-align:left;padding:9px 12px}
- .app-shell .tabs{display:none;position:relative;top:auto;height:auto;max-height:55vh;overflow-y:auto;width:auto;margin:7px 10px 0;padding:8px;gap:4px;border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 20px #00000010}
- .app-shell .tabs.open{display:flex}
+ .app-shell #main-tabs{display:none;position:relative;top:auto;height:auto;max-height:55vh;overflow-y:auto;width:auto;margin:7px 10px 0;padding:8px;gap:4px;border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 20px #00000010}
+ .app-shell #main-tabs.open{display:flex}
  .app-shell .tab{width:100%;min-height:40px;flex:0 0 auto;max-width:none;font-size:11px;padding:8px 9px}
- .app-shell main{padding:12px 10px 24px}
+ .app-shell>main{min-height:0;padding:12px 10px 24px;margin:0}
+ .number-practice-host{padding:9px;}
+ .number-practice-frame{height:1150px;min-height:700px;}
 }
 
 </style>
@@ -254,7 +258,7 @@
 <div class="app-shell">
 <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
 <nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
-<button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN</button>
+<button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN TIẾNG TRUNG</button>
 <button class="tab" data-tab="ocr" type="button"><span>🖼️</span>NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</button>
 <button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT–TRUNG</button>
 <button class="tab" data-tab="voice-translate" type="button"><span aria-hidden="true">🎙️</span>DỊCH NHANH BẰNG GIỌNG NÓI</button>
@@ -262,7 +266,8 @@
 <button class="tab" data-tab="zh-vi" type="button"><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
 <button class="tab" data-tab="write" type="button"><span>✍️</span>LUYỆN VIẾT CHỮ HÁN</button>
 <button class="tab" data-tab="read" type="button"><span>🔊</span>LUYỆN ĐỌC CHỮ HÁN</button>
-<button class="tab" data-tab="combine" type="button"><span>🧩</span>GHÉP CÂU</button>
+<button class="tab" data-tab="combine" type="button"><span>🧩</span>GHÉP CÂU LUYỆN PHẢN XẠ</button>
+<button class="tab" data-tab="number" type="button"><span>🔢</span>LUYỆN SỐ TIẾNG TRUNG</button>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
@@ -410,12 +415,12 @@
    </div>
    <div id="reflex-speech-method" class="reflex-answer-method" hidden style="margin-top:14px;padding:13px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--surface,#fff)">
     <div style="font-weight:700;margin-bottom:5px">Cách 1 — Trả lời bằng giọng nói</div>
-    <p class="smallprint" style="margin:0 0 10px">Bấm micro để nhận diện tiếng Trung bằng bộ nhận diện có sẵn của trình duyệt. Chạm lần nữa để dừng; hệ thống cũng có thể tự kết thúc khi bạn ngừng nói. Tùy trình duyệt, nhận diện có thể cần Internet.</p>
+    <p class="smallprint" style="margin:0 0 10px">Bấm micro để thu âm câu tiếng Trung, chạm lần nữa để dừng. Ứng dụng dùng Whisper chạy trên thiết bị để nhận diện; lần đầu cần Internet tải mô hình.</p>
     <div class="reflex-controls" style="margin-top:0">
      <button id="reflex-mic-button" class="btn outline" type="button" hidden>🎙️ Bắt đầu thu âm</button>
     </div>
     <div id="reflex-speech-recognized" class="reflex-speech-recognized" hidden aria-live="polite"><b>Chữ Hán nhận diện được</b><div id="reflex-speech-recognized-text" class="recognized-text"></div></div>
-    <p class="smallprint" style="margin:8px 0 0">Ưu tiên nhận diện tích hợp của trình duyệt để giữ chất lượng nhận dạng tiếng Trung tốt hơn. Nếu trình duyệt không hỗ trợ hoặc không trả kết quả, bạn vẫn có thể nhập chữ Hán để chấm điểm.</p>
+    <p class="smallprint" style="margin:8px 0 0">Âm thanh được nhận diện trên thiết bị bằng mô hình Whisper sau khi tải xong. Bạn vẫn có thể nhập chữ Hán để chấm điểm khi không tiện thu âm.</p>
    </div>
    <div id="reflex-typing-method" class="reflex-answer-method" style="margin-top:12px;padding:13px;border:1px solid var(--line,#ddd);border-radius:14px;background:var(--surface,#fff)">
     <div id="reflex-typing-title" style="font-weight:700;margin-bottom:7px">Nhập câu trả lời bằng chữ Hán</div>
@@ -433,7 +438,7 @@
      <button id="reflex-live-mic" type="button" aria-label="Bắt đầu ghi âm">🎙️</button>
      <div style="font-weight:700">Chữ Hán nhận diện được</div>
      <div id="reflex-live-transcript" aria-live="polite">Chữ nhận diện sẽ hiện ở đây khi trình duyệt trả kết quả.</div>
-     <p class="smallprint" style="margin:12px 0 0">Tùy trình duyệt, nhận diện giọng nói có thể cần Internet và được xử lý bởi dịch vụ nhận diện của trình duyệt. Nếu không có kết quả, hãy thử lại hoặc nhập chữ Hán bên dưới.</p>
+     <p class="smallprint" style="margin:12px 0 0">Lần đầu cần Internet để tải mô hình nhận diện. Sau khi tải xong, âm thanh được xử lý trên thiết bị; nếu không có kết quả, hãy thử lại hoặc nhập chữ Hán bên dưới.</p>
      <button id="reflex-mic-close-button" class="btn secondary" type="button" hidden style="margin-top:12px;width:100%">Đóng kết quả</button>
     </div>
    </div>
@@ -443,6 +448,14 @@
 
  </div>
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
+</section>
+
+<section id="panel-number" class="panel">
+ <div class="card number-practice-host">
+  <h2 class="section-title">🔢 LUYỆN SỐ TIẾNG TRUNG</h2>
+  <p class="subtle">Đọc số từ 0 đến 999.999, luyện thứ tự, ngẫu nhiên, kiểm tra, năm sinh và số điện thoại.</p>
+  <iframe id="number-practice-frame" class="number-practice-frame" src="./luyen-so-tieng-trung.html" title="Luyện Số Tiếng Trung" loading="lazy" allow="autoplay" referrerpolicy="same-origin"></iframe>
+ </div>
 </section>
 </main>
 </div><!-- /.app-shell -->
@@ -563,6 +576,7 @@ let reflexRecording = false;
 let reflexMediaRecorder = null;
 let reflexMediaStream = null;
 let reflexMediaChunks = [];
+let reflexMediaStarting = false;
 let reflexASRWorker = null;
 let reflexASRPending = null;
 let reflexDirectAsrPromise = null;
@@ -823,7 +837,8 @@ function switchTab(tab){
  const titles={'vi-zh':'LUYỆN VIẾT VIỆT → TRUNG','zh-vi':'LUYỆN VIẾT TRUNG → VIỆT','write':'LUYỆN VIẾT CHỮ HÁN','read':'LUYỆN ĐỌC CHỮ HÁN'};
  if(PRACTICE_NAV_MODES.has(tab))$('practice-section-title').textContent=titles[tab];
  $('practice-back').hidden=!(PRACTICE_NAV_MODES.has(tab)&&practiceReturnTab==='combine');
- window.scrollTo({top:0,behavior:'smooth'});
+ if(window.matchMedia('(min-width:701px)').matches)window.scrollTo({top:0,behavior:'instant'});
+ else window.scrollTo({top:0,behavior:'smooth'});
  if(tab==='combine'){renderCombineChoices();renderSelected();}
 }
 const menuToggle=$('menu-toggle');
@@ -1647,7 +1662,7 @@ async function translateVoiceTranscript(raw,session){
  const transcript=String(raw||'').trim();if(!transcript){setVoiceStatus('Chưa nhận diện được lời nói. Hãy thử lại và nói rõ hơn.');return;}
  $('voice-translate-transcript').textContent=transcript;$('voice-translate-result').textContent='Đang dịch…';$('voice-copy-result').disabled=true;setVoiceStatus('Đang dịch từng phần và giữ nguyên thứ tự câu nói…');
  try{
-  const segments=splitVoiceSegments(transcript);const translated=await Promise.all(segments.map(async part=>part.translate?await machineTranslate(part.text.trim(),part.source,part.target):part.text));
+  const segments=splitVoiceSegments(transcript);const translated=[];for(const part of segments){translated.push(part.translate?await machineTranslate(part.text.trim(),part.source,part.target):part.text);if(session!==voiceSession)return;}
   if(session!==voiceSession)return;
   let output='';for(let i=0;i<segments.length;i++){const part=segments[i];let value=translated[i];if(part.translate){const leading=(part.text.match(/^\s*/)||[''])[0],trailing=(part.text.match(/\s*$/)||[''])[0];value=leading+String(value||'').trim()+trailing;}output+=value;}
   $('voice-translate-result').textContent=output.trim()||'Không có kết quả dịch.';$('voice-copy-result').disabled=!output.trim();setVoiceStatus('Đã dịch xong. Bạn có thể sao chép kết quả.');
@@ -1656,28 +1671,104 @@ async function translateVoiceTranscript(raw,session){
 function ensureVoiceWorker(){
  if(voiceWorker)return voiceWorker;if(!window.Worker)throw new Error('Trình duyệt không hỗ trợ Web Worker.');
  const worker=new Worker('./asr-voice-worker.js',{type:'module'});voiceWorker=worker;
- worker.onmessage=e=>{const data=e.data||{};if(data.session!==voicePendingSession)return;if(data.type==='status'||data.type==='progress'){if(data.text)setVoiceStatus(data.text);return;}if(data.type==='result'){voicePendingSession=0;const text=String(data.text||'').trim();$('voice-translate-transcript').textContent=text||'Không nhận diện được lời nói.';if(text)translateVoiceTranscript(text,data.session);else setVoiceStatus('Whisper chưa nhận diện được lời nói. Hãy thử ghi âm lại.');return;}if(data.type==='error'){voicePendingSession=0;setVoiceStatus('Lỗi nhận diện: '+(data.message||'Không xử lý được âm thanh.'));}};
- worker.onerror=e=>{voicePendingSession=0;setVoiceStatus('Không tải được bộ nhận diện giọng nói. Hãy kiểm tra Internet rồi thử lại. '+(e.message||''));};return worker;
+ worker.onmessage=e=>{const data=e.data||{};if(data.session!==voicePendingSession)return;if(data.type==='status'||data.type==='progress'){if(data.text)setVoiceStatus(data.text);return;}if(data.type==='result'){voicePendingSession=0;$('voice-translate-mic').disabled=false;const text=String(data.text||'').trim();$('voice-translate-transcript').textContent=text||'Không nhận diện được lời nói.';if(text)translateVoiceTranscript(text,data.session);else setVoiceStatus('Whisper chưa nhận diện được lời nói. Hãy thử ghi âm lại.');return;}if(data.type==='error'){voicePendingSession=0;$('voice-translate-mic').disabled=false;setVoiceStatus('Lỗi nhận diện: '+(data.message||'Không xử lý được âm thanh.'));}};
+ worker.onerror=e=>{voicePendingSession=0;$('voice-translate-mic').disabled=false;setVoiceStatus('Không tải được bộ nhận diện giọng nói. Hãy kiểm tra Internet rồi thử lại. '+(e.message||''));};return worker;
 }
 async function decodeVoiceBlob(blob,session){
- const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)throw new Error('Thiết bị không hỗ trợ xử lý âm thanh.');
- const ctx=new AudioCtx();voiceAudioContext=ctx;try{const decoded=await ctx.decodeAudioData((await blob.arrayBuffer()).slice(0));if(session!==voiceSession)throw new Error('Lượt ghi âm đã bị hủy.');const n=decoded.length,channels=Math.max(1,decoded.numberOfChannels||1),mono=new Float32Array(n);for(let c=0;c<channels;c++){const ch=decoded.getChannelData(c);for(let i=0;i<n;i++)mono[i]+=ch[i]/channels;}const peak=mono.reduce((m,v)=>Math.max(m,Math.abs(v)),0);if(peak<0.002)throw new Error('Âm thanh quá nhỏ. Hãy nói rõ hơn.');const rate=16000;if(decoded.sampleRate===rate)return mono;const length=Math.max(1,Math.ceil(n*rate/decoded.sampleRate));const out=new Float32Array(length);const ratio=decoded.sampleRate/rate;for(let i=0;i<length;i++){const pos=i*ratio,left=Math.min(n-1,Math.floor(pos)),right=Math.min(n-1,left+1),frac=pos-left;out[i]=mono[left]*(1-frac)+mono[right]*frac;}return out;}finally{if(voiceAudioContext===ctx)voiceAudioContext=null;try{await ctx.close();}catch(_){}}
+ const AudioCtx=window.AudioContext||window.webkitAudioContext;
+ const OfflineCtx=window.OfflineAudioContext||window.webkitOfflineAudioContext;
+ if(!AudioCtx)throw new Error('Thiết bị không hỗ trợ xử lý âm thanh.');
+ const ctx=new AudioCtx();voiceAudioContext=ctx;
+ try{
+  const decoded=await ctx.decodeAudioData((await blob.arrayBuffer()).slice(0));
+  if(session!==voiceSession)throw new Error('Lượt ghi âm đã bị hủy.');
+  if(!decoded||!decoded.length)throw new Error('Bản ghi âm không có dữ liệu.');
+  const n=decoded.length,channels=Math.max(1,decoded.numberOfChannels||1),mono=new Float32Array(n);
+  for(let c=0;c<channels;c++){const channel=decoded.getChannelData(c);for(let i=0;i<n;i++)mono[i]+=channel[i]/channels;}
+  const peak=mono.reduce((m,v)=>Math.max(m,Math.abs(v)),0);
+  if(peak<0.0015)throw new Error('Âm thanh quá nhỏ hoặc micro không thu được tiếng nói. Hãy kiểm tra micro và thử lại.');
+  const rate=16000;let output;
+  if(decoded.sampleRate===rate)output=new Float32Array(mono);
+  else{
+   const length=Math.max(1,Math.ceil(n*rate/decoded.sampleRate));
+   if(OfflineCtx){
+    const monoBuffer=ctx.createBuffer(1,n,decoded.sampleRate);monoBuffer.getChannelData(0).set(mono);
+    const offline=new OfflineCtx(1,length,rate);const source=offline.createBufferSource();source.buffer=monoBuffer;source.connect(offline.destination);source.start(0);
+    const resampled=await offline.startRendering();
+    if(session!==voiceSession)throw new Error('Lượt ghi âm đã bị hủy.');
+    output=new Float32Array(resampled.getChannelData(0));
+   }else{
+    output=new Float32Array(length);const ratio=decoded.sampleRate/rate;
+    for(let i=0;i<length;i++){const pos=i*ratio,left=Math.min(n-1,Math.floor(pos)),right=Math.min(n-1,left+1),frac=pos-left;output[i]=mono[left]*(1-frac)+mono[right]*frac;}
+   }
+  }
+  if(output.length<8000)throw new Error('Bản ghi quá ngắn. Hãy nói ít nhất khoảng nửa giây rồi dừng.');
+  // Bring quiet mobile recordings to a usable level without clipping.
+  let outPeak=0;for(let i=0;i<output.length;i++)outPeak=Math.max(outPeak,Math.abs(output[i]));
+  if(outPeak>0&&outPeak<0.75){const gain=Math.min(8,0.85/outPeak);for(let i=0;i<output.length;i++)output[i]=Math.max(-1,Math.min(1,output[i]*gain));}
+  return output;
+ }finally{if(voiceAudioContext===ctx)voiceAudioContext=null;try{await ctx.close();}catch(_){}}
 }
 async function processVoiceRecording(blob,session){
- if(session!==voiceSession)return;if(!blob||!blob.size){setVoiceStatus('Không thu được âm thanh. Hãy thử lại.');return;}
+ if(session!==voiceSession)return;
+ $('voice-translate-mic').disabled=true;
+ if(!blob||!blob.size){$('voice-translate-mic').disabled=false;setVoiceStatus('Không thu được âm thanh. Hãy kiểm tra micro rồi thử lại.');return;}
  setVoiceStatus('Đang chuẩn bị âm thanh và nhận diện tự động tiếng Việt/tiếng Trung…');
- try{const samples=await decodeVoiceBlob(blob,session);if(session!==voiceSession)return;const worker=ensureVoiceWorker();voicePendingSession=session;worker.postMessage({type:'transcribe',session,audio:samples});setVoiceStatus('Đang nhận diện bằng Whisper đa ngôn ngữ. Lần đầu có thể cần tải mô hình miễn phí.');}catch(err){if(session===voiceSession)setVoiceStatus('Không xử lý được bản ghi: '+(err?.message||String(err)));}
+ try{const samples=await decodeVoiceBlob(blob,session);if(session!==voiceSession)return;const worker=ensureVoiceWorker();voicePendingSession=session;worker.postMessage({type:'transcribe',session,audio:samples});setVoiceStatus('Đang nhận diện bằng Whisper đa ngôn ngữ. Lần đầu có thể cần tải mô hình miễn phí.');}catch(err){if(session===voiceSession){$('voice-translate-mic').disabled=false;setVoiceStatus('Không xử lý được bản ghi: '+(err?.message||String(err)));}}
 }
 async function startVoiceRecognition(){
- if(voiceStarting)return;voiceStarting=true;
+ if(voiceStarting||voiceRecording||voicePendingSession)return;
+ voiceStarting=true;
  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceStarting=false;setVoiceStatus('Trình duyệt này không hỗ trợ ghi âm. Hãy dùng Safari hoặc Chrome mới qua HTTPS.');return;}
- try{const session=++voiceSession;voiceChunks=[];$('voice-translate-transcript').textContent='Đang chờ bạn nói…';$('voice-translate-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('voice-copy-result').disabled=true;setVoiceStatus('Đang xin quyền sử dụng micro…');voiceStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});if(session!==voiceSession){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;voiceStarting=false;return;}let options={};try{const preferred=chooseReflexRecordingOptions();if(preferred)options=preferred;}catch(_){}voiceRecorder=new MediaRecorder(voiceStream,options);voiceRecorder.ondataavailable=e=>{if(e.data&&e.data.size)voiceChunks.push(e.data);};voiceRecorder.onerror=e=>{if(session===voiceSession)setVoiceStatus('Lỗi ghi âm: '+(e.error?.message||'Không thể ghi âm.'));};voiceRecorder.onstop=()=>{const blob=new Blob(voiceChunks,{type:voiceRecorder?.mimeType||'audio/webm'});voiceChunks=[];if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}voiceRecorder=null;processVoiceRecording(blob,session);};voiceRecorder.start(250);voiceStarting=false;setVoiceMicState(true);setVoiceStatus('Đang ghi âm… nói tự nhiên, sau đó chạm micro lần nữa để dừng và dịch.');}
- catch(err){voiceStarting=false;if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}voiceRecorder=null;setVoiceMicState(false);setVoiceStatus('Không mở được micro: '+(err?.message||String(err))+'. Hãy kiểm tra quyền micro của website.');}
+ try{
+  const session=++voiceSession;voiceChunks=[];
+  $('voice-translate-transcript').textContent='Đang chờ bạn nói…';$('voice-translate-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('voice-copy-result').disabled=true;
+  $('voice-translate-mic').disabled=true;$('voice-translate-mic-label').textContent='ĐANG MỞ MICRO…';
+  setVoiceStatus('Đang xin quyền sử dụng micro…');
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}});
+  if(session!==voiceSession){stream.getTracks().forEach(t=>t.stop());voiceStarting=false;return;}
+  voiceStream=stream;
+  let options={};try{const preferred=chooseReflexRecordingOptions();if(preferred)options=preferred;}catch(_){}
+  const recorder=new MediaRecorder(stream,options);voiceRecorder=recorder;
+  recorder.ondataavailable=e=>{if(session===voiceSession&&e.data&&e.data.size)voiceChunks.push(e.data);};
+  recorder.onerror=e=>{if(session===voiceSession)setVoiceStatus('Lỗi ghi âm: '+(e.error?.message||e.message||'Không thể ghi âm.'));};
+  recorder.onstop=()=>{
+   const chunks=voiceChunks.slice();voiceChunks=[];
+   const mime=recorder.mimeType||(chunks.find(c=>c.type)?.type)||'audio/webm';
+   const blob=new Blob(chunks,{type:mime});
+   if(voiceRecorder===recorder)voiceRecorder=null;
+   if(voiceStream===stream)voiceStream=null;
+   stream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});
+   if(session!==voiceSession)return;
+   processVoiceRecording(blob,session);
+  };
+  recorder.start(250);voiceStarting=false;setVoiceMicState(true);
+  $('voice-translate-mic').disabled=false;
+  setVoiceStatus('Đang ghi âm… nói tiếng Việt hoặc tiếng Trung, sau đó chạm micro lần nữa để dừng và dịch.');
+ }catch(err){
+  voiceStarting=false;
+  if(voiceStream){voiceStream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});voiceStream=null;}
+  voiceRecorder=null;setVoiceMicState(false);$('voice-translate-mic').disabled=false;
+  $('voice-translate-mic-label').textContent='BẮT ĐẦU NÓI';
+  setVoiceStatus('Không mở được micro: '+(err?.message||String(err))+'. Hãy kiểm tra quyền micro của website.');
+ }
 }
 $('voice-translate-mic').addEventListener('click',()=>{
- if(!voiceRecording){startVoiceRecognition();return;}const recorder=voiceRecorder;setVoiceMicState(false);setVoiceStatus('Đang dừng ghi âm…');if(recorder&&recorder.state!=='inactive'){try{recorder.stop();}catch(err){setVoiceStatus('Không dừng được ghi âm: '+(err?.message||String(err)));}}else setVoiceStatus('Không có phiên ghi âm đang hoạt động.');
+ if(voiceStarting){setVoiceStatus('Đang mở micro. Hãy đợi trình duyệt cấp quyền micro.');return;}
+ if(!voiceRecording){startVoiceRecognition();return;}
+ const recorder=voiceRecorder;setVoiceMicState(false);$('voice-translate-mic').disabled=true;setVoiceStatus('Đang hoàn tất bản ghi…');
+ if(recorder&&recorder.state!=='inactive'){try{if(typeof recorder.requestData==='function')recorder.requestData();recorder.stop();}catch(err){$('voice-translate-mic').disabled=false;setVoiceStatus('Không dừng được ghi âm: '+(err?.message||String(err)));}}
+ else{$('voice-translate-mic').disabled=false;setVoiceStatus('Không có phiên ghi âm đang hoạt động.');}
 });
-$('voice-clear').addEventListener('click',()=>{voiceSession++;voicePendingSession=0;if(voiceWorker){try{voiceWorker.postMessage({type:'cancel',session:voiceSession-1});}catch(_){}}if(voiceRecorder&&voiceRecorder.state!=='inactive'){try{voiceRecorder.stop();}catch(_){}}if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}voiceRecorder=null;voiceChunks=[];setVoiceMicState(false);$('voice-translate-transcript').textContent='Chưa có nội dung.';$('voice-translate-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('voice-copy-result').disabled=true;setVoiceStatus('Đã xóa. Sẵn sàng ghi âm lượt mới.');});
+$('voice-clear').addEventListener('click',()=>{
+ const oldSession=voiceSession;voiceSession++;voicePendingSession=0;voiceStarting=false;
+ if(voiceWorker){try{voiceWorker.postMessage({type:'cancel',session:oldSession});}catch(_){}}
+ const recorder=voiceRecorder;voiceRecorder=null;
+ if(recorder&&recorder.state!=='inactive'){recorder.ondataavailable=null;recorder.onstop=null;try{recorder.stop();}catch(_){}}
+ if(voiceStream){voiceStream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});voiceStream=null;}
+ voiceChunks=[];setVoiceMicState(false);$('voice-translate-mic').disabled=false;$('voice-translate-mic-label').textContent='BẮT ĐẦU NÓI';
+ $('voice-translate-transcript').textContent='Chưa có nội dung.';$('voice-translate-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('voice-copy-result').disabled=true;setVoiceStatus('Đã xóa. Sẵn sàng ghi âm lượt mới.');
+});
 $('voice-copy-result').addEventListener('click',async()=>{const value=$('voice-translate-result').textContent.trim();if(!value)return;try{await navigator.clipboard.writeText(value);setVoiceStatus('Đã sao chép kết quả dịch.');}catch(_){const area=document.createElement('textarea');area.value=value;document.body.appendChild(area);area.select();try{document.execCommand('copy');setVoiceStatus('Đã sao chép kết quả dịch.');}catch(__){setVoiceStatus('Không thể sao chép tự động trên trình duyệt này.');}area.remove();}});
 
 function queryIsPinyin(raw){
@@ -2463,6 +2554,7 @@ function resetReflexMicButtons(keepOverlay=false){
 }
 
 function disposeCurrentReflexRecording(){
+ reflexMediaStarting=false;
  const recorder=reflexMediaRecorder;
  const stream=reflexMediaStream;
  reflexMediaRecorder=null;
@@ -2704,6 +2796,7 @@ function completeReflexLocalResult(session,text){
 async function transcribeReflexRecording(blob,session){
  reflexLocalAsrBusy=true;
  const startBtn=$('reflex-mic-button');if(startBtn)startBtn.disabled=true;
+ const liveMicDuringAsr=$('reflex-live-mic');if(liveMicDuringAsr)liveMicDuringAsr.disabled=true;
  try{
   if(session!==reflexRecognitionSession)return;
   updateReflexLiveTranscript('Bản ghi đã xong. Đang nhận dạng ngay trên điện thoại…');
@@ -2729,7 +2822,8 @@ async function transcribeReflexRecording(blob,session){
   const feedback=$('reflex-feedback');if(feedback){feedback.hidden=false;feedback.className='result mid';feedback.textContent=userMessage;}
  }finally{
   reflexLocalAsrBusy=false;
-  const startBtn2=$('reflex-mic-button');if(startBtn2)startBtn2.disabled=false;
+  const startBtn2=$('reflex-mic-button');if(startBtn2)startBtn2.disabled=!!reflexHasAnswered;
+  const liveMicAfterAsr=$('reflex-live-mic');if(liveMicAfterAsr)liveMicAfterAsr.disabled=!!reflexHasAnswered;
  }
 }
 
@@ -2781,7 +2875,102 @@ function finishReflexBrowserRecognition(session, recognition){
  }
 }
 
+async function startDedicatedReadingMediaRecognition(){
+ if(reflexRecording||reflexMediaStarting)return;
+ if(reflexLocalAsrBusy){updateReflexLiveTranscript('Đang chấm điểm lượt vừa rồi. Vui lòng đợi nhận diện xong rồi ghi âm lượt tiếp theo.');return;}
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
+  showReflexSpeechFailure('Trình duyệt không hỗ trợ thu âm. Hãy mở website bằng Chrome hoặc Safari mới qua HTTPS.');
+  $('reflex-mic-instruction').textContent='Không thể mở micro trên trình duyệt này. Bạn vẫn có thể nhập câu chữ Hán ở Cách 2.';
+  return;
+ }
+ if(reflexSpeakWatchdog){clearTimeout(reflexSpeakWatchdog);reflexSpeakWatchdog=null;}
+ if(reflexAutoSpeakTimer){clearTimeout(reflexAutoSpeakTimer);reflexAutoSpeakTimer=null;}
+ speechPlaybackToken++;speechPlaybackActive=false;
+ try{if(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))speechSynthesis.cancel();}catch(_){}
+ const oldSession=reflexRecognitionSession;
+ clearReflexRecognitionTimers();abortReflexBrowserRecognition();cancelPendingReflexASR(oldSession);disposeCurrentReflexRecording();
+ const session=++reflexRecognitionSession;
+ reflexRecognitionTranscript='';reflexRecognitionLiveText='';reflexRecognitionError='';reflexRecognitionStopRequested=false;
+ reflexBrowserFinalTranscript='';reflexBrowserInterimTranscript='';reflexBrowserError='';reflexBrowserStopRequested=false;
+ reflexHasAnswered=false;reflexRecording=true;reflexMediaStarting=true;reflexMediaChunks=[];
+ $('reflex-next-button').hidden=true;$('reflex-check-button').hidden=false;
+ $('reflex-speech-recognized').hidden=true;$('reflex-speech-recognized-text').textContent='';
+ $('reflex-mic-button').disabled=true;$('reflex-mic-button').textContent='🎙️ Đang mở micro…';
+ $('reflex-mic-overlay').hidden=false;$('reflex-mic-close-button').hidden=true;
+ $('reflex-live-mic').disabled=true;$('reflex-live-mic').classList.remove('recording');$('reflex-live-mic').textContent='⏳';$('reflex-live-mic').setAttribute('aria-label','Đang mở micro');
+ updateReflexLiveTranscript('Đang xin quyền sử dụng micro…');
+ $('reflex-mic-instruction').textContent='Đang ghi âm. Hãy đọc hết câu rồi chạm micro lần nữa để dừng và chấm điểm.';
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  if(session!==reflexRecognitionSession||!reflexMediaStarting){stopReflexMediaTracks(stream);return;}
+  reflexMediaStream=stream;reflexMediaStarting=false;
+  let options={};try{options=chooseReflexRecordingOptions()||{};}catch(_){}
+  const recorder=new MediaRecorder(stream,options);reflexMediaRecorder=recorder;
+  recorder.ondataavailable=e=>{if(session===reflexRecognitionSession&&e.data&&e.data.size)reflexMediaChunks.push(e.data);};
+  recorder.onerror=e=>{if(session===reflexRecognitionSession){const msg=String(e?.error?.message||e?.message||'Lỗi ghi âm.');updateReflexLiveTranscript('Lỗi ghi âm: '+msg);$('reflex-mic-instruction').textContent='Không thu được âm thanh. Hãy thử lại.';}};
+  recorder.onstop=()=>{
+   const chunks=reflexMediaChunks.slice();reflexMediaChunks=[];
+   const mime=recorder.mimeType||(chunks.find(c=>c.type)?.type)||'audio/webm';
+   const blob=new Blob(chunks,{type:mime});
+   if(reflexMediaRecorder===recorder)reflexMediaRecorder=null;
+   if(reflexMediaStream===stream)stopReflexMediaTracks(stream);else stopReflexMediaTracks(stream);
+   if(session!==reflexRecognitionSession)return;
+   reflexRecording=false;
+   if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
+   resetReflexMicButtons(true);
+   updateReflexLiveTranscript('Đã thu âm xong. Đang nhận diện tiếng Trung…');
+   $('reflex-mic-instruction').textContent='Đang chuyển bản ghi thành chữ Hán; lần đầu có thể cần tải mô hình nhận diện.';
+   if(!blob.size){completeReflexLocalResult(session,'');return;}
+   transcribeReflexRecording(blob,session);
+  };
+  recorder.start(250);
+  $('reflex-mic-button').disabled=false;$('reflex-mic-button').textContent='⏹️ Dừng và nhận diện';
+  $('reflex-live-mic').disabled=false;$('reflex-live-mic').classList.add('recording');$('reflex-live-mic').textContent='⏹️';$('reflex-live-mic').setAttribute('aria-label','Dừng thu âm');
+  updateReflexLiveTranscript('Đang ghi âm… hãy đọc câu tiếng Trung rõ ràng.');
+  $('reflex-mic-instruction').textContent='Đang ghi âm. Chạm biểu tượng dừng khi đọc xong; ứng dụng sẽ nhận diện và chấm điểm tự động.';
+  reflexMediaRecordingTimer=setTimeout(()=>{if(session===reflexRecognitionSession&&reflexRecording)stopReflexMicrophone(true);},20000);
+ }catch(err){
+  if(session!==reflexRecognitionSession)return;
+  reflexMediaStarting=false;reflexRecording=false;stopReflexMediaTracks();
+  resetReflexMicButtons(true);
+  const message=String(err?.message||err||'Không mở được micro.');
+  showReflexSpeechFailure('Không mở được micro: '+message);
+  $('reflex-mic-instruction').textContent='Hãy kiểm tra quyền micro của website rồi thử lại. Bạn cũng có thể nhập chữ Hán ở Cách 2.';
+ }
+}
+
+function stopDedicatedReadingMediaRecognition(autoStop=false){
+ if(reflexMediaStarting){
+  reflexMediaStarting=false;reflexRecording=false;reflexRecognitionSession++;
+  stopReflexMediaTracks();resetReflexMicButtons(true);
+  updateReflexLiveTranscript('Đã hủy yêu cầu mở micro.');
+  $('reflex-mic-instruction').textContent='Đã hủy. Bạn có thể chạm micro để ghi âm lại.';
+  return;
+ }
+ const recorder=reflexMediaRecorder;
+ if(!recorder||recorder.state==='inactive'){
+  reflexRecording=false;resetReflexMicButtons(true);
+  return;
+ }
+ reflexRecording=false;
+ if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
+ $('reflex-live-mic').disabled=true;$('reflex-live-mic').classList.remove('recording');$('reflex-live-mic').textContent='…';$('reflex-live-mic').setAttribute('aria-label','Đang hoàn tất bản ghi');
+ $('reflex-mic-button').disabled=true;$('reflex-mic-button').textContent='Đang nhận diện…';
+ $('reflex-mic-instruction').textContent=autoStop?'Đã đạt giới hạn 20 giây. Đang xử lý bản ghi…':'Đang hoàn tất bản ghi và nhận diện…';
+ try{if(typeof recorder.requestData==='function')recorder.requestData();}catch(_){}
+ try{recorder.stop();}catch(err){
+  if(reflexMediaRecorder===recorder)reflexMediaRecorder=null;
+  if(reflexMediaStream)stopReflexMediaTracks();
+  const message=String(err?.message||err||'Không dừng được bản ghi.');
+  showReflexSpeechFailure(message);resetReflexMicButtons(true);
+ }
+}
+
 function startReflexMicrophone(){
+ if(reflexMode==='read-sentences'||reflexMode==='read-dialogue'){
+  if(reflexRecording||reflexMediaStarting){stopDedicatedReadingMediaRecognition(false);return;}
+  startDedicatedReadingMediaRecognition();return;
+ }
  if(reflexRecording){stopReflexMicrophone(false);return;}
  // On iOS/WebKit, speechSynthesis.onend may not fire every time. A direct mic tap resets that stale state.
  if(reflexSpeakWatchdog){clearTimeout(reflexSpeakWatchdog);reflexSpeakWatchdog=null;}
@@ -2879,6 +3068,7 @@ function startReflexMicrophone(){
 }
 
 function stopReflexMicrophone(autoStop=false){
+ if(reflexMode==='read-sentences'||reflexMode==='read-dialogue'){stopDedicatedReadingMediaRecognition(autoStop);return;}
  if(!reflexRecording)return;
  const recognition=reflexBrowserRecognition;
  if(!recognition){reflexRecording=false;resetReflexMicButtons(true);showReflexSpeechFailure('Phiên nhận diện đã kết thúc. Bạn có thể thử lại hoặc nhập chữ Hán.');return;}
@@ -3029,6 +3219,21 @@ restoreSelectedCombine();renderSelected();
 updateStats();updateModeButtons();loadPractice();init();
 // Offline app shell caching is available when hosted on HTTPS (not when opened as a file:// URL).
 if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+</script>
+
+<script>
+(function(){
+ const frame=document.getElementById('number-practice-frame');
+ if(!frame)return;
+ window.addEventListener('message',function(event){
+  if(event.source!==frame.contentWindow)return;
+  const data=event.data||{};
+  if(data.type!=='bvt-number-app-resize')return;
+  const height=Number(data.height);
+  if(Number.isFinite(height)&&height>300&&height<6000)frame.style.height=Math.max(700,Math.ceil(height+12))+'px';
+ });
+ frame.addEventListener('load',function(){try{frame.contentWindow.postMessage({type:'bvt-number-app-measure'},'*');}catch(_){}});
+})();
 </script>
 </body>
 </html>

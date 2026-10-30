@@ -46,3 +46,13 @@ Cập nhật v41 (29-10-2026):
 - Trong Ghép câu chỉ còn công cụ ghép câu và luyện phản xạ; vùng OCR không còn nằm trong menu này.
 - Trên máy tính, giới hạn vùng vẽ Hanzi Writer trong Luyện viết chữ Hán về kích thước tương ứng với vùng luyện viết trong Từ điển, để tọa độ nét khớp với vị trí chuột. CSS sửa chỉ áp dụng desktop; bố cục trên điện thoại giữ nguyên.
 - Đổi tên cache service worker để thiết bị lấy bản HTML mới.
+
+
+CẬP NHẬT BỔ SUNG TRONG GÓI V42 (30-10-2026)
+- Tích hợp nguyên giao diện và 7 chế độ của công cụ Luyện Số Tiếng Trung V10 trong tệp luyen-so-tieng-trung.html; mở từ menu LUYỆN SỐ TIẾNG TRUNG.
+- Đổi tên menu đầu tiên thành TỪ ĐIỂN TIẾNG TRUNG.
+- Đổi tên menu Ghép câu thành GHÉP CÂU LUYỆN PHẢN XẠ.
+- Bổ sung luồng thu âm MediaRecorder riêng cho hai chế độ phản xạ đọc câu và đọc hỏi–đáp; dùng lại asr-worker.js tiếng Trung có sẵn để xử lý từng lượt, tránh phụ thuộc vào phiên SpeechRecognition của trình duyệt.
+- Cải thiện nhận diện giọng nói của DỊCH NHANH BẰNG GIỌNG NÓI: chuẩn hóa âm thanh 16 kHz, tăng mức âm lượng khi bản ghi nhỏ và thêm lượt thử nhận diện theo từng ngôn ngữ khi tự động phát hiện không có kết quả hữu ích.
+- Căn lại hai cột menu/nội dung trên máy tính; giữ menu thu gọn trên điện thoại.
+- Service worker đã thêm trang luyện số vào danh sách cache và đổi cache key để cập nhật bản v42 trên GitHub Pages.
