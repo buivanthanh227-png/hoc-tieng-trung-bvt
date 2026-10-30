@@ -1,11 +1,15 @@
-HỌC TIẾNG TRUNG — v41
+HỌC TIẾNG TRUNG BVT - PHIÊN BẢN V42
+
+V42 bổ sung dịch nhanh bằng giọng nói, nhận diện tự động Việt/Trung bằng Whisper đa ngôn ngữ và thanh danh mục dọc bên trái (thu gọn trên điện thoại). Các chức năng hiện có được giữ nguyên.
+
+HỌC TIẾNG TRUNG — v42
 
 Thay đổi chính:
 - Tiêu đề trình duyệt / tên ứng dụng hiển thị là HỌC TIẾNG TRUNG; logo đổi thành 汉语.
 - Bỏ mục menu chung “Luyện tập”; các chức năng được đưa thẳng lên thanh menu: Dịch nhanh Việt–Trung, Luyện viết Việt → Trung, Luyện viết Trung → Việt, Luyện viết chữ Hán, Luyện đọc chữ Hán.
 - Từ điển giữ nguyên. Phần Ghép câu dùng bộ lọc mẫu ngữ pháp, cặp từ tương thích và nghĩa tiếng Việt; kết quả xếp theo tổ hợp 2 từ trước, rồi 3 từ, 4 từ… và tối đa 2.000 câu.
 - Trong mỗi mục luyện tập chỉ hiện chức năng tương ứng; bộ nút chọn chế độ bên trong được ẩn để tránh trùng menu.
-- Thanh menu có thể cuộn ngang trên màn hình điện thoại để nhìn thấy đủ 7 mục.
+- V42 chuyển toàn bộ menu sang thanh dọc bên trái; trên điện thoại menu được thu gọn và mở bằng nút “DANH MỤC CHỨC NĂNG”.
 
 Cập nhật GitHub Pages:
 1. Giải nén ZIP.

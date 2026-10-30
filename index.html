@@ -221,14 +221,43 @@
     margin-right:auto!important;
   }
 }
+
+/* v42: vertical left navigation with a compact mobile drawer. */
+.app-shell{display:grid;grid-template-columns:220px minmax(0,1fr);gap:0;max-width:1180px;margin:0 auto;align-items:start;min-height:calc(100vh - 76px)}
+.app-shell .tabs{position:sticky;top:calc(76px + env(safe-area-inset-top));height:calc(100vh - 76px - env(safe-area-inset-top));overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;justify-content:flex-start;gap:5px;padding:12px 10px;background:#fff;border-right:1px solid var(--line);border-bottom:0;box-shadow:2px 0 8px #00000005}
+.app-shell .tab{flex:0 0 auto;width:100%;max-width:none;min-width:0;min-height:44px;text-align:left;display:flex;align-items:center;gap:9px;padding:9px 10px;font-size:11px;line-height:1.35;border-radius:10px}
+.app-shell .tab span{display:inline-flex;flex:0 0 23px;width:23px;align-items:center;justify-content:center;font-size:16px;line-height:1.2}
+.app-shell main{width:100%;max-width:none;min-width:0;padding:18px 18px 28px}
+.menu-toggle{display:none}
+.voice-translate-card{max-width:760px;margin:0 auto 14px}
+.voice-language-row{display:grid;gap:5px;margin:12px 0}
+.voice-translate-mic{width:100%;min-height:74px;border:0;border-radius:16px;background:var(--red);color:#fff;font-size:15px;font-weight:850;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 5px 14px #b91c1c30}
+.voice-translate-mic span:first-child{font-size:27px}
+.voice-translate-mic.recording{background:#991b1b;animation:voicePulse 1.5s infinite}
+.voice-result-block{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:13px;background:#fbfcfd}
+.voice-result-text{min-height:58px;margin-top:8px;padding:11px;border-radius:10px;background:#fff;border:1px solid #e7eaf0;font-size:16px;line-height:1.65;overflow-wrap:anywhere;white-space:pre-wrap}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 #b91c1c22}50%{box-shadow:0 0 0 8px #b91c1c12}}
+@media(max-width:700px){
+ body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+ .app-shell{display:block;min-height:0}
+ .menu-toggle{display:block;width:calc(100% - 20px);margin:9px 10px 0;min-height:40px;border:1px solid #e6caca;border-radius:10px;background:#fff;color:#991b1b;font-size:12px;font-weight:800;text-align:left;padding:9px 12px}
+ .app-shell .tabs{display:none;position:relative;top:auto;height:auto;max-height:55vh;overflow-y:auto;width:auto;margin:7px 10px 0;padding:8px;gap:4px;border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 20px #00000010}
+ .app-shell .tabs.open{display:flex}
+ .app-shell .tab{width:100%;min-height:40px;flex:0 0 auto;max-width:none;font-size:11px;padding:8px 9px}
+ .app-shell main{padding:12px 10px 24px}
+}
+
 </style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-label="汉语">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p class="brand-slogan"><span>HỌC THÊM MỘT NGÔN NGỮ</span><span>SỐNG THÊM MỘT CUỘC ĐỜI</span></p><span id="top-status" hidden aria-hidden="true"></span></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
-<nav class="tabs" aria-label="Các chức năng chính">
+<div class="app-shell">
+<button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
+<nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
 <button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN</button>
 <button class="tab" data-tab="ocr" type="button"><span>🖼️</span>NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</button>
 <button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT–TRUNG</button>
+<button class="tab" data-tab="voice-translate" type="button"><span aria-hidden="true">🎙️</span>DỊCH NHANH BẰNG GIỌNG NÓI</button>
 <button class="tab" data-tab="vi-zh" type="button"><span>🇻🇳</span>LUYỆN VIẾT VIỆT → TRUNG</button>
 <button class="tab" data-tab="zh-vi" type="button"><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
 <button class="tab" data-tab="write" type="button"><span>✍️</span>LUYỆN VIẾT CHỮ HÁN</button>
@@ -330,6 +359,23 @@
  </div>
  <div class="card" id="practice-stats-card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Thống kê của bạn</h3><button class="btn secondary tiny" id="clear-history" type="button">Xóa lịch sử</button></div><div class="score-stats" style="margin-top:11px"><div class="stat"><b id="stat-done">0</b><span>Lượt đã làm</span></div><div class="stat"><b id="stat-correct">0</b><span>Đạt từ 80%</span></div><div class="stat"><b id="stat-percent">0%</b><span>Tỷ lệ chính xác</span></div></div><p class="smallprint" style="margin-bottom:0">Nút xóa sẽ đặt lại thống kê luyện tập trên thiết bị này; không xóa từ điển đã nạp.</p></div>
 </section>
+<section id="panel-voice-translate" class="panel">
+ <div class="card voice-translate-card">
+  <h2 class="section-title">🎙️ DỊCH NHANH BẰNG GIỌNG NÓI</h2>
+  <p class="subtle">Chạm micro để bắt đầu nói, chạm lần nữa để dừng. Ứng dụng sẽ nhận diện lời nói rồi dịch tiếng Việt sang tiếng Trung và tiếng Trung sang tiếng Việt. Bộ nhận diện Whisper tự động nhận diện tiếng Việt và tiếng Trung, kể cả câu nói xen kẽ hai ngôn ngữ.</p>
+  <button id="voice-translate-mic" class="voice-translate-mic" type="button" aria-pressed="false"><span id="voice-translate-mic-icon">🎙️</span><span id="voice-translate-mic-label">BẮT ĐẦU NÓI</span></button>
+  <p id="voice-translate-status" class="smallprint" role="status" aria-live="polite">Sẵn sàng. Hãy cấp quyền sử dụng micro khi trình duyệt hỏi.</p>
+  <div class="voice-result-block">
+   <div class="row between"><b>Nội dung nhận diện</b><button id="voice-clear" class="btn secondary tiny" type="button">Xóa</button></div>
+   <div id="voice-translate-transcript" class="voice-result-text" aria-live="polite">Chưa có nội dung.</div>
+  </div>
+  <div class="voice-result-block">
+   <div class="row between"><b>Kết quả dịch</b><button id="voice-copy-result" class="btn secondary tiny" type="button" disabled>📋 Sao chép</button></div>
+   <div id="voice-translate-result" class="voice-result-text" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
+  </div>
+  <p class="smallprint">Lưu ý: lần đầu sử dụng cần Internet để tải mô hình Whisper miễn phí. Sau đó mô hình được lưu trong bộ nhớ đệm của trình duyệt; kết quả nhận diện có thể khác nhau tùy chất lượng micro và cách phát âm.</p>
+ </div>
+</section>
 <section id="panel-combine" class="panel">
  <div class="card combine-card">
   <h2 class="section-title">Ghép câu từ từ bạn chọn</h2>
@@ -399,7 +445,8 @@
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
 </main>
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v41</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+</div><!-- /.app-shell -->
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div id="stroke-modal" class="stroke-modal" hidden>
  <div class="stroke-backdrop" data-close-stroke></div>
@@ -779,6 +826,8 @@ function switchTab(tab){
  window.scrollTo({top:0,behavior:'smooth'});
  if(tab==='combine'){renderCombineChoices();renderSelected();}
 }
+const menuToggle=$('menu-toggle');
+menuToggle?.addEventListener('click',()=>{const opened=$('main-tabs').classList.toggle('open');menuToggle.setAttribute('aria-expanded',String(opened));menuToggle.textContent=opened?'✕ ĐÓNG DANH MỤC':'☰ DANH MỤC CHỨC NĂNG';});
 document.querySelector('.tabs').addEventListener('click',e=>{
  const b=e.target.closest('[data-tab]');if(!b)return;
  const tab=b.dataset.tab;
@@ -791,6 +840,7 @@ document.querySelector('.tabs').addEventListener('click',e=>{
   // Keep the last practice mode in memory while the translation screen is open.
  } 
  switchTab(tab);
+ if(menuToggle&&window.matchMedia('(max-width: 700px)').matches){$('main-tabs').classList.remove('open');menuToggle.setAttribute('aria-expanded','false');menuToggle.textContent='☰ DANH MỤC CHỨC NĂNG';}
 });
 let warnedNoNaturalMaleVoice = false;
 function speak(text,button=null,onFinished=null){
@@ -1583,6 +1633,53 @@ async function machineTranslate(text,source,target){
   return translated.replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
  }finally{clearTimeout(timeout);}
 }
+// v42: dedicated voice-translation recorder reuses the app's Whisper/MediaRecorder
+// architecture, but runs a separate multilingual worker so existing practice ASR is untouched.
+let voiceRecorder=null,voiceStream=null,voiceChunks=[],voiceRecording=false,voiceStarting=false,voiceSession=0,voiceWorker=null,voicePendingSession=0,voiceAudioContext=null;
+function setVoiceStatus(message){const el=$('voice-translate-status');if(el)el.textContent=message;}
+function setVoiceMicState(active){voiceRecording=active;$('voice-translate-mic').classList.toggle('recording',active);$('voice-translate-mic').setAttribute('aria-pressed',String(active));$('voice-translate-mic-icon').textContent=active?'⏹️':'🎙️';$('voice-translate-mic-label').textContent=active?'DỪNG VÀ DỊCH':'BẮT ĐẦU NÓI';}
+function splitVoiceSegments(raw){
+ const text=String(raw||'');const parts=[];const re=/([\u3400-\u9fff\uf900-\ufaff]+)|([^\u3400-\u9fff\uf900-\ufaff]+)/g;let m;
+ while((m=re.exec(text))!==null){const value=m[0];if(!value)continue;const isChinese=/[\u3400-\u9fff\uf900-\ufaff]/.test(value);if(!isChinese&&!/[\p{L}\p{N}]/u.test(value)){parts.push({text:value,translate:false});continue;}if(!isChinese&&/^\s*$/u.test(value)){parts.push({text:value,translate:false});continue;}parts.push({text:value,translate:true,source:isChinese?'zh-CN':'vi',target:isChinese?'vi':'zh-CN'});}
+ return parts;
+}
+async function translateVoiceTranscript(raw,session){
+ const transcript=String(raw||'').trim();if(!transcript){setVoiceStatus('Chưa nhận diện được lời nói. Hãy thử lại và nói rõ hơn.');return;}
+ $('voice-translate-transcript').textContent=transcript;$('voice-translate-result').textContent='Đang dịch…';$('voice-copy-result').disabled=true;setVoiceStatus('Đang dịch từng phần và giữ nguyên thứ tự câu nói…');
+ try{
+  const segments=splitVoiceSegments(transcript);const translated=await Promise.all(segments.map(async part=>part.translate?await machineTranslate(part.text.trim(),part.source,part.target):part.text));
+  if(session!==voiceSession)return;
+  let output='';for(let i=0;i<segments.length;i++){const part=segments[i];let value=translated[i];if(part.translate){const leading=(part.text.match(/^\s*/)||[''])[0],trailing=(part.text.match(/\s*$/)||[''])[0];value=leading+String(value||'').trim()+trailing;}output+=value;}
+  $('voice-translate-result').textContent=output.trim()||'Không có kết quả dịch.';$('voice-copy-result').disabled=!output.trim();setVoiceStatus('Đã dịch xong. Bạn có thể sao chép kết quả.');
+ }catch(err){if(session!==voiceSession)return;$('voice-translate-result').textContent='Không dịch được toàn bộ nội dung. Hãy kiểm tra kết nối Internet và thử lại.';setVoiceStatus('Lỗi dịch: '+(err?.message||'dịch vụ không phản hồi'));}
+}
+function ensureVoiceWorker(){
+ if(voiceWorker)return voiceWorker;if(!window.Worker)throw new Error('Trình duyệt không hỗ trợ Web Worker.');
+ const worker=new Worker('./asr-voice-worker.js',{type:'module'});voiceWorker=worker;
+ worker.onmessage=e=>{const data=e.data||{};if(data.session!==voicePendingSession)return;if(data.type==='status'||data.type==='progress'){if(data.text)setVoiceStatus(data.text);return;}if(data.type==='result'){voicePendingSession=0;const text=String(data.text||'').trim();$('voice-translate-transcript').textContent=text||'Không nhận diện được lời nói.';if(text)translateVoiceTranscript(text,data.session);else setVoiceStatus('Whisper chưa nhận diện được lời nói. Hãy thử ghi âm lại.');return;}if(data.type==='error'){voicePendingSession=0;setVoiceStatus('Lỗi nhận diện: '+(data.message||'Không xử lý được âm thanh.'));}};
+ worker.onerror=e=>{voicePendingSession=0;setVoiceStatus('Không tải được bộ nhận diện giọng nói. Hãy kiểm tra Internet rồi thử lại. '+(e.message||''));};return worker;
+}
+async function decodeVoiceBlob(blob,session){
+ const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)throw new Error('Thiết bị không hỗ trợ xử lý âm thanh.');
+ const ctx=new AudioCtx();voiceAudioContext=ctx;try{const decoded=await ctx.decodeAudioData((await blob.arrayBuffer()).slice(0));if(session!==voiceSession)throw new Error('Lượt ghi âm đã bị hủy.');const n=decoded.length,channels=Math.max(1,decoded.numberOfChannels||1),mono=new Float32Array(n);for(let c=0;c<channels;c++){const ch=decoded.getChannelData(c);for(let i=0;i<n;i++)mono[i]+=ch[i]/channels;}const peak=mono.reduce((m,v)=>Math.max(m,Math.abs(v)),0);if(peak<0.002)throw new Error('Âm thanh quá nhỏ. Hãy nói rõ hơn.');const rate=16000;if(decoded.sampleRate===rate)return mono;const length=Math.max(1,Math.ceil(n*rate/decoded.sampleRate));const out=new Float32Array(length);const ratio=decoded.sampleRate/rate;for(let i=0;i<length;i++){const pos=i*ratio,left=Math.min(n-1,Math.floor(pos)),right=Math.min(n-1,left+1),frac=pos-left;out[i]=mono[left]*(1-frac)+mono[right]*frac;}return out;}finally{if(voiceAudioContext===ctx)voiceAudioContext=null;try{await ctx.close();}catch(_){}}
+}
+async function processVoiceRecording(blob,session){
+ if(session!==voiceSession)return;if(!blob||!blob.size){setVoiceStatus('Không thu được âm thanh. Hãy thử lại.');return;}
+ setVoiceStatus('Đang chuẩn bị âm thanh và nhận diện tự động tiếng Việt/tiếng Trung…');
+ try{const samples=await decodeVoiceBlob(blob,session);if(session!==voiceSession)return;const worker=ensureVoiceWorker();voicePendingSession=session;worker.postMessage({type:'transcribe',session,audio:samples});setVoiceStatus('Đang nhận diện bằng Whisper đa ngôn ngữ. Lần đầu có thể cần tải mô hình miễn phí.');}catch(err){if(session===voiceSession)setVoiceStatus('Không xử lý được bản ghi: '+(err?.message||String(err)));}
+}
+async function startVoiceRecognition(){
+ if(voiceStarting)return;voiceStarting=true;
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){voiceStarting=false;setVoiceStatus('Trình duyệt này không hỗ trợ ghi âm. Hãy dùng Safari hoặc Chrome mới qua HTTPS.');return;}
+ try{const session=++voiceSession;voiceChunks=[];$('voice-translate-transcript').textContent='Đang chờ bạn nói…';$('voice-translate-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('voice-copy-result').disabled=true;setVoiceStatus('Đang xin quyền sử dụng micro…');voiceStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});if(session!==voiceSession){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;voiceStarting=false;return;}let options={};try{const preferred=chooseReflexRecordingOptions();if(preferred)options=preferred;}catch(_){}voiceRecorder=new MediaRecorder(voiceStream,options);voiceRecorder.ondataavailable=e=>{if(e.data&&e.data.size)voiceChunks.push(e.data);};voiceRecorder.onerror=e=>{if(session===voiceSession)setVoiceStatus('Lỗi ghi âm: '+(e.error?.message||'Không thể ghi âm.'));};voiceRecorder.onstop=()=>{const blob=new Blob(voiceChunks,{type:voiceRecorder?.mimeType||'audio/webm'});voiceChunks=[];if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}voiceRecorder=null;processVoiceRecording(blob,session);};voiceRecorder.start(250);voiceStarting=false;setVoiceMicState(true);setVoiceStatus('Đang ghi âm… nói tự nhiên, sau đó chạm micro lần nữa để dừng và dịch.');}
+ catch(err){voiceStarting=false;if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}voiceRecorder=null;setVoiceMicState(false);setVoiceStatus('Không mở được micro: '+(err?.message||String(err))+'. Hãy kiểm tra quyền micro của website.');}
+}
+$('voice-translate-mic').addEventListener('click',()=>{
+ if(!voiceRecording){startVoiceRecognition();return;}const recorder=voiceRecorder;setVoiceMicState(false);setVoiceStatus('Đang dừng ghi âm…');if(recorder&&recorder.state!=='inactive'){try{recorder.stop();}catch(err){setVoiceStatus('Không dừng được ghi âm: '+(err?.message||String(err)));}}else setVoiceStatus('Không có phiên ghi âm đang hoạt động.');
+});
+$('voice-clear').addEventListener('click',()=>{voiceSession++;voicePendingSession=0;if(voiceWorker){try{voiceWorker.postMessage({type:'cancel',session:voiceSession-1});}catch(_){}}if(voiceRecorder&&voiceRecorder.state!=='inactive'){try{voiceRecorder.stop();}catch(_){}}if(voiceStream){voiceStream.getTracks().forEach(t=>t.stop());voiceStream=null;}voiceRecorder=null;voiceChunks=[];setVoiceMicState(false);$('voice-translate-transcript').textContent='Chưa có nội dung.';$('voice-translate-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('voice-copy-result').disabled=true;setVoiceStatus('Đã xóa. Sẵn sàng ghi âm lượt mới.');});
+$('voice-copy-result').addEventListener('click',async()=>{const value=$('voice-translate-result').textContent.trim();if(!value)return;try{await navigator.clipboard.writeText(value);setVoiceStatus('Đã sao chép kết quả dịch.');}catch(_){const area=document.createElement('textarea');area.value=value;document.body.appendChild(area);area.select();try{document.execCommand('copy');setVoiceStatus('Đã sao chép kết quả dịch.');}catch(__){setVoiceStatus('Không thể sao chép tự động trên trình duyệt này.');}area.remove();}});
+
 function queryIsPinyin(raw){
  if(/[\u3400-\u9fff]/.test(raw))return false;
  const tokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
