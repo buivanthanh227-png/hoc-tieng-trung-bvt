@@ -104,3 +104,19 @@ CẬP NHẬT TINH CHỈNH V42 (lần 5):
 - Đổi cache service worker để tải bản v42 tinh chỉnh mới.
 
 Cập nhật GitHub: giải nén ZIP, mở thư mục hoc-tieng-trung-bvt-v42, chọn toàn bộ tệp bên trong và tải trực tiếp lên thư mục gốc repository (nơi đang có index.html). Để chắc chắn không sót worker, hãy tải đủ cả 12 tệp. Sau đó chờ GitHub Pages hoàn tất, nhấn Ctrl+F5 trên máy tính hoặc đóng tab và mở lại trên điện thoại.
+
+
+CAP NHAT V42 - 30/10/2026
+- Phan xa doc theo va hoi-dap: tu dong phat am lai moi khi chuyen sang cau tiep theo.
+- Nut DANH MUC CHUC NANG tren dien thoai duoc thu gon con khoang mot nua kich thuoc truoc do.
+- DICH NHANH BANG GIONG NOI: them nut loa cho noi dung nhan dien va ket qua dich; doi chieu nhieu phuong an Whisper (tu dong, tieng Viet, tieng Trung) de chon ket qua phu hop hon.
+- DICH NHANH VIET-TRUNG: them khu vuc dan ca doan van ban va tai tep, moi khu vuc co nut dich ra tieng Trung va tieng Viet.
+- Tep ho tro: TXT, MD, CSV, DOCX. PDF chua ho tro. Dich van ban can ket noi Internet.
+- Menu NHAN DIEN ANH la ten rut gon cua chuc nang nhan dien chu Han tu hinh anh.
+
+
+CẬP NHẬT GIAO DIỆN TỪ ĐIỂN — 30/10/2026
+- Đổi tên mục thành “NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH”.
+- Thu gọn thẻ từ điển: chữ Hán, Pinyin và nghĩa trên hàng đầu; bốn nút nghe, thêm vào ghép câu, xem thứ tự nét và liên kết từ vựng nằm ngang hàng thứ hai.
+- Bổ sung điều hướng trang ở cả phía trên và phía dưới danh sách từ.
+- Nút “Liên kết từ vựng” hiển thị các mục có chung chữ Hán (đối với từ đơn) và/hoặc nghĩa tiếng Việt liên quan; bấm vào một mục liên quan sẽ đưa mục đó vào ô tra cứu từ điển.
