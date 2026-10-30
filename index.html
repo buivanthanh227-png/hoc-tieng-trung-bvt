@@ -301,6 +301,10 @@
 #back-to-top.is-visible{opacity:1;visibility:visible;transform:translateY(0)}
 #back-to-top:focus-visible{outline:3px solid #fbbf24;outline-offset:3px}
 
+
+/* v42: quick actions for paragraph and file translation outputs */
+.translation-result-actions{gap:7px;margin:8px 0 2px}
+.translation-result-actions .btn{min-height:32px;padding:6px 10px;font-size:11px}
 </style>
 </head>
 <body>
@@ -380,11 +384,19 @@
   <div class="row wrap" style="margin-top:9px"><button id="long-translate-to-zh" class="btn" type="button">🇨🇳 Dịch ra tiếng Trung</button><button id="long-translate-to-vi" class="btn secondary" type="button">🇻🇳 Dịch ra tiếng Việt</button></div>
   <p id="long-translate-status" class="smallprint" role="status" aria-live="polite"></p>
   <div id="long-translate-result" class="voice-result-text" aria-live="polite">Bản dịch đoạn văn sẽ hiển thị tại đây.</div>
+  <div class="row wrap translation-result-actions" aria-label="Thao tác với bản dịch đoạn văn">
+   <button id="long-translate-copy" class="btn secondary tiny" type="button" disabled>📋 Sao chép</button>
+   <button id="long-translate-speak" class="btn tiny" type="button" disabled>🔊 Đọc kết quả</button>
+  </div>
   <h3 class="section-title" style="font-size:16px;margin-top:17px">Dịch nội dung từ tệp</h3>
   <input id="translate-file-input" class="field" type="file" accept=".txt,.md,.csv,.docx,text/plain,text/markdown,text/csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
   <div class="row wrap" style="margin-top:9px"><button id="file-translate-to-zh" class="btn" type="button">🇨🇳 Dịch tệp ra tiếng Trung</button><button id="file-translate-to-vi" class="btn secondary" type="button">🇻🇳 Dịch tệp ra tiếng Việt</button></div>
   <p id="file-translate-status" class="smallprint" role="status" aria-live="polite">Hỗ trợ tệp TXT, MD, CSV và DOCX. Tệp PDF chưa được hỗ trợ trong phiên bản này.</p>
   <div id="file-translate-result" class="voice-result-text" aria-live="polite">Kết quả dịch từ tệp sẽ hiển thị tại đây.</div>
+  <div class="row wrap translation-result-actions" aria-label="Thao tác với bản dịch từ tệp">
+   <button id="file-translate-copy" class="btn secondary tiny" type="button" disabled>📋 Sao chép</button>
+   <button id="file-translate-speak" class="btn tiny" type="button" disabled>🔊 Đọc kết quả</button>
+  </div>
  </div>
  <div class="card" id="practice-exercise-card">
   <div class="row between wrap"><h2 class="section-title" id="practice-section-title" style="margin:0">Luyện tập và chấm điểm</h2><button class="btn secondary tiny" id="practice-back" type="button" hidden>← Quay lại ghép câu</button></div>
@@ -2003,7 +2015,13 @@ function splitLongText(text,maxBytes=420){
  }
  flush();return chunks;
 }
+function setTranslationResultActions(resultId,enabled){
+ const prefix=resultId==='long-translate-result'?'long-translate':'file-translate';
+ const copy=$(prefix+'-copy'),speak=$(prefix+'-speak');
+ if(copy)copy.disabled=!enabled;if(speak)speak.disabled=!enabled;
+}
 async function translateLongText(text,target,statusEl,resultEl){
+ setTranslationResultActions(resultEl.id,false);resultEl.dataset.translationLanguage='';
  const raw=String(text||'').trim();if(!raw)throw new Error('Bạn chưa nhập hoặc chọn nội dung cần dịch.');
  const chunks=splitLongText(raw);if(!chunks.length)throw new Error('Không tìm thấy nội dung văn bản.');
  const source=target==='zh-CN'?'vi':'zh-CN';const results=[];
@@ -2011,7 +2029,7 @@ async function translateLongText(text,target,statusEl,resultEl){
   statusEl.textContent='Đang dịch phần '+(i+1)+'/'+chunks.length+'…';
   results.push(await machineTranslate(chunks[i],source,target));
  }
- resultEl.textContent=results.join('\n\n');statusEl.textContent='Đã dịch xong '+chunks.length+' phần.';
+ resultEl.textContent=results.join('\n\n');resultEl.dataset.translationLanguage=target;setTranslationResultActions(resultEl.id,!!resultEl.textContent.trim());statusEl.textContent='Đã dịch xong '+chunks.length+' phần.';
 }
 async function extractDocxText(file){
  if(typeof DecompressionStream==='undefined')throw new Error('Trình duyệt chưa hỗ trợ đọc DOCX. Hãy lưu tệp thành TXT rồi tải lên.');
@@ -2040,17 +2058,51 @@ async function readTranslationFile(file){
 }
 async function runLongTranslation(target){
  const status=$('long-translate-status'),out=$('long-translate-result');
- try{out.textContent='Đang chuẩn bị dịch…';await translateLongText($('long-translate-input').value,target,status,out);}catch(e){status.textContent='Không dịch được: '+(e.message||e);out.textContent='';}
+ setTranslationResultActions(out.id,false);out.dataset.translationLanguage='';
+ try{out.textContent='Đang chuẩn bị dịch…';await translateLongText($('long-translate-input').value,target,status,out);}catch(e){status.textContent='Không dịch được: '+(e.message||e);out.textContent='';setTranslationResultActions(out.id,false);}
 }
 $('long-translate-to-zh')?.addEventListener('click',()=>runLongTranslation('zh-CN'));
 $('long-translate-to-vi')?.addEventListener('click',()=>runLongTranslation('vi'));
 async function runFileTranslation(target){
  const file=$('translate-file-input').files?.[0],status=$('file-translate-status'),out=$('file-translate-result');
  if(!file){status.textContent='Hãy chọn tệp TXT, MD, CSV hoặc DOCX trước.';return;}
- try{out.textContent='Đang đọc tệp '+file.name+'…';const content=await readTranslationFile(file);if(!content.trim())throw new Error('Tệp không có văn bản để dịch.');await translateLongText(content,target,status,out);}catch(e){status.textContent='Không xử lý được tệp: '+(e.message||e);out.textContent='';}
+ setTranslationResultActions(out.id,false);out.dataset.translationLanguage='';
+ try{out.textContent='Đang đọc tệp '+file.name+'…';const content=await readTranslationFile(file);if(!content.trim())throw new Error('Tệp không có văn bản để dịch.');await translateLongText(content,target,status,out);}catch(e){status.textContent='Không xử lý được tệp: '+(e.message||e);out.textContent='';setTranslationResultActions(out.id,false);}
 }
 $('file-translate-to-zh')?.addEventListener('click',()=>runFileTranslation('zh-CN'));
 $('file-translate-to-vi')?.addEventListener('click',()=>runFileTranslation('vi'));
+async function copyTranslationOutput(resultId,statusId){
+ const value=$(resultId)?.textContent?.trim()||'',status=$(statusId);
+ if(!value||/^(Đang chuẩn bị dịch|Đang đọc tệp)/.test(value)){status.textContent='Chưa có kết quả để sao chép.';return;}
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(value);
+  else throw new Error('clipboard unavailable');
+  status.textContent='Đã sao chép toàn bộ kết quả dịch.';
+ }catch(_){
+  const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();
+  let ok=false;try{ok=document.execCommand('copy');}catch(__){}area.remove();
+  status.textContent=ok?'Đã sao chép toàn bộ kết quả dịch.':'Không thể sao chép tự động trên trình duyệt này.';
+ }
+}
+function speakTranslationOutput(resultId,statusId){
+ const result=$(resultId),status=$(statusId),value=result?.textContent?.trim()||'';
+ if(!value||/^(Đang chuẩn bị dịch|Đang đọc tệp)/.test(value)){status.textContent='Chưa có kết quả để đọc.';return;}
+ if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){status.textContent='Trình duyệt không hỗ trợ phát âm.';return;}
+ const lang=result.dataset.translationLanguage||(/[\u3400-\u9fff\uf900-\ufaff]/.test(value)?'zh-CN':'vi');
+ try{
+  speechSynthesis.cancel();
+  const units=value.match(/[^。！？.!?\n]+[。！？.!?]?|\n+/g)||[value];let queue=[],current='';
+  const push=()=>{if(current.trim())queue.push(current.trim());current='';};
+  for(const unit of units){const part=unit.trim();if(!part){push();continue;}if((current+' '+part).length>220)push();if(part.length>220){for(const ch of Array.from(part)){if((current+ch).length>220)push();current+=ch;}}else current+=(current?' ':'')+part;}
+  push();
+  queue.forEach((part,index)=>{const utterance=new SpeechSynthesisUtterance(part);utterance.lang=lang==='zh-CN'?'zh-CN':'vi-VN';utterance.rate=0.9;if(index===queue.length-1)utterance.onend=()=>{status.textContent='Đã đọc xong kết quả dịch.';};utterance.onerror=()=>{status.textContent='Không phát được âm thanh. Hãy kiểm tra giọng đọc của trình duyệt.';};speechSynthesis.speak(utterance);});
+  status.textContent=lang==='zh-CN'?'Đang đọc kết quả bằng tiếng Trung…':'Đang đọc kết quả bằng tiếng Việt…';
+ }catch(e){status.textContent='Không phát được âm thanh: '+(e.message||e);}
+}
+$('long-translate-copy')?.addEventListener('click',()=>copyTranslationOutput('long-translate-result','long-translate-status'));
+$('long-translate-speak')?.addEventListener('click',()=>speakTranslationOutput('long-translate-result','long-translate-status'));
+$('file-translate-copy')?.addEventListener('click',()=>copyTranslationOutput('file-translate-result','file-translate-status'));
+$('file-translate-speak')?.addEventListener('click',()=>speakTranslationOutput('file-translate-result','file-translate-status'));
 
 function queryIsPinyin(raw){
  if(/[\u3400-\u9fff]/.test(raw))return false;

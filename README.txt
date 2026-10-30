@@ -128,3 +128,8 @@ CAP NHAT GIAO DIEN v42 - 30/10/2026 (TOI UU THEO Y KIEN NGUOI DUNG)
 - Giữ ba thao tác luyện viết, luyện dịch và luyện đọc dưới mỗi câu, đồng thời thu nhỏ nút để giảm chiều cao thẻ.
 - Thêm nút mũi tên nổi ở góc dưới bên phải; bấm để cuộn về đầu trang.
 - Giữ nguyên mã phiên bản ứng dụng v42; cập nhật tên bộ nhớ đệm Service Worker để thiết bị tải giao diện mới.
+
+
+CẬP NHẬT V42 — 30/10/2026
+- Bổ sung nút Sao chép và Đọc kết quả cho phần dịch cả đoạn văn bản và phần dịch tệp đính kèm.
+- Giọng đọc tự chọn tiếng Trung hoặc tiếng Việt theo ngôn ngữ đích của bản dịch.
