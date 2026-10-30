@@ -29,11 +29,23 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p site
+
+          # Trang chính hiện tại
           cp index.html site/
           [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
           [ -f icon.svg ] && cp icon.svg site/ || true
           [ -f sw.js ] && cp sw.js site/ || true
-          echo "" > site/.nojekyll
+
+          # Đưa toàn bộ ứng dụng luyện số vào website ở /luyen-so/
+          if [ ! -f luyen-so/index.html ]; then
+            echo "::error::Không tìm thấy luyen-so/index.html trong nhánh main."
+            exit 1
+          fi
+          mkdir -p site/luyen-so
+          cp -a luyen-so/. site/luyen-so/
+
+          # Tắt xử lý Jekyll để giữ nguyên cấu trúc thư mục và tệp
+          : > site/.nojekyll
 
       - name: Cấu hình GitHub Pages
         uses: actions/configure-pages@v5
