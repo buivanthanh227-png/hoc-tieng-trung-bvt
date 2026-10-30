@@ -1,4 +1,4 @@
-// BVT v36: Whisper chạy cục bộ. Import động để lỗi tải thư viện được trả về giao diện rõ ràng.
+// BVT v42: Whisper worker dùng cho phản xạ tiếng Trung và dịch giọng nói Việt/Trung. Import động để lỗi tải thư viện được trả về giao diện rõ ràng.
 let transformersModulePromise = null;
 let transcriber = null;
 let transcriberPromise = null;
@@ -29,7 +29,7 @@ async function getTranscriber(session) {
       env.allowRemoteModels = true;
       env.useBrowserCache = true;
       env.useWasmCache = true;
-      env.cacheKey = 'bvt-whisper-tiny-local-v36';
+      env.cacheKey = 'bvt-whisper-tiny-local-v37';
       try {
         if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
           env.backends.onnx.wasm.numThreads = 1;
@@ -63,6 +63,48 @@ async function getTranscriber(session) {
   return transcriberPromise;
 }
 
+
+function countMatches(text, regex) { return (String(text || '').match(regex) || []).length; }
+function hasVoiceTargetScript(text) {
+  const t = String(text || '');
+  return /[\u3400-\u9fff\uf900-\ufaff]/.test(t) || /[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽệềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i.test(t);
+}
+function scoreVoiceText(text, language) {
+  const t = String(text || '');
+  const han = countMatches(t, /[\u3400-\u9fff\uf900-\ufaff]/g);
+  const latin = countMatches(t, /[A-Za-zÀ-ỹ]/g);
+  const accents = countMatches(t, /[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽệềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/gi);
+  return language === 'chinese' ? han * 5 - latin * .15 : latin + accents * 3 - han * 5;
+}
+
+
+async function transcribeVietnameseChinese(pipe, audio, session) {
+  const run = async options => {
+    const output = await pipe(audio, { task: 'transcribe', return_timestamps: false, chunk_length_s: 30, stride_length_s: 5, ...options });
+    return String(output && output.text || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim();
+  };
+  let automatic = '';
+  try { automatic = await run({}); } catch (_) {}
+  if (activeSession !== session) return '';
+  if (automatic && hasVoiceTargetScript(automatic)) return automatic;
+  postForActive('status', session, { text: 'Đang kiểm tra riêng tiếng Việt và tiếng Trung…' });
+  let vietnamese = '', chinese = '';
+  try { vietnamese = await run({ language: 'vietnamese' }); } catch (_) {}
+  if (activeSession !== session) return '';
+  try { chinese = await run({ language: 'chinese' }); } catch (_) {}
+  if (activeSession !== session) return '';
+  // Prefer a forced-language hypothesis with the matching writing system.
+  if (/[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽệềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i.test(vietnamese)) return vietnamese;
+  if (/[\u3400-\u9fff\uf900-\ufaff]/.test(chinese)) return chinese;
+  const candidates = [
+    { text: automatic, score: 0 },
+    { text: vietnamese, score: scoreVoiceText(vietnamese, 'vietnamese') },
+    { text: chinese, score: scoreVoiceText(chinese, 'chinese') }
+  ].filter(item => item.text);
+  candidates.sort((a, b) => b.score - a.score || b.text.length - a.text.length);
+  return candidates[0]?.text || '';
+}
+
 self.addEventListener('message', async event => {
   const message = event.data || {};
   if (message.type === 'cancel') {
@@ -80,8 +122,10 @@ self.addEventListener('message', async event => {
       instruction: 'Bản ghi đang được xử lý cục bộ. Có thể mất vài giây tùy cấu hình điện thoại.'
     });
     const audio = message.audio instanceof Float32Array ? message.audio : new Float32Array(message.audio);
-    const output = await pipe(audio, { language: 'chinese', task: 'transcribe', return_timestamps: false });
-    postForActive('result', session, { text: String(output && output.text || '').trim() });
+    const text = message.language === 'auto'
+      ? await transcribeVietnameseChinese(pipe, audio, session)
+      : String((await pipe(audio, { language: 'chinese', task: 'transcribe', return_timestamps: false }))?.text || '').trim();
+    postForActive('result', session, { text });
   } catch (error) {
     postForActive('error', session, { message: String(error && error.message || error || 'Không nhận dạng được âm thanh.') });
   }

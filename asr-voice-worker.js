@@ -15,7 +15,7 @@ async function getTranscriber(session){
  if(!transcriberPromise){
   transcriberPromise=(async()=>{
    const {pipeline,env}=await loadTransformers();
-   env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-tiny-v42-voice-multilingual';
+   env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-tiny-local-v37';
    try{if(env.backends?.onnx?.wasm)env.backends.onnx.wasm.numThreads=1;}catch(_){}
    postForActive('status',session,{text:'Đang tải bộ nhận diện đa ngôn ngữ Whisper lần đầu…'});
    return await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{
@@ -37,9 +37,12 @@ function hasTargetScript(text){
  return /[\u3400-\u9fff\uf900-\ufaff]/.test(t)||/[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i.test(t);
 }
 function scoreForced(text,language){
- const t=String(text||'');const han=countMatches(t,/[\u3400-\u9fff\uf900-\ufaff]/g);const latin=countMatches(t,/[A-Za-zÀ-ỹ]/g);
- const marks=countMatches(t,/[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽẹềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/gi);
- return language==='chinese'?(han*5-latin*0.15):(latin+marks*3-han*5);
+ const t=String(text||'');
+ const han=countMatches(t,/[\u3400-\u9fff\uf900-\ufaff]/g);
+ const latin=countMatches(t,/[A-Za-zÀ-ỹ]/g);
+ const marks=countMatches(t,/[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽệềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/gi);
+ if(language==='chinese')return han>0?1200+han*8-latin:han*5-latin*.15;
+ return marks>0?1500+marks*10+latin-han*5:latin-han*5;
 }
 async function run(pipe,audio,options){
  const out=await pipe(audio,{task:'transcribe',return_timestamps:false,chunk_length_s:30,stride_length_s:5,...options});
@@ -54,6 +57,9 @@ async function transcribe(pipe,audio,session){
  if(activeSession!==session)return '';
  try{zh=await run(pipe,audio,{language:'chinese'});}catch(_){}
  if(activeSession!==session)return '';
+ // Prefer a forced-language result when its script clearly matches that language.
+ if(/[ăâđêôơưàáảãạằắẳẵặầấẩẫậèéẻẽệềếểễệìíỉĩịòóỏõọồốổỗộờớởỡợùúủũụừứửữựỳýỷỹỵ]/i.test(vi))return vi;
+ if(/[\u3400-\u9fff\uf900-\ufaff]/.test(zh))return zh;
  const candidates=[{text,score:hasTargetScript(text)?1000:0},{text:vi,score:scoreForced(vi,'vietnamese')},{text:zh,score:scoreForced(zh,'chinese')}].filter(x=>x.text);
  candidates.sort((a,b)=>b.score-a.score||b.text.length-a.text.length);
  return candidates[0]?.text||'';
