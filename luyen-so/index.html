@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#4f46e5">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <title>Luyện Số Tiếng Trung</title>
+  <title>Luyện Số Tiếng Trung V9</title>
   <style>
     :root {
       --primary: #4f46e5;
@@ -40,6 +40,14 @@
     }
     header { text-align: center; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
     h1 { margin: 0; color: var(--primary); font-size: 1.3rem; line-height: 1.35; }
+    .credit {
+      margin: 4px 0 0;
+      color: #dc2626;
+      font-size: .68rem;
+      font-weight: 650;
+      line-height: 1.35;
+      text-align: right;
+    }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     .mode-menu {
       display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
@@ -120,6 +128,7 @@
   <main class="app">
     <header>
       <h1>Luyện Số Tiếng Trung</h1>
+      <p class="credit">CÔNG CỤ ĐƯỢC PHÁT TRIỂN TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</p>
     </header>
 
     <nav class="mode-menu" aria-label="7 chế độ luyện số">
@@ -143,7 +152,7 @@
 
     <section id="delaySettings" class="settings-row hidden">
       <label for="delaySec">Khoảng nghỉ giữa các số (giây):</label>
-      <input type="number" id="delaySec" value="3" min="1" max="10" step="1" inputmode="numeric">
+      <input type="number" id="delaySec" value="5" min="0.1" step="0.1" inputmode="numeric">
     </section>
 
     <div id="voiceStatus" class="sr-only" role="status" aria-live="polite"></div>
@@ -172,7 +181,7 @@
       </div>
     </section>
 
-    <!-- 4. Đọc ngẫu nhiên -->
+    <!-- 4. Đọc ngẫu nhiên: rút số không lặp lại trong mỗi lượt -->
     <section id="controls-random" class="controls hidden">
       <div class="btn-row">
         <button type="button" class="btn btn-primary" id="btnRandStart">▶ Tự động đọc số</button>
@@ -233,6 +242,18 @@
     let score = { correct: 0, wrong: 0 };
     let chineseVoice = null;
     let runToken = 0;
+
+    // Trạng thái riêng của chế độ 5: rút số không lặp trong một lượt kiểm tra.
+    let quizCurrentNumber = null;
+    let quizAnswered = false;
+    let quizSessionInitialized = false;
+    let quizDeckMin = null;
+    let quizDeckMax = null;
+    let quizDeckRemaining = 0;
+    let quizAvailableCount = 0;
+    let quizSwapMap = new Map();
+    let quizDrawnFlags = new Uint8Array(1000000);
+    let quizAdvanceTimer = null;
 
     function setVoiceStatus(message, warning = false) {
       const el = $('voiceStatus');
@@ -357,17 +378,20 @@
       if (!Number.isFinite(max)) max = 100;
       min = Math.max(0, Math.min(999999, min));
       max = Math.max(0, Math.min(999999, max));
+      // Không phụ thuộc thứ tự nhập: 75–30 cũng được hiểu là 30–75.
+      // Giữ nguyên giá trị hiển thị người dùng đã nhập; chỉ chuẩn hóa khi xử lý.
       if (min > max) [min, max] = [max, min];
-      $('minNum').value = min;
-      $('maxNum').value = max;
       return { min, max };
     }
 
     function getDelay() {
-      const raw = Number.parseInt($('delaySec').value, 10);
-      const sec = Number.isFinite(raw) ? Math.max(1, Math.min(10, raw)) : 3;
-      $('delaySec').value = sec;
-      return sec * 1000;
+      const raw = Number($('delaySec').value);
+      // Mặc định 5 giây; cho phép người dùng tự chọn thời gian nghỉ.
+      // Giới hạn kỹ thuật theo setTimeout của trình duyệt để tránh tràn số.
+      const maxSeconds = 2147483.647;
+      const sec = Number.isFinite(raw) ? Math.max(0.1, Math.min(maxSeconds, raw)) : 5;
+      $('delaySec').value = String(sec);
+      return Math.round(sec * 1000);
     }
 
     function setDisplay(original, zh, pinyin, hideAnswer = false) {
@@ -440,6 +464,8 @@
       runToken++;
       if (timer) clearTimeout(timer);
       timer = null;
+      if (quizAdvanceTimer) clearTimeout(quizAdvanceTimer);
+      quizAdvanceTimer = null;
       cancelSpeechOnly();
       $('btnSequenceStart').textContent = currentMode === 'desc' ? '▶ Bắt đầu đọc giảm dần' : '▶ Bắt đầu đọc tăng dần';
       $('btnRandStart').textContent = '▶ Tự động đọc số';
@@ -450,7 +476,7 @@
       currentMode = mode;
       allModes.forEach(item => $('mode-' + item).classList.toggle('active', item === mode));
       $('rangeSettings').classList.toggle('hidden', !['asc','desc','random','quiz'].includes(mode));
-      $('delaySettings').classList.toggle('hidden', !['asc','desc','random'].includes(mode));
+      $('delaySettings').classList.toggle('hidden', !['asc','desc','random','quiz'].includes(mode));
       $('controls-single').classList.toggle('hidden', mode !== 'single');
       $('controls-sequence').classList.toggle('hidden', !['asc','desc'].includes(mode));
       $('controls-random').classList.toggle('hidden', mode !== 'random');
@@ -506,18 +532,100 @@
       step();
     }
 
-    function chooseRandomNumber() {
+    // Bộ rút số không hoàn lại dành riêng cho chế độ 4 (lô tô).
+    // Dùng Fisher–Yates dạng lười để không phải tạo mảng rất lớn trên điện thoại.
+    let randomDeckInitialized = false;
+    let randomDeckMin = null;
+    let randomDeckMax = null;
+    let randomRemaining = 0;
+    let randomAvailableCount = 0;
+    let randomSwapMap = new Map();
+    // Theo dõi những số đã xuất hiện trong lượt hiện tại. Dùng 1 byte cho
+    // mỗi số từ 0 đến 999.999 để không bị lặp kể cả khi người dùng đổi phạm vi
+    // giữa chừng; bộ nhớ chỉ khoảng 1 MB trên điện thoại.
+    let randomDrawnFlags = null;
+
+    function resetRandomDeck(clearHistory = false) {
       const { min, max } = getRange();
-      return Math.floor(Math.random() * (max - min + 1)) + min;
+      randomDeckMin = min;
+      randomDeckMax = max;
+      randomRemaining = max - min + 1;
+      randomSwapMap = new Map();
+      if (clearHistory || !randomDrawnFlags) randomDrawnFlags = new Uint8Array(1000000);
+      randomAvailableCount = 0;
+      for (let number = min; number <= max; number++) {
+        if (!randomDrawnFlags[number]) randomAvailableCount++;
+      }
+      randomDeckInitialized = true;
+    }
+
+    function ensureRandomDeck() {
+      const { min, max } = getRange();
+      if (!randomDeckInitialized) {
+        resetRandomDeck(true);
+      } else if (min !== randomDeckMin || max !== randomDeckMax) {
+        // Đổi phạm vi sẽ tạo danh sách ứng viên mới, nhưng vẫn giữ dấu các
+        // số đã đọc để không có số nào lặp lại trong cùng lượt chơi.
+        resetRandomDeck(false);
+      }
+    }
+
+    function drawUniqueRandomNumber() {
+      ensureRandomDeck();
+      // Mỗi ứng viên trong phạm vi hiện tại chỉ được rút khỏi bộ một lần.
+      // Nếu đã xuất hiện ở phạm vi trước đó của cùng lượt, bỏ qua ứng viên đó.
+      while (randomRemaining > 0) {
+        const pickedIndex = Math.floor(Math.random() * randomRemaining);
+        const lastIndex = randomRemaining - 1;
+        const pickedValue = randomSwapMap.has(pickedIndex)
+          ? randomSwapMap.get(pickedIndex) : pickedIndex;
+        const lastValue = randomSwapMap.has(lastIndex)
+          ? randomSwapMap.get(lastIndex) : lastIndex;
+
+        if (pickedIndex !== lastIndex) randomSwapMap.set(pickedIndex, lastValue);
+        randomSwapMap.delete(lastIndex);
+        randomRemaining--;
+
+        const number = randomDeckMin + pickedValue;
+        if (randomDrawnFlags[number]) continue;
+        randomDrawnFlags[number] = 1;
+        randomAvailableCount--;
+        return number;
+      }
+      return null;
+    }
+
+    function showRandomFinished() {
+      $('feedbackText').textContent = 'Đã đọc hết các số trong phạm vi.';
+      $('feedbackText').className = 'feedback correct';
     }
 
     function showRandomNumber(hideAnswer, auto = false, token = runToken) {
-      currentNumber = chooseRandomNumber();
+      const nextNumber = drawUniqueRandomNumber();
+      if (nextNumber === null) {
+        stopAll();
+        showRandomFinished();
+        return;
+      }
+
+      currentNumber = nextNumber;
       updateNumberDisplay(currentNumber, hideAnswer);
       speakChineseText(numberToChinese(currentNumber).zh, (ok) => {
-        if (auto && token === runToken && isRunning) {
+        if (token !== runToken) return;
+        if (auto && isRunning) {
           if (!ok) { stopAll(); return; }
           updateNumberDisplay(currentNumber, false);
+        }
+
+        // Khi đã đọc hết ứng viên (kể cả các số đã được đánh dấu từ một
+        // phạm vi trước trong cùng lượt), dừng hẳn và không tự quay vòng.
+        if (randomAvailableCount === 0) {
+          if (auto && isRunning) stopAll();
+          showRandomFinished();
+          return;
+        }
+
+        if (auto && isRunning) {
           timer = setTimeout(() => {
             if (isRunning && token === runToken) showRandomNumber(true, true, token);
           }, getDelay());
@@ -527,6 +635,13 @@
 
     function startRandom() {
       if (isRunning) { stopAll(); return; }
+      ensureRandomDeck();
+      // Không tự chạy vòng mới khi hết số. Chỉ khi người dùng chủ động bấm
+      // Start lần nữa sau khi đã kết thúc thì mới tạo một lượt mới.
+      if (randomAvailableCount <= 0) {
+        // Một lượt mới chỉ bắt đầu khi người dùng chủ động nhấn Start.
+        resetRandomDeck(true);
+      }
       isRunning = true;
       const token = ++runToken;
       $('btnRandStart').textContent = 'Tạm dừng';
@@ -535,6 +650,7 @@
 
     function nextRandomManual() {
       stopAll();
+      ensureRandomDeck();
       showRandomNumber(false, false, runToken);
     }
 
@@ -545,24 +661,131 @@
       }
     }
 
-    function startQuizNext() {
-      stopAll();
-      currentNumber = chooseRandomNumber();
-      updateNumberDisplay(currentNumber, true);
+    // Bộ rút số không hoàn lại riêng cho chế độ 5.
+    // Dùng Fisher–Yates dạng lười để không cần tạo mảng tối đa 1.000.000 phần tử.
+    function resetQuizDeck(clearHistory = false) {
+      const { min, max } = getRange();
+      quizDeckMin = min;
+      quizDeckMax = max;
+      quizDeckRemaining = max - min + 1;
+      quizSwapMap = new Map();
+      if (clearHistory) quizDrawnFlags = new Uint8Array(1000000);
+      quizAvailableCount = 0;
+      for (let number = min; number <= max; number++) {
+        if (!quizDrawnFlags[number]) quizAvailableCount++;
+      }
+      quizSessionInitialized = true;
+    }
+
+    function ensureQuizDeck() {
+      const { min, max } = getRange();
+      if (!quizSessionInitialized) {
+        resetQuizDeck(true);
+      } else if (min !== quizDeckMin || max !== quizDeckMax) {
+        // Khi đổi phạm vi, số đã hỏi trong lượt này vẫn được ghi nhớ.
+        resetQuizDeck(false);
+      }
+    }
+
+    function drawUniqueQuizNumber() {
+      ensureQuizDeck();
+      if (quizAvailableCount <= 0) return null;
+
+      while (quizDeckRemaining > 0) {
+        const pickedIndex = Math.floor(Math.random() * quizDeckRemaining);
+        const lastIndex = quizDeckRemaining - 1;
+        const pickedValue = quizSwapMap.has(pickedIndex)
+          ? quizSwapMap.get(pickedIndex) : pickedIndex;
+        const lastValue = quizSwapMap.has(lastIndex)
+          ? quizSwapMap.get(lastIndex) : lastIndex;
+
+        if (pickedIndex !== lastIndex) quizSwapMap.set(pickedIndex, lastValue);
+        quizSwapMap.delete(lastIndex);
+        quizDeckRemaining--;
+
+        const number = quizDeckMin + pickedValue;
+        if (quizDrawnFlags[number]) continue;
+        quizDrawnFlags[number] = 1;
+        quizAvailableCount--;
+        return number;
+      }
+      return null;
+    }
+
+    function showQuizFinished() {
+      quizCurrentNumber = null;
+      quizAnswered = false;
+      $('btnQuizStart').textContent = '▶ Bắt đầu lượt mới';
+      $('feedbackText').textContent = 'Đã kiểm tra hết các số trong phạm vi.';
+      $('feedbackText').className = 'feedback correct';
+    }
+
+    function issueQuizQuestion() {
+      const nextNumber = drawUniqueQuizNumber();
+      if (nextNumber === null) {
+        showQuizFinished();
+        return;
+      }
+
+      quizCurrentNumber = nextNumber;
+      quizAnswered = false;
+      currentNumber = nextNumber;
+      $('btnQuizStart').textContent = '🔊 Phát lại số hiện tại';
       $('quizInput').value = '';
-      speakChineseText(numberToChinese(currentNumber).zh, null, runToken);
+      updateNumberDisplay(nextNumber, true);
+      const token = ++runToken;
+      speakChineseText(numberToChinese(nextNumber).zh, null, token);
+    }
+
+    function startQuizNext() {
+      // Nếu câu hiện tại chưa trả lời, nút chỉ phát lại câu đó, không rút số mới.
+      if (quizCurrentNumber !== null && !quizAnswered) {
+        const token = ++runToken;
+        speakChineseText(numberToChinese(quizCurrentNumber).zh, null, token);
+        return;
+      }
+
+      // Nếu người dùng đã trả lời và đang chờ tự chuyển câu, không cho bấm
+      // để bỏ qua thời gian nghỉ hoặc tạo thêm câu hỏi.
+      if (quizCurrentNumber !== null && quizAnswered && quizAdvanceTimer) return;
+
+      // Chỉ bắt đầu lượt mới khi người dùng chủ động bấm nút sau khi đã hết số.
+      if (quizSessionInitialized && quizAvailableCount <= 0) {
+        resetQuizDeck(true);
+      } else {
+        ensureQuizDeck();
+      }
+      issueQuizQuestion();
+    }
+
+    function advanceQuizAfterDelay() {
+      quizAdvanceTimer = null;
+      if (currentMode !== 'quiz') return;
+      if (!quizAnswered) return;
+      // Nếu người dùng đổi phạm vi trong lúc chờ, cập nhật tập số còn lại
+      // nhưng vẫn loại trừ mọi số đã được hỏi trong lượt hiện tại.
+      ensureQuizDeck();
+
+      if (quizAvailableCount <= 0) {
+        showQuizFinished();
+        return;
+      }
+      issueQuizQuestion();
     }
 
     function checkQuizAnswer() {
-      if (currentNumber === null) return;
+      if (quizCurrentNumber === null || quizAnswered) return;
       const raw = $('quizInput').value.trim();
       if (raw === '') {
         $('feedbackText').textContent = 'Vui lòng nhập số bạn nghe được.';
         $('feedbackText').className = 'feedback wrong';
         return;
       }
+
       const val = Number(raw);
-      const answer = currentNumber;
+      const answer = quizCurrentNumber;
+      quizAnswered = true;
+      currentNumber = null;
       updateNumberDisplay(answer, false);
       if (Number.isInteger(val) && val === answer) {
         $('feedbackText').textContent = '✓ Chính xác!';
@@ -575,7 +798,11 @@
       }
       $('scoreCorrect').textContent = score.correct;
       $('scoreWrong').textContent = score.wrong;
-      currentNumber = null;
+
+      // Sau khi chấm điểm, chờ đúng khoảng giây người dùng cài rồi mới hỏi số mới.
+      // Câu cuối cùng cũng chờ đủ thời gian để người dùng xem kết quả, sau đó dừng.
+      if (quizAdvanceTimer) clearTimeout(quizAdvanceTimer);
+      quizAdvanceTimer = setTimeout(advanceQuizAfterDelay, getDelay());
     }
 
     function speakBirthYear() {
