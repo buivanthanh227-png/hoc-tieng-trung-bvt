@@ -150,3 +150,11 @@ BIG UPDATE V42.2 – SỬA THU ÂM VÀ PHẢN HỒI LUYỆN TỪ VỰNG (31/10/2
 - Hiển thị rõ CHÍNH XÁC / CHƯA CHÍNH XÁC khi người học nhập hoặc thu âm có kết quả. Khi không có câu trả lời, ứng dụng tiếp tục bộ đếm và tự hiện đáp án theo thời gian cài đặt.
 - Cả bốn chế độ đều phát âm câu hỏi và phát âm đáp án theo ngôn ngữ tương ứng.
 - Cần cấp quyền micro và mở ứng dụng bằng HTTPS. Lần đầu sử dụng nhận diện cần Internet để tải mô hình; các lần sau có thể dùng lại mô hình đã lưu trong bộ nhớ đệm trình duyệt.
+
+
+BIG UPDATE V42.3 – GỘP LUYỆN TẬP TỪ VỰNG THÀNH 2 HƯỚNG (31/10/2026)
+- Thay biểu tượng menu Luyện tập từ vựng bằng ký hiệu thẻ từ có chữ 词, phân biệt với biểu tượng quyển sách của Từ điển.
+- Gộp bốn lựa chọn cũ thành hai hướng luyện tập: (1) AI hiển thị và phát âm nghĩa tiếng Việt, người học trả lời tiếng Trung; (2) AI hiển thị và phát âm chữ Hán tiếng Trung, người học trả lời tiếng Việt.
+- Mỗi câu hỏi được hiển thị trên màn hình và phát âm; khi hiện đáp án, đáp án cũng được phát âm theo ngôn ngữ đích. Giữ nguyên nhập bàn phím, thu âm, chấm CHÍNH XÁC/CHƯA CHÍNH XÁC, bộ hẹn giờ và quy tắc xáo trộn không lặp từ.
+- Giữ nguyên ba nguồn nạp từ vựng: tự chọn từ điển, từ đã nhận diện từ ảnh và từ đã chọn ở Ghép câu luyện phản xạ.
+- Đổi cache Service Worker sang mã V42.3 để tải giao diện mới.
