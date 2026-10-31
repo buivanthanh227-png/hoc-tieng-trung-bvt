@@ -308,6 +308,8 @@
 
 /* V42.3 - vocabulary menu uses a distinct flashcard/word symbol, not the dictionary book icon */
 .tab .vocab-wordmark{display:grid;place-items:center;width:29px;height:25px;margin:0 auto 2px;border:1px solid #7dd3fc;border-radius:7px;background:linear-gradient(145deg,#e0f2fe,#f0f9ff);color:#075985;font-family:"Noto Serif CJK SC",serif;font-size:18px;font-weight:900;line-height:1;box-shadow:inset 0 -2px 0 #bae6fd}
+/* V42.3 alignment fix: keep the vocabulary icon in the same fixed icon column as every other menu, on desktop and mobile. */
+.app-shell .tab .vocab-wordmark{display:inline-grid;flex:0 0 23px;width:23px;min-width:23px;height:23px;margin:0;padding:0;place-items:center;vertical-align:middle;line-height:1}
 .vocab-section-mark{display:inline-grid;place-items:center;vertical-align:middle;width:25px;height:25px;margin-right:4px;border:1px solid #7dd3fc;border-radius:6px;background:#e0f2fe;color:#075985;font-family:"Noto Serif CJK SC",serif;font-size:16px;font-weight:900;line-height:1}
 /* v42.2 - vocabulary training: reliable repeatable MediaRecorder + Whisper recognition */
 .vocab-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}
