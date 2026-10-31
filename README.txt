@@ -133,3 +133,11 @@ CAP NHAT GIAO DIEN v42 - 30/10/2026 (TOI UU THEO Y KIEN NGUOI DUNG)
 CẬP NHẬT V42 — 30/10/2026
 - Bổ sung nút Sao chép và Đọc kết quả cho phần dịch cả đoạn văn bản và phần dịch tệp đính kèm.
 - Giọng đọc tự chọn tiếng Trung hoặc tiếng Việt theo ngôn ngữ đích của bản dịch.
+
+
+BIG UPDATE V42.1 – LUYỆN TẬP TỪ VỰNG (31/10/2026)
+- Thêm menu LUYỆN TẬP TỪ VỰNG. Nguồn từ vựng gồm: người dùng tự chọn từ điển, từ đã nhận diện/tách từ bằng chức năng quét ảnh, và các từ đã chọn trong menu Ghép câu luyện phản xạ. Có thể gộp nhiều nguồn; ứng dụng tự loại từ trùng theo chữ Hán.
+- Bốn chế độ: AI đọc tiếng Việt – người học trả lời tiếng Trung; AI đọc tiếng Trung – người học trả lời tiếng Việt; hiện nghĩa tiếng Việt – trả lời tiếng Trung; hiện chữ Hán – trả lời tiếng Việt.
+- Người học có thể nhập câu trả lời hoặc dùng micro (khi trình duyệt hỗ trợ). Có thể cài thời gian tự hiện đáp án và thời gian tự chuyển sang từ tiếp theo. Khi hiện đáp án, ứng dụng luôn phát âm theo ngôn ngữ đáp án.
+- Mỗi lượt xáo trộn ngẫu nhiên danh sách và mỗi từ chỉ xuất hiện một lần; hết danh sách sẽ dừng, không tự lặp từ. Bấm BẮT ĐẦU LUYỆN TẬP để tạo lượt mới và xáo trộn lại.
+- Micro cần quyền truy cập và khả năng nhận diện giọng nói của trình duyệt; giọng đọc dùng Speech Synthesis có sẵn trên thiết bị.
