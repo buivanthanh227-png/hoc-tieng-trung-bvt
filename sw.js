@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME='hoc-trung-app-shell-v42-1-vocabulary-training-20261031a';
+const CACHE_NAME='hoc-trung-app-shell-v42-2-vocabulary-training-asr-20261031b';
 const APP_FILES = ['./index.html', './luyen-so-tieng-trung.html', './manifest.webmanifest', './icon.svg', './icon.svg?v=41-gold-logo-stroke-practice-20261028', './icon-v41-192.png', './icon-v41-192.png?v=41-gold-logo-stroke-practice-20261028', './icon-v41-512.png', './icon-v41-512.png?v=41-gold-logo-stroke-practice-20261028', './apple-touch-icon-v41.png', './apple-touch-icon-v41.png?v=41-gold-logo-stroke-practice-20261028', './sw.js', './asr-worker.js', './asr-voice-worker.js', './ocr-worker.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 self.addEventListener('install', event => {

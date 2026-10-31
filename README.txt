@@ -141,3 +141,12 @@ BIG UPDATE V42.1 – LUYỆN TẬP TỪ VỰNG (31/10/2026)
 - Người học có thể nhập câu trả lời hoặc dùng micro (khi trình duyệt hỗ trợ). Có thể cài thời gian tự hiện đáp án và thời gian tự chuyển sang từ tiếp theo. Khi hiện đáp án, ứng dụng luôn phát âm theo ngôn ngữ đáp án.
 - Mỗi lượt xáo trộn ngẫu nhiên danh sách và mỗi từ chỉ xuất hiện một lần; hết danh sách sẽ dừng, không tự lặp từ. Bấm BẮT ĐẦU LUYỆN TẬP để tạo lượt mới và xáo trộn lại.
 - Micro cần quyền truy cập và khả năng nhận diện giọng nói của trình duyệt; giọng đọc dùng Speech Synthesis có sẵn trên thiết bị.
+
+
+BIG UPDATE V42.2 – SỬA THU ÂM VÀ PHẢN HỒI LUYỆN TỪ VỰNG (31/10/2026)
+- Biểu tượng menu Luyện tập từ vựng dùng hình quyển sách, phù hợp nội dung ôn từ.
+- Sửa micro luyện từ vựng: sử dụng MediaRecorder và bộ nhận diện Whisper chạy trên thiết bị; mỗi lần thu âm tạo phiên nhận diện riêng, có thể ghi âm nhiều lượt liên tiếp.
+- Nhận diện đúng ngôn ngữ trả lời: tiếng Trung khi cần trả lời chữ Hán, tiếng Việt khi cần trả lời nghĩa tiếng Việt.
+- Hiển thị rõ CHÍNH XÁC / CHƯA CHÍNH XÁC khi người học nhập hoặc thu âm có kết quả. Khi không có câu trả lời, ứng dụng tiếp tục bộ đếm và tự hiện đáp án theo thời gian cài đặt.
+- Cả bốn chế độ đều phát âm câu hỏi và phát âm đáp án theo ngôn ngữ tương ứng.
+- Cần cấp quyền micro và mở ứng dụng bằng HTTPS. Lần đầu sử dụng nhận diện cần Internet để tải mô hình; các lần sau có thể dùng lại mô hình đã lưu trong bộ nhớ đệm trình duyệt.

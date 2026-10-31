@@ -124,7 +124,7 @@ self.addEventListener('message', async event => {
     const audio = message.audio instanceof Float32Array ? message.audio : new Float32Array(message.audio);
     const text = message.language === 'auto'
       ? await transcribeVietnameseChinese(pipe, audio, session)
-      : String((await pipe(audio, { language: 'chinese', task: 'transcribe', return_timestamps: false }))?.text || '').trim();
+      : String((await pipe(audio, { language: message.language === 'vietnamese' ? 'vietnamese' : 'chinese', task: 'transcribe', return_timestamps: false }))?.text || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim();
     postForActive('result', session, { text });
   } catch (error) {
     postForActive('error', session, { message: String(error && error.message || error || 'Không nhận dạng được âm thanh.') });
