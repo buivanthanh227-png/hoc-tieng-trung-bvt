@@ -1,5 +1,5 @@
 // BVT v42: multilingual Whisper worker for Vietnamese/Chinese voice translation.
-// Uses automatic language detection first; only retries with explicit languages if detection gives no useful text.
+// Compares automatic recognition with both explicit languages to reduce wrong-script results.
 let transformersModulePromise=null,transcriber=null,transcriberPromise=null,activeSession=null;
 function postForActive(type,session,payload={}){if(activeSession===session)self.postMessage({type,session,...payload});}
 async function loadTransformers(){
@@ -15,10 +15,10 @@ async function getTranscriber(session){
  if(!transcriberPromise){
   transcriberPromise=(async()=>{
    const {pipeline,env}=await loadTransformers();
-   env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-tiny-local-v37';
+   env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-base-local-v4245';
    try{if(env.backends?.onnx?.wasm)env.backends.onnx.wasm.numThreads=1;}catch(_){}
    postForActive('status',session,{text:'Đang tải bộ nhận diện đa ngôn ngữ Whisper lần đầu…'});
-   return await pipeline('automatic-speech-recognition','onnx-community/whisper-tiny',{
+   return await pipeline('automatic-speech-recognition','onnx-community/whisper-base',{
     device:'wasm',dtype:'q8',progress_callback:info=>{
      if(activeSession!==session||!info||info.status!=='progress')return;
      const name=String(info.file||'tệp mô hình').split('/').pop();
@@ -50,8 +50,7 @@ async function run(pipe,audio,options){
 }
 async function transcribe(pipe,audio,session){
  let text=await run(pipe,audio,{});if(activeSession!==session)return '';
- if(hasTargetScript(text))return text;
- postForActive('status',session,{text:text?'Đang kiểm tra lại ngôn ngữ để tránh nhận sai tiếng Việt/Trung…':'Đang thử nhận diện riêng tiếng Việt và tiếng Trung…'});
+ postForActive('status',session,{text:text?'Đang đối chiếu kết quả tự động với tiếng Việt và tiếng Trung…':'Đang thử nhận diện riêng tiếng Việt và tiếng Trung…'});
  let vi='',zh='';
  try{vi=await run(pipe,audio,{language:'vietnamese'});}catch(_){}
  if(activeSession!==session)return '';

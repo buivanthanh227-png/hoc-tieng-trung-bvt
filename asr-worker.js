@@ -29,17 +29,17 @@ async function getTranscriber(session) {
       env.allowRemoteModels = true;
       env.useBrowserCache = true;
       env.useWasmCache = true;
-      env.cacheKey = 'bvt-whisper-tiny-local-v37';
+      env.cacheKey = 'bvt-whisper-base-local-v4245';
       try {
         if (env.backends && env.backends.onnx && env.backends.onnx.wasm) {
           env.backends.onnx.wasm.numThreads = 1;
         }
       } catch (_) {}
       postForActive('status', session, {
-        text: 'Đang tải mô hình Whisper tiny miễn phí lần đầu…',
+        text: 'Đang tải mô hình Whisper base đa ngôn ngữ miễn phí lần đầu…',
         instruction: 'Lần đầu cần Internet để tải mô hình. Âm thanh được xử lý trên điện thoại, không gửi lên API nhận dạng.'
       });
-      const pipe = await pipeline('automatic-speech-recognition', 'onnx-community/whisper-tiny', {
+      const pipe = await pipeline('automatic-speech-recognition', 'onnx-community/whisper-base', {
         device: 'wasm', dtype: 'q8',
         progress_callback: info => {
           if (activeSession !== session || !info) return;
@@ -86,8 +86,7 @@ async function transcribeVietnameseChinese(pipe, audio, session) {
   let automatic = '';
   try { automatic = await run({}); } catch (_) {}
   if (activeSession !== session) return '';
-  if (automatic && hasVoiceTargetScript(automatic)) return automatic;
-  postForActive('status', session, { text: 'Đang kiểm tra riêng tiếng Việt và tiếng Trung…' });
+  postForActive('status', session, { text: 'Đang đối chiếu nhận diện tự động với hai lượt tiếng Việt và tiếng Trung…' });
   let vietnamese = '', chinese = '';
   try { vietnamese = await run({ language: 'vietnamese' }); } catch (_) {}
   if (activeSession !== session) return '';
@@ -122,9 +121,21 @@ self.addEventListener('message', async event => {
       instruction: 'Bản ghi đang được xử lý cục bộ. Có thể mất vài giây tùy cấu hình điện thoại.'
     });
     const audio = message.audio instanceof Float32Array ? message.audio : new Float32Array(message.audio);
-    const text = message.language === 'auto'
-      ? await transcribeVietnameseChinese(pipe, audio, session)
-      : String((await pipe(audio, { language: message.language === 'vietnamese' ? 'vietnamese' : 'chinese', task: 'transcribe', return_timestamps: false }))?.text || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim();
+    let text = '';
+    if (message.language === 'auto') {
+      text = await transcribeVietnameseChinese(pipe, audio, session);
+    } else if (message.language === 'chinese') {
+      let forced = '', automatic = '';
+      try { forced = String((await pipe(audio, { language: 'chinese', task: 'transcribe', return_timestamps: false }))?.text || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim(); } catch (_) {}
+      if (activeSession !== session) return;
+      try { automatic = String((await pipe(audio, { task: 'transcribe', return_timestamps: false }))?.text || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim(); } catch (_) {}
+      if (activeSession !== session) return;
+      const hanCount = value => (String(value || '').match(/[\u3400-\u9fff\uf900-\ufaff]/g) || []).length;
+      const candidates = [forced, automatic].filter(Boolean).sort((a, b) => (hanCount(b) * 4 - (b.length - hanCount(b)) * .2) - (hanCount(a) * 4 - (a.length - hanCount(a)) * .2) || b.length - a.length);
+      text = candidates[0] || '';
+    } else {
+      text = String((await pipe(audio, { language: 'vietnamese', task: 'transcribe', return_timestamps: false }))?.text || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim();
+    }
     postForActive('result', session, { text });
   } catch (error) {
     postForActive('error', session, { message: String(error && error.message || error || 'Không nhận dạng được âm thanh.') });

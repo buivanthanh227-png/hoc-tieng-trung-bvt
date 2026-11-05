@@ -195,3 +195,12 @@ TINH CHINH THU TU NET VA HINH GOI NHO BO THU V42.4 (05/11/2026):
 - Nut Chay lai/Xem lai giu nguyen nhan, bam vao se dat lai chu hien tai va phat lai tu net dau tien.
 - Thay emoji phu thuoc font bang 214 hinh goi nho SVG vector, cung mau net va nen, hien thi dong bo tren may tinh va dien thoai. Hinh la meo ghi nho truc quan, khong phai minh hoa tu nguyen.
 - Service Worker doi ma cache de trinh duyet nhan ban cap nhat.
+
+
+CAP NHAT V42.4 – AM THANH, KHO TAI LIEU VA MINH HOA 214 BO THU (05/11/2026):
+- Menu 4: co nut sao chep rieng noi dung nhan dien; cap nhat Whisper Base da ngon ngu cho nhan dien tieng Viet/Trung.
+- Menu 5 va 6: nut loa phat am noi dung cau hoi, dap an tieng Trung va nghia tieng Viet.
+- Menu 8: ghi am bang MediaRecorder va nhan dien tieng Trung bang Whisper Base, khong phu thuoc SpeechRecognition tich hop cua trinh duyet. Lan dau can Internet tai mo hinh, sau do duoc cache tren trinh duyet.
+- Menu 13 TAI LIEU CUA BAN: luu anh va van ban bang IndexedDB tren trinh duyet; ho tro xem, tim kiem, tai xuong, xoa, xuat/nhap ban sao luu JSON de chuyen thiet bi. Khong dong bo dam may tu dong.
+- Danh sach 214 bo thu: bo sung nghia goi y tieng Viet va 214 minh hoa SVG rieng theo tung so bo thu; hinh la cong cu ghi nho su pham, khong phai hinh giai thich nguon goc tu nguyen cua moi chu.
+- Luu y: nhan dien giong noi phu thuoc chat luong micro, tieng on va giong doc; TTS phu thuoc giong doc co tren thiet bi.
