@@ -225,3 +225,20 @@ CAP NHAT V42.4 - SUA HOAT ANH BO THU (05/11/2026)
 - Khi chon mot bo thu, mo hop thoai noi (modal) hien thi hinh goi nho, y nghia, so net va hoat anh; khong can cuon xuong cuoi danh sach.
 - Hoat anh tu lap sau moi luot, nghi 3 giay; nut Xem lai thu tu net dat trong modal va chay lai tu net dau tien.
 - Nut quay lai chu dang tra van duoc hien trong modal khi mo tu cua so thu tu net cua tu dien.
+
+
+V42.4.6 - 13 MENU COLORS + RADICAL / IDS COMPONENT ANALYSIS
+- 13 menu colors are now distinct and use white labels with high contrast.
+- Character analysis combines the official radical field with Make Me a Hanzi IDS decomposition and semantic/phonetic components.
+- Silver 银 / 銀 should show the primary metal radical 金 (#167) plus 艮 (#138) as a phonetic component.
+- Results are precomputed and cached per character when the Make Me a Hanzi dictionary map is loaded.
+- The cache key was bumped to v2 to avoid stale radical-only entries.
+- Service worker cache version updated.
+
+V42.4.6 - DISTINCT 13-COLOR IDENTITY + CHARACTER COMPONENT ANALYSIS
+- Replaced menu colors with 13 distinct color identities; all have readable white-text contrast. The selected function content uses the corresponding accent color as well.
+- Character-to-radical analysis now cross-checks the Make Me a Hanzi fields: radical, IDS decomposition, semantic component, phonetic component, and hint.
+- IDS decomposition leaves are compared with the 214 Kangxi radical list and known positional variants. The official primary radical is presented separately from additional visible components that happen to match a Kangxi radical.
+- Example: 银 = primary 金 (#167; written as 钅) + phonetic component 艮 (#138). 銀 gives the same component result using 釒. 行 = primary 行 (#144) + recognized component 彳 (#60).
+- On first analysis, the browser downloads the Make Me a Hanzi character metadata (about 9,000 common characters), builds the character result index, and caches the source map in local storage. Internet is required for the first download; the local fallback includes the 银/銀/行 examples.
+- Cache key and service-worker shell version were bumped so old radical-only cache entries cannot hide the new decomposition data.

@@ -348,8 +348,8 @@
 .copyable-field{position:relative!important;padding-right:19px!important}.copy-field-button{position:absolute;right:1px;top:1px;width:17px;height:17px;min-width:17px;min-height:17px;padding:0;border:0;border-radius:5px;background:#ffffffdf;color:#64748b;font-size:10px;line-height:17px;display:grid;place-items:center;z-index:3;box-shadow:0 0 0 1px #e2e8f0}
 .radical-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.radical-item{display:grid;grid-template-columns:32px minmax(0,1fr);gap:7px;align-items:center;text-align:left;padding:8px 9px;border:1px solid #d8eeec;border-radius:11px;background:linear-gradient(145deg,#f0fdfa,#fff);color:#134e4a;min-width:0}.radical-item.active{border-color:#0f766e;background:#ccfbf1}.radical-glyph{font-size:25px;font-weight:800;line-height:1.1;text-align:center;color:#0f766e}.radical-info{min-width:0}.radical-info b{display:block;font-size:11px;line-height:1.25}.radical-info small{display:block;font-size:10px;color:#64748b;margin-top:2px}.radical-detail{border-color:#99f6e4;background:linear-gradient(145deg,#f0fdfa,#fff)}.radical-stroke-stage{margin:12px auto 8px;border-color:#99f6e4;background:#fff}.radical-stroke-stage .stroke-fallback-char{color:#0f766e}
 @media(max-width:620px){.radical-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.radical-item{padding:7px 6px;grid-template-columns:27px minmax(0,1fr);gap:5px}.radical-glyph{font-size:22px}}@media(max-width:380px){.radical-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-[data-active-tab="vi-zh"] #panel-practice{--red:#16a34a;--red2:#22c55e}[data-active-tab="zh-vi"] #panel-practice{--red:#0284c7;--red2:#0ea5e9}[data-active-tab="write"] #panel-practice{--red:#db2777;--red2:#ec4899}[data-active-tab="read"] #panel-practice{--red:#7c3aed;--red2:#8b5cf6}
-[data-active-tab="vi-zh"] #panel-practice{--red:#16a34a;--red2:#22c55e}[data-active-tab="zh-vi"] #panel-practice{--red:#0284c7;--red2:#0ea5e9}[data-active-tab="write"] #panel-practice{--red:#db2777;--red2:#ec4899}[data-active-tab="read"] #panel-practice{--red:#7c3aed;--red2:#8b5cf6}
+[data-active-tab="vi-zh"] #panel-practice{--red:#267F10;--red2:#4A9F2B}[data-active-tab="zh-vi"] #panel-practice{--red:#107F2C;--red2:#2AA64D}[data-active-tab="write"] #panel-practice{--red:#107F5E;--red2:#22A77F}[data-active-tab="read"] #panel-practice{--red:#106E7F;--red2:#218FA3}
+[data-active-tab="vi-zh"] #panel-practice{--red:#267F10;--red2:#4A9F2B}[data-active-tab="zh-vi"] #panel-practice{--red:#107F2C;--red2:#2AA64D}[data-active-tab="write"] #panel-practice{--red:#107F5E;--red2:#22A77F}[data-active-tab="read"] #panel-practice{--red:#106E7F;--red2:#218FA3}
 
 #panel-dict .card,#panel-ocr .card,#panel-practice .card,#panel-voice-translate .card,#panel-combine .card,#panel-vocab-training .card,#panel-radicals .card{border-top:3px solid color-mix(in srgb,var(--red) 62%,white)}
 #panel-dict .section-title,#panel-ocr .section-title,#panel-practice .section-title,#panel-voice-translate .section-title,#panel-combine .section-title,#panel-vocab-training .section-title,#panel-radicals .section-title{color:var(--red)}
@@ -510,6 +510,52 @@
 #radical-stroke-modal .radical-modal-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 #radical-stroke-modal .radical-modal-actions .btn{min-width:145px}
 @media(max-width:520px){#radical-stroke-modal .stroke-dialog{padding:12px}#radical-stroke-modal .radical-modal-art-icon{width:66px;height:66px}#radical-stroke-modal .radical-modal-art-icon svg{width:60px;height:60px}#radical-modal-stroke-stage{width:min(270px,76vw)}}
+</style>
+
+
+<style id="v4246-distinct-menu-colors-and-radical-components">
+/* V42.4.6: 13 clearly separated, high-contrast menu colors (all labels stay white). */
+.app-shell #main-tabs .tab[data-tab="dict"]{--menu-color:#7F1010}
+.app-shell #main-tabs .tab[data-tab="ocr"]{--menu-color:#7F4210}
+.app-shell #main-tabs .tab[data-tab="translate"]{--menu-color:#7F7410}
+.app-shell #main-tabs .tab[data-tab="voice-translate"]{--menu-color:#587F10}
+.app-shell #main-tabs .tab[data-tab="vi-zh"]{--menu-color:#267F10}
+.app-shell #main-tabs .tab[data-tab="zh-vi"]{--menu-color:#107F2C}
+.app-shell #main-tabs .tab[data-tab="write"]{--menu-color:#107F5E}
+.app-shell #main-tabs .tab[data-tab="read"]{--menu-color:#106E7F}
+.app-shell #main-tabs .tab[data-tab="combine"]{--menu-color:#103C7F}
+.app-shell #main-tabs .tab[data-tab="vocab-training"]{--menu-color:#15107F}
+.app-shell #main-tabs .tab[data-tab="number"]{--menu-color:#47107F}
+.app-shell #main-tabs .tab[data-tab="radicals"]{--menu-color:#7A107F}
+.app-shell #main-tabs .tab[data-tab="library"]{--menu-color:#7F1053}
+/* Carry the same 13-color identity into each selected function's content area. */
+:root[data-active-tab="dict"]{--red:#7F1010;--red2:#A52A2A}
+:root[data-active-tab="ocr"]{--red:#7F4210;--red2:#A65F23}
+:root[data-active-tab="translate"]{--red:#7F7410;--red2:#A99B24}
+:root[data-active-tab="voice-translate"]{--red:#587F10;--red2:#79A52A}
+:root[data-active-tab="vi-zh"]{--red:#267F10;--red2:#4A9F2B}
+:root[data-active-tab="zh-vi"]{--red:#107F2C;--red2:#2AA64D}
+:root[data-active-tab="write"]{--red:#107F5E;--red2:#22A77F}
+:root[data-active-tab="read"]{--red:#106E7F;--red2:#218FA3}
+:root[data-active-tab="combine"]{--red:#103C7F;--red2:#285C9F}
+:root[data-active-tab="vocab-training"]{--red:#15107F;--red2:#302A9F}
+:root[data-active-tab="number"]{--red:#47107F;--red2:#6A2A9F}
+:root[data-active-tab="radicals"]{--red:#7A107F;--red2:#9B2AA1}
+:root[data-active-tab="library"]{--red:#7F1053;--red2:#A52D75}
+.radical-analysis{display:grid;gap:5px;min-width:0}
+.radical-analysis-primary,.radical-analysis-secondary{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-width:0}
+.radical-analysis-primary>b,.radical-analysis-secondary>b{font-size:10px;color:#334155;flex:0 0 auto}
+.radical-component-chips{display:flex;flex-wrap:wrap;gap:5px;min-width:0}
+.radical-component-button{display:inline-flex!important;flex-wrap:wrap;align-items:center;gap:4px;white-space:normal!important;min-height:29px!important;padding:4px 7px!important;border-color:#99c5be!important;background:#f1fbf8!important;color:#134e4a!important;font-weight:800!important}
+.radical-component-button small{font-size:8px!important;color:#0f766e!important;font-weight:900!important;margin:0!important}
+.radical-component-button em{font-size:9px!important;font-style:normal!important;color:#64748b!important;font-weight:500!important}
+.radical-analysis-source{display:block;color:#64748b;font-size:9px;line-height:1.35;overflow-wrap:anywhere}
+.radical-analysis-count{display:block;color:#0f766e;font-size:9px;font-weight:800;margin-top:3px}
+.radical-word-row{align-items:start!important;grid-template-columns:34px minmax(0,1fr)!important}
+.radical-word-content{min-width:0}
+.radical-analysis.compact{gap:4px}
+.radical-analysis.compact .radical-analysis-primary,.radical-analysis.compact .radical-analysis-secondary{gap:4px}
+@media(max-width:420px){.radical-component-button{font-size:9px!important;padding:4px 6px!important}.radical-analysis-primary,.radical-analysis-secondary{align-items:flex-start}.radical-analysis-primary>b,.radical-analysis-secondary>b{width:100%}}
 </style>
 
 </head>
@@ -4514,16 +4560,161 @@ $('radical-modal-replay')?.addEventListener('click',()=>{
 });
 const variants=[['氵','水'],['氺','水'],['亻','人'],['扌','手'],['忄','心'],['讠','言'],['訁','言'],['艹','艸'],['辶','辵'],['钅','金'],['釒','金'],['刂','刀'],['灬','火'],['犭','犬'],['礻','示'],['衤','衣'],['饣','食'],['纟','糸'],['糹','糸'],['车','車'],['门','門'],['马','馬'],['鸟','鳥'],['鱼','魚'],['贝','貝'],['见','見'],['页','頁'],['风','風'],['长','長'],['⺮','竹'],['⺡','水'],['⺗','心'],['⺼','肉'],['阝','邑']];
 const RADICAL_DATA_URL='https://raw.githubusercontent.com/skishore/makemeahanzi/master/dictionary.txt';
-const RADICAL_CACHE_KEY='bvt-character-radicals-makemeahanzi-v1';
-const LOCAL_RADICAL_FALLBACK={银:{radical:'钅'},行:{radical:'行'},銀:{radical:'釒'}};
+// v2 stores the official radical AND the IDS component breakdown from Make Me a Hanzi.
+const RADICAL_CACHE_KEY='bvt-character-radicals-makemeahanzi-v2-components';
+const LOCAL_RADICAL_FALLBACK={
+ '银':{radical:'钅',decomposition:'⿰钅艮',semantic:'钅',phonetic:'艮',hint:'money',type:'pictophonetic'},
+ '銀':{radical:'釒',decomposition:'⿰釒艮',semantic:'釒',phonetic:'艮',hint:'money',type:'pictophonetic'},
+ '行':{radical:'行',decomposition:'⿰彳亍',hint:'To take small steps 亍 with one\'s feet 彳',type:'ideographic'}
+};
+const IDS_BINARY_OPERATORS=new Set([...'⿰⿱⿴⿵⿶⿷⿸⿹⿺⿻']);
+const IDS_TERNARY_OPERATORS=new Set([...'⿲⿳']);
+const IDS_ALL_OPERATORS=new Set([...IDS_BINARY_OPERATORS,...IDS_TERNARY_OPERATORS]);
+const isHanComponent=ch=>/^[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\u2e80-\u2eff\u31c0-\u31ef\u{20000}-\u{323af}]$/u.test(ch);
 let characterRadicalMap=null,characterRadicalPromise=null,characterRadicalSource='';
-function resolveRadicalForm(form){if(!form)return null;let r=RADICALS.find(x=>x.char===form);if(r)return {record:r,form};const direct=RADICALS.find(x=>String(x.variant||'').split(/[·,，；;]/).some(v=>v.trim().replace(/（.*?）/g,'').replace(/\s*\(.*?\)/g,'').trim()===form));if(direct)return {record:direct,form};const alias=variants.find(x=>x[0]===form)?.[1];r=RADICALS.find(x=>x.char===alias);return r?{record:r,form}:null;}
-async function loadCharacterRadicalMap(){if(characterRadicalMap)return characterRadicalMap;if(characterRadicalPromise)return characterRadicalPromise;characterRadicalPromise=(async()=>{let map={};try{const cached=localStorage.getItem(RADICAL_CACHE_KEY);if(cached){const obj=JSON.parse(cached);if(obj&&Object.keys(obj).length>500)map=obj;}}catch(_){}if(Object.keys(map).length){characterRadicalMap=map;characterRadicalSource='bộ dữ liệu đã lưu trên thiết bị';return map;}try{const response=await fetch(RADICAL_DATA_URL,{cache:'force-cache'});if(!response.ok)throw new Error('HTTP '+response.status);const raw=await response.text();for(const line of raw.split(/\r?\n/)){if(!line.trim())continue;try{const item=JSON.parse(line);if(item.character&&item.radical)map[item.character]={radical:item.radical,hint:item.etymology?.hint||item.etymology?.semantic||''};}catch(_){}}if(Object.keys(map).length>500){try{localStorage.setItem(RADICAL_CACHE_KEY,JSON.stringify(map));}catch(_){}characterRadicalMap=map;characterRadicalSource='Make Me a Hanzi';return map;}}catch(err){console.warn('Không tải được dữ liệu bộ thủ:',err);}characterRadicalMap={...LOCAL_RADICAL_FALLBACK};characterRadicalSource='dữ liệu dự phòng cục bộ (một số chữ phổ biến)';return characterRadicalMap;})();return characterRadicalPromise;}
-function guessRadicalForWord(word){const cs=[...String(word||'')];for(const ch of cs){const v=variants.find(x=>x[0]===ch);if(v){const r=RADICALS.find(x=>x.char===v[1]);if(r)return {...r,note:'dạng biến thể '+v[0]};}}const priority=['人','口','女','子','宀','山','巾','心','手','日','月','木','水','火','田','目','石','禾','竹','米','糸','肉','言','足','金','雨','馬','魚','鳥'];for(const radical of priority){if(cs.includes(radical)){const r=RADICALS.find(x=>x.char===radical);if(r)return {...r,note:'gợi ý theo thành phần nhìn thấy, chưa phải phân loại từ điển'};}}return null;}
-async function getCharacterRadicalInfo(ch){const map=await loadCharacterRadicalMap();const item=map[ch];if(!item?.radical)return null;const resolved=resolveRadicalForm(item.radical);return {character:ch,rawRadical:item.radical,record:resolved?.record||null,hint:item.hint||'',source:characterRadicalSource};}
-async function updateStrokeRadicalInfo(ch){const el=$('stroke-radical-info');if(!el)return;el.textContent='Đang tra bộ thủ của chữ '+ch+'…';const info=await getCharacterRadicalInfo(ch);if(!el.isConnected||activeStrokeChar!==ch)return;if(info){const r=info.record;el.innerHTML=`<b>Bộ thủ:</b> ${escapeHTML(info.rawRadical)}${r?` → <strong>${escapeHTML(r.char)}</strong> · bộ #${r.no} · ${r.strokes} nét${r.variantStrokes?' (dạng 钅: 5 nét)':''} <button type="button" class="btn secondary tiny" data-open-radical="${r.no}">Xem bộ thủ</button>`:' · chưa có trong danh sách 214 bộ thủ'} <small>(${escapeHTML(info.source)})</small>`;}else{el.textContent='Chưa có dữ liệu phân loại bộ thủ cho chữ này trong dữ liệu hiện có.';}}
-async function renderWordRadicals(word,panel){const chars=[...String(word||'')].filter(ch=>/[\u3400-\u9fff\uf900-\ufaff]/.test(ch));panel.hidden=false;panel.innerHTML='<div class="related-heading">Đang tra bộ thủ cho từng chữ Hán…</div>';await loadCharacterRadicalMap();const rows=await Promise.all(chars.map(ch=>getCharacterRadicalInfo(ch)));panel.innerHTML='<div class="related-heading">Bộ thủ theo từng chữ Hán</div><div class="radical-word-list">'+rows.map((info,i)=>{const ch=chars[i];if(!info)return `<div class="radical-word-row"><b class="radical-word-char">${escapeHTML(ch)}</b><span>Chưa có dữ liệu bộ thủ cho chữ này.</span></div>`;const r=info.record;return `<div class="radical-word-row"><b class="radical-word-char">${escapeHTML(ch)}</b><div><strong>${r?`部首 ${escapeHTML(r.char)} · #${r.no}`:`部首 ${escapeHTML(info.rawRadical)}`}</strong><small>${escapeHTML(info.rawRadical)}${r?` · ${r.no===167?'金 chuẩn 8 nét · 钅 giản thể 5 nét':r.strokes+' nét'}`:''}${info.hint?' · '+escapeHTML(info.hint):''}</small></div>${r?`<button type="button" class="btn secondary tiny" data-open-radical="${r.no}">Xem bộ thủ</button>`:''}</div>`;}).join('')+'</div><div class="smallprint">Phân loại bộ thủ theo dữ liệu Make Me a Hanzi; dữ liệu bao phủ hơn 9.000 chữ thông dụng. Chữ ngoài dữ liệu sẽ được báo riêng, không tự đoán bộ thủ.</div>';}
-window.selectRadical=selectRadical;window.guessRadicalForWord=guessRadicalForWord;window.updateStrokeRadicalInfo=updateStrokeRadicalInfo;renderRadicals();
+let characterAnalysisCache=new Map();
+function resolveRadicalForm(form,contextRadical=''){
+ if(!form)return null;
+ let r=RADICALS.find(x=>x.char===form);if(r)return {record:r,form};
+ const direct=RADICALS.find(x=>String(x.variant||'').split(/[·,，；;]/).some(v=>v.trim().replace(/（.*?）/g,'').replace(/\s*\(.*?\)/g,'').trim()===form));
+ if(direct)return {record:direct,form};
+ // 阝 has two different historical positions: left-side 阜 and right-side 邑.
+ if(form==='阝'){
+  const ctx=RADICALS.find(x=>x.char===contextRadical)||RADICALS.find(x=>variants.find(v=>v[0]===contextRadical)?.[1]===x.char);
+  if(ctx?.no===170)return {record:ctx,form};
+  if(ctx?.no===163)return {record:ctx,form};
+  const rightSideDefault=RADICALS.find(x=>x.no===163);
+  return rightSideDefault?{record:rightSideDefault,form}:null;
+ }
+ const alias=variants.find(x=>x[0]===form)?.[1];
+ r=RADICALS.find(x=>x.char===alias);
+ return r?{record:r,form}:null;
+}
+function extractIdsComponents(decomposition){
+ const raw=String(decomposition||'').trim();
+ if(!raw||raw==='？'||raw==='?')return [];
+ // Make Me a Hanzi uses prefix IDS operators (⿰, ⿱, ⿲, etc.); every remaining Han character is a leaf component.
+ const leaves=[];
+ for(const ch of [...raw]){
+  if(IDS_ALL_OPERATORS.has(ch)||ch==='？'||ch==='?'||/\s/.test(ch)||/[\uFE00-\uFE0F]/u.test(ch))continue;
+  if(isHanComponent(ch))leaves.push(ch);
+ }
+ return leaves;
+}
+function buildCharacterRadicalAnalysis(ch,item){
+ if(!item)return null;
+ const primaryForm=String(item.radical||item.semantic||'').trim();
+ const primaryResolved=resolveRadicalForm(primaryForm,primaryForm);
+ const found=new Map();
+ const add=(form,role='thành phần cấu tạo')=>{
+  const raw=String(form||'').trim();if(!raw)return;
+  const resolved=resolveRadicalForm(raw,primaryForm);if(!resolved)return;
+  const record=resolved.record,existing=found.get(record.no);
+  if(existing){
+   if(!existing.rawForms.includes(raw))existing.rawForms.push(raw);
+   if(!existing.roles.includes(role))existing.roles.push(role);
+   existing.count+=1;
+  }else found.set(record.no,{no:record.no,char:record.char,pinyin:record.pinyin,strokes:record.strokes,record,rawForms:[raw],roles:[role],count:1,isPrimary:!!primaryResolved&&record.no===primaryResolved.record.no});
+ };
+ if(primaryResolved)add(primaryForm,'bộ thủ chính theo dữ liệu Make Me a Hanzi');
+ const decompositionLeaves=extractIdsComponents(item.decomposition);
+ const phonetic=String(item.phonetic||'').trim();
+ const semantic=String(item.semantic||'').trim();
+ for(const token of decompositionLeaves){
+  let role='thành phần cấu tạo';
+  if(phonetic&&token===phonetic)role='thành phần phiên âm';
+  else if(semantic&&token===semantic)role='thành phần biểu nghĩa';
+  add(token,role);
+ }
+ if(semantic)add(semantic,'thành phần biểu nghĩa');
+ if(phonetic)add(phonetic,'thành phần phiên âm');
+ const components=[...found.values()].sort((a,b)=>(Number(b.isPrimary)-Number(a.isPrimary))||a.no-b.no);
+ return {
+  character:ch,rawRadical:primaryForm,record:primaryResolved?.record||null,
+  primary:components.find(x=>x.isPrimary)||null,
+  components,secondaryComponents:components.filter(x=>!x.isPrimary),
+  decomposition:String(item.decomposition||''),semantic,phonetic,
+  hint:String(item.hint||''),type:String(item.type||''),
+  source:characterRadicalSource||'Make Me a Hanzi'
+ };
+}
+function precomputeCharacterAnalyses(map){
+ const cache=new Map();
+ for(const [ch,item] of Object.entries(map||{})){
+  const info=buildCharacterRadicalAnalysis(ch,item);
+  if(info)cache.set(ch,info);
+ }
+ characterAnalysisCache=cache;
+}
+async function loadCharacterRadicalMap(){
+ if(characterRadicalMap)return characterRadicalMap;
+ if(characterRadicalPromise)return characterRadicalPromise;
+ characterRadicalPromise=(async()=>{
+  let map={};
+  try{const cached=localStorage.getItem(RADICAL_CACHE_KEY);if(cached){const obj=JSON.parse(cached);if(obj&&Object.keys(obj).length>500)map=obj;}}catch(_){}
+  if(Object.keys(map).length){characterRadicalMap=map;characterRadicalSource='dữ liệu Make Me a Hanzi đã lưu trên thiết bị';precomputeCharacterAnalyses(map);return map;}
+  try{
+   const response=await fetch(RADICAL_DATA_URL,{cache:'force-cache'});if(!response.ok)throw new Error('HTTP '+response.status);
+   const raw=await response.text();
+   for(const line of raw.split(/\r?\n/)){
+    if(!line.trim())continue;
+    try{
+     const item=JSON.parse(line);if(!item.character||!item.radical)continue;
+     map[item.character]={radical:item.radical,decomposition:item.decomposition||'',semantic:item.etymology?.semantic||'',phonetic:item.etymology?.phonetic||'',hint:item.etymology?.hint||'',type:item.etymology?.type||''};
+    }catch(_){}
+   }
+   if(Object.keys(map).length>500){
+    try{localStorage.setItem(RADICAL_CACHE_KEY,JSON.stringify(map));}catch(err){console.warn('Không thể lưu cache phân tích bộ thủ:',err);}
+    characterRadicalMap=map;characterRadicalSource='Make Me a Hanzi (radical + decomposition IDS)';precomputeCharacterAnalyses(map);return map;
+   }
+  }catch(err){console.warn('Không tải được dữ liệu bộ thủ và cấu tạo:',err);}
+  characterRadicalMap={...LOCAL_RADICAL_FALLBACK};characterRadicalSource='dữ liệu dự phòng cục bộ';precomputeCharacterAnalyses(characterRadicalMap);return characterRadicalMap;
+ })();
+ return characterRadicalPromise;
+}
+function guessRadicalForWord(word){
+ const cs=[...String(word||'')];
+ for(const ch of cs){const v=variants.find(x=>x[0]===ch);if(v){const r=RADICALS.find(x=>x.char===v[1]);if(r)return {...r,note:'dạng biến thể '+v[0]};}}
+ const priority=['人','口','女','子','宀','山','巾','心','手','日','月','木','水','火','田','目','石','禾','竹','米','糸','肉','言','足','金','雨','馬','魚','鳥'];
+ for(const radical of priority){if(cs.includes(radical)){const r=RADICALS.find(x=>x.char===radical);if(r)return {...r,note:'gợi ý theo thành phần nhìn thấy, chưa phải phân loại từ điển'};}}
+ return null;
+}
+async function getCharacterRadicalInfo(ch){
+ const map=await loadCharacterRadicalMap();
+ if(characterAnalysisCache.has(ch))return characterAnalysisCache.get(ch);
+ const item=map[ch];if(!item)return null;
+ const info=buildCharacterRadicalAnalysis(ch,item);if(info)characterAnalysisCache.set(ch,info);return info;
+}
+function radicalComponentButtonHtml(component){
+ const label=component.isPrimary?'BỘ CHÍNH':(component.roles.includes('thành phần phiên âm')?'PHIÊN ÂM':(component.roles.includes('thành phần biểu nghĩa')?'BIỂU NGHĨA':'CẤU TẠO'));
+ const form=component.rawForms.join(' / ');
+ return `<button type="button" class="btn secondary tiny radical-component-button" data-open-radical="${component.no}" title="Xem bộ thủ ${escapeHTML(component.char)}">#${component.no} · ${escapeHTML(component.char)} <small>${label}</small><em>${escapeHTML(form)}</em></button>`;
+}
+function radicalAnalysisHtml(info,compact=false){
+ if(!info)return '<span>Chưa có dữ liệu cấu tạo cho chữ này.</span>';
+ const primary=info.primary?`<div class="radical-analysis-primary"><b>Bộ thủ chính theo dữ liệu:</b> ${radicalComponentButtonHtml(info.primary)}</div>`:'<div class="radical-analysis-primary"><b>Bộ thủ chính theo dữ liệu:</b> chưa xác định được trong danh sách 214 bộ.</div>';
+ const rest=info.secondaryComponents.length?`<div class="radical-analysis-secondary"><b>Thành phần khác trùng với bộ thủ Kangxi:</b><div class="radical-component-chips">${info.secondaryComponents.map(radicalComponentButtonHtml).join('')}</div></div>`:'<div class="radical-analysis-secondary"><b>Thành phần khác:</b> dữ liệu hiện chưa nhận diện thêm thành phần nào trùng với 214 bộ thủ.</div>';
+ const extras=info.decomposition?`<small class="radical-analysis-source">Phân tích cấu tạo: <strong>${escapeHTML(info.decomposition)}</strong>${info.type?' · '+escapeHTML(info.type):''}${info.hint?' · '+escapeHTML(info.hint):''}</small>`:'';
+ return `<div class="radical-analysis ${compact?'compact':''}">${primary}${rest}${extras}<small class="radical-analysis-source">Nguồn: ${escapeHTML(info.source)}. Bộ thủ chính theo Make Me a Hanzi được tách riêng với thành phần cấu tạo/phiên âm.</small></div>`;
+}
+async function updateStrokeRadicalInfo(ch){
+ const el=$('stroke-radical-info');if(!el)return;
+ el.textContent='Đang phân tích bộ thủ và thành phần cấu tạo của chữ '+ch+'…';
+ const info=await getCharacterRadicalInfo(ch);
+ if(!el.isConnected||activeStrokeChar!==ch)return;
+ el.innerHTML=radicalAnalysisHtml(info,true);
+}
+async function renderWordRadicals(word,panel){
+ const chars=[...String(word||'')].filter(isHanComponent);
+ panel.hidden=false;panel.innerHTML='<div class="related-heading">Đang đối chiếu bộ thủ và cấu tạo từng chữ Hán…</div>';
+ await loadCharacterRadicalMap();
+ const rows=await Promise.all(chars.map(ch=>getCharacterRadicalInfo(ch)));
+ panel.innerHTML='<div class="related-heading">Kết quả đối chiếu bộ thủ và thành phần cấu tạo</div><div class="radical-word-list">'+rows.map((info,i)=>{
+  const ch=chars[i];
+  return `<div class="radical-word-row"><b class="radical-word-char">${escapeHTML(ch)}</b><div class="radical-word-content">${radicalAnalysisHtml(info)}${info?.components?.length?`<small class="radical-analysis-count">Đã nhận diện ${info.components.length} thành phần tương ứng với bộ thủ Kangxi.</small>`:''}</div></div>`;
+ }).join('')+'</div><div class="smallprint">Ứng dụng đối chiếu bộ thủ chính thức với cấu tạo IDS của Make Me a Hanzi. Thành phần phiên âm như 艮 trong 银 được liệt kê riêng, không bị nhầm là bộ thủ chính thức của chữ. Một chữ có thể chứa nhiều thành phần trùng tên bộ thủ; đây không có nghĩa tất cả đều là bộ thủ phân loại chính.</div>';
+}
+window.selectRadical=selectRadical;window.guessRadicalForWord=guessRadicalForWord;window.updateStrokeRadicalInfo=updateStrokeRadicalInfo;window.getCharacterRadicalInfo=getCharacterRadicalInfo;window.renderWordRadicals=renderWordRadicals;renderRadicals();
 // Individual copy controls for the three language fields in dynamic results.
 const rules=[['.hanzi','hanzi'],['.pinyin','pinyin'],['.meaning','vi'],['.suggestion-hanzi','hanzi'],['.suggestion-pinyin','pinyin'],['.suggestion-meaning','vi'],['.read-result-hanzi','hanzi'],['.read-result-meta small:nth-child(1)','pinyin'],['.read-result-meta small:nth-child(2)','vi'],['.ocr-word-main b','hanzi'],['.ocr-word-pinyin','pinyin'],['.ocr-word-meaning','vi'],['.chinese','hanzi'],['.meta','pinyin'],['.translation','vi'],['.homework-zh','hanzi'],['.homework-pinyin-text','pinyin'],['.homework-vietnamese-text','vi'],['.answer-hanzi','hanzi'],['.answer-pinyin','pinyin'],['.answer-vietnamese','vi'],['.selected-word b','hanzi'],['.selected-word small','vi'],['.selected-chip b','hanzi'],['.selected-chip small','vi'],['.vocab-training-chip b','hanzi'],['.vocab-training-chip small','text'],['.vocab-training-result b','hanzi'],['.vocab-training-result span small:nth-child(1)','pinyin'],['.vocab-training-result span small:nth-child(2)','vi'],['.voice-result-text','text'],['#voice-translate-result','text'],['.question','text'],['.question-translation','text'],['.vocab-training-question-text','text']];
 function valueFor(el,kind){if(kind==='hanzi')return [...el.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE).map(n=>n.textContent).join('').trim()||el.textContent.trim();return (el.innerText||el.textContent||'').trim();}
