@@ -558,6 +558,36 @@
 @media(max-width:420px){.radical-component-button{font-size:9px!important;padding:4px 6px!important}.radical-analysis-primary,.radical-analysis-secondary{align-items:flex-start}.radical-analysis-primary>b,.radical-analysis-secondary>b{width:100%}}
 </style>
 
+
+<style id="v4247-distinct-13-colors-and-audio">
+/* 13 visibly distinct categorical colors; same color follows the selected menu into the content panel. */
+.app-shell #main-tabs .tab[data-tab="dict"]{--menu-color:#BA1B1B!important}
+.app-shell #main-tabs .tab[data-tab="ocr"]{--menu-color:#C2410C!important}
+.app-shell #main-tabs .tab[data-tab="translate"]{--menu-color:#8A5B00!important}
+.app-shell #main-tabs .tab[data-tab="voice-translate"]{--menu-color:#7C6500!important}
+.app-shell #main-tabs .tab[data-tab="vi-zh"]{--menu-color:#287A32!important}
+.app-shell #main-tabs .tab[data-tab="zh-vi"]{--menu-color:#007A53!important}
+.app-shell #main-tabs .tab[data-tab="write"]{--menu-color:#007A78!important}
+.app-shell #main-tabs .tab[data-tab="read"]{--menu-color:#1557A6!important}
+.app-shell #main-tabs .tab[data-tab="combine"]{--menu-color:#443A9F!important}
+.app-shell #main-tabs .tab[data-tab="vocab-training"]{--menu-color:#7132A8!important}
+.app-shell #main-tabs .tab[data-tab="number"]{--menu-color:#A51E73!important}
+.app-shell #main-tabs .tab[data-tab="radicals"]{--menu-color:#754C24!important}
+.app-shell #main-tabs .tab[data-tab="library"]{--menu-color:#4B5563!important}
+
+.write-speech-target{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:9px auto 4px;padding:8px 12px;max-width:520px;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc}
+.write-speech-target .write-speech-label{font-size:11px;color:#64748b;font-weight:700}
+.write-speech-target strong{font-size:21px;color:#1f2937;letter-spacing:.03em}
+.write-speech-target button{width:34px;height:34px;min-width:34px;padding:0;border:1px solid #bfdbfe;border-radius:9px;background:#eff6ff;color:#1d4ed8;font-size:17px}
+.asr-settings{margin:12px 0;padding:10px 12px;border:1px solid #cbd5e1;border-radius:12px;background:#f8fafc}
+.asr-settings summary{cursor:pointer;font-weight:800;font-size:12px;color:#334155}
+.asr-settings .field{margin-top:7px}
+.asr-settings .asr-config-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.asr-manual-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;margin-top:10px}
+.asr-manual-row .field{min-width:0}
+@media(max-width:430px){.asr-manual-row{grid-template-columns:1fr}.asr-manual-row .btn{width:100%}}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -682,8 +712,10 @@
   </div>
   <div class="question-audio-line"><div class="question" id="practice-question">你好</div><button class="btn secondary tiny practice-question-speaker" id="practice-question-speak" type="button" title="Phát âm nội dung đang hiển thị">🔊</button></div>
   <div class="question-translation" id="practice-subtext">Pinyin: nǐ hǎo</div>
+  <div class="write-speech-target" id="write-speech-target" hidden><span class="write-speech-label">Chữ Hán cần luyện</span><strong id="write-speech-hanzi">你好</strong><button id="write-speech-hanzi-speak" type="button" aria-label="Phát âm chữ Hán" title="Nghe tiếng Trung">🔊</button></div>
   <div class="reading-tools" id="reading-tools" style="display:none"><button class="btn outline" id="listen-btn">🔈 Nghe mẫu</button><button class="btn secondary" id="mic-btn">🎙️ Đọc để chấm</button></div>
   <p id="read-asr-status" class="smallprint" hidden aria-live="polite" style="margin:6px 0 0">Micro chưa bật.</p>
+  <p class="smallprint" style="margin:5px 0 0">Trên iPhone, bạn có thể chạm ô nhập câu trả lời rồi dùng micro trên bàn phím iOS để đọc thành chữ nếu nhận diện trong ứng dụng chưa tốt.</p>
   <div class="answer" id="typed-answer-wrap"><label class="subtle" id="answer-label" for="user-answer">Nhập câu trả lời</label><input class="field" id="user-answer" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập đáp án bằng chữ Hán hoặc tiếng Việt"></div>
   <div class="write-panel" id="write-panel">
    
@@ -706,6 +738,16 @@
  <div class="card voice-translate-card">
   <h2 class="section-title" data-function-number="4">🎙️ DỊCH NHANH BẰNG GIỌNG NÓI</h2>
   <p class="subtle">Bấm micro để nhận diện và dịch hai chiều Việt ⇄ Trung.</p>
+  <details class="asr-settings" id="asr-cloud-settings">
+   <summary>⚙️ Cấu hình nhận diện chất lượng cao qua Cloudflare (tùy chọn)</summary>
+   <p class="smallprint">Khi cấu hình, menu 4, 8 và 9 sẽ dùng Whisper Large V3 Turbo trên máy chủ. Để trống thì ứng dụng thử nhận diện cục bộ. Địa chỉ Worker và mã truy cập do bạn tự tạo; không nhập API Token tài khoản Cloudflare vào đây.</p>
+   <label class="library-label" for="asr-cloud-endpoint">Địa chỉ Cloudflare Worker</label><input class="field" id="asr-cloud-endpoint" type="url" placeholder="https://ten-worker.ten-tai-khoan.workers.dev">
+   <label class="library-label" for="asr-cloud-secret">Mã truy cập riêng (ASR shared secret)</label><input class="field" id="asr-cloud-secret" type="password" autocomplete="off" placeholder="Mã bí mật do bạn tự đặt trong Worker">
+   <div class="asr-config-actions"><button class="btn tiny" id="asr-cloud-save" type="button">Lưu cấu hình trên thiết bị</button><button class="btn secondary tiny" id="asr-cloud-clear" type="button">Xóa cấu hình</button></div>
+   <p class="smallprint" id="asr-cloud-config-status" aria-live="polite">Chưa cấu hình Cloudflare.</p>
+  </details>
+  <div class="asr-manual-row"><input id="voice-keyboard-input" class="field" type="text" autocomplete="off" placeholder="Hoặc nhập bằng micro bàn phím iPhone…"><button id="voice-keyboard-translate" class="btn secondary" type="button">Dịch nội dung nhập</button></div>
+  <p class="smallprint">Trên iPhone, bạn cũng có thể chạm ô nhập này rồi bấm biểu tượng micro trên bàn phím để dùng Dictation của iOS.</p>
   <button id="voice-translate-mic" class="voice-translate-mic" type="button" aria-pressed="false"><span id="voice-translate-mic-icon">🎙️</span><span id="voice-translate-mic-label">BẮT ĐẦU NÓI</span></button>
   <p id="voice-translate-status" class="smallprint" role="status" aria-live="polite">Sẵn sàng. Hãy cấp quyền sử dụng micro khi trình duyệt hỏi.</p>
   <div class="voice-result-block">
@@ -821,6 +863,7 @@
     <div id="reflex-typing-title" style="font-weight:700;margin-bottom:7px">Nhập câu trả lời bằng chữ Hán</div>
     <label class="reflex-input-label" for="reflex-answer-input" id="reflex-answer-label">Bạn hãy trả lời bằng chữ Hán</label>
     <input id="reflex-answer-input" class="field" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập câu trả lời bằng chữ Hán…">
+    <p class="smallprint" style="margin:5px 0 0">Trên iPhone, bạn có thể chạm ô này rồi bấm micro trên bàn phím để dùng Dictation của iOS nếu nhận diện trong app chưa tốt.</p>
     <div class="reflex-controls">
      <button id="reflex-check-button" class="btn" type="button">Kiểm tra câu trả lời</button>
     </div>
@@ -956,6 +999,15 @@ let filteredIndices = [];
 let currentPage = 1;
 const pageSize = 10;
 let activeTab = 'dict';
+const BVT_FUNCTION_COLORS = {
+ dict:{main:'#BA1B1B',alt:'#E34A4A'}, ocr:{main:'#C2410C',alt:'#EA6A32'},
+ translate:{main:'#8A5B00',alt:'#B9821A'}, 'voice-translate':{main:'#7C6500',alt:'#A58B18'},
+ 'vi-zh':{main:'#287A32',alt:'#4F9E56'}, 'zh-vi':{main:'#007A53',alt:'#269A73'},
+ write:{main:'#007A78',alt:'#299A96'}, read:{main:'#1557A6',alt:'#377FC6'},
+ combine:{main:'#443A9F',alt:'#655BB8'}, 'vocab-training':{main:'#7132A8',alt:'#8C56BD'},
+ number:{main:'#A51E73',alt:'#C44B92'}, radicals:{main:'#754C24',alt:'#9C6B40'},
+ library:{main:'#4B5563',alt:'#748091'}
+};
 let combineScope = 'common';
 let selectedCombine = new Map();
 let generatedSentences = [];
@@ -1312,6 +1364,11 @@ function switchTab(tab){
  if(tab==='practice')tab=PRACTICE_NAV_MODES.has(practiceMode)?practiceMode:'vi-zh';
  const panelTab=(tab==='translate'||PRACTICE_NAV_MODES.has(tab))?'practice':tab;
  activeTab=tab;document.documentElement.dataset.activeTab=tab;
+ const accent=BVT_FUNCTION_COLORS[tab]||BVT_FUNCTION_COLORS.dict;
+ document.documentElement.style.setProperty('--red',accent.main);
+ document.documentElement.style.setProperty('--red2',accent.alt);
+ const activePanel=$('panel-'+panelTab);
+ if(activePanel){activePanel.style.setProperty('--red',accent.main);activePanel.style.setProperty('--red2',accent.alt);}
  if(tab==='number')loadEmbeddedNumberPractice();
  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+panelTab));
@@ -1326,6 +1383,8 @@ function switchTab(tab){
  else window.scrollTo({top:0,behavior:'smooth'});
  if(tab==='combine'){renderCombineChoices();renderSelected();}
 }
+// Initialize the full page palette, including the active content panel, not just the sidebar banner.
+switchTab('dict');
 const menuToggle=$('menu-toggle');
 menuToggle?.addEventListener('click',()=>{const opened=$('main-tabs').classList.toggle('open');menuToggle.setAttribute('aria-expanded',String(opened));menuToggle.textContent=opened?'✕ ĐÓNG DANH MỤC':'☰ DANH MỤC CHỨC NĂNG';});
 document.querySelector('.tabs').addEventListener('click',e=>{
@@ -1937,7 +1996,11 @@ function loadPractice(){
   else{$('practice-question').textContent=row[0];$('practice-subtext').textContent='Pinyin: '+row[2];}
  }
  const qSpeak=$('practice-question-speak');
- if(qSpeak){const zhMode=practiceMode==='zh-vi'||practiceMode==='read';qSpeak.title=zhMode?'🔊 Nghe câu tiếng Trung':'🔊 Nghe câu tiếng Việt';qSpeak.setAttribute('aria-label',qSpeak.title);qSpeak.hidden=practiceMode==='write';}
+ if(qSpeak){const zhMode=practiceMode==='zh-vi'||practiceMode==='read';qSpeak.title=zhMode?'🔊 Nghe câu tiếng Trung':'🔊 Nghe câu tiếng Việt';qSpeak.setAttribute('aria-label',qSpeak.title);qSpeak.hidden=false;}
+ const writeSpeech=$('write-speech-target'),writeHanzi=$('write-speech-hanzi');
+ const writeHanziText=String(currentPractice?.row?.[0]||currentPractice?.sentence?.zh||'').trim();
+ if(writeSpeech)writeSpeech.hidden=practiceMode!=='write'||!writeHanziText;
+ if(writeHanzi)writeHanzi.textContent=writeHanziText;
  if(practiceMode==='read'){$('answer-label').textContent='Bản chép lời từ micro bằng Whisper';}
  $('session-score').textContent=`Điểm: ${sessionCorrect}/${sessionDone}`;$('progress-fill').style.width=(sessionDone?Math.round(sessionCorrect/sessionDone*100):0)+'%';
  const hasReadTarget=!!(currentPractice?.sentence?.zh&&practiceMode==='read');$('listen-btn').disabled=!hasReadTarget;$('mic-btn').disabled=!hasReadTarget;$('user-answer').disabled=practiceMode==='read'&&!hasReadTarget;$('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
@@ -2053,27 +2116,51 @@ function handleReadSubmit(user,source='typed'){
 $('submit-answer').onclick=handleSubmit;$('next-question').onclick=()=>nextPractice();$('practice-change-question').onclick=()=>nextPractice();$('practice-show-answer').onclick=revealPracticeAnswer;
 function nextPractice(){if(currentSentencePracticeDeck.length){practiceIndex++;if(practiceIndex>=currentSentencePracticeDeck.length){practiceIndex=0;toast('Đã luyện hết '+currentSentencePracticeDeck.length+' câu. Bắt đầu lại từ câu đầu.');}currentCustomSentence=currentSentencePracticeDeck[practiceIndex];practiceChecked=false;loadPractice();return;}if(practiceMode==='read'){if(currentCustomSentence){currentCustomSentence=null;}practiceChecked=false;loadPractice();return;}practiceIndex++;if(currentCustomSentence){currentCustomSentence=null;}loadPractice();}
 $('listen-btn').onclick=()=>{const text=currentPractice?.sentence?.zh||currentPractice?.row?.[0]||$('practice-question').textContent;speak(text);};
-let practiceReadWorker=null,practiceReadWorkerSession=0,practiceReadPendingSession=0,practiceReadSession=0;
+let practiceReadWorker=null,practiceReadWorkerSession=0,practiceReadPendingSession=0,practiceReadSession=0,practiceReadPendingSamples=null,practiceReadFallbackSession=0,practiceReadTimeout=null;
 let practiceReadRecorder=null,practiceReadStream=null,practiceReadChunks=[],practiceReadStarting=false,practiceReadRecording=false,practiceReadTimer=null;
 function setReadAsrStatus(message,show=true){const el=$('read-asr-status');if(!el)return;el.textContent=message;el.hidden=!show;}
 function setReadMicState(state){practiceReadRecording=!!state;$('mic-btn').textContent=state?'⏹️ Dừng thu âm':'🎙️ Đọc để chấm';$('mic-btn').classList.toggle('recording',!!state);$('mic-btn').disabled=practiceReadStarting||practiceReadPendingSession>0;}
+async function practiceReadDirectFallback(samples,session,reason=''){
+ if(session!==practiceReadSession||session!==practiceReadPendingSession||practiceReadFallbackSession===session)return;
+ practiceReadFallbackSession=session;clearTimeout(practiceReadTimeout);practiceReadTimeout=null;
+ const oldWorker=practiceReadWorker;practiceReadWorker=null;if(oldWorker){oldWorker.onmessage=null;oldWorker.onerror=null;try{oldWorker.terminate();}catch(_){}}
+ setReadAsrStatus((reason?reason+' ':'')+'Đang chuyển sang nhận diện dự phòng trên thiết bị…',true);
+ try{
+  const pipe=await getDirectReflexTranscriber();
+  if(session!==practiceReadSession||session!==practiceReadPendingSession)return;
+  const output=await pipe(samples,{language:'chinese',task:'transcribe',return_timestamps:false,chunk_length_s:20,stride_length_s:4});
+  if(session!==practiceReadSession||session!==practiceReadPendingSession)return;
+  const text=String(output?.text||'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim();
+  practiceReadPendingSession=0;practiceReadPendingSamples=null;practiceReadFallbackSession=0;setReadMicState(false);
+  if(text){$('user-answer').value=text;setReadAsrStatus('Đã nhận diện bằng phương án dự phòng: '+text,true);handleReadSubmit(text,'whisper');}
+  else setReadAsrStatus('Chưa nhận diện được câu nói. Hãy nói trọn câu, giảm tiếng ồn hoặc dùng micro trên bàn phím iPhone.',true);
+ }catch(error){
+  if(session!==practiceReadSession)return;
+  practiceReadPendingSession=0;practiceReadPendingSamples=null;practiceReadFallbackSession=0;setReadMicState(false);
+  setReadAsrStatus('Không tải được bộ nhận diện dự phòng: '+(error?.message||String(error))+'. Hãy kiểm tra Internet hoặc dùng micro bàn phím iPhone.',true);
+ }
+}
 function ensurePracticeReadWorker(){
  if(practiceReadWorker)return practiceReadWorker;
  if(!window.Worker)throw new Error('Trình duyệt không hỗ trợ Web Worker.');
- const worker=new Worker('./asr-worker.js',{type:'module'});practiceReadWorker=worker;
+ const worker=new Worker(new URL('./asr-worker.js', document.baseURI));practiceReadWorker=worker;
  worker.onmessage=e=>{
-  const data=e.data||{};if(data.session!==practiceReadPendingSession||data.session!==practiceReadSession)return;
+  const data=e.data||{};if(data.session!==practiceReadPendingSession||data.session!==practiceReadSession||practiceReadFallbackSession===data.session)return;
   if(data.type==='status'||data.type==='progress'){setReadAsrStatus(data.text||'Đang nhận diện tiếng Trung…');return;}
   if(data.type==='result'){
+   clearTimeout(practiceReadTimeout);practiceReadTimeout=null;
    const text=String(data.text||'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim();
-   practiceReadPendingSession=0;setReadMicState(false);
+   practiceReadPendingSession=0;practiceReadPendingSamples=null;setReadMicState(false);
    if(text){$('user-answer').value=text;setReadAsrStatus('Đã nhận diện: '+text,true);handleReadSubmit(text,'whisper');}
    else{setReadAsrStatus('Whisper chưa nhận ra nội dung. Hãy thử nói rõ, đưa micro gần hơn hoặc nhập bản chép lời.',true);}
    return;
   }
-  if(data.type==='error'){practiceReadPendingSession=0;setReadMicState(false);setReadAsrStatus('Lỗi nhận diện: '+(data.message||'Không xử lý được âm thanh.'),true);}
+  if(data.type==='error')practiceReadDirectFallback(practiceReadPendingSamples,data.session,'Worker báo lỗi: '+(data.message||'Không xử lý được âm thanh.'));
  };
- worker.onerror=e=>{if(practiceReadWorker===worker)practiceReadWorker=null;try{worker.terminate();}catch(_){}if(practiceReadPendingSession){practiceReadPendingSession=0;setReadMicState(false);setReadAsrStatus('Worker nhận diện gặp lỗi: '+(e.message||'Không khởi chạy được.'),true);}};
+ worker.onerror=e=>{
+  if(practiceReadWorker===worker)practiceReadWorker=null;try{worker.terminate();}catch(_){}
+  if(practiceReadPendingSession)practiceReadDirectFallback(practiceReadPendingSamples,practiceReadPendingSession,'Worker gặp lỗi: '+(e.message||'Không khởi chạy được.'));
+ };
  return worker;
 }
 async function decodePracticeReadBlob(blob,session){
@@ -2129,12 +2216,24 @@ async function startRecognition(){
    practiceReadStarting=false;
    if(!blob.size){setReadMicState(false);setReadAsrStatus('Không thu được âm thanh. Kiểm tra micro rồi thử lại.',true);return;}
    try{
+    const cloudConfig=getBvtCloudAsrConfig();
+    if(cloudConfig){
+     practiceReadPendingSession=session;practiceReadPendingSamples=null;practiceReadFallbackSession=0;$('mic-btn').disabled=true;$('mic-btn').textContent='⏳ Đang nhận diện…';
+     setReadAsrStatus('Đang nhận diện bằng Whisper Large V3 Turbo trên Cloudflare…',true);
+     const text=await transcribeBvtCloudAudio(blob,'zh');
+     if(session!==practiceReadSession)return;
+     practiceReadPendingSession=0;setReadMicState(false);$('user-answer').value=text;setReadAsrStatus('Đã nhận diện: '+text,true);handleReadSubmit(text,'whisper');return;
+    }
     setReadAsrStatus('Đang chuẩn hóa âm thanh và tải mô hình Whisper base…');
     const samples=await decodePracticeReadBlob(blob,session);if(session!==practiceReadSession)return;
-    const worker=ensurePracticeReadWorker();practiceReadPendingSession=session;practiceReadWorkerSession=session;$('mic-btn').disabled=true;$('mic-btn').textContent='⏳ Đang nhận diện…';
-    worker.postMessage({type:'transcribe',session,audio:samples,language:'chinese'},[samples.buffer]);
-    setReadAsrStatus('Đang nhận diện tiếng Trung. Lần đầu cần Internet tải mô hình Whisper base; sau đó trình duyệt sẽ lưu bộ nhớ đệm.',true);
-   }catch(err){setReadMicState(false);setReadAsrStatus('Không xử lý được bản ghi: '+(err?.message||String(err)),true);}
+    practiceReadPendingSession=session;practiceReadWorkerSession=session;practiceReadPendingSamples=samples;practiceReadFallbackSession=0;$('mic-btn').disabled=true;$('mic-btn').textContent='⏳ Đang nhận diện…';
+    try{
+     const worker=ensurePracticeReadWorker();
+     worker.postMessage({type:'transcribe',session,audio:samples,language:'chinese'});
+     clearTimeout(practiceReadTimeout);practiceReadTimeout=setTimeout(()=>{if(session===practiceReadSession&&session===practiceReadPendingSession)practiceReadDirectFallback(practiceReadPendingSamples,session,'Worker quá thời gian phản hồi.');},150000);
+     setReadAsrStatus('Đang nhận diện tiếng Trung. Nếu worker không hoạt động, ứng dụng tự chuyển sang phương án dự phòng.',true);
+    }catch(workerError){practiceReadDirectFallback(samples,session,'Không khởi tạo được worker: '+(workerError?.message||String(workerError)));} 
+   }catch(err){practiceReadPendingSession=0;practiceReadPendingSamples=null;clearTimeout(practiceReadTimeout);practiceReadTimeout=null;setReadMicState(false);setReadAsrStatus('Không xử lý được bản ghi: '+(err?.message||String(err)),true);}
   };
   recorder.start(250);practiceReadStarting=false;setReadMicState(true);setReadAsrStatus('Đang ghi âm… đọc hết câu tiếng Trung rồi chạm Dừng thu âm. Tự dừng sau 25 giây.');
   practiceReadTimer=setTimeout(()=>{if(session===practiceReadSession&&practiceReadRecording)stopPracticeReadRecording(true);},25000);
@@ -2142,6 +2241,7 @@ async function startRecognition(){
 }
 $('mic-btn').onclick=()=>{if(practiceReadRecording)stopPracticeReadRecording(false);else startRecognition();};
 $('practice-question-speak').addEventListener('click',()=>speakAuto($('practice-question').textContent,$('practice-question-speak')));
+$('write-speech-hanzi-speak')?.addEventListener('click',()=>speakAuto($('write-speech-hanzi')?.textContent||'', $('write-speech-hanzi-speak')));
 let homeworkLookupToken=0;
 const OFFLINE_SENTENCE_TRANSLATIONS={
  'banlanhkhong':{zh:'你冷吗？',py:'Nǐ lěng ma?',vi:'Bạn lạnh không?'},
@@ -2224,6 +2324,33 @@ async function machineTranslate(text,source,target){
 // v42: voice translation uses its own MediaRecorder session and a separate Worker instance
 // of asr-worker.js. The shared worker script adds multilingual mode while reflex keeps zh-CN mode.
 let voiceRecorder=null,voiceStream=null,voiceChunks=[],voiceRecording=false,voiceStarting=false,voiceSession=0,voiceWorker=null,voicePendingSession=0,voicePendingAudio=null,voiceFallbackSession=0,voicePendingWorkerText='',voiceAudioContext=null,voiceDirectAsrPromise=null,voiceWorkerTimeoutTimer=null;
+const BVT_ASR_CLOUD_CONFIG_KEY='bvt_asr_cloudflare_config_v1';
+function getBvtCloudAsrConfig(){try{const v=JSON.parse(localStorage.getItem(BVT_ASR_CLOUD_CONFIG_KEY)||'null');if(v&&/^https:\/\//i.test(v.endpoint||'')&&String(v.secret||'').length>=16)return v;}catch(_){}return null;}
+async function transcribeBvtCloudAudio(blob,language='auto'){
+ const cfg=getBvtCloudAsrConfig();if(!cfg)throw new Error('Chưa cấu hình Cloudflare Worker.');
+ const form=new FormData();form.append('audio',blob,'bvt-recording.'+(/mp4/i.test(blob.type)?'m4a':'webm'));form.append('language',language);
+ const response=await fetch(cfg.endpoint,{method:'POST',headers:{Authorization:'Bearer '+cfg.secret},body:form});
+ let data={};try{data=await response.json();}catch(_){}
+ if(!response.ok)throw new Error(data.error||('Cloudflare ASR trả về HTTP '+response.status));
+ const text=String(data.text||'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim();
+ if(!text)throw new Error('Whisper Large V3 Turbo không nhận được câu nói.');
+ return text;
+}
+function initBvtCloudAsrSettings(){
+ const endpoint=$('asr-cloud-endpoint'),secret=$('asr-cloud-secret'),status=$('asr-cloud-config-status');if(!endpoint||!secret||!status)return;
+ const saved=getBvtCloudAsrConfig();if(saved){endpoint.value=saved.endpoint;secret.value=saved.secret;status.textContent='Đã lưu cấu hình trên thiết bị này. Menu 4, 8 và 9 sẽ ưu tiên Cloudflare.';}
+ $('asr-cloud-save').addEventListener('click',()=>{
+  const url=String(endpoint.value||'').trim(),key=String(secret.value||'').trim();
+  if(!/^https:\/\//i.test(url)){status.textContent='Địa chỉ Worker phải bắt đầu bằng https://';return;}
+  if(key.length<16){status.textContent='Mã truy cập nên có ít nhất 16 ký tự.';return;}
+  try{localStorage.setItem(BVT_ASR_CLOUD_CONFIG_KEY,JSON.stringify({endpoint:url,secret:key}));status.textContent='Đã lưu. Từ lượt ghi âm tiếp theo, ứng dụng ưu tiên Whisper Large V3 Turbo qua Cloudflare.';}
+  catch(e){status.textContent='Không lưu được cấu hình trên trình duyệt: '+(e.message||e);}
+ });
+ $('asr-cloud-clear').addEventListener('click',()=>{localStorage.removeItem(BVT_ASR_CLOUD_CONFIG_KEY);endpoint.value='';secret.value='';status.textContent='Đã xóa cấu hình. Ứng dụng quay lại nhận diện cục bộ.';});
+}
+initBvtCloudAsrSettings();
+$('voice-keyboard-translate')?.addEventListener('click',()=>{const value=String($('voice-keyboard-input')?.value||'').trim();if(!value){setVoiceStatus('Hãy nhập nội dung hoặc dùng micro bàn phím iPhone trước.');return;}const session=++voiceSession;voicePendingSession=session;completeVoiceRecognition(value,session);});
+
 function setVoiceStatus(message){const el=$('voice-translate-status');if(el)el.textContent=message;}
 function clearVoiceWorkerTimeout(){if(voiceWorkerTimeoutTimer){clearTimeout(voiceWorkerTimeoutTimer);voiceWorkerTimeoutTimer=null;}}
 function setVoiceMicState(active){voiceRecording=active;$('voice-translate-mic').classList.toggle('recording',active);$('voice-translate-mic').setAttribute('aria-pressed',String(active));$('voice-translate-mic-icon').textContent=active?'⏹️':'🎙️';$('voice-translate-mic-label').textContent=active?'DỪNG VÀ DỊCH':'BẮT ĐẦU NÓI';}
@@ -2283,7 +2410,7 @@ async function fallbackVoiceRecognition(session,reason){
 }
 function ensureVoiceWorker(){
  if(voiceWorker)return voiceWorker;if(!window.Worker)throw new Error('Trình duyệt không hỗ trợ Web Worker.');
- const worker=new Worker('./asr-worker.js',{type:'module'});voiceWorker=worker;
+ const worker=new Worker(new URL('./asr-worker.js', document.baseURI));voiceWorker=worker;
  worker.onmessage=e=>{
   const data=e.data||{};if(data.session!==voicePendingSession)return;
   if(data.type==='status'||data.type==='progress'){if(data.text)setVoiceStatus(data.text);if(data.instruction)setVoiceStatus(data.text||data.instruction);return;}
@@ -2336,6 +2463,13 @@ async function processVoiceRecording(blob,session){
  $('voice-translate-mic').disabled=true;
  if(!blob||!blob.size){$('voice-translate-mic').disabled=false;setVoiceStatus('Không thu được âm thanh. Hãy kiểm tra micro rồi thử lại.');return;}
  setVoiceStatus('Đang chuẩn bị âm thanh và nhận diện tự động tiếng Việt/tiếng Trung…');
+ const cloudConfig=getBvtCloudAsrConfig();
+ if(cloudConfig){
+  voicePendingSession=session;voicePendingAudio=null;setVoiceStatus('Đang nhận diện bằng Whisper Large V3 Turbo trên Cloudflare…');
+  try{const text=await transcribeBvtCloudAudio(blob,'auto');if(session===voiceSession)completeVoiceRecognition(text,session);}
+  catch(error){if(session===voiceSession){voicePendingSession=0;$('voice-translate-mic').disabled=false;setVoiceStatus('Cloudflare ASR không phản hồi: '+(error?.message||String(error))+'. Hãy kiểm tra cấu hình hoặc xóa cấu hình để dùng nhận diện cục bộ.');}}
+  return;
+ }
  let samples=null;
  try{samples=await decodeVoiceBlob(blob,session);if(session!==voiceSession)return;const worker=ensureVoiceWorker();voicePendingSession=session;voicePendingAudio=samples;voiceFallbackSession=0;worker.postMessage({type:'transcribe',session,audio:samples,language:'auto'});clearVoiceWorkerTimeout();voiceWorkerTimeoutTimer=setTimeout(()=>{if(session===voiceSession&&session===voicePendingSession){const stalled=voiceWorker;voiceWorker=null;if(stalled){try{stalled.terminate();}catch(_){}}fallbackVoiceRecognition(session,'Bộ nhận diện chạy quá lâu trong worker.');}},180000);setVoiceStatus('Đang nhận diện bằng Whisper tiếng Việt/tiếng Trung. Lần đầu có thể cần tải mô hình miễn phí.');}catch(err){if(session===voiceSession){voicePendingSession=session;voicePendingAudio=typeof samples!=='undefined'?samples:null;if(voicePendingAudio)fallbackVoiceRecognition(session,'Không tạo được worker nhận diện: '+(err?.message||String(err)));else{$('voice-translate-mic').disabled=false;setVoiceStatus('Không xử lý được bản ghi: '+(err?.message||String(err)));}}}
 }
@@ -3363,7 +3497,7 @@ function getDirectReflexTranscriber(){
    updateReflexLiveTranscript('Đang mở bộ nhận dạng dự phòng trên thiết bị…');
    const mod=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1');
    const {pipeline,env}=mod;
-   env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-base-local-v4245';
+   env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-base-local-v4247';
    try{if(env.backends&&env.backends.onnx&&env.backends.onnx.wasm)env.backends.onnx.wasm.numThreads=1;}catch(_){}
    updateReflexLiveTranscript('Đang tải thư viện và mô hình nhận dạng miễn phí…');
    return await pipeline('automatic-speech-recognition','onnx-community/whisper-base',{
@@ -3416,7 +3550,7 @@ function startReflexASRFallback(pending,reason){
 function ensureReflexASRWorker(){
  if(reflexASRWorker)return reflexASRWorker;
  if(!window.Worker)throw new Error('Trình duyệt không hỗ trợ Web Worker.');
- const worker=new Worker('./asr-worker.js',{type:'module'});
+ const worker=new Worker(new URL('./asr-worker.js', document.baseURI));
  worker.onmessage=e=>{
   const data=e.data||{};const pending=reflexASRPending;
   if(!pending||data.session!==pending.session||pending.fallbackStarted)return;
@@ -3542,6 +3676,14 @@ async function transcribeReflexRecording(blob,session){
  const liveMicDuringAsr=$('reflex-live-mic');if(liveMicDuringAsr)liveMicDuringAsr.disabled=true;
  try{
   if(session!==reflexRecognitionSession)return;
+  const cloudConfig=getBvtCloudAsrConfig();
+  if(cloudConfig){
+   updateReflexLiveTranscript('Đang nhận diện bằng Whisper Large V3 Turbo trên Cloudflare…');
+   $('reflex-mic-instruction').textContent='Đang xử lý qua Cloudflare. Âm thanh được gửi tới Worker do bạn cấu hình; có thể dùng micro bàn phím iPhone ở ô trả lời nếu muốn Dictation của iOS.';
+   const transcript=await transcribeBvtCloudAudio(blob,'zh');
+   if(session!==reflexRecognitionSession)return;
+   completeReflexLocalResult(session,transcript);return;
+  }
   updateReflexLiveTranscript('Bản ghi đã xong. Đang nhận dạng ngay trên điện thoại…');
   $('reflex-mic-instruction').textContent='Đang xử lý bản ghi trên thiết bị. Lần đầu cần tải mô hình nhận dạng; các lượt sau sẽ dùng lại mô hình đã nạp.';
   updateReflexLiveTranscript('Đang chuẩn bị âm thanh…');

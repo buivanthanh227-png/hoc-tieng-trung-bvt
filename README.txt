@@ -242,3 +242,51 @@ V42.4.6 - DISTINCT 13-COLOR IDENTITY + CHARACTER COMPONENT ANALYSIS
 - Example: 银 = primary 金 (#167; written as 钅) + phonetic component 艮 (#138). 銀 gives the same component result using 釒. 行 = primary 行 (#144) + recognized component 彳 (#60).
 - On first analysis, the browser downloads the Make Me a Hanzi character metadata (about 9,000 common characters), builds the character result index, and caches the source map in local storage. Internet is required for the first download; the local fallback includes the 银/銀/行 examples.
 - Cache key and service-worker shell version were bumped so old radical-only cache entries cannot hide the new decomposition data.
+
+============================================================
+V42.4.7 – 13 MÀU TƯƠNG PHẢN, LOA MENU 7, SỬA WORKER NHẬN DIỆN
+============================================================
+- 13 menu nay su dung 13 mau phan biet ro hon, chu trang co tuong phan cao.
+- Mau cua banner va khu vuc noi dung ben phai cung doi theo menu dang chon.
+- Menu 7 co loa doc nghia tieng Viet o canh cau hoi va loa doc ca tu/chum tu tieng Trung can luyen.
+- ASR worker chuyen sang classic Worker + URL tu document.baseURI; menu 8 giu du lieu am thanh va tu chuyen sang nhan dien du phong neu worker loi/qua thoi gian.
+- Menu 4/8/9 co the su dung Cloudflare Workers AI Whisper Large V3 Turbo neu cau hinh Worker rieng. Neu chua cau hinh, ung dung van thu Whisper Base cuc bo.
+
+TUY CHON: BAT WHISPER LARGE V3 TURBO QUA CLOUDFLARE
+1. Trong Cloudflare Dashboard, vao Workers & Pages > Create > Worker, dat ten tuy y.
+2. Mo Edit code, dan noi dung tep asr-cloudflare-worker.js, Save and Deploy.
+3. Trong Settings > Bindings, them Workers AI binding, ten binding chinh xac: AI.
+4. Trong Settings > Variables and Secrets:
+   - Them secret ASR_SHARED_SECRET = mot chuoi ngau nhien dai toi thieu 32 ky tu.
+   - Them variable ALLOWED_ORIGIN = https://buivanthanh227-png.github.io
+5. Deploy lai Worker. Sao chep URL https://...workers.dev.
+6. Mo app > menu 4 > Cau hinh nhan dien chat luong cao qua Cloudflare.
+   Dan URL Worker va cung chuoi ASR_SHARED_SECRET vao hai o, bam Luu.
+7. Tu cac luot tiep theo, menu 4 (tu dong Viet/Trung), menu 8 (zh), menu 9 (zh)
+   se gui am thanh toi Cloudflare Workers AI. Cau hinh chi luu trong trinh duyet thiet bi do.
+
+BAO MAT:
+- KHONG nhap Cloudflare Global API Token hoac API Token tai khoan vao app.
+- Chi dung ASR_SHARED_SECRET rieng cho Worker; neu nghi bi lo, doi secret va cap nhat trong app.
+- CORS gioi han origin GitHub Pages cua app; token van la lop bao ve chinh.
+- Am thanh duoc gui qua Worker den Cloudflare de nhan dang, khac voi che do Whisper Base cuc bo.
+- Worker gioi han tep am thanh 15 MB moi lan.
+
+NHAN DIEN BAN PHI / MIEN PHI:
+- Workers AI Free cap 10.000 Neurons moi ngay. Model Whisper Large V3 Turbo tinh 46,63 Neurons/phut,
+  tuong duong khoang 214 phut am thanh/ngay theo phep chia ly thuyet; gioi han co the con bi anh huong
+  boi cac gioi han tai khoan/model va co the thay doi theo chinh sach Cloudflare.
+- Tren tai khoan Paid, vuot muc mien phi tinh theo don gia hien hanh cua Cloudflare.
+- Tinh nang micro ban phim iPhone la Apple Dictation cua he dieu hanh; app web khong the goi truc tiep
+  dich vu noi bo nay. Co the cham vao o nhap va bam micro tren ban phim iPhone de doc thanh van ban.
+
+
+HUONG DAN CAU HINH NHAN DIEN GIONG NOI CLOUD (BAN TIENG VIET)
+----------------------------------------------------------------
+- Tep asr-cloudflare-worker.js la tep Worker rieng, KHONG phai tep worker ma GitHub Pages tu chay.
+- Tao Worker trong Cloudflare Dashboard, dan code tu tep tren, them AI binding ten AI.
+- Them secret ASR_SHARED_SECRET (chuoi ngau nhien >= 32 ky tu) va variable ALLOWED_ORIGIN=https://buivanthanh227-png.github.io.
+- Deploy Worker, copy URL workers.dev. Mo menu 4 trong app, mo muc Cau hinh nhan dien chat luong cao, nhap URL va dung secret do, bam Luu.
+- Neu chua cau hinh, menu 4/8/9 tiep tuc dung nhan dien Whisper Base cuc bo va fallback.
+- Khong dua Cloudflare Global API Token vao app; chi dung secret rieng ASR_SHARED_SECRET.
+- Tren iPhone, micro ban phim la Apple Dictation. Khi focus vao o nhap, bam mic tren ban phim de doc thanh van ban; day la duong nhap lieu cua iOS, khong phai Web Speech API cua trang web.
