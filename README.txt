@@ -181,3 +181,10 @@ TINH CHỈNH TRA BỘ THỦ V42.4 (05/11/2026):
 - Bổ sung từ khóa tiếng Việt 'kim' và các dạng 金 / 釒 / 钅 vào tra cứu bộ thủ; khi lọc 5 nét, biến thể giản thể 钅 cũng xuất hiện dưới bộ chuẩn #167 金. 金 chuẩn có 8 nét, 钅 có 5 nét.
 - Bổ sung biểu tượng gợi nhớ trực quan cho thêm nhiều bộ thủ. Với các bộ trừu tượng/hiếm, ký tự bộ thủ và hoạt ảnh thứ tự nét vẫn là hình tham chiếu chính; biểu tượng không phải hình minh họa nguồn gốc chữ.
 - Dữ liệu phân loại theo từng ký tự lấy từ Make Me a Hanzi dictionary.txt, trường radical; dữ liệu này bao phủ hơn 9.000 ký tự thông dụng. dictionary.txt được phân phối theo LGPL-3.0-or-later theo tệp COPYING của dự án gốc.
+
+
+TINH CHỈNH GIAO DIỆN V42.4.3 (05/11/2026):
+- Bỏ nút Bộ thủ riêng cạnh Liên kết từ vựng trong từng thẻ từ điển. Phân tích bộ thủ vẫn được hiển thị trong cửa sổ xem thứ tự nét của chữ Hán.
+- Khi mở bộ thủ từ phần phân tích trong cửa sổ thứ tự nét, có nút quay lại đúng chữ Hán và đúng từ đang tra cứu.
+- Đánh số 1–12 ngay trên tiêu đề khu vực chức năng; các chế độ luyện Việt→Trung, Trung→Việt, Luyện viết Hán tự và Luyện đọc lần lượt thể hiện số 5–8.
+- Thu gọn nút menu trên điện thoại, giảm khoảng cách và kích thước nhãn để 12 mục có thể hiện đầy đủ khi mở danh mục; giới hạn chiều cao menu theo phần màn hình còn lại.
