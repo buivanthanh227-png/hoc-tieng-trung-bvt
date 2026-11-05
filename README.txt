@@ -158,3 +158,9 @@ BIG UPDATE V42.3 – GỘP LUYỆN TẬP TỪ VỰNG THÀNH 2 HƯỚNG (31/10/20
 - Mỗi câu hỏi được hiển thị trên màn hình và phát âm; khi hiện đáp án, đáp án cũng được phát âm theo ngôn ngữ đích. Giữ nguyên nhập bàn phím, thu âm, chấm CHÍNH XÁC/CHƯA CHÍNH XÁC, bộ hẹn giờ và quy tắc xáo trộn không lặp từ.
 - Giữ nguyên ba nguồn nạp từ vựng: tự chọn từ điển, từ đã nhận diện từ ảnh và từ đã chọn ở Ghép câu luyện phản xạ.
 - Đổi cache Service Worker sang mã V42.3 để tải giao diện mới.
+
+
+V42.4: menu 214 bo thu Kangxi (so thu tu, pinyin, nghia goi y, so net, loc va hoat anh Hanzi Writer); nut sao chep rieng cho Hanzi/Pinyin/nghia Viet o cac khu vuc tu vung va cau; mau nhan dien rieng theo chuc nang.
+
+
+V42.4: menu 214 bo thu Kangxi (so thu tu, pinyin, nghia goi y, so net, loc va hoat anh Hanzi Writer); nut sao chep rieng cho Hanzi/Pinyin/nghia Viet o cac khu vuc tu vung va cau; mau nhan dien rieng theo chuc nang.
