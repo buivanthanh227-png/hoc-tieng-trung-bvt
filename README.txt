@@ -167,3 +167,17 @@ V42.4: menu 214 bo thu Kangxi (so thu tu, pinyin, nghia goi y, so net, loc va ho
 
 
 CAP NHAT GIAO DIEN V42.4 (05/11/2026): Sua tuong phan nut hien dap an va cac nut che do; bo cac nut sao chep trong danh sach tu lien ket; dua nut sao chep nghia tieng Viet ve dau dong nghia trong tu dien; can giua tieu de tren thanh do o may tinh; danh so 1-12 va to mau 12 muc menu theo mau chuc nang.
+
+
+V42.4 – cập nhật biểu tượng cờ, tra bộ thủ theo từng chữ và căn chỉnh nút sao chép (05/11/2026):
+- Logo chữ Hán cũ được thay bằng quốc kỳ Việt Nam và Trung Quốc trong khung nền trắng; màu cờ được giữ nguyên.
+- Bộ thủ trong từng chữ Hán được tra bằng trường radical của dữ liệu Make Me a Hanzi (khoảng hơn 9.000 ký tự), tải khi người dùng mở chức năng lần đầu và lưu bộ tra cứu trên thiết bị. Nếu không có bản ghi, ứng dụng báo chưa có dữ liệu thay vì gán bộ thủ theo suy đoán.
+- Nguồn dữ liệu cấu trúc chữ: https://github.com/skishore/makemeahanzi (dictionary.txt; giấy phép của dữ liệu từ điển theo LGPL-3.0-or-later; vui lòng xem tệp giấy phép gốc tại kho dự án).
+- Bộ thủ 金 là bộ số 167, dạng chuẩn có 8 nét; dạng giản thể đứng bên trái 钅 có 5 nét. Bộ lọc 5 nét cũng hiển thị biến thể này.
+- Các biểu tượng trong danh sách bộ thủ là hình gợi nhớ trực quan, không phải bản vẽ khảo cổ về nguồn gốc chữ.
+
+
+TINH CHỈNH TRA BỘ THỦ V42.4 (05/11/2026):
+- Bổ sung từ khóa tiếng Việt 'kim' và các dạng 金 / 釒 / 钅 vào tra cứu bộ thủ; khi lọc 5 nét, biến thể giản thể 钅 cũng xuất hiện dưới bộ chuẩn #167 金. 金 chuẩn có 8 nét, 钅 có 5 nét.
+- Bổ sung biểu tượng gợi nhớ trực quan cho thêm nhiều bộ thủ. Với các bộ trừu tượng/hiếm, ký tự bộ thủ và hoạt ảnh thứ tự nét vẫn là hình tham chiếu chính; biểu tượng không phải hình minh họa nguồn gốc chữ.
+- Dữ liệu phân loại theo từng ký tự lấy từ Make Me a Hanzi dictionary.txt, trường radical; dữ liệu này bao phủ hơn 9.000 ký tự thông dụng. dictionary.txt được phân phối theo LGPL-3.0-or-later theo tệp COPYING của dự án gốc.
