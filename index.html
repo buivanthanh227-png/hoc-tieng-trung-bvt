@@ -354,25 +354,78 @@
 #panel-dict .card,#panel-ocr .card,#panel-practice .card,#panel-voice-translate .card,#panel-combine .card,#panel-vocab-training .card,#panel-radicals .card{border-top:3px solid color-mix(in srgb,var(--red) 62%,white)}
 #panel-dict .section-title,#panel-ocr .section-title,#panel-practice .section-title,#panel-voice-translate .section-title,#panel-combine .section-title,#panel-vocab-training .section-title,#panel-radicals .section-title{color:var(--red)}
 #panel-dict .btn:not(.secondary),#panel-ocr .btn:not(.secondary),#panel-practice .btn:not(.secondary),#panel-voice-translate .btn:not(.secondary),#panel-combine .btn:not(.secondary),#panel-vocab-training .btn:not(.secondary),#panel-radicals .btn:not(.secondary){background:var(--red)}
-.copy-sibling-toolbar{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:4px;margin:-4px 0 6px}.copy-sibling-button{border:1px solid #e2e8f0;background:#fff;border-radius:6px;padding:3px 6px;font-size:9px;color:#64748b;min-height:22px}.copy-sibling-button:active{background:#dbeafe;color:#1d4ed8}</style>
+.copy-sibling-toolbar{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:4px;margin:-4px 0 6px}.copy-sibling-button{border:1px solid #e2e8f0;background:#fff;border-radius:6px;padding:3px 6px;font-size:9px;color:#64748b;min-height:22px}.copy-sibling-button:active{background:#dbeafe;color:#1d4ed8}
+
+/* V42.4 UI refinement: restore readable controls, simplify related links, and style the left menu. */
+/* Accent-filled primary buttons must never reuse the accent as their text color. */
+#panel-practice .btn.outline,#panel-combine .btn.outline,#panel-ocr .btn.outline,
+#panel-dict .btn.outline,#panel-radicals .btn.outline,#panel-voice-translate .btn.outline{
+  background:#fff!important;color:var(--red)!important;
+  border:1px solid color-mix(in srgb,var(--red) 48%,#fff)!important;
+}
+#panel-practice .mode-btn.active,#panel-combine .mode-btn.active{
+  background:var(--red)!important;color:#fff!important;border-color:var(--red)!important;
+  box-shadow:inset 0 -2px 0 #00000012;
+}
+#panel-practice .mode-btn:not(.active),#panel-combine .mode-btn:not(.active){color:#475467!important;background:#fff!important}
+
+/* The Vietnamese meaning copy icon sits before the meaning, not at the far right edge. */
+#panel-dict .meaning.copyable-field{padding-left:20px!important;padding-right:0!important}
+#panel-dict .meaning.copyable-field .copy-field-button{left:0!important;right:auto!important;top:0!important}
+
+/* Twelve menu tiles: number + icon + white label on the existing function accent color. */
+.app-shell #main-tabs .tab{background:var(--menu-color)!important;color:#fff!important;border:1px solid var(--menu-color)!important;border-radius:9px!important;box-shadow:0 2px 5px color-mix(in srgb,var(--menu-color) 20%,transparent);transition:filter .15s,box-shadow .15s}
+.app-shell #main-tabs .tab:hover{filter:brightness(1.08)}
+.app-shell #main-tabs .tab.active{background:var(--menu-color)!important;color:#fff!important;border-color:#fff!important;box-shadow:0 0 0 2px var(--menu-color),0 3px 8px color-mix(in srgb,var(--menu-color) 28%,transparent);filter:brightness(.92)}
+.app-shell #main-tabs .tab:focus-visible{outline:3px solid #fbbf24;outline-offset:2px}
+.app-shell #main-tabs .tab .tab-number{display:inline-grid!important;flex:0 0 24px!important;width:24px!important;min-width:24px!important;height:24px!important;place-items:center!important;border:1px solid #ffffff88!important;border-radius:7px!important;background:#ffffff20!important;color:#fff!important;font-size:12px!important;font-weight:900!important;line-height:1!important}
+.app-shell #main-tabs .tab>span:not(.tab-number){color:#fff!important}
+.app-shell #main-tabs .tab .vocab-wordmark{background:#ffffff20!important;border:1px solid #ffffff88!important;color:#fff!important;box-shadow:none!important}
+.app-shell #main-tabs .tab[data-tab="dict"]{--menu-color:#2563eb}
+.app-shell #main-tabs .tab[data-tab="ocr"]{--menu-color:#7c3aed}
+.app-shell #main-tabs .tab[data-tab="translate"]{--menu-color:#0891b2}
+.app-shell #main-tabs .tab[data-tab="voice-translate"]{--menu-color:#ea580c}
+.app-shell #main-tabs .tab[data-tab="vi-zh"]{--menu-color:#16a34a}
+.app-shell #main-tabs .tab[data-tab="zh-vi"]{--menu-color:#0284c7}
+.app-shell #main-tabs .tab[data-tab="write"]{--menu-color:#db2777}
+.app-shell #main-tabs .tab[data-tab="read"]{--menu-color:#7c3aed}
+.app-shell #main-tabs .tab[data-tab="combine"]{--menu-color:#d97706}
+.app-shell #main-tabs .tab[data-tab="vocab-training"]{--menu-color:#4f46e5}
+.app-shell #main-tabs .tab[data-tab="number"]{--menu-color:#6554db}
+.app-shell #main-tabs .tab[data-tab="radicals"]{--menu-color:#0f766e}
+
+/* Center the brand in the red header on desktop while leaving mobile unchanged. */
+@media(min-width:701px){
+  .topbar{min-height:92px;padding-top:calc(10px + env(safe-area-inset-top));padding-bottom:10px}
+  .toprow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;max-width:1180px;min-height:68px}
+  .brand{grid-column:2;justify-self:center;display:flex;flex-direction:column;align-items:center;gap:0;text-align:center;min-width:max-content}
+  .brand .logo{display:none}
+  .brand h1{font-size:20px;line-height:1.2;letter-spacing:.02em}
+  .brand .brand-slogan{align-items:center;text-align:center;font-size:10px;line-height:1.25;gap:3px;margin:5px 0 0}
+  .top-meta{grid-column:3;justify-self:end;align-self:center;text-align:right}
+  .credit-line{max-width:250px;margin-left:auto}
+  .app-shell #main-tabs{top:calc(92px + 12px);height:calc(100vh - 116px);max-height:calc(100vh - 116px)}
+}
+
+</style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand"><div class="logo" aria-label="汉语">汉语</div><div><h1>HỌC TIẾNG TRUNG</h1><p class="brand-slogan"><span>HỌC THÊM MỘT NGÔN NGỮ</span><span>SỐNG THÊM MỘT CUỘC ĐỜI</span></p><span id="top-status" hidden aria-hidden="true"></span></div></div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
 <div class="app-shell">
 <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
 <nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
-<button class="tab active" data-tab="dict" type="button"><span>📚</span>TỪ ĐIỂN TIẾNG TRUNG</button>
-<button class="tab" data-tab="ocr" type="button"><span>🖼️</span>NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</button>
-<button class="tab" data-tab="translate" type="button"><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT ⇄ TRUNG</button>
-<button class="tab" data-tab="voice-translate" type="button"><span aria-hidden="true">🎙️</span>DỊCH NHANH BẰNG GIỌNG NÓI</button>
-<button class="tab" data-tab="vi-zh" type="button"><span>🇻🇳</span>LUYỆN VIẾT VIỆT → TRUNG</button>
-<button class="tab" data-tab="zh-vi" type="button"><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
-<button class="tab" data-tab="write" type="button"><span>✍️</span>LUYỆN VIẾT HÁN TỰ</button>
-<button class="tab" data-tab="read" type="button"><span>🔊</span>LUYỆN ĐỌC CHỮ HÁN</button>
-<button class="tab" data-tab="combine" type="button"><span>🧩</span>GHÉP CÂU LUYỆN PHẢN XẠ</button>
-<button class="tab" data-tab="vocab-training" type="button"><span class="vocab-wordmark" aria-hidden="true">词</span>LUYỆN TẬP TỪ VỰNG</button>
-<button class="tab" data-tab="number" type="button"><span>🔢</span>LUYỆN SỐ TIẾNG TRUNG</button>
-<button class="tab" data-tab="radicals" type="button"><span>部</span>DANH SÁCH BỘ THỦ</button>
+<button class="tab active" data-tab="dict" type="button"><span class="tab-number" aria-hidden="true">1</span><span>📚</span>TỪ ĐIỂN TIẾNG TRUNG</button>
+<button class="tab" data-tab="ocr" type="button"><span class="tab-number" aria-hidden="true">2</span><span>🖼️</span>NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</button>
+<button class="tab" data-tab="translate" type="button"><span class="tab-number" aria-hidden="true">3</span><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT ⇄ TRUNG</button>
+<button class="tab" data-tab="voice-translate" type="button"><span class="tab-number" aria-hidden="true">4</span><span aria-hidden="true">🎙️</span>DỊCH NHANH BẰNG GIỌNG NÓI</button>
+<button class="tab" data-tab="vi-zh" type="button"><span class="tab-number" aria-hidden="true">5</span><span>🇻🇳</span>LUYỆN VIẾT VIỆT → TRUNG</button>
+<button class="tab" data-tab="zh-vi" type="button"><span class="tab-number" aria-hidden="true">6</span><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
+<button class="tab" data-tab="write" type="button"><span class="tab-number" aria-hidden="true">7</span><span>✍️</span>LUYỆN VIẾT HÁN TỰ</button>
+<button class="tab" data-tab="read" type="button"><span class="tab-number" aria-hidden="true">8</span><span>🔊</span>LUYỆN ĐỌC CHỮ HÁN</button>
+<button class="tab" data-tab="combine" type="button"><span class="tab-number" aria-hidden="true">9</span><span>🧩</span>GHÉP CÂU LUYỆN PHẢN XẠ</button>
+<button class="tab" data-tab="vocab-training" type="button"><span class="tab-number" aria-hidden="true">10</span><span class="vocab-wordmark" aria-hidden="true">词</span>LUYỆN TẬP TỪ VỰNG</button>
+<button class="tab" data-tab="number" type="button"><span class="tab-number" aria-hidden="true">11</span><span>🔢</span>LUYỆN SỐ TIẾNG TRUNG</button>
+<button class="tab" data-tab="radicals" type="button"><span class="tab-number" aria-hidden="true">12</span><span>部</span>DANH SÁCH BỘ THỦ</button>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
@@ -4082,7 +4135,7 @@ window.selectRadical=selectRadical;window.guessRadicalForWord=guessRadicalForWor
 const rules=[['.hanzi','hanzi'],['.pinyin','pinyin'],['.meaning','vi'],['.suggestion-hanzi','hanzi'],['.suggestion-pinyin','pinyin'],['.suggestion-meaning','vi'],['.read-result-hanzi','hanzi'],['.read-result-meta small:nth-child(1)','pinyin'],['.read-result-meta small:nth-child(2)','vi'],['.ocr-word-main b','hanzi'],['.ocr-word-pinyin','pinyin'],['.ocr-word-meaning','vi'],['.chinese','hanzi'],['.meta','pinyin'],['.translation','vi'],['.homework-zh','hanzi'],['.homework-pinyin-text','pinyin'],['.homework-vietnamese-text','vi'],['.answer-hanzi','hanzi'],['.answer-pinyin','pinyin'],['.answer-vietnamese','vi'],['.selected-word b','hanzi'],['.selected-word small','vi'],['.selected-chip b','hanzi'],['.selected-chip small','vi'],['.vocab-training-chip b','hanzi'],['.vocab-training-chip small','text'],['.vocab-training-result b','hanzi'],['.vocab-training-result span small:nth-child(1)','pinyin'],['.vocab-training-result span small:nth-child(2)','vi'],['.voice-result-text','text'],['#voice-translate-transcript','text'],['#voice-translate-result','text'],['.question','text'],['.question-translation','text'],['.vocab-training-question-text','text']];
 function valueFor(el,kind){if(kind==='hanzi')return [...el.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE).map(n=>n.textContent).join('').trim()||el.textContent.trim();return (el.innerText||el.textContent||'').trim();}
 function enhanceCopy(root=document){for(const [sel,kind] of rules){root.querySelectorAll?.(sel).forEach(el=>{if(el.dataset.copyEnhanced)return;if(el.closest('button'))return;const value=valueFor(el,kind);if(!value||value.length>1200)return;el.dataset.copyEnhanced='1';el.classList.add('copyable-field');const b=document.createElement('button');b.type='button';b.className='copy-field-button';b.dataset.copyControl='1';b.dataset.copyValue=value;b.title='Sao chép '+({hanzi:'chữ Hán',pinyin:'phiên âm',vi:'nghĩa tiếng Việt',text:'nội dung'}[kind]);b.setAttribute('aria-label',b.title);b.textContent='⧉';el.appendChild(b);});}}
-function enhanceNestedCopy(root=document){const selector='.combine-suggestion,.vocab-training-result,.related-item';const parents=[];if(root.matches?.(selector))parents.push(root);parents.push(...(root.querySelectorAll?.(selector)||[]));parents.forEach(parent=>{if(parent.dataset.copyToolbar)return;const fields=parent.classList.contains('vocab-training-result')?[[parent.querySelector('b')?.textContent,'chữ Hán'],[parent.querySelector('span small:nth-child(1)')?.textContent,'phiên âm'],[parent.querySelector('span small:nth-child(2)')?.textContent,'nghĩa tiếng Việt']]:parent.classList.contains('related-item')?[[parent.querySelector('strong')?.textContent,'chữ Hán'],[parent.querySelector('.related-pinyin')?.textContent,'phiên âm'],[parent.querySelector('.related-meaning')?.textContent,'nghĩa tiếng Việt']]:[[parent.querySelector('.suggestion-hanzi,.read-result-hanzi')?.textContent,'chữ Hán'],[parent.querySelector('.suggestion-pinyin,.read-result-meta small:nth-child(1)')?.textContent,'phiên âm'],[parent.querySelector('.suggestion-meaning,.read-result-meta small:nth-child(2)')?.textContent,'nghĩa tiếng Việt']];const usable=fields.filter(x=>String(x[0]||'').trim());if(!usable.length)return;parent.dataset.copyToolbar='1';const bar=document.createElement('div');bar.className='copy-sibling-toolbar';usable.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.className='copy-sibling-button';b.dataset.copyControl='1';b.dataset.copyValue=String(value).trim();b.title='Sao chép '+label;b.textContent='⧉ '+label;bar.appendChild(b);});parent.insertAdjacentElement('afterend',bar);});}
+function enhanceNestedCopy(root=document){const selector='.combine-suggestion,.vocab-training-result';const parents=[];if(root.matches?.(selector))parents.push(root);parents.push(...(root.querySelectorAll?.(selector)||[]));parents.forEach(parent=>{if(parent.dataset.copyToolbar)return;const fields=parent.classList.contains('vocab-training-result')?[[parent.querySelector('b')?.textContent,'chữ Hán'],[parent.querySelector('span small:nth-child(1)')?.textContent,'phiên âm'],[parent.querySelector('span small:nth-child(2)')?.textContent,'nghĩa tiếng Việt']]:[[parent.querySelector('.suggestion-hanzi,.read-result-hanzi')?.textContent,'chữ Hán'],[parent.querySelector('.suggestion-pinyin,.read-result-meta small:nth-child(1)')?.textContent,'phiên âm'],[parent.querySelector('.suggestion-meaning,.read-result-meta small:nth-child(2)')?.textContent,'nghĩa tiếng Việt']];const usable=fields.filter(x=>String(x[0]||'').trim());if(!usable.length)return;parent.dataset.copyToolbar='1';const bar=document.createElement('div');bar.className='copy-sibling-toolbar';usable.forEach(([value,label])=>{const b=document.createElement('button');b.type='button';b.className='copy-sibling-button';b.dataset.copyControl='1';b.dataset.copyValue=String(value).trim();b.title='Sao chép '+label;b.textContent='⧉ '+label;bar.appendChild(b);});parent.insertAdjacentElement('afterend',bar);});}
 async function copyText(v){try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(v);return true;}}catch(_){}const a=document.createElement('textarea');a.value=v;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}a.remove();return ok;}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-copy-control]');if(!b)return;e.preventDefault();e.stopPropagation();const ok=await copyText(b.dataset.copyValue||'');const t=$('toast');if(t){t.textContent=ok?'Đã sao chép nội dung.':'Không thể sao chép trên trình duyệt này.';t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}});
 const mo=new MutationObserver(records=>{for(const rec of records)for(const node of rec.addedNodes)if(node.nodeType===1){enhanceCopy(node);enhanceNestedCopy(node);}});mo.observe(document.body,{childList:true,subtree:true});enhanceCopy();enhanceNestedCopy();

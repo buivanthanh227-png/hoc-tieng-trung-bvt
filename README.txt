@@ -164,3 +164,6 @@ V42.4: menu 214 bo thu Kangxi (so thu tu, pinyin, nghia goi y, so net, loc va ho
 
 
 V42.4: menu 214 bo thu Kangxi (so thu tu, pinyin, nghia goi y, so net, loc va hoat anh Hanzi Writer); nut sao chep rieng cho Hanzi/Pinyin/nghia Viet o cac khu vuc tu vung va cau; mau nhan dien rieng theo chuc nang.
+
+
+CAP NHAT GIAO DIEN V42.4 (05/11/2026): Sua tuong phan nut hien dap an va cac nut che do; bo cac nut sao chep trong danh sach tu lien ket; dua nut sao chep nghia tieng Viet ve dau dong nghia trong tu dien; can giua tieu de tren thanh do o may tinh; danh so 1-12 va to mau 12 muc menu theo mau chuc nang.
