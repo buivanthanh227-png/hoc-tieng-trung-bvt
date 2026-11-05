@@ -204,3 +204,24 @@ CAP NHAT V42.4 – AM THANH, KHO TAI LIEU VA MINH HOA 214 BO THU (05/11/2026):
 - Menu 13 TAI LIEU CUA BAN: luu anh va van ban bang IndexedDB tren trinh duyet; ho tro xem, tim kiem, tai xuong, xoa, xuat/nhap ban sao luu JSON de chuyen thiet bi. Khong dong bo dam may tu dong.
 - Danh sach 214 bo thu: bo sung nghia goi y tieng Viet va 214 minh hoa SVG rieng theo tung so bo thu; hinh la cong cu ghi nho su pham, khong phai hinh giai thich nguon goc tu nguyen cua moi chu.
 - Luu y: nhan dien giong noi phu thuoc chat luong micro, tieng on va giong doc; TTS phu thuoc giong doc co tren thiet bi.
+
+
+CAP NHAT V42.4 - SUA HOAT ANH BO THU (05/11/2026)
+- Bo sung lai ham tai hoat anh thu tu net bo thu (ban truoc con loi goi ham nhung thieu dinh nghia).
+- Khi chon mot bo thu, mo hop thoai noi (modal) hien thi hinh goi nho, y nghia, so net va hoat anh; khong can cuon xuong cuoi danh sach.
+- Hoat anh tu lap sau moi luot, nghi 3 giay; nut Xem lai thu tu net dat trong modal va chay lai tu net dau tien.
+- Nut quay lai chu dang tra van duoc hien trong modal khi mo tu cua so thu tu net cua tu dien.
+
+
+CAP NHAT V42.4 - SUA HOAT ANH BO THU (05/11/2026)
+- Bo sung lai ham tai hoat anh thu tu net bo thu (ban truoc con loi goi ham nhung thieu dinh nghia).
+- Khi chon mot bo thu, mo hop thoai noi (modal) hien thi hinh goi nho, y nghia, so net va hoat anh; khong can cuon xuong cuoi danh sach.
+- Hoat anh tu lap sau moi luot, nghi 3 giay; nut Xem lai thu tu net dat trong modal va chay lai tu net dau tien.
+- Nut quay lai chu dang tra van duoc hien trong modal khi mo tu cua so thu tu net cua tu dien.
+
+
+CAP NHAT V42.4 - SUA HOAT ANH BO THU (05/11/2026)
+- Bo sung lai ham tai hoat anh thu tu net bo thu (ban truoc con loi goi ham nhung thieu dinh nghia).
+- Khi chon mot bo thu, mo hop thoai noi (modal) hien thi hinh goi nho, y nghia, so net va hoat anh; khong can cuon xuong cuoi danh sach.
+- Hoat anh tu lap sau moi luot, nghi 3 giay; nut Xem lai thu tu net dat trong modal va chay lai tu net dau tien.
+- Nut quay lai chu dang tra van duoc hien trong modal khi mo tu cua so thu tu net cua tu dien.
