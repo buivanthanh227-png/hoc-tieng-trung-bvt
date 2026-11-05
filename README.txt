@@ -244,49 +244,53 @@ V42.4.6 - DISTINCT 13-COLOR IDENTITY + CHARACTER COMPONENT ANALYSIS
 - Cache key and service-worker shell version were bumped so old radical-only cache entries cannot hide the new decomposition data.
 
 ============================================================
-V42.4.7 – 13 MÀU TƯƠNG PHẢN, LOA MENU 7, SỬA WORKER NHẬN DIỆN
+V42.5 – TURNSTILE, CLOUDFLARE ASR MAC DINH, FALLBACK CUC BO
 ============================================================
-- 13 menu nay su dung 13 mau phan biet ro hon, chu trang co tuong phan cao.
-- Mau cua banner va khu vuc noi dung ben phai cung doi theo menu dang chon.
-- Menu 7 co loa doc nghia tieng Viet o canh cau hoi va loa doc ca tu/chum tu tieng Trung can luyen.
-- ASR worker chuyen sang classic Worker + URL tu document.baseURI; menu 8 giu du lieu am thanh va tu chuyen sang nhan dien du phong neu worker loi/qua thoi gian.
-- Menu 4/8/9 co the su dung Cloudflare Workers AI Whisper Large V3 Turbo neu cau hinh Worker rieng. Neu chua cau hinh, ung dung van thu Whisper Base cuc bo.
+- Menu 4, 8 va 9 uu tien Whisper Large V3 Turbo qua Worker bvt-asr.
+- Neu Cloudflare/Turnstile khong tai duoc, xac minh that bai, Worker loi hoac het thoi gian, app tu chuyen sang nhan dien cuc bo tren thiet bi.
+- Khong con muc cau hinh URL/ma truy cap thu cong. Endpoint va Turnstile Site Key cong khai duoc dat san trong index.html.
+- Menu 8 an nut loa canh cau hoi; nut Nghe mau rieng van duoc giu.
+- Giam dong huong dan lap lai trong menu 4 va menu 8; chi hien thong bao trang thai khi thao tac.
+- Worker dung Turnstile Siteverify de xac minh moi yeu cau nhan dien. Secret Key chi nam trong Cloudflare Worker, khong nam trong GitHub Pages.
+- Worker gioi han moi tep am thanh toi da 15 MB.
 
-TUY CHON: BAT WHISPER LARGE V3 TURBO QUA CLOUDFLARE
-1. Trong Cloudflare Dashboard, vao Workers & Pages > Create > Worker, dat ten tuy y.
-2. Mo Edit code, dan noi dung tep asr-cloudflare-worker.js, Save and Deploy.
-3. Trong Settings > Bindings, them Workers AI binding, ten binding chinh xac: AI.
-4. Trong Settings > Variables and Secrets:
-   - Them secret ASR_SHARED_SECRET = mot chuoi ngau nhien dai toi thieu 32 ky tu.
-   - Them variable ALLOWED_ORIGIN = https://buivanthanh227-png.github.io
-5. Deploy lai Worker. Sao chep URL https://...workers.dev.
-6. Mo app > menu 4 > Cau hinh nhan dien chat luong cao qua Cloudflare.
-   Dan URL Worker va cung chuoi ASR_SHARED_SECRET vao hai o, bam Luu.
-7. Tu cac luot tiep theo, menu 4 (tu dong Viet/Trung), menu 8 (zh), menu 9 (zh)
-   se gui am thanh toi Cloudflare Workers AI. Cau hinh chi luu trong trinh duyet thiet bi do.
+BAT BUOC CAP NHAT WORKER TRUOC KHI DANG APP V42.5
+-------------------------------------------------
+1. Mo Cloudflare Dashboard > Workers & Pages > bvt-asr > Edit code.
+2. Thay toan bo ma cu bang tep asr-cloudflare-worker.js trong goi V42.5, sau do Save and Deploy.
+3. Giu Workers AI binding ten chinh xac la AI.
+4. Trong Settings > Variables and Secrets, them Secret ten TURNSTILE_SECRET_KEY va dan Secret Key cua widget Turnstile (khong phai Site Key).
+5. Giu variable ALLOWED_ORIGIN = https://buivanthanh227-png.github.io.
+6. Xoa Secret ASR_SHARED_SECRET cu neu con; ban V42.5 khong su dung Bearer password nua.
+7. Deploy lai Worker. Mo dia chi workers.dev de kiem tra JSON health co protection: Cloudflare Turnstile.
+8. Sau do moi tai len GitHub Pages toan bo tep trong goi V42.5.
 
-BAO MAT:
-- KHONG nhap Cloudflare Global API Token hoac API Token tai khoan vao app.
-- Chi dung ASR_SHARED_SECRET rieng cho Worker; neu nghi bi lo, doi secret va cap nhat trong app.
-- CORS gioi han origin GitHub Pages cua app; token van la lop bao ve chinh.
-- Am thanh duoc gui qua Worker den Cloudflare de nhan dang, khac voi che do Whisper Base cuc bo.
-- Worker gioi han tep am thanh 15 MB moi lan.
+TURNSTILE DA DUOC NHUNG SAN TRONG APP
+-------------------------------------
+- Site Key cong khai da duoc dat san trong index.html: 0x4AAAAAAF0xjE9j2xA4Ndkm.
+- Hostname duoc phep: buivanthanh227-png.github.io.
+- Action duoc kiem tra tren Worker: bvt_asr.
+- Nguoi hoc khong can nhap URL, Site Key hoac mat khau. Turnstile chay tu dong khi can nhan dien; trong truong hop Cloudflare yeu cau tuong tac, nguoi hoc co the thay buoc xac minh nho.
+- Site Key la khoa cong khai. Tuyet doi khong dua Turnstile Secret Key vao index.html, README cong khai hoac GitHub.
+- Token Turnstile duoc tao moi cho tung lan gui am thanh va duoc xac minh phia Worker qua Siteverify. Token co thoi han 5 phut va chi su dung duoc mot lan.
 
-NHAN DIEN BAN PHI / MIEN PHI:
-- Workers AI Free cap 10.000 Neurons moi ngay. Model Whisper Large V3 Turbo tinh 46,63 Neurons/phut,
-  tuong duong khoang 214 phut am thanh/ngay theo phep chia ly thuyet; gioi han co the con bi anh huong
-  boi cac gioi han tai khoan/model va co the thay doi theo chinh sach Cloudflare.
-- Tren tai khoan Paid, vuot muc mien phi tinh theo don gia hien hanh cua Cloudflare.
-- Tinh nang micro ban phim iPhone la Apple Dictation cua he dieu hanh; app web khong the goi truc tiep
-  dich vu noi bo nay. Co the cham vao o nhap va bam micro tren ban phim iPhone de doc thanh van ban.
+KHI CO LOI
+-----------
+- Thieu TURNSTILE_SECRET_KEY: Worker tra ve HTTP 500; them Secret tren Worker va Deploy lai.
+- Token khong hop le/het han/da su dung: Worker tra ve HTTP 401; app tu chuyen sang nhan dien cuc bo.
+- Sai hostname hoac action: Worker tu choi yeu cau; kiem tra widget Turnstile dang cho phep buivanthanh227-png.github.io va action bvt_asr.
+- Thieu AI binding: them Workers AI binding ten AI.
+- Worker/Turnstile khong truy cap duoc: app tu chuyen sang Whisper Base cuc bo neu trinh duyet tai duoc model.
 
+CAP NHAT GITHUB PAGES
+---------------------
+1. Giai nen ZIP.
+2. Chon tat ca tep trong goi va tai truc tiep vao thu muc goc repository dang chua index.html; khong tao them thu muc long.
+3. Doi GitHub Pages cap nhat xong. Tren may tinh nhan Ctrl+F5; tren dien thoai dong tab va mo lai.
+4. Worker Cloudflare la tep rieng, phai Deploy theo huong dan phia tren; tai tep Worker len GitHub khong lam Worker tu cap nhat.
 
-HUONG DAN CAU HINH NHAN DIEN GIONG NOI CLOUD (BAN TIENG VIET)
-----------------------------------------------------------------
-- Tep asr-cloudflare-worker.js la tep Worker rieng, KHONG phai tep worker ma GitHub Pages tu chay.
-- Tao Worker trong Cloudflare Dashboard, dan code tu tep tren, them AI binding ten AI.
-- Them secret ASR_SHARED_SECRET (chuoi ngau nhien >= 32 ky tu) va variable ALLOWED_ORIGIN=https://buivanthanh227-png.github.io.
-- Deploy Worker, copy URL workers.dev. Mo menu 4 trong app, mo muc Cau hinh nhan dien chat luong cao, nhap URL va dung secret do, bam Luu.
-- Neu chua cau hinh, menu 4/8/9 tiep tuc dung nhan dien Whisper Base cuc bo va fallback.
-- Khong dua Cloudflare Global API Token vao app; chi dung secret rieng ASR_SHARED_SECRET.
-- Tren iPhone, micro ban phim la Apple Dictation. Khi focus vao o nhap, bam mic tren ban phim de doc thanh van ban; day la duong nhap lieu cua iOS, khong phai Web Speech API cua trang web.
+GHI CHU QUYEN RIENG TU VA CHI PHI
+---------------------------------
+- Am thanh duoc gui toi Cloudflare de nhan dang khi dich vu san sang. Neu Cloudflare/Turnstile loi, app thu nhan dang cuc bo tren thiet bi.
+- Turnstile giam yeu cau tu dong va khong cong khai khoa bi mat; no khong thay the hoan toan gioi han tan suat. Nen theo doi Workers AI usage va cau hinh rate limiting neu luong nguoi dung tang.
+- Workers AI Free cap 10.000 Neurons/ngay theo chinh sach tai khoan; muc tieu thu cu the co the thay doi. Kiem tra bang gia Cloudflare hien hanh truoc khi dua vao su dung cong khai quy mo lon.

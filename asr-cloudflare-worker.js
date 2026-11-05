@@ -1,13 +1,15 @@
 /**
- * BVT Cloudflare Workers AI speech-to-text gateway.
- * Required Worker bindings/settings:
+ * BVT Cloudflare Workers AI speech-to-text gateway (V42.5).
+ * Required Worker configuration:
  *   AI: Workers AI binding named exactly "AI"
- *   ASR_SHARED_SECRET: secret string (set with `wrangler secret put ASR_SHARED_SECRET`)
+ *   TURNSTILE_SECRET_KEY: Cloudflare Turnstile Secret Key (Worker Secret)
  *   ALLOWED_ORIGIN: https://buivanthanh227-png.github.io
  * Model: @cf/openai/whisper-large-v3-turbo
+ * The Turnstile Site Key is public and is embedded in index.html.
  */
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
 const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
+const EXPECTED_ACTION = 'bvt_asr';
 
 function json(data, status, origin) {
   return new Response(JSON.stringify(data), {
@@ -17,11 +19,12 @@ function json(data, status, origin) {
       'Cache-Control': 'no-store',
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type',
       'Vary': 'Origin'
     }
   });
 }
+
 function toBase64(bytes) {
   let binary = '';
   const chunkSize = 0x8000;
@@ -32,10 +35,62 @@ function toBase64(bytes) {
   return btoa(binary);
 }
 
+async function verifyTurnstile(token, request, env, expectedHostname) {
+  if (typeof token !== 'string' || !token || token.length > 2048) {
+    return { success: false, reason: 'missing-input-response' };
+  }
+  const body = new URLSearchParams({
+    secret: String(env.TURNSTILE_SECRET_KEY || ''),
+    response: token
+  });
+  const ip = request.headers.get('CF-Connecting-IP');
+  if (ip) body.set('remoteip', ip);
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+      signal: controller.signal
+    });
+    if (!response.ok) return { success: false, reason: 'siteverify-http-' + response.status };
+    const result = await response.json();
+    const valid = !!result.success &&
+      result.hostname === expectedHostname &&
+      result.action === EXPECTED_ACTION;
+    return {
+      success: valid,
+      reason: valid ? '' : (Array.isArray(result['error-codes']) ? result['error-codes'].join(',') : 'turnstile-validation-failed')
+    };
+  } catch (error) {
+    return { success: false, reason: String(error?.message || 'siteverify-unavailable') };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export default {
   async fetch(request, env) {
-    const allowedOrigin = env.ALLOWED_ORIGIN || 'https://buivanthanh227-png.github.io';
+    const allowedOrigin = String(env.ALLOWED_ORIGIN || 'https://buivanthanh227-png.github.io')
+      .trim()
+      .replace(/\/+$/, '');
     const requestOrigin = request.headers.get('Origin') || '';
+    let expectedHostname = 'buivanthanh227-png.github.io';
+    try { expectedHostname = new URL(allowedOrigin).hostname; } catch (_) {}
+
+    // Direct browser navigation is a read-only health check.
+    if (request.method === 'GET' && !requestOrigin) {
+      return json({
+        ok: true,
+        service: 'BVT speech recognition Worker',
+        model: MODEL,
+        protection: 'Cloudflare Turnstile',
+        message: 'Worker is running. Send a Turnstile-verified audio POST request from the BVT learning app.'
+      }, 200, allowedOrigin);
+    }
+
     if (requestOrigin !== allowedOrigin) {
       return new Response('Origin not allowed', { status: 403 });
     }
@@ -45,22 +100,27 @@ export default {
         headers: {
           'Access-Control-Allow-Origin': allowedOrigin,
           'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Authorization, Content-Type',
+          'Access-Control-Allow-Headers': 'Content-Type',
           'Access-Control-Max-Age': '86400',
           'Vary': 'Origin'
         }
       });
     }
     if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, allowedOrigin);
-    if (!env.AI || !env.ASR_SHARED_SECRET) return json({ error: 'Worker is missing AI binding or ASR_SHARED_SECRET.' }, 500, allowedOrigin);
-    const authorization = request.headers.get('Authorization') || '';
-    if (authorization !== `Bearer ${env.ASR_SHARED_SECRET}`) return json({ error: 'Unauthorized' }, 401, allowedOrigin);
+    if (!env.AI) return json({ error: 'Worker is missing the AI binding. Add Workers AI binding named AI.' }, 500, allowedOrigin);
+    if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Worker is missing TURNSTILE_SECRET_KEY. Add the Turnstile Secret Key as a Worker Secret.' }, 500, allowedOrigin);
 
     try {
       const form = await request.formData();
       const audio = form.get('audio');
       if (!audio || typeof audio.arrayBuffer !== 'function') return json({ error: 'Missing audio file.' }, 400, allowedOrigin);
       if (!audio.size || audio.size > MAX_AUDIO_BYTES) return json({ error: 'Audio must be between 1 byte and 15 MB.' }, 413, allowedOrigin);
+
+      const verification = await verifyTurnstile(form.get('cf-turnstile-response'), request, env, expectedHostname);
+      if (!verification.success) {
+        return json({ error: 'Turnstile verification failed.', details: verification.reason }, 401, allowedOrigin);
+      }
+
       const requestedLanguage = String(form.get('language') || 'auto').toLowerCase();
       const language = requestedLanguage === 'vi' ? 'vi' : requestedLanguage === 'zh' ? 'zh' : 'auto';
       const bytes = new Uint8Array(await audio.arrayBuffer());
