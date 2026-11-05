@@ -188,3 +188,10 @@ TINH CHỈNH GIAO DIỆN V42.4.3 (05/11/2026):
 - Khi mở bộ thủ từ phần phân tích trong cửa sổ thứ tự nét, có nút quay lại đúng chữ Hán và đúng từ đang tra cứu.
 - Đánh số 1–12 ngay trên tiêu đề khu vực chức năng; các chế độ luyện Việt→Trung, Trung→Việt, Luyện viết Hán tự và Luyện đọc lần lượt thể hiện số 5–8.
 - Thu gọn nút menu trên điện thoại, giảm khoảng cách và kích thước nhãn để 12 mục có thể hiện đầy đủ khi mở danh mục; giới hạn chiều cao menu theo phần màn hình còn lại.
+
+
+TINH CHINH THU TU NET VA HINH GOI NHO BO THU V42.4 (05/11/2026):
+- Hoat anh chu mau trong cua so thu tu net tu dien va phan luyen viet tu dong lap lai sau moi vong, nghi 3 giay; phan hoat anh 214 bo thu cung tu dong lap lai sau 3 giay.
+- Nut Chay lai/Xem lai giu nguyen nhan, bam vao se dat lai chu hien tai va phat lai tu net dau tien.
+- Thay emoji phu thuoc font bang 214 hinh goi nho SVG vector, cung mau net va nen, hien thi dong bo tren may tinh va dien thoai. Hinh la meo ghi nho truc quan, khong phai minh hoa tu nguyen.
+- Service Worker doi ma cache de trinh duyet nhan ban cap nhat.
