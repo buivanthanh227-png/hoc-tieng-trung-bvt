@@ -359,3 +359,15 @@ V42.5.5 – Sửa ngôn ngữ chép lời tiếng Trung và dòng phiên bản.
 - Menu 9 (phản xạ đọc câu và hỏi đáp): yêu cầu Cloudflare nhận diện language=zh; fallback cục bộ dùng language=chinese.
 - Menu 4 vẫn dùng language=auto cho nhận diện song ngữ Việt/Trung.
 - Cập nhật tiêu đề trang, manifest và chân trang thành V42.5.5.
+
+
+CẬP NHẬT V42.5.7 – TINH GỌN GIAO DIỆN VÀ LUỒNG LUYỆN VIẾT (06-11-2026)
+- Menu 4: chỉ còn thao tác nhận diện/dịch bằng nút BẮT ĐẦU NÓI; bỏ ô nhập văn bản thủ công và bỏ ghi chú về cơ chế nhận diện. Cơ chế ưu tiên Cloudflare và tự chuyển sang nhận diện trên thiết bị khi cần vẫn được giữ nguyên.
+- Menu 5 và 6: bỏ các nhãn phụ trùng với tiêu đề lớn; menu 5 bỏ câu hướng dẫn nhập chữ Hán/Pinyin.
+- Menu 7: bỏ từ mẫu mặc định và các dòng hướng dẫn trùng lặp; ban đầu chỉ hiển thị ô tìm từ. Khi chọn từ trong từ điển hoặc chọn Luyện viết Hán tự từ câu đã ghép ở menu 9, hiển thị chữ Hán, Pinyin, nghĩa tiếng Việt, nút nghe chữ Hán/nghĩa tiếng Việt và ba nút sao chép riêng.
+- Menu 8: bỏ nhãn phụ và hướng dẫn dài; khi chưa chọn nội dung chỉ hiển thị ô tìm kiếm. Bỏ tên công nghệ nhận diện khỏi các thông báo; giữ nguyên nhận diện Cloudflare và tự chuyển sang phương án trên thiết bị khi cần.
+- Menu 9: bỏ các ghi chú kỹ thuật về quá trình nhận diện/ghi âm. Bổ sung nút Luyện viết Hán tự cho câu đã ghép để chuyển nội dung sang menu 7.
+- Menu 10 và 12: bỏ các đoạn giới thiệu dài theo yêu cầu.
+- Cập nhật tiêu đề trang, manifest, chân trang và cache Service Worker thành V42.5.7.
+
+Cập nhật GitHub Pages: giải nén ZIP và tải ghi đè toàn bộ tệp trong gói lên thư mục gốc đang publish. Không cần thay đổi hoặc Deploy lại Cloudflare Worker; cấu hình nhận diện hiện tại được giữ nguyên.
