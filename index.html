@@ -2602,15 +2602,15 @@ async function getBvtTurnstileToken(){
 async function transcribeBvtCloudAudio(blob,language='auto'){
  const cfg=getBvtCloudAsrConfig();
  const token=await getBvtTurnstileToken();
- if(!token)throw new Error('Cloudflare chưa cấp mã xác minh.');
+ if(!token)throw new Error('Không thể xác minh kết nối nhận diện. Vui lòng thử lại.');
  const form=new FormData();form.append('audio',blob,'bvt-recording.'+(/mp4/i.test(blob.type)?'m4a':'webm'));form.append('language',language);form.append('cf-turnstile-response',token);
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),90000);
  try{
   const response=await fetch(cfg.endpoint,{method:'POST',body:form,signal:controller.signal});
   let data={};try{data=await response.json();}catch(_){}
-  if(!response.ok)throw new Error(data.error||('Cloudflare ASR trả về HTTP '+response.status));
+  if(!response.ok)throw new Error(data.error||('Dịch vụ nhận diện trực tuyến trả về lỗi '+response.status));
   const text=String(data.text||'').replace(/[\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim();
-  if(!text)throw new Error('Whisper Large V3 Turbo không nhận được câu nói.');
+  if(!text)throw new Error('Không nhận diện được lời nói.');
   return text;
  }finally{clearTimeout(timeout);}
 }
@@ -2681,7 +2681,7 @@ function ensureVoiceWorker(){
   if(data.type==='result'){
    const text=String(data.text||'').trim();
    if(text){voicePendingWorkerText=text;fallbackVoiceRecognition(data.session,'Đang đối chiếu thêm các phương án nhận diện để tăng độ chính xác.');return;}
-   fallbackVoiceRecognition(data.session,'Whisper chưa trả về chữ nhận diện.');return;
+   fallbackVoiceRecognition(data.session,'Chưa nhận diện được lời nói.');return;
   }
   if(data.type==='error'){fallbackVoiceRecognition(data.session,'Worker nhận diện gặp lỗi: '+(data.message||'không xử lý được âm thanh.'));}
  };
@@ -2729,7 +2729,7 @@ async function processVoiceRecording(blob,session){
  setVoiceStatus('Đang chuẩn bị âm thanh và nhận diện tự động tiếng Việt/tiếng Trung…');
  const cloudConfig=getBvtCloudAsrConfig();
  if(cloudConfig){
-  voicePendingSession=session;voicePendingAudio=null;setVoiceStatus('Đang nhận diện bằng Whisper Large V3 Turbo…');
+  voicePendingSession=session;voicePendingAudio=null;setVoiceStatus('Đang nhận diện lời nói…');
   try{const text=await transcribeBvtCloudAudio(blob,'auto');if(session===voiceSession)completeVoiceRecognition(text,session);return;}
   catch(error){
    if(session!==voiceSession)return;
@@ -2746,7 +2746,7 @@ async function processVoiceRecording(blob,session){
   return;
  }
  let samples=null;
- try{samples=await decodeVoiceBlob(blob,session);if(session!==voiceSession)return;const worker=ensureVoiceWorker();voicePendingSession=session;voicePendingAudio=samples;voiceFallbackSession=0;worker.postMessage({type:'transcribe',session,audio:samples,language:'auto'});clearVoiceWorkerTimeout();voiceWorkerTimeoutTimer=setTimeout(()=>{if(session===voiceSession&&session===voicePendingSession){const stalled=voiceWorker;voiceWorker=null;if(stalled){try{stalled.terminate();}catch(_){}}fallbackVoiceRecognition(session,'Bộ nhận diện chạy quá lâu trong worker.');}},180000);setVoiceStatus('Đang nhận diện bằng Whisper tiếng Việt/tiếng Trung. Lần đầu có thể cần tải mô hình miễn phí.');}catch(err){if(session===voiceSession){voicePendingSession=session;voicePendingAudio=typeof samples!=='undefined'?samples:null;if(voicePendingAudio)fallbackVoiceRecognition(session,'Không tạo được worker nhận diện: '+(err?.message||String(err)));else{$('voice-translate-mic').disabled=false;setVoiceStatus('Không xử lý được bản ghi: '+(err?.message||String(err)));}}}
+ try{samples=await decodeVoiceBlob(blob,session);if(session!==voiceSession)return;const worker=ensureVoiceWorker();voicePendingSession=session;voicePendingAudio=samples;voiceFallbackSession=0;worker.postMessage({type:'transcribe',session,audio:samples,language:'auto'});clearVoiceWorkerTimeout();voiceWorkerTimeoutTimer=setTimeout(()=>{if(session===voiceSession&&session===voicePendingSession){const stalled=voiceWorker;voiceWorker=null;if(stalled){try{stalled.terminate();}catch(_){}}fallbackVoiceRecognition(session,'Bộ nhận diện chạy quá lâu trong worker.');}},180000);setVoiceStatus('Đang nhận diện lời nói. Lần đầu có thể cần tải dữ liệu nhận diện.');}catch(err){if(session===voiceSession){voicePendingSession=session;voicePendingAudio=typeof samples!=='undefined'?samples:null;if(voicePendingAudio)fallbackVoiceRecognition(session,'Không tạo được worker nhận diện: '+(err?.message||String(err)));else{$('voice-translate-mic').disabled=false;setVoiceStatus('Không xử lý được bản ghi: '+(err?.message||String(err)));}}}
 }
 async function startVoiceRecognition(){
  if(voiceStarting||voiceRecording||voicePendingSession)return;
@@ -3783,7 +3783,7 @@ function getDirectReflexTranscriber(){
    const {pipeline,env}=mod;
    env.allowLocalModels=false;env.allowRemoteModels=true;env.useBrowserCache=true;env.useWasmCache=true;env.cacheKey='bvt-whisper-base-local-v4247';
    try{if(env.backends&&env.backends.onnx&&env.backends.onnx.wasm)env.backends.onnx.wasm.numThreads=1;}catch(_){}
-   updateReflexLiveTranscript('Đang tải thư viện và mô hình nhận dạng miễn phí…');
+   updateReflexLiveTranscript('Đang chuẩn bị nhận diện trên thiết bị…');
    return await pipeline('automatic-speech-recognition','onnx-community/whisper-base',{
     device:'wasm',dtype:'q8',progress_callback:info=>{
      if(!info||info.status!=='progress')return;
@@ -3943,10 +3943,10 @@ function completeReflexLocalResult(session,text,provider='local'){
  const closeBtn=$('reflex-mic-close-button');if(closeBtn)closeBtn.hidden=true;
  if(transcript){
   updateReflexLiveTranscript(transcript);
-  const providerStatus=$('reflex-asr-status');if(providerStatus){providerStatus.textContent='Nguồn nhận diện: '+(provider==='cloudflare'?'Cloudflare Whisper Large V3 Turbo':'Whisper Base cục bộ (dự phòng)');providerStatus.hidden=false;}
+  const providerStatus=$('reflex-asr-status');if(providerStatus){providerStatus.textContent='Nhận diện: '+(provider==='cloudflare'?'trực tuyến':'trên thiết bị');providerStatus.hidden=false;}
   const recognized=$('reflex-speech-recognized');if(recognized)recognized.hidden=false;
   const recognizedText=$('reflex-speech-recognized-text');if(recognizedText)recognizedText.textContent=transcript;
-  $('reflex-mic-instruction').textContent='Đã nhận diện bằng '+(provider==='cloudflare'?'Cloudflare Whisper Large V3 Turbo':'Whisper Base cục bộ (dự phòng)')+'. Đóng cửa sổ này để xem điểm và sang câu tiếp theo.';
+  $('reflex-mic-instruction').textContent='Đã nhận diện lời nói. Đóng cửa sổ này để xem điểm và sang câu tiếp theo.';
   evaluateReflexAnswer(transcript,'speech');
  }else{
   const msg='Mô hình không nhận ra câu nói. Hãy thử lại, nói rõ hơn hoặc nhập câu trả lời bằng chữ Hán.';
@@ -3963,15 +3963,15 @@ async function transcribeReflexRecording(blob,session){
   if(session!==reflexRecognitionSession)return;
   const cloudConfig=getBvtCloudAsrConfig();
   if(cloudConfig){
-   updateReflexLiveTranscript('Đang nhận diện tiếng Trung bằng Whisper Large V3 Turbo…');
-   $('reflex-mic-instruction').textContent='Đang xử lý bản ghi tiếng Trung bằng Cloudflare Whisper Large V3 Turbo.';
+   updateReflexLiveTranscript('Đang nhận diện tiếng Trung…');
+   $('reflex-mic-instruction').textContent='Đang xử lý bản ghi tiếng Trung.';
    try{
     const transcript=await transcribeBvtCloudAudio(blob,'zh'); // Force Mandarin transcript; menu 9 must return Hanzi, not Vietnamese/English.
     if(session!==reflexRecognitionSession)return;
     completeReflexLocalResult(session,transcript,'cloudflare');return;
    }catch(cloudError){
     if(session!==reflexRecognitionSession)return;
-    updateReflexLiveTranscript('Cloudflare không phản hồi. Đang chuyển sang Whisper Base cục bộ…');
+    updateReflexLiveTranscript('Dịch vụ nhận diện trực tuyến chưa phản hồi. Đang chuyển sang nhận diện trên thiết bị…');
     const samples=await decodeReflexBlobTo16kMono(blob,session);
     if(session!==reflexRecognitionSession)return;
     if(samples.length<4000)throw new Error('Bản ghi quá ngắn. Hãy nói ít nhất khoảng nửa giây rồi dừng.');
@@ -4100,7 +4100,7 @@ async function startDedicatedReadingMediaRecognition(){
    if(reflexMediaRecordingTimer){clearTimeout(reflexMediaRecordingTimer);reflexMediaRecordingTimer=null;}
    resetReflexMicButtons(true);
    updateReflexLiveTranscript('Đã thu âm xong. Đang nhận diện tiếng Trung…');
-   $('reflex-mic-instruction').textContent='Đang chuyển bản ghi thành chữ Hán; lần đầu có thể cần tải mô hình nhận diện.';
+   $('reflex-mic-instruction').textContent='Đang chuyển bản ghi thành chữ Hán; lần đầu có thể cần tải dữ liệu nhận diện.';
    if(!blob.size){completeReflexLocalResult(session,'');return;}
    transcribeReflexRecording(blob,session);
   };
@@ -4599,7 +4599,7 @@ async function startVocabularyTrainingRecording(){
    if(session!==reflexRecognitionSession||session!==vocabTrainingAsrSession||!vocabTrainingRunning||vocabTrainingRevealed)return;
    if(vocabTrainingMediaRecordingTimer){clearTimeout(vocabTrainingMediaRecordingTimer);vocabTrainingMediaRecordingTimer=null;}
    $('vocab-training-mic').textContent='⏳ ĐANG NHẬN DIỆN…';$('vocab-training-mic').disabled=true;
-   $('vocab-training-session-status').textContent='Đã thu âm. Đang nhận diện bằng Whisper Large V3 Turbo…';
+   $('vocab-training-session-status').textContent='Đã thu âm. Đang nhận diện lời nói…';
    try{
     if(!blob.size)throw new Error('Bản ghi trống. Hãy nói rõ hơn rồi thử lại.');
     let transcript='';
@@ -4607,7 +4607,7 @@ async function startVocabularyTrainingRecording(){
      transcript=await transcribeBvtCloudAudio(blob,answerLanguage==='vi'?'vi':'zh');
     }catch(cloudError){
      if(session!==reflexRecognitionSession||session!==vocabTrainingAsrSession)return;
-     $('vocab-training-session-status').textContent='Cloudflare chưa phản hồi. Đang chuyển sang nhận diện cục bộ…';
+     $('vocab-training-session-status').textContent='Dịch vụ nhận diện trực tuyến chưa phản hồi. Đang chuyển sang nhận diện trên thiết bị…';
      const samples=await decodeReflexBlobTo16kMono(blob,session);
      if(session!==reflexRecognitionSession||session!==vocabTrainingAsrSession)return;
      if(samples.length<4000)throw new Error('Bản ghi quá ngắn. Hãy nói ít nhất khoảng nửa giây.');
