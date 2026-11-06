@@ -1,18 +1,19 @@
 /**
- * BVT Cloudflare Workers AI speech-to-text and text-to-speech gateway (V42.5.8).
+ * BVT Cloudflare Workers AI speech-to-text and Vietnamese text-to-speech gateway (V42.5.11).
  * Required Worker configuration:
  *   AI: Workers AI binding named exactly "AI"
  *   TURNSTILE_SECRET_KEY: Cloudflare Turnstile Secret Key (Worker Secret)
  *   ALLOWED_ORIGIN: https://buivanthanh227-png.github.io
- * Speech-to-text model: @cf/openai/whisper-large-v3-turbo
- * Speech model: google/gemini-3.8-flash-tts
- * The Turnstile Site Key is public and is embedded in index.html.
+ * Speech-to-text: @cf/openai/whisper-large-v3-turbo
+ * Vietnamese TTS: inworld/tts-2, one fixed voice (Olivia), language vi-VN.
+ * Mandarin is spoken by the device's Google zh-CN SpeechSynthesis voice, not by this Worker.
  */
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
-const TTS_MODEL = 'google/gemini-3.8-flash-tts';
-const TTS_DEFAULT_VOICES = Object.freeze({ vi: 'Kore', zh: 'Puck' });
+const TTS_MODEL = 'inworld/tts-2';
+const TTS_VOICE_ID = 'Olivia';
 const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
 const MAX_TTS_AUDIO_BYTES = 20 * 1024 * 1024;
+const MAX_TTS_TEXT_LENGTH = 2000;
 const EXPECTED_ACTION = 'bvt_asr';
 
 function json(data, status, origin) {
@@ -40,47 +41,31 @@ function toBase64(bytes) {
 }
 
 async function verifyTurnstile(token, request, env, expectedHostname) {
-  if (typeof token !== 'string' || !token || token.length > 2048) {
-    return { success: false, reason: 'missing-input-response' };
-  }
-  const body = new URLSearchParams({
-    secret: String(env.TURNSTILE_SECRET_KEY || ''),
-    response: token
-  });
+  if (typeof token !== 'string' || !token || token.length > 2048) return { success: false, reason: 'missing-input-response' };
+  const body = new URLSearchParams({ secret: String(env.TURNSTILE_SECRET_KEY || ''), response: token });
   const ip = request.headers.get('CF-Connecting-IP');
   if (ip) body.set('remoteip', ip);
-
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
   try {
     const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body,
-      signal: controller.signal
+      method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body, signal: controller.signal
     });
     if (!response.ok) return { success: false, reason: 'siteverify-http-' + response.status };
     const result = await response.json();
-    const valid = !!result.success &&
-      result.hostname === expectedHostname &&
-      result.action === EXPECTED_ACTION;
-    return {
-      success: valid,
-      reason: valid ? '' : (Array.isArray(result['error-codes']) ? result['error-codes'].join(',') : 'turnstile-validation-failed')
-    };
+    const valid = !!result.success && result.hostname === expectedHostname && result.action === EXPECTED_ACTION;
+    return { success: valid, reason: valid ? '' : (Array.isArray(result['error-codes']) ? result['error-codes'].join(',') : 'turnstile-validation-failed') };
   } catch (error) {
     return { success: false, reason: String(error?.message || 'siteverify-unavailable') };
-  } finally {
-    clearTimeout(timeout);
-  }
+  } finally { clearTimeout(timeout); }
 }
-
 
 async function decodeAudioBytes(value) {
   if (value instanceof Uint8Array) return value;
   if (value instanceof ArrayBuffer) return new Uint8Array(value);
   if (ArrayBuffer.isView(value)) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
   if (value && typeof value === 'object') {
+    if (value.result != null) return decodeAudioBytes(value.result);
     if (value.audio != null) return decodeAudioBytes(value.audio);
     if (value.data != null) return decodeAudioBytes(value.data);
   }
@@ -102,9 +87,7 @@ async function decodeAudioBytes(value) {
     } finally { clearTimeout(timeout); }
   }
   const base64 = source.replace(/^data:audio\/[a-z0-9.+-]+;base64,/i, '').replace(/\s/g, '');
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64) || base64.length % 4 === 1) {
-    throw new Error('The TTS model returned an unsupported audio format.');
-  }
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64) || base64.length % 4 === 1) throw new Error('The TTS model returned an unsupported audio format.');
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -116,21 +99,28 @@ async function handleTts(body, request, env, allowedOrigin, expectedHostname) {
   if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Worker is missing TURNSTILE_SECRET_KEY.' }, 500, allowedOrigin);
   const text = String(body?.text || '').trim();
   if (!text) return json({ error: 'Missing text to speak.' }, 400, allowedOrigin);
-  if (text.length > 3000) return json({ error: 'Text is too long. Please keep each reading under 3,000 characters.' }, 413, allowedOrigin);
+  if (text.length > MAX_TTS_TEXT_LENGTH) return json({ error: 'Đoạn cần đọc quá dài. Hãy chia nhỏ nội dung dưới 2.000 ký tự.' }, 413, allowedOrigin);
+  const language = String(body?.language || 'vi').toLowerCase();
+  if (language !== 'vi') return json({ error: 'Worker chỉ tạo giọng tiếng Việt. Tiếng Trung sử dụng Google zh-CN trên thiết bị.' }, 400, allowedOrigin);
   const verification = await verifyTurnstile(body?.turnstileToken, request, env, expectedHostname);
-  if (!verification.success) return json({ error: 'Speech service verification failed.' }, 401, allowedOrigin);
-  const language = String(body?.language || 'vi').toLowerCase() === 'zh' ? 'zh' : 'vi';
-  // The app ships only two fixed voices: Puck for Mandarin and Kore for Vietnamese.
-  // The worker enforces this pair even if a client sends another voice name.
-  const voice = TTS_DEFAULT_VOICES[language];
+  if (!verification.success) return json({ error: 'Speech service verification failed.', details: verification.reason }, 401, allowedOrigin);
   try {
-    const result = await env.AI.run(TTS_MODEL, { text, voice });
-    const audio = await decodeAudioBytes(result?.audio ?? result);
+    const taggedText = '<lang lang="vi-VN">' + text + '</lang>';
+    const result = await env.AI.run(TTS_MODEL, {
+      text: taggedText,
+      voice_id: TTS_VOICE_ID,
+      output_format: 'mp3',
+      timestamp_type: 'none',
+      temperature: 0.7,
+      speaking_rate: 1.0
+    });
+    const audioValue = result?.result?.audio ?? result?.audio ?? result;
+    const audio = await decodeAudioBytes(audioValue);
     if (!audio.byteLength) throw new Error('The TTS model returned an empty audio file.');
     return new Response(audio, {
       status: 200,
       headers: {
-        'Content-Type': 'audio/wav',
+        'Content-Type': 'audio/mpeg',
         'Content-Length': String(audio.byteLength),
         'Cache-Control': 'no-store',
         'Access-Control-Allow-Origin': allowedOrigin,
@@ -144,39 +134,31 @@ async function handleTts(body, request, env, allowedOrigin, expectedHostname) {
 
 export default {
   async fetch(request, env) {
-    const allowedOrigin = String(env.ALLOWED_ORIGIN || 'https://buivanthanh227-png.github.io')
-      .trim()
-      .replace(/\/+$/, '');
+    const allowedOrigin = String(env.ALLOWED_ORIGIN || 'https://buivanthanh227-png.github.io').trim().replace(/\/+$/, '');
     const requestOrigin = request.headers.get('Origin') || '';
     let expectedHostname = 'buivanthanh227-png.github.io';
     try { expectedHostname = new URL(allowedOrigin).hostname; } catch (_) {}
 
-    // Direct browser navigation is a read-only health check.
     if (request.method === 'GET' && !requestOrigin) {
       return json({
         ok: true,
-        service: 'BVT speech recognition and speech playback Worker',
+        service: 'BVT speech recognition and Vietnamese speech playback Worker',
         model: MODEL,
         tts_model: TTS_MODEL,
+        tts_voice: TTS_VOICE_ID,
+        tts_language: 'vi-VN',
         protection: 'Cloudflare Turnstile',
-        message: 'Worker is running. Send a verified speech-recognition or speech-generation request from the BVT learning app.'
+        message: 'Worker is running. Mandarin uses the device Google zh-CN voice; Vietnamese TTS is generated through Workers AI.'
       }, 200, allowedOrigin);
     }
-
-    if (requestOrigin !== allowedOrigin) {
-      return new Response('Origin not allowed', { status: 403 });
-    }
+    if (requestOrigin !== allowedOrigin) return new Response('Origin not allowed', { status: 403 });
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        status: 204,
-        headers: {
-          'Access-Control-Allow-Origin': allowedOrigin,
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Access-Control-Max-Age': '86400',
-          'Vary': 'Origin'
-        }
-      });
+      return new Response(null, { status: 204, headers: {
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '86400', 'Vary': 'Origin'
+      }});
     }
     if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405, allowedOrigin);
     if (!env.AI) return json({ error: 'Worker is missing the AI binding. Add Workers AI binding named AI.' }, 500, allowedOrigin);
@@ -193,19 +175,13 @@ export default {
       const audio = form.get('audio');
       if (!audio || typeof audio.arrayBuffer !== 'function') return json({ error: 'Missing audio file.' }, 400, allowedOrigin);
       if (!audio.size || audio.size > MAX_AUDIO_BYTES) return json({ error: 'Audio must be between 1 byte and 15 MB.' }, 413, allowedOrigin);
-
       const verification = await verifyTurnstile(form.get('cf-turnstile-response'), request, env, expectedHostname);
-      if (!verification.success) {
-        return json({ error: 'Turnstile verification failed.', details: verification.reason }, 401, allowedOrigin);
-      }
-
+      if (!verification.success) return json({ error: 'Turnstile verification failed.', details: verification.reason }, 401, allowedOrigin);
       const requestedLanguage = String(form.get('language') || 'auto').toLowerCase();
       const language = requestedLanguage === 'vi' ? 'vi' : requestedLanguage === 'zh' ? 'zh' : 'auto';
       const bytes = new Uint8Array(await audio.arrayBuffer());
       const params = {
-        audio: toBase64(bytes),
-        task: 'transcribe',
-        vad_filter: true,
+        audio: toBase64(bytes), task: 'transcribe', vad_filter: true,
         ...(language === 'auto' ? {} : { language }),
         ...(language === 'vi' ? { initial_prompt: 'Tiếng Việt. Giữ dấu tiếng Việt, tên riêng và dấu câu.' } : {}),
         ...(language === 'zh' ? { initial_prompt: '普通话，简体中文。请准确识别汉字、声调和标点。' } : {})
