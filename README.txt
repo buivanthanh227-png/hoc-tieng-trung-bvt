@@ -335,3 +335,13 @@ V42.5.3 – FIX BỐ CỤC MENU DESKTOP/TABLET (2026-11-06)
 - Tên menu được phép xuống dòng tự nhiên, từng hàng tự tăng chiều cao; không còn cố định chiều cao 56px gây chồng chữ.
 - Giữ nguyên bố cục menu dạng thu gọn của điện thoại (<=700px).
 - Cập nhật Service Worker cache để trình duyệt nhận bản mới.
+
+
+CẬP NHẬT V42.5.4 (06-11-2026)
+- Sửa bố cục menu 4 trên desktop/tablet: thẻ chức năng căn theo lề trái của cột nội dung, không còn bị thu hẹp rồi căn giữa làm cụm điều khiển lệch xa thanh menu.
+- Đồng bộ menu 8 và menu 9 với menu 4: dùng cùng MediaRecorder và cấu hình micro, gửi cùng yêu cầu Whisper Large V3 Turbo với language=auto để mô hình tự nhận diện, không ép riêng zh/initial_prompt.
+- Bỏ tự dừng 25 giây ở menu 8 và 20 giây ở menu 9; người dùng chủ động dừng như menu 4, tránh cắt mất câu nói.
+- Phân biệt rõ kết quả nhận diện qua Cloudflare và kết quả dự phòng Whisper Base cục bộ để người dùng biết nguồn của kết quả.
+- Service Worker đổi cache key để trình duyệt tải V42.5.4.
+
+Cập nhật: giải nén và tải ghi đè toàn bộ 13 tệp vào thư mục gốc GitHub Pages. Không cần Deploy lại Cloudflare Worker vì mã Worker và cấu hình Turnstile không thay đổi.
