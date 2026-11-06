@@ -314,3 +314,17 @@ CAP NHAT V42.5.1 – BANG MAU 13 MENU VA DONG BO NHAN DIEN
 4. Lam moi ma cache Service Worker. Worker Cloudflare khong thay doi; khong can Deploy lai
    Worker neu dang dung dung ban Turnstile cua V42.5. Chi can cap nhat 13 tep GitHub Pages.
 5. Da kiem tra cu phap JS, manifest, ID HTML, bang mau va tinh toan ven ZIP.
+
+
+CAP NHAT V42.5.2 – LOA DAP AN, TEN NUT NET VE VA CAN GIUA MENU
+----------------------------------------------------------------
+1. Menu 5 va 6: khi hien dap an mau hoac kiem tra dap an, them nut loa cho dap an,
+   chu Han va nghia tieng Viet. O chieu Trung -> Viet, lay chu Han tu cau/tu dang luyen
+   de phat am rieng, khong chi phat am phan nghia tieng Viet.
+2. Thong nhat nhan nut xem lai net thanh “Chay lai tu dau thu tu net” tren cac khu vuc
+   luyen viet, tu dien va bo thu.
+3. Menu 10: bo chu 词 khoi tieu de ben phai “LUYEN TAP TU VUNG”; giu bieu tuong o menu trai.
+4. Menu 3: bieu tuong 文 ⇄ A nam ngang.
+5. Ca 13 menu trai co chieu cao dong nhat theo tung breakpoint, so thu tu nam ben trai,
+   nhom bieu tuong + ten nam giua chieu ngang, tang co chu va can giua ten menu.
+6. Doi ma cache Service Worker. Worker Cloudflare khong thay doi.

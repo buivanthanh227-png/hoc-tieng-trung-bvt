@@ -609,6 +609,61 @@
 @media(max-width:700px){.app-shell #main-tabs .tab{color:#17212b!important}.app-shell #main-tabs .tab.active{border-width:2px!important}}
 </style>
 
+
+<style id="v4252-centered-navigation-and-answer-audio">
+/* v42.5.2: consistent menu geometry, centered labels, and horizontal icon+title. */
+.app-shell #main-tabs .tab{
+ position:relative!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;height:56px!important;min-height:56px!important;max-height:56px!important;
+ padding:5px 7px!important;gap:0!important;text-align:center!important;white-space:normal!important;
+}
+.app-shell #main-tabs .tab .tab-number{
+ position:absolute!important;left:7px!important;top:50%!important;transform:translateY(-50%)!important;
+ display:grid!important;flex:0 0 23px!important;width:23px!important;min-width:23px!important;height:23px!important;
+ margin:0!important;z-index:2!important;
+}
+.app-shell #main-tabs .tab .tab-main{
+ display:flex!important;flex:1 1 auto!important;align-items:center!important;justify-content:center!important;
+ gap:7px!important;width:100%!important;height:100%!important;min-width:0!important;
+ padding:3px 31px!important;box-sizing:border-box!important;
+}
+.app-shell #main-tabs .tab .tab-icon{
+ display:inline-flex!important;flex:0 0 auto!important;align-items:center!important;justify-content:center!important;
+ width:auto!important;min-width:0!important;height:auto!important;margin:0!important;padding:0!important;
+ font-size:19px!important;line-height:1!important;white-space:nowrap!important;
+}
+.app-shell #main-tabs .tab .tab-icon.translate-icon{
+ font-family:Arial,sans-serif!important;font-size:15px!important;font-weight:900!important;
+ letter-spacing:-.45px!important;line-height:1!important;white-space:nowrap!important;
+}
+.app-shell #main-tabs .tab .tab-label{
+ display:block!important;flex:0 1 auto!important;width:auto!important;min-width:0!important;max-width:100%!important;
+ margin:0!important;text-align:center!important;font-size:13.5px!important;font-weight:900!important;
+ line-height:1.17!important;letter-spacing:.005em!important;overflow-wrap:anywhere!important;word-break:normal!important;
+}
+.app-shell #main-tabs .tab[data-tab="vocab-training"] .tab-icon.vocab-wordmark{
+ width:auto!important;height:auto!important;min-width:0!important;border:0!important;background:transparent!important;
+ box-shadow:none!important;border-radius:0!important;font-size:20px!important;line-height:1!important;
+}
+/* The wordmark remains in the left navigation; remove it only from the right-side panel heading. */
+#panel-vocab-training .vocab-training-heading .vocab-section-mark{display:none!important}
+#practice-result [data-speak]{margin-left:7px;vertical-align:middle}
+@media(max-width:700px){
+ .app-shell #main-tabs .tab{height:48px!important;min-height:48px!important;max-height:48px!important;padding:4px 5px!important}
+ .app-shell #main-tabs .tab .tab-number{left:6px!important;flex-basis:20px!important;width:20px!important;min-width:20px!important;height:20px!important;font-size:10px!important}
+ .app-shell #main-tabs .tab .tab-main{gap:5px!important;padding:2px 27px!important}
+ .app-shell #main-tabs .tab .tab-icon{font-size:16px!important}
+ .app-shell #main-tabs .tab .tab-icon.translate-icon{font-size:13px!important;letter-spacing:-.4px!important}
+ .app-shell #main-tabs .tab .tab-label{font-size:12px!important;line-height:1.13!important}
+ .app-shell #main-tabs .tab[data-tab="vocab-training"] .tab-icon.vocab-wordmark{font-size:17px!important}
+}
+@media(max-width:360px){
+ .app-shell #main-tabs .tab{height:46px!important;min-height:46px!important;max-height:46px!important}
+ .app-shell #main-tabs .tab .tab-main{padding-left:25px!important;padding-right:25px!important;gap:4px!important}
+ .app-shell #main-tabs .tab .tab-label{font-size:11.5px!important}
+}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -623,19 +678,19 @@
 <div class="app-shell">
 <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
 <nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
-<button class="tab active" data-tab="dict" type="button"><span class="tab-number" aria-hidden="true">1</span><span>📚</span>TỪ ĐIỂN TIẾNG TRUNG</button>
-<button class="tab" data-tab="ocr" type="button"><span class="tab-number" aria-hidden="true">2</span><span>🖼️</span>NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</button>
-<button class="tab" data-tab="translate" type="button"><span class="tab-number" aria-hidden="true">3</span><span class="translate-icon" aria-hidden="true">文⇄A</span>DỊCH NHANH VIỆT ⇄ TRUNG</button>
-<button class="tab" data-tab="voice-translate" type="button"><span class="tab-number" aria-hidden="true">4</span><span aria-hidden="true">🎙️</span>DỊCH NHANH BẰNG GIỌNG NÓI</button>
-<button class="tab" data-tab="vi-zh" type="button"><span class="tab-number" aria-hidden="true">5</span><span>🇻🇳</span>LUYỆN VIẾT VIỆT → TRUNG</button>
-<button class="tab" data-tab="zh-vi" type="button"><span class="tab-number" aria-hidden="true">6</span><span>🇨🇳</span>LUYỆN VIẾT TRUNG → VIỆT</button>
-<button class="tab" data-tab="write" type="button"><span class="tab-number" aria-hidden="true">7</span><span>✍️</span>LUYỆN VIẾT HÁN TỰ</button>
-<button class="tab" data-tab="read" type="button"><span class="tab-number" aria-hidden="true">8</span><span>🔊</span>LUYỆN ĐỌC CHỮ HÁN</button>
-<button class="tab" data-tab="combine" type="button"><span class="tab-number" aria-hidden="true">9</span><span>🧩</span>GHÉP CÂU LUYỆN PHẢN XẠ</button>
-<button class="tab" data-tab="vocab-training" type="button"><span class="tab-number" aria-hidden="true">10</span><span class="vocab-wordmark" aria-hidden="true">词</span>LUYỆN TẬP TỪ VỰNG</button>
-<button class="tab" data-tab="number" type="button"><span class="tab-number" aria-hidden="true">11</span><span>🔢</span>LUYỆN SỐ TIẾNG TRUNG</button>
-<button class="tab" data-tab="radicals" type="button"><span class="tab-number" aria-hidden="true">12</span><span>部</span>DANH SÁCH BỘ THỦ</button>
-<button class="tab" data-tab="library" type="button"><span class="tab-number" aria-hidden="true">13</span><span>🗂️</span>TÀI LIỆU CỦA BẠN</button>
+<button class="tab active" data-tab="dict" type="button"><span class="tab-number" aria-hidden="true">1</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">📚</span><span class="tab-label">TỪ ĐIỂN TIẾNG TRUNG</span></span></button>
+<button class="tab" data-tab="ocr" type="button"><span class="tab-number" aria-hidden="true">2</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🖼️</span><span class="tab-label">NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</span></span></button>
+<button class="tab" data-tab="translate" type="button"><span class="tab-number" aria-hidden="true">3</span><span class="tab-main"><span class="tab-icon translate-icon" aria-hidden="true">文 ⇄ A</span><span class="tab-label">DỊCH NHANH VIỆT ⇄ TRUNG</span></span></button>
+<button class="tab" data-tab="voice-translate" type="button"><span class="tab-number" aria-hidden="true">4</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🎙️</span><span class="tab-label">DỊCH NHANH BẰNG GIỌNG NÓI</span></span></button>
+<button class="tab" data-tab="vi-zh" type="button"><span class="tab-number" aria-hidden="true">5</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🇻🇳</span><span class="tab-label">LUYỆN VIẾT VIỆT → TRUNG</span></span></button>
+<button class="tab" data-tab="zh-vi" type="button"><span class="tab-number" aria-hidden="true">6</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🇨🇳</span><span class="tab-label">LUYỆN VIẾT TRUNG → VIỆT</span></span></button>
+<button class="tab" data-tab="write" type="button"><span class="tab-number" aria-hidden="true">7</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">✍️</span><span class="tab-label">LUYỆN VIẾT HÁN TỰ</span></span></button>
+<button class="tab" data-tab="read" type="button"><span class="tab-number" aria-hidden="true">8</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🔊</span><span class="tab-label">LUYỆN ĐỌC CHỮ HÁN</span></span></button>
+<button class="tab" data-tab="combine" type="button"><span class="tab-number" aria-hidden="true">9</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🧩</span><span class="tab-label">GHÉP CÂU LUYỆN PHẢN XẠ</span></span></button>
+<button class="tab" data-tab="vocab-training" type="button"><span class="tab-number" aria-hidden="true">10</span><span class="tab-main"><span class="tab-icon vocab-wordmark" aria-hidden="true">词</span><span class="tab-label">LUYỆN TẬP TỪ VỰNG</span></span></button>
+<button class="tab" data-tab="number" type="button"><span class="tab-number" aria-hidden="true">11</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🔢</span><span class="tab-label">LUYỆN SỐ TIẾNG TRUNG</span></span></button>
+<button class="tab" data-tab="radicals" type="button"><span class="tab-number" aria-hidden="true">12</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">部</span><span class="tab-label">DANH SÁCH BỘ THỦ</span></span></button>
+<button class="tab" data-tab="library" type="button"><span class="tab-number" aria-hidden="true">13</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🗂️</span><span class="tab-label">TÀI LIỆU CỦA BẠN</span></span></button>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
@@ -745,7 +800,7 @@
    <p id="write-vocab-status" class="smallprint" style="margin:5px 0 0">Chưa chọn từ riêng; đang dùng từ/câu của bài luyện hiện tại.</p>
    <div id="practice-write-char-picker" class="practice-write-char-picker"></div>
    <div class="practice-write-grid">
-    <section class="practice-write-card"><h3>Chữ mẫu · thứ tự nét</h3><div id="practice-stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="practice-stroke-count" class="smallprint">Đang chuẩn bị chữ mẫu…</p><button id="practice-stroke-replay" class="btn secondary full" type="button">▶ Chạy lại thứ tự nét</button></section>
+    <section class="practice-write-card"><h3>Chữ mẫu · thứ tự nét</h3><div id="practice-stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="practice-stroke-count" class="smallprint">Đang chuẩn bị chữ mẫu…</p><button id="practice-stroke-replay" class="btn secondary full" type="button">▶ Chạy lại từ đầu thứ tự nét</button></section>
     <section class="practice-write-card"><h3>Bạn luyện viết & chấm điểm</h3><div id="practice-free-wrap"><div class="canvas-wrap"><canvas id="writing-canvas" class="writing-canvas" width="500" height="500" aria-label="Bảng để tự viết chữ Hán bằng tay"></canvas></div><div class="row wrap" style="justify-content:center"><button class="btn secondary tiny" id="clear-canvas" type="button">Xóa nét</button><button class="btn secondary tiny" id="show-trace" type="button">Bật/tắt chữ mờ</button></div></div><div id="practice-stroke-quiz" class="stroke-stage practice-stroke-quiz"><span class="stroke-fallback-char">✍</span></div><p id="practice-stroke-feedback" class="smallprint" style="text-align:center;min-height:30px">Bắt đầu viết theo thứ tự nét mẫu.</p><div class="row wrap" style="justify-content:center"><button class="btn full" id="practice-grade-strokes" type="button">✍ Bắt đầu viết & chấm</button><button class="btn secondary tiny" id="practice-free-write" type="button" hidden>Quay lại ô viết tự do</button></div></section>
    </div>
   </div>
@@ -774,7 +829,7 @@
 </section>
 <section id="panel-vocab-training" class="panel">
  <div class="card vocab-training-card">
-  <div class="row between wrap"><h2 class="section-title vocab-training-heading" data-function-number="10" style="margin:0"><span class="vocab-section-mark" aria-hidden="true">词</span> LUYỆN TẬP TỪ VỰNG</h2><span class="pill" id="vocab-training-count">0 từ đã nạp</span></div>
+  <div class="row between wrap"><h2 class="section-title vocab-training-heading" data-function-number="10" style="margin:0">LUYỆN TẬP TỪ VỰNG</h2><span class="pill" id="vocab-training-count">0 từ đã nạp</span></div>
   <p class="subtle" style="margin:7px 0 12px">Chọn và kết hợp từ vựng từ từ điển, ảnh đã quét hoặc danh sách từ ở Ghép câu luyện phản xạ.</p>
   <div class="vocab-source-grid">
    <div class="vocab-source-box">
@@ -900,7 +955,7 @@
  <div class="footer-note">Câu được tạo theo các mẫu ngữ pháp tiếng Trung thông dụng. Với từ hiếm hoặc nghĩa đa dạng, hãy kiểm tra lại ngữ cảnh trước khi học thuộc.</div>
 </section>
 
-<section id="panel-radicals" class="panel"><div class="card"><div class="row between wrap"><h2 class="section-title" data-function-number="12" style="margin:0">部 DANH SÁCH 214 BỘ THỦ KANGXI</h2><span class="pill">214 bộ thủ</span></div><p class="subtle" style="margin:7px 0 10px">Tra cứu theo số thứ tự, chữ bộ thủ hoặc số nét. Mỗi bộ có minh họa vector màu riêng theo nghĩa gợi ý; chọn một bộ để xem nghĩa, ví dụ và hoạt ảnh thứ tự nét.</p><input id="radical-search" class="field" type="search" placeholder="Tìm bộ thủ: 金, 钅, kim, 167…" autocomplete="off"><div class="row wrap" style="margin-top:9px;gap:7px"><label class="subtle" for="radical-stroke-filter">Lọc số nét</label><select id="radical-stroke-filter" class="field small" style="width:auto;min-width:115px"><option value="all">Tất cả</option><option value="1">1 nét</option><option value="2">2 nét</option><option value="3">3 nét</option><option value="4">4 nét</option><option value="5">5 nét</option><option value="6">6 nét</option><option value="7">7 nét</option><option value="8">8 nét</option><option value="9">9 nét</option><option value="10">10 nét</option><option value="11">11 nét</option><option value="12">12 nét</option><option value="13">13 nét</option><option value="14">14 nét</option><option value="15">15 nét</option><option value="16">16 nét</option><option value="17">17 nét</option></select><span id="radical-result-count" class="subtle">214 bộ thủ</span></div></div><div id="radical-list" class="radical-grid"></div><div id="radical-detail" class="card radical-detail" hidden><div class="row between wrap"><div><h3 id="radical-detail-title" class="section-title" style="margin:0">Bộ thủ</h3><p id="radical-detail-meta" class="subtle" style="margin:4px 0 0"></p></div><div class="row wrap" style="gap:6px"><button id="radical-return-character" class="btn secondary tiny" type="button" hidden>← Quay lại chữ đang tra</button><button id="radical-detail-close" class="btn secondary tiny" type="button">Đóng</button></div></div><div id="radical-illustration-box" class="radical-illustration-box"><span id="radical-illustration-icon" class="radical-illustration-icon">🔎</span><div><b>Hình gợi nhớ</b><p id="radical-illustration-caption">Chọn bộ thủ để xem hình minh họa và cách ghi nhớ.</p></div></div><div id="radical-stroke-stage" class="stroke-stage radical-stroke-stage"><span class="stroke-fallback-char">部</span></div><p id="radical-stroke-status" class="smallprint" role="status" aria-live="polite">Chọn bộ thủ để xem thứ tự nét.</p><div class="row wrap"><button id="radical-stroke-replay" class="btn" type="button" disabled>▶ Xem lại thứ tự nét</button><a id="radical-bishun-link" class="btn secondary" href="https://bishun.net/" target="_blank" rel="noreferrer">Mở Bishun.net</a></div></div><p class="smallprint">Danh sách theo thứ tự chuẩn 214 bộ thủ Kangxi (tham chiếu Unicode Han Database và HSK Guide). Mỗi bộ có minh họa riêng theo nghĩa gợi ý và ví dụ từ vựng. Nghĩa bộ thủ là gợi ý chủ đề, không phải nghĩa chính xác của mọi chữ. Một số dạng có biến thể như 亻, 氵, 扌. Hoạt ảnh dùng dữ liệu Hanzi Writer; một số bộ thủ cổ/hiếm có thể không có dữ liệu hoạt ảnh.</p></section>
+<section id="panel-radicals" class="panel"><div class="card"><div class="row between wrap"><h2 class="section-title" data-function-number="12" style="margin:0">部 DANH SÁCH 214 BỘ THỦ KANGXI</h2><span class="pill">214 bộ thủ</span></div><p class="subtle" style="margin:7px 0 10px">Tra cứu theo số thứ tự, chữ bộ thủ hoặc số nét. Mỗi bộ có minh họa vector màu riêng theo nghĩa gợi ý; chọn một bộ để xem nghĩa, ví dụ và hoạt ảnh thứ tự nét.</p><input id="radical-search" class="field" type="search" placeholder="Tìm bộ thủ: 金, 钅, kim, 167…" autocomplete="off"><div class="row wrap" style="margin-top:9px;gap:7px"><label class="subtle" for="radical-stroke-filter">Lọc số nét</label><select id="radical-stroke-filter" class="field small" style="width:auto;min-width:115px"><option value="all">Tất cả</option><option value="1">1 nét</option><option value="2">2 nét</option><option value="3">3 nét</option><option value="4">4 nét</option><option value="5">5 nét</option><option value="6">6 nét</option><option value="7">7 nét</option><option value="8">8 nét</option><option value="9">9 nét</option><option value="10">10 nét</option><option value="11">11 nét</option><option value="12">12 nét</option><option value="13">13 nét</option><option value="14">14 nét</option><option value="15">15 nét</option><option value="16">16 nét</option><option value="17">17 nét</option></select><span id="radical-result-count" class="subtle">214 bộ thủ</span></div></div><div id="radical-list" class="radical-grid"></div><div id="radical-detail" class="card radical-detail" hidden><div class="row between wrap"><div><h3 id="radical-detail-title" class="section-title" style="margin:0">Bộ thủ</h3><p id="radical-detail-meta" class="subtle" style="margin:4px 0 0"></p></div><div class="row wrap" style="gap:6px"><button id="radical-return-character" class="btn secondary tiny" type="button" hidden>← Quay lại chữ đang tra</button><button id="radical-detail-close" class="btn secondary tiny" type="button">Đóng</button></div></div><div id="radical-illustration-box" class="radical-illustration-box"><span id="radical-illustration-icon" class="radical-illustration-icon">🔎</span><div><b>Hình gợi nhớ</b><p id="radical-illustration-caption">Chọn bộ thủ để xem hình minh họa và cách ghi nhớ.</p></div></div><div id="radical-stroke-stage" class="stroke-stage radical-stroke-stage"><span class="stroke-fallback-char">部</span></div><p id="radical-stroke-status" class="smallprint" role="status" aria-live="polite">Chọn bộ thủ để xem thứ tự nét.</p><div class="row wrap"><button id="radical-stroke-replay" class="btn" type="button" disabled>▶ Chạy lại từ đầu thứ tự nét</button><a id="radical-bishun-link" class="btn secondary" href="https://bishun.net/" target="_blank" rel="noreferrer">Mở Bishun.net</a></div></div><p class="smallprint">Danh sách theo thứ tự chuẩn 214 bộ thủ Kangxi (tham chiếu Unicode Han Database và HSK Guide). Mỗi bộ có minh họa riêng theo nghĩa gợi ý và ví dụ từ vựng. Nghĩa bộ thủ là gợi ý chủ đề, không phải nghĩa chính xác của mọi chữ. Một số dạng có biến thể như 亻, 氵, 扌. Hoạt ảnh dùng dữ liệu Hanzi Writer; một số bộ thủ cổ/hiếm có thể không có dữ liệu hoạt ảnh.</p></section>
 <section id="panel-number" class="panel">
  <div class="card number-practice-host">
   <h2 class="section-title" data-function-number="11">🔢 LUYỆN SỐ TIẾNG TRUNG</h2>
@@ -942,7 +997,7 @@
   <p class="subtle" style="margin:12px 0 6px">Chọn một chữ trong từ để xem thứ tự nét.</p>
   <div id="stroke-char-picker" class="stroke-char-picker"></div>
   <div class="stroke-content-grid">
-   <section class="stroke-panel"><h3>Chữ mẫu · thứ tự nét</h3><div id="stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="stroke-count" class="smallprint">Đang tải dữ liệu nét…</p><button id="stroke-replay" class="btn secondary full" type="button">▶ Chạy lại thứ tự nét</button></section>
+   <section class="stroke-panel"><h3>Chữ mẫu · thứ tự nét</h3><div id="stroke-model" class="stroke-stage"><span class="stroke-fallback-char">汉</span></div><p id="stroke-count" class="smallprint">Đang tải dữ liệu nét…</p><button id="stroke-replay" class="btn secondary full" type="button">▶ Chạy lại từ đầu thứ tự nét</button></section>
    <section class="stroke-panel"><h3>Bạn luyện viết</h3><div id="stroke-quiz" class="stroke-stage"><span class="stroke-fallback-char">✍</span></div><p id="stroke-feedback" class="smallprint">Bấm “Bắt đầu luyện” rồi viết từng nét theo thứ tự trên màn hình.</p><button id="stroke-start-quiz" class="btn full" type="button">✍ Bắt đầu luyện</button></section>
   </div>
   <p class="smallprint" style="margin:12px 0 0">Dữ liệu nét được tải theo từng chữ từ Hanzi Writer Data. Nếu không có dữ liệu cho chữ hiếm, bạn có thể tra bổ sung tại <a href="https://bishun.net/" target="_blank" rel="noreferrer">Bishun.net ↗</a>.</p>
@@ -960,7 +1015,7 @@
   <div id="radical-modal-stroke-stage" class="stroke-stage"><span id="radical-modal-fallback" class="stroke-fallback-char">一</span></div>
   <p id="radical-modal-status" class="smallprint" role="status" aria-live="polite">Đang chuẩn bị dữ liệu thứ tự nét…</p>
   <div class="radical-modal-actions">
-   <button id="radical-modal-replay" class="btn secondary" type="button" disabled>▶ Xem lại thứ tự nét</button>
+   <button id="radical-modal-replay" class="btn secondary" type="button" disabled>▶ Chạy lại từ đầu thứ tự nét</button>
    <button id="radical-modal-return" class="btn secondary" type="button" hidden>← Quay lại chữ đang tra</button>
    <a id="radical-modal-bishun" class="btn outline" href="https://bishun.net/" target="_blank" rel="noreferrer">Mở Bishun.net</a>
   </div>
@@ -2089,27 +2144,34 @@ function startPracticeForWord(row,mode){currentCustomSentence=null;forcedPractic
 function cleanAnswer(s){return String(s||'').trim().toLowerCase().replace(/[，。！？!?、,.：:；;“”"'’‘]/g,'').replace(/\s+/g,'');}
 function similarity(a,b){a=cleanAnswer(a);b=cleanAnswer(b);if(!a&&!b)return 1;if(!a||!b)return 0;if(a===b)return 1;let prev=Array(b.length+1).fill(0);for(let j=0;j<=b.length;j++)prev[j]=j;for(let i=1;i<=a.length;i++){const cur=[i];for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));prev=cur;}return Math.max(0,1-prev[b.length]/Math.max(a.length,b.length));}
 function scoreAnswer(user,expected,aliases=[]){const cand=[expected,...aliases].filter(Boolean);let best=0;for(const c of cand){const s=similarity(user,c);best=Math.max(best,s);}const u=normVietnamese(user), ex=normVietnamese(expected);if(u&&ex&&u===ex)best=1;else if(u&&ex&&(ex.includes(u)||u.includes(ex))&&Math.min(u.length,ex.length)>=2)best=Math.max(best,Math.min(u.length,ex.length)/Math.max(u.length,ex.length)*.92);return Math.round(best*100);}
-function showScore(score,expected,pinyin,meaning,notes=''){const box=$('practice-result');box.hidden=false;box.className='result '+(score>=80?'good':score>=50?'mid':'bad');const audio=(v,label)=>v?` <button type="button" class="btn secondary tiny" data-speak="${escapeHTML(v)}" title="Nghe ${label}" aria-label="Phát âm ${label}">🔊</button>`:'';box.innerHTML=`<div class="score">${score}/100</div><b>${score>=80?'Chính xác — tốt lắm!':score>=50?'Gần đúng — hãy xem lại đáp án.':'Chưa chính xác — thử ghi nhớ đáp án mẫu.'}</b><div style="margin-top:6px"><b>Đáp án:</b> ${escapeHTML(expected)}${audio(expected,'đáp án')}</div>${pinyin?`<div><b>Pinyin:</b> ${escapeHTML(pinyin)}</div>`:''}${meaning?`<div><b>Nghĩa:</b> ${escapeHTML(meaning)}${audio(meaning,'nghĩa tiếng Việt')}</div>`:''}${notes?`<p style="margin:6px 0 0">${escapeHTML(notes)}</p>`:''}`;sessionDone++;if(score>=80)sessionCorrect++;$('session-score').textContent=`Điểm: ${sessionCorrect}/${sessionDone}`;$('progress-fill').style.width=Math.round(sessionCorrect/sessionDone*100)+'%';saveStats(score);updateStats();}
+function showScore(score,expected,pinyin,meaning,notes=''){
+ const box=$('practice-result');box.hidden=false;box.className='result '+(score>=80?'good':score>=50?'mid':'bad');
+ const audio=(v,label)=>v?` <button type="button" class="btn secondary tiny" data-speak="${escapeHTML(v)}" title="Nghe ${label}" aria-label="Phát âm ${label}">🔊</button>`:'';
+ const chineseAnswer=practiceMode==='zh-vi'?(currentPractice?.type==='sentence'?currentPractice?.sentence?.zh:currentPractice?.row?.[0])||'':'';
+ box.innerHTML=`<div class="score">${score}/100</div><b>${score>=80?'Chính xác — tốt lắm!':score>=50?'Gần đúng — hãy xem lại đáp án.':'Chưa chính xác — thử ghi nhớ đáp án mẫu.'}</b><div style="margin-top:6px"><b>Đáp án:</b> ${escapeHTML(expected)}${audio(expected,'đáp án')}</div>${chineseAnswer?`<div><b>Chữ Hán:</b> ${escapeHTML(chineseAnswer)}${audio(chineseAnswer,'chữ Hán')}</div>`:''}${pinyin?`<div><b>Pinyin:</b> ${escapeHTML(pinyin)}</div>`:''}${meaning?`<div><b>Nghĩa:</b> ${escapeHTML(meaning)}${audio(meaning,'nghĩa tiếng Việt')}</div>`:''}${notes?`<p style="margin:6px 0 0">${escapeHTML(notes)}</p>`:''}`;
+ sessionDone++;if(score>=80)sessionCorrect++;$('session-score').textContent=`Điểm: ${sessionCorrect}/${sessionDone}`;$('progress-fill').style.width=Math.round(sessionCorrect/sessionDone*100)+'%';saveStats(score);updateStats();
+}
 function revealPracticeAnswer(){
  const p=currentPractice;if(!p){toast('Chưa có câu hỏi để hiện đáp án.');return;}
- let expected='',py='',meaning='',extra='';
+ let expected='',py='',meaning='',chineseAnswer='';
  if(p.type==='sentence'){
-  if(practiceMode==='zh-vi'){expected=p.sentence.vi;py=p.sentence.py;meaning='Nghĩa tiếng Việt của câu mẫu';extra='<div><b>Câu tiếng Hán:</b> '+escapeHTML(p.sentence.zh)+'</div>';}
+  if(practiceMode==='zh-vi'){expected=p.sentence.vi;py=p.sentence.py;chineseAnswer=p.sentence.zh;}
   else{expected=p.sentence.zh;py=p.sentence.py;meaning=p.sentence.vi;}
  }else if(p.row){const r=p.row;
-  if(practiceMode==='zh-vi'){expected=r[3];py=r[2];extra='<div><b>Chữ Hán:</b> '+escapeHTML(r[0])+'</div>';}
+  if(practiceMode==='zh-vi'){expected=r[3];py=r[2];chineseAnswer=r[0];}
   else{expected=r[0];py=r[2];meaning=r[3];}
  }
  if(!expected){toast('Không tìm thấy đáp án cho câu hỏi này.');return;}
+ const audio=(v,label)=>v?` <button type="button" class="btn secondary tiny" data-speak="${escapeHTML(v)}" title="Nghe ${label}" aria-label="Phát âm ${label}">🔊</button>`:'';
  const box=$('practice-result');box.hidden=false;box.className='result mid';
- box.innerHTML=`<b>Đáp án mẫu</b><div style="margin-top:6px;font-size:19px;font-weight:850">${escapeHTML(expected)}</div>${extra}${py?`<div><b>Pinyin:</b> ${escapeHTML(py)}</div>`:''}${meaning&&practiceMode!=='zh-vi'?`<div><b>Nghĩa:</b> ${escapeHTML(meaning)}</div>`:''}<p class="smallprint" style="margin:6px 0 0">Đây là đáp án tham khảo, chưa tính vào thống kê đúng/sai.</p>`;
+ box.innerHTML=`<b>Đáp án mẫu</b><div style="margin-top:6px;font-size:19px;font-weight:850">${escapeHTML(expected)}${audio(expected,practiceMode==='zh-vi'?'đáp án tiếng Việt':'đáp án tiếng Trung')}</div>${chineseAnswer?`<div><b>Chữ Hán:</b> ${escapeHTML(chineseAnswer)}${audio(chineseAnswer,'chữ Hán')}</div>`:''}${py?`<div><b>Pinyin:</b> ${escapeHTML(py)}</div>`:''}${meaning?`<div><b>Nghĩa tiếng Việt:</b> ${escapeHTML(meaning)}${audio(meaning,'nghĩa tiếng Việt')}</div>`:''}<p class="smallprint" style="margin:6px 0 0">Đây là đáp án tham khảo, chưa tính vào thống kê đúng/sai.</p>`;
 }
 function handleSubmit(){
  if(practiceChecked){if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){toast('Đã kiểm tra câu này. Bấm “Đổi câu hỏi” để luyện từ tiếp theo.');return;}nextPractice();return;}
  const user=$('user-answer').value.trim();if(practiceMode==='read'){handleReadSubmit(user);return;}if(!user){toast('Nhập câu trả lời trước khi chấm.');return;}
  const p=currentPractice;let score=0,expected='',py='',meaning='',notes='';
- if(p?.type==='sentence'){if(practiceMode==='zh-vi'){expected=p.sentence.vi;score=scoreAnswer(user,expected,[expected.replace(/[.!?。？！]+$/,''),p.sentence.zh]);py=p.sentence.py;meaning='Dịch từ câu tiếng Trung';}else{expected=p.sentence.zh;score=scoreAnswer(user,expected,[expected.replace(/[。！？]/g,''),p.sentence.py,keyPinyin(p.sentence.py)]);py=p.sentence.py;meaning=p.sentence.vi;}}
- else{const r=p.row;if(practiceMode==='vi-zh'||practiceMode==='write'){expected=r[0];const alternatives=[r[1],r[2],keyPinyin(r[2]),r[0]+' '+r[2]];score=scoreAnswer(user,expected,alternatives);py=r[2];meaning=r[3];if(practiceMode==='write'&&cleanAnswer(user)===cleanAnswer(expected))notes='Bạn đã nhập đúng chữ Hán. Ô vẽ tự do là luyện tay; dùng chế độ Chấm thứ tự nét để kiểm tra từng nét theo mẫu.';}else{expected=r[3];score=scoreAnswer(user,expected,[simpleGloss(r[3]),r[0]]);py=r[2];meaning='';notes='Chữ Hán: '+r[0];}}
+ if(p?.type==='sentence'){if(practiceMode==='zh-vi'){expected=p.sentence.vi;score=scoreAnswer(user,expected,[expected.replace(/[.!?。？！]+$/,''),p.sentence.zh]);py=p.sentence.py;meaning='';}else{expected=p.sentence.zh;score=scoreAnswer(user,expected,[expected.replace(/[。！？]/g,''),p.sentence.py,keyPinyin(p.sentence.py)]);py=p.sentence.py;meaning=p.sentence.vi;}}
+ else{const r=p.row;if(practiceMode==='vi-zh'||practiceMode==='write'){expected=r[0];const alternatives=[r[1],r[2],keyPinyin(r[2]),r[0]+' '+r[2]];score=scoreAnswer(user,expected,alternatives);py=r[2];meaning=r[3];if(practiceMode==='write'&&cleanAnswer(user)===cleanAnswer(expected))notes='Bạn đã nhập đúng chữ Hán. Ô vẽ tự do là luyện tay; dùng chế độ Chấm thứ tự nét để kiểm tra từng nét theo mẫu.';}else{expected=r[3];score=scoreAnswer(user,expected,[simpleGloss(r[3]),r[0]]);py=r[2];meaning='';notes='';}}
  showScore(score,expected,py,meaning,notes);practiceChecked=true;
  if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){$('submit-answer').disabled=true;$('next-question').hidden=true;}
  else{$('submit-answer').hidden=true;$('next-question').hidden=false;}
