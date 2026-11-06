@@ -294,3 +294,23 @@ GHI CHU QUYEN RIENG TU VA CHI PHI
 - Am thanh duoc gui toi Cloudflare de nhan dang khi dich vu san sang. Neu Cloudflare/Turnstile loi, app thu nhan dang cuc bo tren thiet bi.
 - Turnstile giam yeu cau tu dong va khong cong khai khoa bi mat; no khong thay the hoan toan gioi han tan suat. Nen theo doi Workers AI usage va cau hinh rate limiting neu luong nguoi dung tang.
 - Workers AI Free cap 10.000 Neurons/ngay theo chinh sach tai khoan; muc tieu thu cu the co the thay doi. Kiem tra bang gia Cloudflare hien hanh truoc khi dua vao su dung cong khai quy mo lon.
+
+
+CAP NHAT V42.5.1 – BANG MAU 13 MENU VA DONG BO NHAN DIEN
+--------------------------------------------------------
+1. Doi 13 mau menu theo bang mau pastel nguoi dung cung cap:
+   1 Soft Teal #4DB6AC; 2 Warm Amber #FFB74D; 3 Lavender Purple #BA68C8;
+   4 Sky Blue #64B5F6; 5 Coral Peach #FF8A65; 6 Mint Green #81C784;
+   7 Rose Pink #F06292; 8 Slate Blue #7986CB; 9 Lime Chartreuse #D4E157;
+   10 Warm Sienna #A1887F; 11 Cyan Breeze #4DD0E1;
+   12 Orchid Violet #9575CD; 13 Cool Grey #90A4AE.
+   Banner, menu dang chon va vung chuc nang ben phai dung cung mau theo menu.
+   Chu mau toi tren nen pastel de dam bao de doc.
+2. Menu 8, 9 va 10 thong nhat luong MediaRecorder -> Cloudflare Whisper Large V3 Turbo ->
+   Whisper Base cuc bo neu Cloudflare that bai. Menu 9 dung nut ghi am noi dong, khong mo
+   hop thoai micro do cu. Menu 10 uu tien Cloudflare truoc khi fallback cuc bo.
+3. Sua phat am ket qua dich menu 4: ca doan dich duoc dua vao mot SpeechSynthesisUtterance
+   de tranh chi doc cau dau trong doan nhieu cau.
+4. Lam moi ma cache Service Worker. Worker Cloudflare khong thay doi; khong can Deploy lai
+   Worker neu dang dung dung ban Turnstile cua V42.5. Chi can cap nhat 13 tep GitHub Pages.
+5. Da kiem tra cu phap JS, manifest, ID HTML, bang mau va tinh toan ven ZIP.
