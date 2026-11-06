@@ -370,4 +370,23 @@ CẬP NHẬT V42.5.7 – TINH GỌN GIAO DIỆN VÀ LUỒNG LUYỆN VIẾT (06-1
 - Menu 10 và 12: bỏ các đoạn giới thiệu dài theo yêu cầu.
 - Cập nhật tiêu đề trang, manifest, chân trang và cache Service Worker thành V42.5.7.
 
-Cập nhật GitHub Pages: giải nén ZIP và tải ghi đè toàn bộ tệp trong gói lên thư mục gốc đang publish. Không cần thay đổi hoặc Deploy lại Cloudflare Worker; cấu hình nhận diện hiện tại được giữ nguyên.
+Cập nhật GitHub Pages: giải nén ZIP và tải ghi đè toàn bộ tệp trong gói lên thư mục gốc đang publish. Ghi chú này chỉ đúng cho v42.5.7. Từ v42.5.8, cần cập nhật mã Worker nếu muốn dùng giọng đọc dự phòng trực tuyến.
+
+
+LƯU Ý CẬP NHẬT GITHUB PAGES: chỉ ghi đè index.html, manifest.webmanifest và sw.js trong thư mục đang publish. Ghi chú này dành cho bản cập nhật trước v42.5.8. Bản v42.5.8 cần cập nhật riêng mã asr-cloudflare-worker.js trên Worker nếu muốn dùng giọng đọc dự phòng.
+
+
+==================== PHIEN BAN v42.5.8 ====================
+- Menu 13 (Tai lieu cua ban): bo cuc gon hon; form luu tai lieu va sao luu dat canh nhau tren man hinh lon, tu xep tren man hinh nho; cac o nhap, nut bam va danh sach da luu duoc thu gon.
+- So thu tu 1-13 tren menu duoc tang kich thuoc va do dam de lon hon ten menu.
+- Phat am: uu tien giong co san tren thiet bi. Neu thieu giong Viet/Trung, co the dung giong doc truc tuyen Gemini TTS qua Cloudflare Worker (can Internet, Workers AI va co the tinh phi theo muc su dung).
+- De bat giong doc du phong: cap nhat ma trong asr-cloudflare-worker.js len Worker bvt-asr (giu nguyen AI binding, Turnstile Secret va ALLOWED_ORIGIN). Khong can tao Worker moi.
+- Goi ZIP PATCH_GITHUB_2_TEP chi co index.html va sw.js; ma Worker la tep rieng, cap nhat tren Cloudflare, khong tai tep Worker vao GitHub Pages.
+
+
+GHI CHÚ BỔ SUNG V42.5.8 – BẢNG CHỌN GIỌNG ĐỌC
+- Có bảng “GIỌNG ĐỌC” trên thanh tiêu đề, với hai lựa chọn riêng cho tiếng Trung và tiếng Việt.
+- “Tự động” ưu tiên giọng đọc của thiết bị; nếu thiết bị không có giọng phù hợp hoặc phát sinh lỗi, ứng dụng chuyển sang giọng trực tuyến.
+- Người dùng có thể chọn một trong 30 giọng trực tuyến Gemini TTS hoặc chọn cụ thể giọng có sẵn trên thiết bị cho từng ngôn ngữ. Lựa chọn được lưu trên thiết bị hiện tại.
+- Phát âm trực tuyến cần Internet và Worker đã triển khai TTS; đây không phải gói giọng ngoại tuyến được nhúng trong ZIP.
+- Các nút đọc trong từ điển, menu dịch nhanh, dịch đoạn/tệp, luyện đọc và luyện từ vựng đều dùng chung cơ chế phát âm dự phòng.

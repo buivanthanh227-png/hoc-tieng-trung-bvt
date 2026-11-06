@@ -1,13 +1,16 @@
 /**
- * BVT Cloudflare Workers AI speech-to-text gateway (V42.5).
+ * BVT Cloudflare Workers AI speech-to-text and text-to-speech gateway (V42.5.8).
  * Required Worker configuration:
  *   AI: Workers AI binding named exactly "AI"
  *   TURNSTILE_SECRET_KEY: Cloudflare Turnstile Secret Key (Worker Secret)
  *   ALLOWED_ORIGIN: https://buivanthanh227-png.github.io
- * Model: @cf/openai/whisper-large-v3-turbo
+ * Speech-to-text model: @cf/openai/whisper-large-v3-turbo
+ * Speech model: google/gemini-3.8-flash-tts
  * The Turnstile Site Key is public and is embedded in index.html.
  */
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
+const TTS_MODEL = 'google/gemini-3.8-flash-tts';
+const TTS_VOICES = new Set(['Zephyr','Puck','Charon','Kore','Fenrir','Leda','Orus','Aoede','Callirrhoe','Autonoe','Enceladus','Iapetus','Umbriel','Algieba','Despina','Erinome','Algenib','Rasalgethi','Laomedeia','Achernar','Alnilam','Schedar','Gacrux','Pulcherrima','Achird','Zubenelgenubi','Vindemiatrix','Sadachbia','Sadaltager','Sulafat']);
 const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
 const EXPECTED_ACTION = 'bvt_asr';
 
@@ -71,6 +74,48 @@ async function verifyTurnstile(token, request, env, expectedHostname) {
   }
 }
 
+
+function decodeAudioBytes(value) {
+  if (value instanceof Uint8Array) return value;
+  if (value instanceof ArrayBuffer) return new Uint8Array(value);
+  if (ArrayBuffer.isView(value)) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+  if (typeof value !== 'string') throw new Error('The TTS model did not return audio data.');
+  const base64 = value.replace(/^data:audio\/[a-z0-9.+-]+;base64,/i, '').replace(/\s/g, '');
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+async function handleTts(body, request, env, allowedOrigin, expectedHostname) {
+  if (!env.AI) return json({ error: 'Worker is missing the AI binding.' }, 500, allowedOrigin);
+  if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Worker is missing TURNSTILE_SECRET_KEY.' }, 500, allowedOrigin);
+  const text = String(body?.text || '').trim();
+  if (!text) return json({ error: 'Missing text to speak.' }, 400, allowedOrigin);
+  if (text.length > 3000) return json({ error: 'Text is too long. Please keep each reading under 3,000 characters.' }, 413, allowedOrigin);
+  const verification = await verifyTurnstile(body?.turnstileToken, request, env, expectedHostname);
+  if (!verification.success) return json({ error: 'Speech service verification failed.' }, 401, allowedOrigin);
+  const requestedVoice = String(body?.voice || 'Kore');
+  const voice = TTS_VOICES.has(requestedVoice) ? requestedVoice : 'Kore';
+  try {
+    const result = await env.AI.run(TTS_MODEL, { text, voice });
+    const audio = decodeAudioBytes(result?.audio ?? result);
+    if (!audio.byteLength) throw new Error('The TTS model returned an empty audio file.');
+    return new Response(audio, {
+      status: 200,
+      headers: {
+        'Content-Type': 'audio/wav',
+        'Content-Length': String(audio.byteLength),
+        'Cache-Control': 'no-store',
+        'Access-Control-Allow-Origin': allowedOrigin,
+        'Vary': 'Origin'
+      }
+    });
+  } catch (error) {
+    return json({ error: String(error?.message || error || 'Speech generation failed.') }, 502, allowedOrigin);
+  }
+}
+
 export default {
   async fetch(request, env) {
     const allowedOrigin = String(env.ALLOWED_ORIGIN || 'https://buivanthanh227-png.github.io')
@@ -84,10 +129,11 @@ export default {
     if (request.method === 'GET' && !requestOrigin) {
       return json({
         ok: true,
-        service: 'BVT speech recognition Worker',
+        service: 'BVT speech recognition and speech playback Worker',
         model: MODEL,
+        tts_model: TTS_MODEL,
         protection: 'Cloudflare Turnstile',
-        message: 'Worker is running. Send a Turnstile-verified audio POST request from the BVT learning app.'
+        message: 'Worker is running. Send a verified speech-recognition or speech-generation request from the BVT learning app.'
       }, 200, allowedOrigin);
     }
 
@@ -111,6 +157,12 @@ export default {
     if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Worker is missing TURNSTILE_SECRET_KEY. Add the Turnstile Secret Key as a Worker Secret.' }, 500, allowedOrigin);
 
     try {
+      const contentType = request.headers.get('Content-Type') || '';
+      if (contentType.toLowerCase().includes('application/json')) {
+        const body = await request.json();
+        if (body?.task === 'tts') return await handleTts(body, request, env, allowedOrigin, expectedHostname);
+        return json({ error: 'Unknown JSON task.' }, 400, allowedOrigin);
+      }
       const form = await request.formData();
       const audio = form.get('audio');
       if (!audio || typeof audio.arrayBuffer !== 'function') return json({ error: 'Missing audio file.' }, 400, allowedOrigin);
