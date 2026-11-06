@@ -328,3 +328,10 @@ CAP NHAT V42.5.2 – LOA DAP AN, TEN NUT NET VE VA CAN GIUA MENU
 5. Ca 13 menu trai co chieu cao dong nhat theo tung breakpoint, so thu tu nam ben trai,
    nhom bieu tuong + ten nam giua chieu ngang, tang co chu va can giua ten menu.
 6. Doi ma cache Service Worker. Worker Cloudflare khong thay doi.
+
+
+V42.5.3 – FIX BỐ CỤC MENU DESKTOP/TABLET (2026-11-06)
+- Mở rộng cột điều hướng trên desktop/tablet (258–300px tùy chiều rộng màn hình).
+- Tên menu được phép xuống dòng tự nhiên, từng hàng tự tăng chiều cao; không còn cố định chiều cao 56px gây chồng chữ.
+- Giữ nguyên bố cục menu dạng thu gọn của điện thoại (<=700px).
+- Cập nhật Service Worker cache để trình duyệt nhận bản mới.
