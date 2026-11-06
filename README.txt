@@ -1,4 +1,4 @@
-HOC TIENG TRUNG BVT - PHIEN BAN V42.5.12
+HOC TIENG TRUNG BVT - PHIEN BAN V42.5.13
 
 PHAT AM TIENG TRUNG VA TIENG VIET
 - Da tro lai co che doc bang SpeechSynthesis cua trinh duyet/he dieu hanh nhu ban truoc khi them dich vu TTS Cloudflare.
