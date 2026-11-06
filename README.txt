@@ -345,3 +345,17 @@ CẬP NHẬT V42.5.4 (06-11-2026)
 - Service Worker đổi cache key để trình duyệt tải V42.5.4.
 
 Cập nhật: giải nén và tải ghi đè toàn bộ 13 tệp vào thư mục gốc GitHub Pages. Không cần Deploy lại Cloudflare Worker vì mã Worker và cấu hình Turnstile không thay đổi.
+
+
+V42.5.5 – Sửa ngôn ngữ nhận diện tiếng Trung ở menu 8 và 9; cập nhật dòng phiên bản chân trang.
+- Menu 8 (luyện đọc Hán tự): gửi language=zh lên Cloudflare Whisper Large V3 Turbo; fallback cục bộ giữ language=chinese.
+- Menu 9 (phản xạ đọc câu và hỏi đáp): gửi language=zh lên Cloudflare; fallback cục bộ dùng Chinese.
+- Menu 4 giữ language=auto để tiếp tục nhận diện/dịch song ngữ tự động.
+- Footer: HỌC TIẾNG TRUNG · Phiên bản v42.5.5.
+
+
+V42.5.5 – Sửa ngôn ngữ chép lời tiếng Trung và dòng phiên bản.
+- Menu 8 (luyện đọc chữ Hán): yêu cầu Cloudflare Whisper Large V3 Turbo nhận diện language=zh; fallback cục bộ dùng language=chinese.
+- Menu 9 (phản xạ đọc câu và hỏi đáp): yêu cầu Cloudflare nhận diện language=zh; fallback cục bộ dùng language=chinese.
+- Menu 4 vẫn dùng language=auto cho nhận diện song ngữ Việt/Trung.
+- Cập nhật tiêu đề trang, manifest và chân trang thành V42.5.5.
