@@ -10,8 +10,9 @@
  */
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
 const TTS_MODEL = 'google/gemini-3.8-flash-tts';
-const TTS_VOICES = new Set(['Zephyr','Puck','Charon','Kore','Fenrir','Leda','Orus','Aoede','Callirrhoe','Autonoe','Enceladus','Iapetus','Umbriel','Algieba','Despina','Erinome','Algenib','Rasalgethi','Laomedeia','Achernar','Alnilam','Schedar','Gacrux','Pulcherrima','Achird','Zubenelgenubi','Vindemiatrix','Sadachbia','Sadaltager','Sulafat']);
+const TTS_DEFAULT_VOICES = Object.freeze({ vi: 'Kore', zh: 'Puck' });
 const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
+const MAX_TTS_AUDIO_BYTES = 20 * 1024 * 1024;
 const EXPECTED_ACTION = 'bvt_asr';
 
 function json(data, status, origin) {
@@ -75,12 +76,35 @@ async function verifyTurnstile(token, request, env, expectedHostname) {
 }
 
 
-function decodeAudioBytes(value) {
+async function decodeAudioBytes(value) {
   if (value instanceof Uint8Array) return value;
   if (value instanceof ArrayBuffer) return new Uint8Array(value);
   if (ArrayBuffer.isView(value)) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+  if (value && typeof value === 'object') {
+    if (value.audio != null) return decodeAudioBytes(value.audio);
+    if (value.data != null) return decodeAudioBytes(value.data);
+  }
   if (typeof value !== 'string') throw new Error('The TTS model did not return audio data.');
-  const base64 = value.replace(/^data:audio\/[a-z0-9.+-]+;base64,/i, '').replace(/\s/g, '');
+  const source = value.trim();
+  if (/^https:\/\//i.test(source)) {
+    const audioUrl = new URL(source);
+    if (audioUrl.protocol !== 'https:') throw new Error('The TTS audio URL must use HTTPS.');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000);
+    try {
+      const response = await fetch(audioUrl.href, { signal: controller.signal });
+      if (!response.ok) throw new Error('Could not download generated audio (' + response.status + ').');
+      const length = Number(response.headers.get('Content-Length') || 0);
+      if (length > MAX_TTS_AUDIO_BYTES) throw new Error('Generated audio is too large.');
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      if (!bytes.byteLength || bytes.byteLength > MAX_TTS_AUDIO_BYTES) throw new Error('Generated audio is empty or too large.');
+      return bytes;
+    } finally { clearTimeout(timeout); }
+  }
+  const base64 = source.replace(/^data:audio\/[a-z0-9.+-]+;base64,/i, '').replace(/\s/g, '');
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64) || base64.length % 4 === 1) {
+    throw new Error('The TTS model returned an unsupported audio format.');
+  }
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -95,11 +119,13 @@ async function handleTts(body, request, env, allowedOrigin, expectedHostname) {
   if (text.length > 3000) return json({ error: 'Text is too long. Please keep each reading under 3,000 characters.' }, 413, allowedOrigin);
   const verification = await verifyTurnstile(body?.turnstileToken, request, env, expectedHostname);
   if (!verification.success) return json({ error: 'Speech service verification failed.' }, 401, allowedOrigin);
-  const requestedVoice = String(body?.voice || 'Kore');
-  const voice = TTS_VOICES.has(requestedVoice) ? requestedVoice : 'Kore';
+  const language = String(body?.language || 'vi').toLowerCase() === 'zh' ? 'zh' : 'vi';
+  // The app ships only two fixed voices: Puck for Mandarin and Kore for Vietnamese.
+  // The worker enforces this pair even if a client sends another voice name.
+  const voice = TTS_DEFAULT_VOICES[language];
   try {
     const result = await env.AI.run(TTS_MODEL, { text, voice });
-    const audio = decodeAudioBytes(result?.audio ?? result);
+    const audio = await decodeAudioBytes(result?.audio ?? result);
     if (!audio.byteLength) throw new Error('The TTS model returned an empty audio file.');
     return new Response(audio, {
       status: 200,
