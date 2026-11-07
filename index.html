@@ -1822,7 +1822,7 @@ document.querySelector('.tabs').addEventListener('click',e=>{
  switchTab(tab);
  if(menuToggle&&window.matchMedia('(max-width: 700px)').matches){$('main-tabs').classList.remove('open');menuToggle.setAttribute('aria-expanded','false');menuToggle.textContent='☰ DANH MỤC CHỨC NĂNG';}
 });
-/* v42.6: strictly use voices for the requested language; never fall back to a foreign-language voice. */
+/* v42.6: language-safe device voices; complete paragraph playback and selected-word autoplay fix. */
 function bvtGetNativeVoices(){
  try{return ('speechSynthesis'in window)?(window.speechSynthesis.getVoices()||[]):[];}catch(_){return [];}
 }
@@ -1934,15 +1934,76 @@ function bvtSpeakLocale(text,language='vi',button=null,onFinished=null){
   speechPlaybackActive=true;synth.speak(utterance);return utterance;
  }catch(_){speechPlaybackActive=false;bvtMarkMissingVoice('vi');if(typeof onFinished==='function')onFinished();return null;}
 }
+function bvtSplitSpeechSentences(value,maxChars=180){
+ const source=String(value||'').trim();if(!source)return [];
+ const raw=source.match(/[^。！？.!?\n]+[。！？.!?\n]*/gu)||[source];
+ const output=[];
+ for(const sentence of raw){
+  let rest=sentence.trim();if(!rest)continue;
+  while(Array.from(rest).length>maxChars){
+   const chars=Array.from(rest);let cut=maxChars;
+   // Prefer a natural word boundary for Vietnamese/Latin text; Chinese can split by character.
+   for(let i=maxChars-1;i>=Math.floor(maxChars*.65);i--){if(/\s/.test(chars[i])){cut=i+1;break;}}
+   output.push(chars.slice(0,cut).join('').trim());rest=chars.slice(cut).join('').trim();
+  }
+  if(rest)output.push(rest);
+ }
+ return output;
+}
+function bvtBuildSpeechRuns(value){
+ const tokens=String(value||'').match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/gu)||[];
+ const runs=[];let activeLanguage=null;
+ for(const token of tokens){
+  const hasHan=/[\u3400-\u9fff\uf900-\ufaff]/u.test(token);
+  const hasText=/[\p{L}\p{N}]/u.test(token);
+  const language=hasHan?'zh':hasText?'vi':(activeLanguage||'vi');
+  if(!runs.length||runs[runs.length-1].language!==language)runs.push({language,text:token});
+  else runs[runs.length-1].text+=token;
+  if(hasHan||hasText)activeLanguage=language;
+ }
+ return runs.filter(run=>/[\p{L}\p{N}]/u.test(run.text));
+}
 function speakAuto(text,button=null,onFinished=null){
  const value=String(text||'').trim();if(!value){if(typeof onFinished==='function')onFinished();return;}
- const hasHan=/[\u3400-\u9fff\uf900-\ufaff]/.test(value);
- if(!hasHan){bvtSpeakLocale(value,'vi',button,onFinished);return;}
- const chunks=value.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/g)||[value];
- const meaningful=chunks.filter(x=>/[\p{L}\p{N}]/u.test(x));
- if(!meaningful.length){if(typeof onFinished==='function')onFinished();return;}
- let index=0;const next=()=>{if(index>=meaningful.length){if(typeof onFinished==='function')onFinished();return;}const part=meaningful[index++];const partLanguage=/[\u3400-\u9fff\uf900-\ufaff]/.test(part)?'zh':'vi';bvtSpeakLocale(part,partLanguage,button,next);};
- bvtCancelCloudSpeech();next();
+ if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){
+  const lang=/[\u3400-\u9fff\uf900-\ufaff]/u.test(value)?'zh':'vi';bvtMarkMissingVoice(lang);if(typeof onFinished==='function')onFinished();return;
+ }
+ const queue=[];
+ for(const run of bvtBuildSpeechRuns(value)){
+  const voice=bvtBestNativeVoice(run.language);
+  if(!voice){bvtMarkMissingVoice(run.language);continue;}
+  for(const part of bvtSplitSpeechSentences(run.text)){
+   const utterance=new SpeechSynthesisUtterance(part);
+   utterance.voice=voice;utterance.lang=run.language==='zh'?'zh-CN':'vi-VN';
+   utterance.rate=run.language==='zh'?.82:.9;utterance.pitch=1;
+   queue.push(utterance);
+  }
+ }
+ if(button){button.textContent='🔊';button.title='Phát lần lượt toàn bộ nội dung theo ngôn ngữ.';}
+ if(!queue.length){if(typeof onFinished==='function')onFinished();return;}
+ const synth=window.speechSynthesis;
+ // Queue every sentence in one browser speech session. Calling speak() recursively from onend
+ // can cancel the next sentence on some desktop/mobile engines while the previous utterance
+ // is still marked as speaking or pending.
+ bvtCancelCloudSpeech();
+ const token=++speechPlaybackToken;let remaining=queue.length,finished=false;
+ const completeOne=()=>{
+  if(token!==speechPlaybackToken||finished)return;
+  remaining--;
+  if(remaining<=0){finished=true;speechPlaybackActive=false;reflexLastSpeechEndedAt=Date.now();if(typeof onFinished==='function')onFinished();}
+ };
+ for(const utterance of queue){
+  utterance.onstart=()=>{if(token===speechPlaybackToken)speechPlaybackActive=true;};
+  utterance.onend=completeOne;utterance.onerror=completeOne;
+ }
+ try{
+  speechPlaybackActive=true;
+  for(const utterance of queue)synth.speak(utterance);
+  return queue;
+ }catch(error){
+  if(token===speechPlaybackToken){speechPlaybackActive=false;try{synth.cancel();}catch(_){}}
+  if(typeof onFinished==='function')onFinished();return null;
+ }
 }
 function speak(text,button=null,onFinished=null){
  const value=String(text||'').trim();if(!value){if(typeof onFinished==='function')onFinished();return null;}
@@ -2535,10 +2596,14 @@ function loadPractice(){
  const hasReadTarget=!!(currentPractice?.sentence?.zh&&practiceMode==='read');$('listen-btn').disabled=!hasReadTarget;$('mic-btn').disabled=!hasReadTarget;$('user-answer').disabled=practiceMode==='read'&&!hasReadTarget;$('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
  if(practiceMode==='write'){preparePracticeWriting();}else{traceChar='';practiceTraceChar='';clearCanvas();}
  // Menu 5 reads its Vietnamese prompt; menu 6 reads its Chinese prompt.
- // Call synchronously during the user's menu/next-question action for mobile browser audio permission.
+ // Menus 7 and 8 read the selected Chinese word/sentence immediately after selection.
+ // These calls occur in the selection/menu event flow to preserve mobile audio permission.
  if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){
   const questionText=String($('practice-question')?.textContent||'').trim();
   if(questionText)speakAuto(questionText,qSpeak);
+ }else if(practiceMode==='write'||practiceMode==='read'){
+  const selectedChinese=String(currentPractice?.sentence?.zh||currentPractice?.row?.[0]||'').trim();
+  if(selectedChinese)speak(selectedChinese,qSpeak);
  }
 }
 function renderWriteTargetDisplay(){
@@ -3150,7 +3215,18 @@ function speakVoiceBox(id){
  const text=$(id)?.textContent?.trim();
  if(!text||/^(Chưa có nội dung|Bản dịch sẽ hiển thị)/.test(text)){setVoiceStatus('Chưa có nội dung để phát âm.');return;}
  setVoiceStatus('Đang đọc nội dung…');
- speakAuto(text,null,()=>setVoiceStatus('Đã đọc xong toàn bộ nội dung.'));
+ const finished=()=>setVoiceStatus('Đã đọc xong toàn bộ nội dung.');
+ // Menu 4's translated result is one continuous Chinese passage. Use one zh-CN
+ // utterance for the complete passage so desktop engines do not stop after sentence 1.
+ if(id==='voice-translate-result'&&/[\u3400-\u9fff\uf900-\ufaff]/u.test(text)){
+  speak(text,null,finished);
+  return;
+ }
+ if(id==='voice-translate-result'){
+  bvtSpeakLocale(text,'vi',null,finished);
+  return;
+ }
+ speakAuto(text,null,finished);
 }
 $('voice-play-transcript')?.addEventListener('click',()=>speakVoiceBox('voice-translate-transcript'));
 $('voice-play-result')?.addEventListener('click',()=>speakVoiceBox('voice-translate-result'));

@@ -1,4 +1,11 @@
-HOC TIENG TRUNG BVT - PHIEN BAN V42.5.13
+HOC TIENG TRUNG BVT - PHIEN BAN V42.6
+
+BAN SUA LOI PHAT AM MENU 4, 7 VA 8
+- Menu 4: nut doc ket qua tieng Trung phat am ca doan bang mot luot SpeechSynthesis zh-CN, khong tach thanh nhieu utterance de tranh chi doc cau dau tren mot so trinh duyet desktop.
+- Menu 7: tu dong phat am chu Han sau khi chon tu vung hoac cau de luyen viet.
+- Menu 8: tu dong phat am chu Han sau khi chon tu vung hoac cau de luyen doc.
+- Cac luot chon noi dung tu menu 9 chuyen sang menu 7/8 cung tu dong phat am.
+- Khong thay doi ten phien ban hien thi: van la V42.6. Khong can Deploy lai Cloudflare Worker.
 
 PHAT AM TIENG TRUNG VA TIENG VIET
 - Da tro lai co che doc bang SpeechSynthesis cua trinh duyet/he dieu hanh nhu ban truoc khi them dich vu TTS Cloudflare.
