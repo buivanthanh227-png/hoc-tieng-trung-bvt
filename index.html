@@ -961,6 +961,122 @@
 
 </style>
 
+<style id="v42-6-dictionary-spread-and-read-display">
+/* Menu 1: spread the vocabulary card across the available desktop width. */
+@media (min-width: 1024px) {
+  #panel-dict > .card {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    transform: none;
+  }
+  #panel-dict .dict-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 12px;
+  }
+  #panel-dict .word {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    align-items: stretch;
+    padding: 15px 18px;
+  }
+  #panel-dict .word-main {
+    display: grid;
+    grid-template-columns: minmax(150px, 1.05fr) minmax(190px, 1.15fr) minmax(260px, 2fr);
+    align-items: center;
+    gap: clamp(18px, 3vw, 44px);
+    width: 100%;
+  }
+  #panel-dict .hanzi {
+    min-width: 0;
+    font-size: 29px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  #panel-dict .word-traditional {
+    display: inline-block;
+    margin-left: 5px;
+    color: #98a2b3;
+    font-size: 14px;
+    font-weight: 650;
+  }
+  #panel-dict .pinyin {
+    min-width: 0;
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  #panel-dict .meaning {
+    min-width: 0;
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  #panel-dict .word-actions {
+    display: grid;
+    grid-template-columns: minmax(125px, .85fr) minmax(125px, .85fr) minmax(210px, 1.35fr) minmax(180px, 1.1fr);
+    gap: 10px;
+    width: 100%;
+  }
+  #panel-dict .dict-action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 60px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.35;
+    white-space: normal;
+  }
+  #panel-dict .dict-action-btn:hover { background: #fff7f7; border-color: #f0b8b8; }
+  #panel-dict .dict-action-icon { flex: 0 0 auto; font-size: 20px; line-height: 1; }
+  #panel-dict .dict-action-label { min-width: 0; text-align: center; overflow-wrap: anywhere; }
+}
+/* Phones and compact tablets: keep each word readable and buttons in a balanced 2x2 layout. */
+@media (max-width: 1023px) {
+  #panel-dict > .card { width: auto; max-width: none; margin-left: 0; transform: none; }
+  #panel-dict .dict-grid { display: grid; grid-template-columns: minmax(0, 1fr) !important; gap: 9px; }
+  #panel-dict .word { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-items: stretch; padding: 11px 12px; }
+  #panel-dict .word-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; min-width: 0; }
+  #panel-dict .hanzi { font-size: 24px; line-height: 1.35; overflow-wrap: anywhere; word-break: break-word; }
+  #panel-dict .word-traditional { display: inline-block; margin-left: 4px; color: #98a2b3; font-size: 12px; font-weight: 650; }
+  #panel-dict .pinyin { margin: 0; font-size: 13px; line-height: 1.45; overflow-wrap: anywhere; }
+  #panel-dict .meaning { margin: 0; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; word-break: break-word; }
+  #panel-dict .word-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; width: 100%; }
+  #panel-dict .dict-action-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 55px; padding: 7px 8px; border: 1px solid var(--line); border-radius: 9px; background: #f8fafc; color: #344054; font-size: 11px; font-weight: 750; line-height: 1.35; white-space: normal; }
+  #panel-dict .dict-action-icon { flex: 0 0 auto; font-size: 17px; line-height: 1; }
+  #panel-dict .dict-action-label { min-width: 0; text-align: center; overflow-wrap: anywhere; }
+}
+/* Menu 8 mirrors the selected-word panel from menu 7; the sample-play button is removed. */
+.read-target-display { margin-top: 10px; }
+.read-target-display[hidden] { display: none !important; }
+.read-target-display .write-target-line strong { overflow-wrap: anywhere; word-break: break-word; }
+.read-target-display .write-target-cell:first-child .write-target-line strong { color: #106e7f; }
+#reading-tools { display: flex; justify-content: center; grid-template-columns: minmax(220px, 340px); }
+#reading-tools #mic-btn { width: min(340px, 100%); min-height: 46px; font-size: 14px; font-weight: 800; }
+@media (max-width: 520px) {
+  .read-target-display { grid-template-columns: 1fr; gap: 6px; padding: 8px; }
+  .read-target-display .write-target-cell { display: grid; grid-template-columns: 92px minmax(0, 1fr); align-items: center; gap: 5px; padding: 6px; }
+  .read-target-display .write-target-label { margin: 0; }
+  .read-target-display .write-target-line strong { font-size: 15px; }
+  .read-target-display .write-target-cell:first-child .write-target-line strong { font-size: 21px; }
+}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -1108,9 +1224,14 @@
    <div id="read-vocab-results" class="combine-suggestions" hidden></div>
    <p id="read-vocab-status" class="read-search-status" hidden></p>
   </div>
+  <div id="read-target-display" class="write-target-display read-target-display" hidden aria-live="polite">
+   <div class="write-target-cell"><span class="write-target-label">Chữ Hán</span><div class="write-target-line"><strong id="read-target-hanzi"></strong><span class="write-target-actions"><button id="read-target-hanzi-speak" class="write-target-action" type="button" data-speak="" title="Nghe chữ Hán" aria-label="Nghe chữ Hán">🔊</button><button id="read-target-hanzi-copy" class="write-target-action" type="button" data-copy-control="1" data-copy-value="" title="Sao chép chữ Hán" aria-label="Sao chép chữ Hán">⧉</button></span></div></div>
+   <div class="write-target-cell"><span class="write-target-label">Pinyin</span><div class="write-target-line"><strong id="read-target-pinyin"></strong><span class="write-target-actions"><button id="read-target-pinyin-copy" class="write-target-action" type="button" data-copy-control="1" data-copy-value="" title="Sao chép Pinyin" aria-label="Sao chép Pinyin">⧉</button></span></div></div>
+   <div class="write-target-cell"><span class="write-target-label">Nghĩa tiếng Việt</span><div class="write-target-line"><strong id="read-target-meaning"></strong><span class="write-target-actions"><button id="read-target-meaning-speak" class="write-target-action" type="button" data-speak="" title="Nghe nghĩa tiếng Việt" aria-label="Nghe nghĩa tiếng Việt">🔊</button><button id="read-target-meaning-copy" class="write-target-action" type="button" data-copy-control="1" data-copy-value="" title="Sao chép nghĩa tiếng Việt" aria-label="Sao chép nghĩa tiếng Việt">⧉</button></span></div></div>
+  </div>
   <div class="question-audio-line" id="practice-question-area"><div class="question" id="practice-question">你好</div><button class="btn secondary tiny practice-question-speaker" id="practice-question-speak" type="button" title="Phát âm nội dung đang hiển thị">🔊</button></div>
   <div class="question-translation" id="practice-subtext">Pinyin: nǐ hǎo</div>
-  <div class="reading-tools" id="reading-tools" style="display:none"><button class="btn outline" id="listen-btn">🔈 Nghe mẫu</button><button class="btn secondary" id="mic-btn">🎙️ Đọc để chấm</button></div>
+  <div class="reading-tools" id="reading-tools" style="display:none"><button class="btn secondary" id="mic-btn">🎙️ Đọc để chấm điểm!</button></div>
   <p id="read-asr-status" class="smallprint" hidden aria-live="polite" style="margin:6px 0 0">Micro chưa bật.</p>
   <div class="answer" id="typed-answer-wrap"><label class="subtle" id="answer-label" for="user-answer">Nhập câu trả lời</label><input class="field" id="user-answer" type="text" autocomplete="off" autocapitalize="off" placeholder="Nhập đáp án bằng chữ Hán hoặc tiếng Việt"></div>
   <div class="write-panel" id="write-panel">
@@ -1725,7 +1846,7 @@ function relatedWordIndices(index){
 function renderDictionary(){
  const container=$('dict-list');container.innerHTML='';const total=filteredIndices.length;const pages=Math.max(1,Math.ceil(total/pageSize));currentPage=Math.min(currentPage,pages);const start=(currentPage-1)*pageSize;const ids=filteredIndices.slice(start,start+pageSize);
  if(!ids.length){container.innerHTML='<div class="empty">Không tìm thấy từ phù hợp. Thử Pinyin, chữ phồn thể hoặc một nghĩa gần đúng.</div>';}
- else{for(const i of ids){const [simp,trad,py,meaning,hsk]=dictionary[i];const card=document.createElement('article');card.className='word';card.innerHTML=`<div class="word-main"><div class="hanzi">${escapeHTML(simp)}${simp!==trad?` <span style="font-size:12px;color:#98a2b3;font-weight:600">${escapeHTML(trad)}</span>`:''}</div><div class="pinyin">${escapeHTML(py)}</div><div class="meaning" title="${escapeHTML(meaning)}">${escapeHTML(meaning)}</div></div><div class="word-actions"><button type="button" class="iconbtn" title="Nghe phát âm tiếng Trung" aria-label="Nghe phát âm" data-speak="${escapeHTML(simp)}">🔊</button><button type="button" class="iconbtn" title="Thêm vào ghép câu" aria-label="Thêm vào ghép câu" data-add="${i}">＋</button><button type="button" class="iconbtn" title="Xem thứ tự nét và luyện viết" aria-label="Xem thứ tự nét" data-write="${i}">✍️</button><button type="button" class="iconbtn related-word-button" title="Hiện các từ có liên quan" data-related="${i}">🔗 Liên kết từ vựng</button></div><div class="related-words" data-related-panel="${i}" hidden></div>`;container.appendChild(card);}}
+ else{for(const i of ids){const [simp,trad,py,meaning,hsk]=dictionary[i];const card=document.createElement('article');card.className='word';card.innerHTML=`<div class="word-main"><div class="hanzi">${escapeHTML(simp)}${simp!==trad?` <span class="word-traditional">${escapeHTML(trad)}</span>`:''}</div><div class="pinyin">${escapeHTML(py)}</div><div class="meaning" title="${escapeHTML(meaning)}">${escapeHTML(meaning)}</div></div><div class="word-actions"><button type="button" class="dict-action-btn" title="Nghe phát âm tiếng Trung" aria-label="Nghe phát âm" data-speak="${escapeHTML(simp)}"><span class="dict-action-icon" aria-hidden="true">🔊</span><span class="dict-action-label">Nghe phát âm</span></button><button type="button" class="dict-action-btn" title="Xem thứ tự nét và luyện viết" aria-label="Luyện viết" data-write="${i}"><span class="dict-action-icon" aria-hidden="true">✍️</span><span class="dict-action-label">Luyện viết</span></button><button type="button" class="dict-action-btn" title="Thêm vào ghép câu" aria-label="Thêm vào ghép câu" data-add="${i}"><span class="dict-action-icon" aria-hidden="true">＋</span><span class="dict-action-label">Thêm vào ghép câu</span></button><button type="button" class="dict-action-btn related-word-button" title="Hiện các từ có liên quan" aria-label="Liên kết từ vựng" data-related="${i}"><span class="dict-action-icon" aria-hidden="true">🔗</span><span class="dict-action-label">Liên kết từ vựng</span></button></div><div class="related-words" data-related-panel="${i}" hidden></div>`;container.appendChild(card);}}
  const info=`Trang ${total?currentPage:0}/${total?pages:0}`;
  ['page-info','page-info-top'].forEach(id=>{const el=$(id);if(el)el.textContent=info;});
  ['prev-page','prev-page-top'].forEach(id=>{const el=$(id);if(el)el.disabled=currentPage<=1;});
@@ -2518,9 +2639,10 @@ function updateModeButtons(){
  $('practice-meta-row').hidden=practiceMode==='write'||(practiceMode==='read'&&!readingReady);
  $('practice-progress').hidden=practiceMode==='write'||practiceMode==='read';
  $('practice-session-progress-row').hidden=practiceMode==='write'||(practiceMode==='read'&&!readingReady);
- $('practice-question-area').hidden=practiceMode==='write'||(practiceMode==='read'&&!readingReady);
- $('practice-subtext').hidden=practiceMode==='write'||(practiceMode==='read'&&!readingReady);
+ $('practice-question-area').hidden=practiceMode==='write'||practiceMode==='read'||(practiceMode==='read'&&!readingReady);
+ $('practice-subtext').hidden=practiceMode==='write'||practiceMode==='read'||(practiceMode==='read'&&!readingReady);
  $('write-target-display').hidden=practiceMode!=='write'||!writingReady;
+ $('read-target-display').hidden=practiceMode!=='read'||!readingReady;
  $('practice-write-char-picker').hidden=practiceMode!=='write'||!writingReady;
  $('practice-write-grid').hidden=practiceMode!=='write'||!writingReady;
  $('reading-tools').style.display=practiceMode==='read'&&readingReady?'flex':'none';
@@ -2537,7 +2659,6 @@ function updateModeButtons(){
  $('user-answer').placeholder=practiceMode==='read'?'Vui lòng nhập nội dung bạn muốn...':practiceMode==='zh-vi'?'Nhập nghĩa tiếng Việt…':'Nhập đáp án…';
  $('user-answer').inputMode='text';
  const hasReadTarget=!!(selectedReadTarget||(currentCustomSentence&&practiceMode==='read'));
- $('listen-btn').disabled=practiceMode==='read'&&!hasReadTarget;
  $('mic-btn').disabled=practiceMode==='read'&&!hasReadTarget;
  $('user-answer').disabled=practiceMode==='read'&&!hasReadTarget;
  $('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
@@ -2591,9 +2712,10 @@ function loadPractice(){
  const qSpeak=$('practice-question-speak');
  if(qSpeak){const zhMode=practiceMode==='zh-vi'||practiceMode==='read';qSpeak.title=zhMode?'🔊 Nghe câu tiếng Trung':'🔊 Nghe câu tiếng Việt';qSpeak.setAttribute('aria-label',qSpeak.title);qSpeak.hidden=practiceMode==='read';qSpeak.style.display=practiceMode==='read'?'none':'';}
  renderWriteTargetDisplay();
+ renderReadTargetDisplay();
  if(practiceMode==='read'){$('answer-label').textContent='Câu trả lời';}
  $('session-score').textContent=`Điểm: ${sessionCorrect}/${sessionDone}`;$('progress-fill').style.width=(sessionDone?Math.round(sessionCorrect/sessionDone*100):0)+'%';
- const hasReadTarget=!!(currentPractice?.sentence?.zh&&practiceMode==='read');$('listen-btn').disabled=!hasReadTarget;$('mic-btn').disabled=!hasReadTarget;$('user-answer').disabled=practiceMode==='read'&&!hasReadTarget;$('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
+ const hasReadTarget=!!(currentPractice?.sentence?.zh&&practiceMode==='read');$('mic-btn').disabled=!hasReadTarget;$('user-answer').disabled=practiceMode==='read'&&!hasReadTarget;$('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
  if(practiceMode==='write'){preparePracticeWriting();}else{traceChar='';practiceTraceChar='';clearCanvas();}
  // Menu 5 reads its Vietnamese prompt; menu 6 reads its Chinese prompt.
  // Menus 7 and 8 read the selected Chinese word/sentence immediately after selection.
@@ -2613,6 +2735,15 @@ function renderWriteTargetDisplay(){
  [['write-target-hanzi',zh],['write-target-pinyin',py],['write-target-meaning',vi]].forEach(([id,value])=>{const el=$(id);if(el)el.textContent=value||'—';});
  [['write-target-hanzi-speak',zh],['write-target-meaning-speak',vi]].forEach(([id,value])=>{const el=$(id);if(el)el.dataset.speak=value;});
  [['write-target-hanzi-copy',zh],['write-target-pinyin-copy',py],['write-target-meaning-copy',vi]].forEach(([id,value])=>{const el=$(id);if(el)el.dataset.copyValue=value;});
+ panel.hidden=false;
+}
+function renderReadTargetDisplay(){
+ const panel=$('read-target-display'),row=currentPractice?.row,sentence=currentPractice?.sentence;
+ const zh=String(row?.[0]||sentence?.zh||'').trim(),py=String(row?.[2]||sentence?.py||'').trim(),vi=String(row?.[3]||sentence?.vi||'').trim();
+ if(!panel||practiceMode!=='read'||!zh){if(panel)panel.hidden=true;return;}
+ [['read-target-hanzi',zh],['read-target-pinyin',py],['read-target-meaning',vi]].forEach(([id,value])=>{const el=$(id);if(el)el.textContent=value||'—';});
+ [['read-target-hanzi-speak',zh],['read-target-meaning-speak',vi]].forEach(([id,value])=>{const el=$(id);if(el)el.dataset.speak=value;});
+ [['read-target-hanzi-copy',zh],['read-target-pinyin-copy',py],['read-target-meaning-copy',vi]].forEach(([id,value])=>{const el=$(id);if(el)el.dataset.copyValue=value;});
  panel.hidden=false;
 }
 function currentPracticeCharacters(){
@@ -2728,11 +2859,10 @@ function handleReadSubmit(user,source='typed'){
 }
 $('submit-answer').onclick=handleSubmit;$('next-question').onclick=()=>nextPractice();$('practice-change-question').onclick=()=>nextPractice();$('practice-show-answer').onclick=revealPracticeAnswer;
 function nextPractice(){if(currentSentencePracticeDeck.length){practiceIndex++;if(practiceIndex>=currentSentencePracticeDeck.length){practiceIndex=0;toast('Đã luyện hết '+currentSentencePracticeDeck.length+' câu. Bắt đầu lại từ câu đầu.');}currentCustomSentence=currentSentencePracticeDeck[practiceIndex];practiceChecked=false;loadPractice();return;}if(practiceMode==='read'){if(currentCustomSentence){currentCustomSentence=null;}practiceChecked=false;loadPractice();return;}practiceIndex++;if(currentCustomSentence){currentCustomSentence=null;}loadPractice();}
-$('listen-btn').onclick=()=>{const text=currentPractice?.sentence?.zh||currentPractice?.row?.[0]||$('practice-question').textContent;speak(text);};
 let practiceReadWorker=null,practiceReadWorkerSession=0,practiceReadPendingSession=0,practiceReadSession=0,practiceReadPendingSamples=null,practiceReadFallbackSession=0,practiceReadTimeout=null;
 let practiceReadRecorder=null,practiceReadStream=null,practiceReadChunks=[],practiceReadStarting=false,practiceReadRecording=false,practiceReadTimer=null;
 function setReadAsrStatus(message,show=true){const el=$('read-asr-status');if(!el)return;el.textContent=message;el.hidden=!show;}
-function setReadMicState(state){practiceReadRecording=!!state;$('mic-btn').textContent=state?'⏹️ Dừng thu âm':'🎙️ Đọc để chấm';$('mic-btn').classList.toggle('recording',!!state);$('mic-btn').disabled=practiceReadStarting||practiceReadPendingSession>0;}
+function setReadMicState(state){practiceReadRecording=!!state;$('mic-btn').textContent=state?'⏹️ Dừng thu âm':'🎙️ Đọc để chấm điểm!';$('mic-btn').classList.toggle('recording',!!state);$('mic-btn').disabled=practiceReadStarting||practiceReadPendingSession>0;}
 async function practiceReadDirectFallback(samples,session,reason=''){
  if(session!==practiceReadSession||session!==practiceReadPendingSession||practiceReadFallbackSession===session)return;
  practiceReadFallbackSession=session;clearTimeout(practiceReadTimeout);practiceReadTimeout=null;
