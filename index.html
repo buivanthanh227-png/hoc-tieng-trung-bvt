@@ -1182,6 +1182,13 @@
    <button class="mode-btn" data-mode="read">🔊 Luyện đọc</button>
   </div>
   <div class="row between" id="practice-meta-row" style="margin-top:14px"><span class="pill" id="practice-level" hidden></span><span class="subtle" id="practice-progress">Câu 1</span></div>
+  <div id="practice-length-filter" class="row between wrap" style="margin-top:10px;gap:8px;align-items:center">
+   <label for="practice-word-length" class="subtle" style="font-weight:750">Lọc theo số chữ Hán</label>
+   <select id="practice-word-length" class="field small" style="width:auto;min-width:125px">
+    <option value="1">1 chữ Hán</option><option value="2">2 chữ Hán</option><option value="3">3 chữ Hán</option><option value="4">4 chữ Hán</option><option value="5">5 chữ Hán</option><option value="6">6 chữ Hán</option><option value="7+">7 chữ trở lên</option>
+   </select>
+   <span id="practice-word-length-count" class="pill">Đang đếm từ…</span>
+  </div>
   <div class="row" id="practice-session-progress-row" style="margin-top:9px"><div class="progressbar"><div id="progress-fill"></div></div><span class="subtle" id="session-score">Điểm: 0</span></div>
   <p class="subtle" id="practice-instruction" style="text-align:center;margin-top:15px">Hãy dịch nghĩa tiếng Việt sang tiếng Trung.</p>
   <div class="read-search-panel" id="read-search-panel" hidden>
@@ -1458,8 +1465,7 @@ const keyPinyin = s => norm(String(s ?? '').replace(/[āáǎà]/g,'a').replace(/
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 let dictionary = [];
 let searchIndex = [];
-let practicePoolCache = null;
-let practiceSeedPoolCache = null;
+let practicePoolCache = new Map();
 let activeLevel = 'all';
 let nextSpeechGender = 'male';
 let activeStrokeRow = null;
@@ -1492,6 +1498,8 @@ let sentencePage = 1;
 const SENTENCES_PER_PAGE = 10;
 let currentSentencePracticeDeck = [];
 let practiceMode = 'vi-zh';
+let practiceWordLength = '1';
+try { const savedPracticeLength = localStorage.getItem('bvt-practice-word-length-v1'); if (/^[1-6]$/.test(savedPracticeLength || '') || savedPracticeLength === '7+') practiceWordLength = savedPracticeLength; } catch (_) {}
 let practiceIndex = 0;
 let sessionDone = 0;
 let sessionCorrect = 0;
@@ -1680,7 +1688,7 @@ function searchScoreForRow(i,q){
  // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
  return best;
 }
-function setDictionary(rows,sourceName){dictionary=rows;practicePoolCache=null;ocrLexiconMap=null;ocrLexiconLengths=[];searchIndex=dictionary.map(makeSearchRecord);$('count-pill').textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';$('dict-result-count').textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';$('dict-source-badge').textContent=sourceName;$('top-status').textContent=sourceName==='CVDICT đã lưu'?'Từ điển đã lưu trên thiết bị':'Tra từ · học ngữ pháp · luyện đọc';applyFilter();renderCombineChoices();}
+function setDictionary(rows,sourceName){dictionary=rows;practicePoolCache=new Map();ocrLexiconMap=null;ocrLexiconLengths=[];searchIndex=dictionary.map(makeSearchRecord);$('count-pill').textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';$('dict-result-count').textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';$('dict-source-badge').textContent=sourceName;$('top-status').textContent=sourceName==='CVDICT đã lưu'?'Từ điển đã lưu trên thiết bị':'Tra từ · học ngữ pháp · luyện đọc';applyFilter();renderCombineChoices();if(typeof updatePracticeLengthFilter==='function')updatePracticeLengthFilter();if(!currentPractice&&(practiceMode==='vi-zh'||practiceMode==='zh-vi'))loadPractice();}
 function idbOpen(){return new Promise((resolve,reject)=>{if(!('indexedDB'in window))return reject(Error('IndexedDB không khả dụng'));const req=indexedDB.open('trung-viet-study',1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('dictionary'))db.createObjectStore('dictionary');};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('Không mở được IndexedDB'));req.onblocked=()=>reject(Error('IndexedDB đang bị một tab khác giữ mở'));});}
 async function idbGet(){const db=await idbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('dictionary','readonly'),req=tx.objectStore('dictionary').get('rows');req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();});}
 async function idbPut(rows){const db=await idbOpen();return new Promise((resolve,reject)=>{const tx=db.transaction('dictionary','readwrite');tx.objectStore('dictionary').put(rows,'rows');tx.oncomplete=()=>{db.close();resolve(true);};tx.onerror=()=>{const e=tx.error;db.close();reject(e||Error('Không lưu được dữ liệu'));};});}
@@ -2503,6 +2511,7 @@ function updateModeButtons(){
  const readingReady=!!(currentPractice?.sentence?.zh||currentPractice?.row?.[0]);
  const writingReady=!!(currentPractice?.sentence?.zh||currentPractice?.row?.[0]);
  $('practice-meta-row').hidden=practiceMode==='write'||(practiceMode==='read'&&!readingReady);
+ const lengthFilter=$('practice-length-filter');if(lengthFilter)lengthFilter.hidden=!(practiceMode==='vi-zh'||practiceMode==='zh-vi')||!!currentCustomSentence;
  $('practice-progress').hidden=practiceMode==='write'||practiceMode==='read';
  $('practice-session-progress-row').hidden=practiceMode==='write'||(practiceMode==='read'&&!readingReady);
  $('practice-question-area').hidden=practiceMode==='write'||practiceMode==='read'||(practiceMode==='read'&&!readingReady);
@@ -2532,25 +2541,139 @@ function updateModeButtons(){
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{const nextMode=b.dataset.mode;if(nextMode==='read'&&practiceMode!=='read'&&!(practiceReturnTab==='combine'&&(currentCustomSentence||currentSentencePracticeDeck.length)))selectedReadTarget=null;practiceMode=nextMode;if(practiceReturnTab!=='combine'||nextMode==='write'){currentCustomSentence=null;currentSentencePracticeDeck=[];}forcedPracticeRow=null;practiceIndex=0;practiceChecked=false;updateModeButtons();loadPractice();}));
 $('practice-back').addEventListener('click',()=>switchTab('combine'));
+$('practice-word-length').addEventListener('change',e=>{
+ const next=String(e.target.value||'1');
+ if(!/^[1-6]$/.test(next)&&next!=='7+')return;
+ practiceWordLength=next;
+ try{localStorage.setItem('bvt-practice-word-length-v1',practiceWordLength);}catch(_){}
+ forcedPracticeRow=null;
+ updatePracticeLengthFilter();
+ if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){practiceIndex=0;practiceChecked=false;loadPractice();}
+});
 function practicePool(){
- if(!practiceSeedPoolCache){
-  const cleaned=buildSeed().map(r=>{
-   const meaning=simpleGloss(r[3]).replace(/^[\s·•,，;；]+/,'').replace(/[\s·•,，;；]+$/,'').trim();
-   return [r[0],r[1],r[2],meaning,r[4]||''];
-  });
-  practiceSeedPoolCache=cleaned.filter(r=>{
-   if(!Array.isArray(r)||!r[0]||!r[2]||!r[3]||!/^HSK[12]$/.test(String(r[4]||'')))return false;
-   const han=[...String(r[0])].filter(ch=>/[\u3400-\u9fff]/.test(ch)).length;
-   const meaning=String(r[3]||'').trim();
-   if(!han||han>3||!meaning||meaning.length>20||String(r[2]).length>18)return false;
-   if(/^(xem|biến thể|dùng trong|viết tắt|ký hiệu|tên gọi|một loại|trợ từ chỉ)/i.test(meaning))return false;
-   if(/[\[\]{}<>]/.test(meaning))return false;
-   return true;
-  });
+ const lengthKey=String(practiceWordLength||'1');
+ if(practicePoolCache.has(lengthKey))return practicePoolCache.get(lengthKey);
+ // Use the complete local dictionary after it has loaded; during startup, use the built-in common seed.
+ const sourceRows=dictionary.length>1000?dictionary:buildSeed();
+ const byWord=new Map();
+ const pinyinPattern=/^[A-Za-züÜvVêÊāáǎàēéěèīíǐìōóǒòūúǔùḿńňǹ\s'-]+$/;
+ const metaMeaning=/^(?:xem\b|biến thể|dùng trong\b|thành phần\b|viết tắt\b|ký hiệu\b|chữ cái\b|tên gọi cũ\b|họ\b|tên riêng\b|một ký tự\b|một bộ thủ\b|nét\b|cách viết khác\b|không chuẩn\b|cổ tự\b|chữ tượng hình\b|dạng (?:phồn thể|giản thể|không chuẩn|cổ)\b)/i;
+ const unsuitableMeaning=/khiêu dâm|dương vật|tinh dịch|tinh hoàn|âm đạo|tục tĩu|chửi thề|\b(?:fuck|shit|porn|genital|penis|vagina|vulgar|obscene|profanity)\b/i;
+ for(const raw of sourceRows){
+  if(!Array.isArray(raw)||raw.length<4)continue;
+  const word=String(raw[0]||'').normalize('NFKC').trim();
+  const chars=[...word];
+  if(!chars.length||!chars.every(ch=>/[\u4e00-\u9fff]/u.test(ch)))continue;
+  const charCount=chars.length;
+  if(lengthKey==='7+'?charCount<7:charCount!==Number(lengthKey))continue;
+  const py=String(raw[2]||'').trim();
+  let meaning=simpleGloss(raw[3]).replace(/^[\s·•,，;；]+/,'').replace(/[\s·•,，;；]+$/,'').trim();
+  if(!py||!meaning||py.length>28||!pinyinPattern.test(py)||meaning.length>100)continue;
+  if(metaMeaning.test(meaning)||unsuitableMeaning.test(meaning)||/[\[\]{}<>]/.test(meaning))continue;
+  const key=practiceRandomWordKey([word]);
+  if(!key||byWord.has(key))continue;
+  byWord.set(key,[word,String(raw[1]||word),py,meaning,String(raw[4]||'')]);
  }
- return practiceSeedPoolCache;
+ const pool=[...byWord.values()];
+ practicePoolCache.set(lengthKey,pool);
+ return pool;
 }
-function randomPractice(){const pool=practicePool();if(!pool.length)return buildSeed()[0];const previous=String(currentPractice?.row?.[0]||'');const choices=previous?pool.filter(r=>r[0]!==previous):pool;return choices[Math.floor(Math.random()*choices.length)]||pool[0];}
+function updatePracticeLengthFilter(){
+ const select=$('practice-word-length');
+ if(select&&select.value!==practiceWordLength)select.value=practiceWordLength;
+ const count=$('practice-word-length-count');
+ if(count){const pool=practicePool();count.textContent=pool.length.toLocaleString('vi-VN')+' từ có thể luyện';}
+}
+const PRACTICE_RANDOM_ORDER_KEY='bvt-practice-random-order-v2-';
+const PRACTICE_RANDOM_PROGRESS_KEY='bvt-practice-random-progress-v2-';
+const practiceRandomBagCache=new Map();
+function practiceRandomWordKey(row){return String(row?.[0]||'').normalize('NFKC').replace(/\s+/g,'').trim();}
+function shufflePracticeWordKeys(keys){const copy=keys.slice();for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}return copy;}
+function buildPracticeRandomOrder(pool,keys){
+ const common=new Set(pool.filter(row=>/^HSK[123]$/.test(String(row[4]||''))).map(practiceRandomWordKey));
+ const commonKeys=keys.filter(key=>common.has(key));
+ const extendedKeys=keys.filter(key=>!common.has(key));
+ // Present the vetted HSK seed vocabulary first, then continue into the full dictionary pool.
+ return shufflePracticeWordKeys(commonKeys).concat(shufflePracticeWordKeys(extendedKeys));
+}
+function practicePoolSignature(keys){let hash=2166136261;for(const key of keys){const value=key+'|';for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,16777619);}}return keys.length+'-'+(hash>>>0).toString(36);}
+function practiceStorageGet(key){try{return JSON.parse(localStorage.getItem(key)||'null');}catch(_){return null;}}
+function savePracticeRandomBag(bag,writeOrder=false){
+ try{
+  if(writeOrder)localStorage.setItem(PRACTICE_RANDOM_ORDER_KEY+bag.length,JSON.stringify({version:2,signature:bag.signature,order:bag.order,cycle:bag.cycle}));
+  localStorage.setItem(PRACTICE_RANDOM_PROGRESS_KEY+bag.length,JSON.stringify({version:2,signature:bag.signature,index:bag.index,last:bag.last,cycle:bag.cycle}));
+ }catch(_){/* Keep the current no-repeat order in memory if browser storage is unavailable. */}
+}
+function avoidPracticeBoundaryRepeat(order,last){
+ if(last&&order.length>1&&order[0]===last){const j=1+Math.floor(Math.random()*(order.length-1));[order[0],order[j]]=[order[j],order[0]];}
+ return order;
+}
+function getPracticeRandomBag(pool){
+ const lengthKey=String(practiceWordLength);
+ const cached=practiceRandomBagCache.get(lengthKey);
+ // The pool array is cached until the dictionary or selected length changes. Reuse its bag directly on each question.
+ if(cached&&cached.poolRef===pool)return cached;
+ const byKey=new Map();for(const row of pool){const key=practiceRandomWordKey(row);if(key&&!byKey.has(key))byKey.set(key,row);}
+ const keys=[...byKey.keys()];
+ const signature=practicePoolSignature(keys);
+ const orderKey=PRACTICE_RANDOM_ORDER_KEY+lengthKey;
+ const progressKey=PRACTICE_RANDOM_PROGRESS_KEY+lengthKey;
+ const savedOrder=practiceStorageGet(orderKey);
+ const savedProgress=practiceStorageGet(progressKey);
+ const valid=new Set(keys);
+ let order=null,index=0,last='',cycle=1;
+ const savedOrderLooksValid=savedOrder&&savedOrder.version===2&&Array.isArray(savedOrder.order)&&savedOrder.order.length>0&&new Set(savedOrder.order).size===savedOrder.order.length;
+ if(savedOrderLooksValid&&savedProgress&&savedProgress.version===2&&savedProgress.signature===savedOrder.signature){
+  const sourceOrder=savedOrder.order;
+  const sourceSet=new Set(sourceOrder);
+  const oldIndex=Math.max(0,Math.min(sourceOrder.length,Math.floor(Number(savedProgress.index)||0)));
+  const oldLast=String(savedProgress.last||'');
+  const savedCycle=Math.max(1,Math.floor(Number(savedProgress.cycle||savedOrder.cycle)||1));
+  if(savedOrder.signature===signature&&sourceOrder.length===keys.length&&sourceOrder.every(k=>valid.has(k))){
+   order=sourceOrder.slice();index=oldIndex;last=valid.has(oldLast)?oldLast:'';cycle=savedCycle;
+  }else if(sourceOrder.every(k=>valid.has(k))){
+   // Dictionary grows after the quick startup seed: keep already-seen words spent and append only new ones.
+   const remainingOld=sourceOrder.slice(oldIndex);
+   const added=keys.filter(k=>!sourceSet.has(k));
+   order=avoidPracticeBoundaryRepeat(remainingOld.concat(buildPracticeRandomOrder(pool,added)),oldLast);
+   index=0;last=valid.has(oldLast)?oldLast:'';cycle=savedCycle;
+  }
+ }
+ // In-memory migration also covers browsers where localStorage is unavailable.
+ if(!order&&cached&&Array.isArray(cached.order)&&cached.order.every(k=>valid.has(k))){
+  const oldSet=new Set(cached.order);
+  const remainingOld=cached.order.slice(cached.index);
+  const added=keys.filter(k=>!oldSet.has(k));
+  order=avoidPracticeBoundaryRepeat(remainingOld.concat(buildPracticeRandomOrder(pool,added)),cached.last);
+  index=0;last=valid.has(cached.last)?cached.last:'';cycle=cached.cycle||1;
+ }
+ if(!order){order=buildPracticeRandomOrder(pool,keys);index=0;last='';cycle=1;}
+ const bag={length:lengthKey,signature,byKey,keys,order,index,last,cycle,poolRef:pool};
+ practiceRandomBagCache.set(lengthKey,bag);
+ savePracticeRandomBag(bag,true);
+ return bag;
+}
+function refillPracticeRandomBag(bag){
+ bag.order=avoidPracticeBoundaryRepeat(buildPracticeRandomOrder([...bag.byKey.values()],bag.keys),bag.last);
+ bag.index=0;bag.cycle++;
+ savePracticeRandomBag(bag,true);
+}
+function markPracticeRandomWordUsed(row){
+ const pool=practicePool();if(!pool.length)return;
+ const bag=getPracticeRandomBag(pool);const key=practiceRandomWordKey(row);if(!bag.byKey.has(key))return;
+ const found=bag.order.indexOf(key,bag.index);
+ if(found>=bag.index){[bag.order[bag.index],bag.order[found]]=[bag.order[found],bag.order[bag.index]];bag.index++;}
+ bag.last=key;savePracticeRandomBag(bag,true);
+}
+function randomPractice(){
+ const pool=practicePool();if(!pool.length)return null;
+ const bag=getPracticeRandomBag(pool);
+ if(!bag.keys.length)return null;
+ if(bag.index>=bag.order.length)refillPracticeRandomBag(bag);
+ const key=bag.order[bag.index++];
+ bag.last=key;savePracticeRandomBag(bag,false);
+ return bag.byKey.get(key)||null;
+}
 function loadPractice(){
  resetPracticeStrokeQuiz();$('practice-back').hidden=practiceReturnTab!=='combine';practiceChecked=false;$('practice-result').hidden=true;$('next-question').hidden=true;$('submit-answer').hidden=false;$('submit-answer').disabled=false;$('user-answer').value='';
  updateModeButtons();
@@ -2570,18 +2693,21 @@ function loadPractice(){
  }else if(practiceMode==='write'&&!forcedPracticeRow){
   currentPractice=null;$('practice-progress').textContent='';$('practice-question').textContent='';$('practice-subtext').textContent='';$('user-answer').placeholder='';
  }else{
-  const row=forcedPracticeRow||randomPractice();forcedPracticeRow=null;currentPractice={type:'word',row:row,sentence:null};$('practice-level').textContent='';$('practice-progress').textContent=`Câu ${practiceIndex+1}`;
-  if(practiceMode==='vi-zh'){$('practice-question').textContent=row[3];$('practice-subtext').textContent='';}
-  else{$('practice-question').textContent=row[0];$('practice-subtext').textContent='Pinyin: '+row[2];}
+  const selectedPracticeRow=forcedPracticeRow;const row=selectedPracticeRow||randomPractice();if(selectedPracticeRow&&(practiceMode==='vi-zh'||practiceMode==='zh-vi'))markPracticeRandomWordUsed(row);forcedPracticeRow=null;
+  if(row){currentPractice={type:'word',row:row,sentence:null};$('practice-level').textContent='';$('practice-progress').textContent=`Câu ${practiceIndex+1}`;
+   if(practiceMode==='vi-zh'){$('practice-question').textContent=row[3];$('practice-subtext').textContent='';}
+   else{$('practice-question').textContent=row[0];$('practice-subtext').textContent='Pinyin: '+row[2];}
+  }else{currentPractice=null;$('practice-level').textContent='';$('practice-progress').textContent='';$('practice-question').textContent='Đang nạp dữ liệu từ vựng phù hợp…';$('practice-subtext').textContent='Hãy đợi từ điển tích hợp nạp xong rồi đổi câu hỏi.';}
  }
  updateModeButtons();
+ updatePracticeLengthFilter();
  const qSpeak=$('practice-question-speak');
  if(qSpeak){const zhMode=practiceMode==='zh-vi'||practiceMode==='read';qSpeak.title=zhMode?'🔊 Nghe câu tiếng Trung':'🔊 Nghe câu tiếng Việt';qSpeak.setAttribute('aria-label',qSpeak.title);qSpeak.hidden=practiceMode==='read';qSpeak.style.display=practiceMode==='read'?'none':'';}
  renderWriteTargetDisplay();
  renderReadTargetDisplay();
  if(practiceMode==='read'){$('answer-label').textContent='Câu trả lời';}
  $('session-score').textContent=`Điểm: ${sessionCorrect}/${sessionDone}`;$('progress-fill').style.width=(sessionDone?Math.round(sessionCorrect/sessionDone*100):0)+'%';
- const hasReadTarget=!!(currentPractice?.sentence?.zh&&practiceMode==='read');$('mic-btn').disabled=!hasReadTarget;$('user-answer').disabled=practiceMode==='read'&&!hasReadTarget;$('submit-answer').disabled=practiceMode==='read'&&!hasReadTarget;
+ const hasReadTarget=!!(currentPractice?.sentence?.zh&&practiceMode==='read');$('mic-btn').disabled=!hasReadTarget;$('user-answer').disabled=(practiceMode==='read'&&!hasReadTarget)||((practiceMode==='vi-zh'||practiceMode==='zh-vi')&&!currentPractice);$('submit-answer').disabled=(practiceMode==='read'&&!hasReadTarget)||((practiceMode==='vi-zh'||practiceMode==='zh-vi')&&!currentPractice);
  if(practiceMode==='write'){preparePracticeWriting();}else{traceChar='';practiceTraceChar='';clearCanvas();}
  // Menu 5 reads its Vietnamese prompt; menu 6 reads its Chinese prompt.
  // Menus 7 and 8 read the selected Chinese word/sentence immediately after selection.
