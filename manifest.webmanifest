@@ -1,7 +1,7 @@
 {
-  "name": "HỌC TIẾNG TRUNG BVT · V42.7",
-  "short_name": "Học Tiếng Trung BVT",
-  "description": "Từ điển Trung–Việt, dịch nhanh, luyện tập, dịch hình ảnh và giọng nói đa ngôn ngữ.",
+  "name": "HỌC TIẾNG TRUNG BVT · V42.7.1",
+  "short_name": "HỌC TIẾNG TRUNG",
+  "description": "Từ điển Trung–Việt và công cụ dịch đa ngôn ngữ bằng hình ảnh, giọng nói.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

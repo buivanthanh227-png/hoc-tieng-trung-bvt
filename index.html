@@ -1065,38 +1065,47 @@
 
 
 <style id="v427-multilingual-menu-style">
-/* v42.7: isolated styles for the two new multilingual tools; menus 1–13 are untouched. */
-.app-shell #main-tabs .tab[data-tab="multilingual-image"]{--menu-color:#A21CAF}
-.app-shell #main-tabs .tab[data-tab="multilingual-voice"]{--menu-color:#1E3A8A}
+/* v42.7.1: muted colours and compact responsive controls for the two added tools only. */
+.app-shell #main-tabs .tab[data-tab="multilingual-image"]{--menu-color:#75699A!important}
+.app-shell #main-tabs .tab[data-tab="multilingual-voice"]{--menu-color:#62769A!important}
 #panel-multilingual-image,#panel-multilingual-voice{max-width:940px;margin-left:auto;margin-right:auto;min-width:0}
-#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:clamp(12px,2vw,18px);margin-bottom:12px;min-width:0}
-#panel-multilingual-image .ml-heading[data-function-number]::before,
-#panel-multilingual-voice .ml-heading[data-function-number]::before{content:attr(data-function-number);display:inline-grid;place-items:center;min-width:27px;height:27px;padding:0 5px;margin-right:8px;border-radius:8px;background:var(--ml-accent);color:#fff;font-size:14px;font-weight:900;vertical-align:middle}
-#panel-multilingual-image .ml-heading{--ml-accent:#A21CAF}
-#panel-multilingual-voice .ml-heading{--ml-accent:#1E3A8A}
+#panel-multilingual-image{--ml-accent:#75699A}
+#panel-multilingual-voice{--ml-accent:#62769A}
+#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:clamp(11px,1.6vw,16px);margin-bottom:10px;min-width:0}
+#panel-multilingual-image .ml-heading,#panel-multilingual-voice .ml-heading{display:flex;align-items:center;gap:8px;background:var(--ml-accent);color:#fff!important;border-radius:10px;padding:8px 11px!important;margin:0 0 12px!important;font-size:clamp(14px,1.4vw,17px)!important;line-height:1.25}
+#panel-multilingual-image .ml-heading[data-function-number]::before,#panel-multilingual-voice .ml-heading[data-function-number]::before{content:attr(data-function-number);display:inline-grid;place-items:center;flex:0 0 27px;width:27px;height:27px;border-radius:8px;background:#ffffff24;border:1px solid #ffffff70;color:#fff;font-size:14px;font-weight:900;vertical-align:middle}
 .ml-language-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
-.ml-language-field{display:flex;flex-direction:column;gap:5px;min-width:0}
-.ml-language-field label{font-size:12px;font-weight:800;color:var(--ink)}
-.ml-language-field select{min-width:0;width:100%;min-height:44px;border:1px solid var(--line);border-radius:11px;background:#fff;padding:9px 11px;font-size:14px;color:var(--ink)}
-.ml-action-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.ml-action-row>.btn,.ml-action-row>label.btn{flex:1 1 170px;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center}
+.ml-language-field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.ml-language-field label,.ml-text-label{font-size:11px;font-weight:850;color:var(--ink);line-height:1.25}
+.ml-language-field select{min-width:0;width:100%;min-height:36px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:6px 9px;font-size:13px;line-height:1.2;color:var(--ink)}
+.ml-lang-search{width:100%;min-width:0;min-height:31px!important;height:31px!important;padding:5px 8px!important;border:1px solid var(--line)!important;border-radius:8px!important;background:#fff!important;color:var(--ink)!important;font-size:12px!important;line-height:1.2!important}
+.ml-action-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px}
+.ml-action-row>.btn,.ml-action-row>label.btn{flex:1 1 145px;min-height:38px;display:flex;align-items:center;justify-content:center;text-align:center;padding:7px 10px;font-size:12px;line-height:1.2;border-radius:9px}
+#panel-multilingual-image .ml-primary,#panel-multilingual-voice .ml-primary{background:#75699A!important;color:#fff!important;border-color:#75699A!important}
+#panel-multilingual-voice .ml-primary{background:#62769A!important;border-color:#62769A!important}
+#panel-multilingual-image button,#panel-multilingual-voice button{font-weight:800}
+#panel-multilingual-image .ml-icon-btn,#panel-multilingual-voice .ml-icon-btn{min-height:32px;padding:5px 9px;border:0;border-radius:8px;background:var(--ml-accent);color:#fff!important;font-size:12px}
 .ml-file-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-.ml-image-preview{display:flex;gap:8px;overflow-x:auto;padding:4px 1px 8px;margin-top:9px}
-.ml-image-preview figure{position:relative;flex:0 0 78px;width:78px;height:78px;margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f8fafc}
+.ml-image-preview{display:flex;gap:8px;overflow-x:auto;padding:4px 1px 7px;margin-top:8px}
+.ml-image-preview figure{position:relative;flex:0 0 68px;width:68px;height:68px;margin:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#f8fafc}
 .ml-image-preview img{width:100%;height:100%;object-fit:cover}
-.ml-image-preview button{position:absolute;right:3px;top:3px;width:23px;height:23px;border:0;border-radius:50%;background:#111827d9;color:#fff;font-weight:900}
-.ml-text-label{display:block;margin:11px 0 5px;font-size:12px;font-weight:850;color:var(--ink)}
-.ml-textarea{width:100%;min-height:92px;max-height:280px;resize:vertical;font-size:14px;line-height:1.5}
-.ml-output{white-space:pre-wrap;overflow-wrap:anywhere;min-height:60px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:15px;line-height:1.6;color:var(--ink)}
-.ml-output-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:8px}
-.ml-output-actions .btn{min-height:35px;padding:6px 10px}
-.ml-status{min-height:20px;margin:8px 0 0;font-size:12px;line-height:1.4;color:var(--muted)}
-.ml-voice-mic{width:100%;min-height:76px;border:0;border-radius:15px;background:linear-gradient(135deg,#1E3A8A,#172554);color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 4px 13px #1e3a8a30}
-.ml-voice-mic .ml-mic-icon{font-size:25px}
+.ml-image-preview button{position:absolute;right:3px;top:3px;width:22px;height:22px;border:0;border-radius:50%;background:#111827d9;color:#fff;font-weight:900}
+.ml-text-label{display:block;margin:10px 0 5px}
+.ml-textarea{width:100%;min-height:72px;max-height:240px;resize:vertical;font-size:14px;line-height:1.45}
+.ml-recognition-actions{display:flex;gap:6px;justify-content:flex-end;align-items:center;margin:0 0 5px}
+.ml-recognition-actions .ml-icon-btn{min-width:36px}
+.ml-output{white-space:pre-wrap;overflow-wrap:anywhere;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:14px;line-height:1.55;color:var(--ink)}
+.ml-output-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}
+.ml-output-actions .btn{min-height:32px;padding:5px 9px}
+.ml-result-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.ml-result-head>b{font-size:13px}
+.ml-status{min-height:17px;margin:7px 0 0;font-size:11px;line-height:1.35;color:var(--muted)}
+.ml-voice-mic{display:flex;width:min(100%,270px);min-height:49px;margin:11px auto 8px;padding:8px 16px;border:0;border-radius:11px;background:#62769A;color:#fff!important;font-size:14px;font-weight:900;align-items:center;justify-content:center;gap:9px;box-shadow:0 3px 9px #33415520}
+.ml-voice-mic .ml-mic-icon{font-size:20px}
 .ml-voice-mic.recording{background:linear-gradient(135deg,#b91c1c,#7f1d1d);animation:mlVoicePulse 1.2s infinite}
-@keyframes mlVoicePulse{0%,100%{box-shadow:0 0 0 0 #b91c1c20}50%{box-shadow:0 0 0 8px #b91c1c12}}
-@media(max-width:620px){.ml-language-grid{grid-template-columns:1fr}.ml-action-row{gap:7px}.ml-action-row>.btn,.ml-action-row>label.btn{flex-basis:100%}#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:12px}}
-@media(min-width:621px) and (max-width:950px){#panel-multilingual-image,#panel-multilingual-voice{max-width:100%}.ml-language-grid{gap:12px}}
+@keyframes mlVoicePulse{0%,100%{box-shadow:0 0 0 0 #b91c1c20}50%{box-shadow:0 0 0 7px #b91c1c12}}
+@media(max-width:620px){.ml-language-grid{grid-template-columns:1fr;gap:8px}.ml-action-row{gap:6px}.ml-action-row>.btn,.ml-action-row>label.btn{flex:1 1 calc(50% - 6px);min-height:36px;font-size:11.5px}#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:10px}.ml-voice-mic{min-height:46px}}
+@media(min-width:621px) and (max-width:950px){#panel-multilingual-image,#panel-multilingual-voice{max-width:100%}.ml-language-grid{gap:9px}}
 </style>
 </head>
 <body>
@@ -1126,7 +1135,7 @@
 <button class="tab" data-tab="radicals" type="button"><span class="tab-number" aria-hidden="true">12</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">部</span><span class="tab-label">DANH SÁCH BỘ THỦ</span></span></button>
 <button class="tab" data-tab="library" type="button"><span class="tab-number" aria-hidden="true">13</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🗂️</span><span class="tab-label">TÀI LIỆU CỦA BẠN</span></span></button>
 <button class="tab" data-tab="multilingual-image" type="button"><span class="tab-number" aria-hidden="true">14</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🌐</span><span class="tab-label">DỊCH HÌNH ẢNH ĐA NGÔN NGỮ</span></span></button>
-<button class="tab" data-tab="multilingual-voice" type="button"><span class="tab-number" aria-hidden="true">15</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🎧</span><span class="tab-label">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</span></span></button>
+<button class="tab" data-tab="multilingual-voice" type="button"><span class="tab-number" aria-hidden="true">15</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🗣️</span><span class="tab-label">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</span></span></button>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
@@ -1441,22 +1450,22 @@
  <div class="card ml-card">
   <h2 class="section-title ml-heading" data-function-number="14">DỊCH HÌNH ẢNH ĐA NGÔN NGỮ</h2>
   <div class="ml-language-grid">
-   <div class="ml-language-field"><label for="bvt-mi-source">NGÔN NGỮ TRONG ẢNH</label><select id="bvt-mi-source" class="field"><option value="auto">TỰ ĐỘNG NHẬN DIỆN</option><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
-   <div class="ml-language-field"><label for="bvt-mi-target">DỊCH SANG</label><select id="bvt-mi-target" class="field"><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
+   <div class="ml-language-field"><label for="bvt-mi-source">NGÔN NGỮ TRONG ẢNH</label><input id="bvt-mi-source-search" class="field ml-lang-search" type="search" placeholder="⌕ TÌM NGÔN NGỮ..." autocomplete="off" aria-label="Tìm ngôn ngữ trong ảnh"><select id="bvt-mi-source" class="field" aria-label="Ngôn ngữ trong ảnh"></select></div>
+   <div class="ml-language-field"><label for="bvt-mi-target">DỊCH SANG</label><input id="bvt-mi-target-search" class="field ml-lang-search" type="search" placeholder="⌕ TÌM NGÔN NGỮ..." autocomplete="off" aria-label="Tìm ngôn ngữ đích"><select id="bvt-mi-target" class="field" aria-label="Ngôn ngữ đích"></select></div>
   </div>
   <div class="ml-action-row">
-   <label class="btn" for="bvt-mi-camera">📷 CHỤP ẢNH</label><input id="bvt-mi-camera" class="ml-file-input" type="file" accept="image/*" capture="environment">
-   <label class="btn secondary" for="bvt-mi-upload">🖼️ TẢI ẢNH LÊN</label><input id="bvt-mi-upload" class="ml-file-input" type="file" accept="image/*" multiple>
+   <label class="btn ml-primary" for="bvt-mi-camera">📷 CHỤP ẢNH</label><input id="bvt-mi-camera" class="ml-file-input" type="file" accept="image/*" capture="environment">
+   <label class="btn" for="bvt-mi-upload">🖼️ TẢI ẢNH LÊN</label><input id="bvt-mi-upload" class="ml-file-input" type="file" accept="image/*" multiple>
   </div>
   <div id="bvt-mi-preview" class="ml-image-preview" hidden></div>
-  <div class="ml-action-row"><button id="bvt-mi-scan" class="btn" type="button" disabled>🔎 NHẬN DIỆN ẢNH</button><button id="bvt-mi-clear" class="btn secondary" type="button" disabled>✕ XÓA</button></div>
-  <label class="ml-text-label" for="bvt-mi-text">VĂN BẢN NHẬN DIỆN</label>
-  <textarea id="bvt-mi-text" class="field ml-textarea" rows="3" placeholder="Văn bản từ hình ảnh sẽ hiển thị tại đây."></textarea>
-  <div class="ml-action-row"><button id="bvt-mi-translate" class="btn" type="button" disabled>DỊCH VĂN BẢN</button></div>
+  <div class="ml-action-row"><button id="bvt-mi-scan" class="btn ml-primary" type="button" disabled>🔎 NHẬN DIỆN ẢNH</button><button id="bvt-mi-clear" class="btn secondary" type="button" disabled>✕ XÓA ẢNH</button></div>
+  <label class="ml-text-label" for="bvt-mi-text">NỘI DUNG NHẬN DIỆN</label>
+  <div class="ml-recognition-actions"><button id="bvt-mi-text-speak" class="ml-icon-btn" type="button" title="Phát âm nội dung nhận diện" aria-label="Phát âm nội dung nhận diện">🔊</button><button id="bvt-mi-text-copy" class="ml-icon-btn" type="button" title="Sao chép nội dung nhận diện" aria-label="Sao chép nội dung nhận diện">📋</button><button id="bvt-mi-text-clear" class="ml-icon-btn" type="button" title="Xóa nội dung nhận diện" aria-label="Xóa nội dung nhận diện">✕</button></div>
+  <textarea id="bvt-mi-text" class="field ml-textarea" rows="3" placeholder=""></textarea>
   <p id="bvt-mi-status" class="ml-status" role="status" aria-live="polite">Sẵn sàng.</p>
  </div>
  <div class="card ml-card">
-  <div class="row between"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mi-speak" class="btn secondary tiny" type="button" title="Đọc kết quả">🔊</button><button id="bvt-mi-copy" class="btn secondary tiny" type="button">📋 SAO CHÉP</button></div></div>
+  <div class="ml-result-head"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mi-speak" class="ml-icon-btn" type="button" title="Đọc kết quả" aria-label="Đọc kết quả">🔊</button><button id="bvt-mi-copy" class="ml-icon-btn" type="button" title="Sao chép kết quả" aria-label="Sao chép kết quả">📋</button></div></div>
   <div id="bvt-mi-result" class="ml-output" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
  </div>
 </section>
@@ -1464,23 +1473,23 @@
  <div class="card ml-card">
   <h2 class="section-title ml-heading" data-function-number="15">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</h2>
   <div class="ml-language-grid">
-   <div class="ml-language-field"><label for="bvt-mv-source">NGÔN NGỮ BẠN NÓI</label><select id="bvt-mv-source" class="field"><option value="auto">TỰ ĐỘNG NHẬN DIỆN</option><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
-   <div class="ml-language-field"><label for="bvt-mv-target">DỊCH SANG</label><select id="bvt-mv-target" class="field"><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
+   <div class="ml-language-field"><label for="bvt-mv-source">NGÔN NGỮ BẠN NÓI</label><input id="bvt-mv-source-search" class="field ml-lang-search" type="search" placeholder="⌕ TÌM NGÔN NGỮ..." autocomplete="off" aria-label="Tìm ngôn ngữ giọng nói"><select id="bvt-mv-source" class="field" aria-label="Ngôn ngữ bạn nói"></select></div>
+   <div class="ml-language-field"><label for="bvt-mv-target">DỊCH SANG</label><input id="bvt-mv-target-search" class="field ml-lang-search" type="search" placeholder="⌕ TÌM NGÔN NGỮ..." autocomplete="off" aria-label="Tìm ngôn ngữ đích"><select id="bvt-mv-target" class="field" aria-label="Ngôn ngữ đích"></select></div>
   </div>
   <button id="bvt-mv-mic" class="ml-voice-mic" type="button" aria-pressed="false"><span class="ml-mic-icon">🎙️</span><span id="bvt-mv-mic-label">BẮT ĐẦU NÓI</span></button>
   <p id="bvt-mv-status" class="ml-status" role="status" aria-live="polite">Sẵn sàng.</p>
   <label class="ml-text-label" for="bvt-mv-text">NỘI DUNG NHẬN DIỆN</label>
-  <textarea id="bvt-mv-text" class="field ml-textarea" rows="3" placeholder="Nội dung giọng nói sẽ hiển thị tại đây."></textarea>
-  <div class="ml-action-row"><button id="bvt-mv-translate" class="btn" type="button" disabled>DỊCH VĂN BẢN</button></div>
+  <div class="ml-recognition-actions"><button id="bvt-mv-text-speak" class="ml-icon-btn" type="button" title="Phát âm nội dung nhận diện" aria-label="Phát âm nội dung nhận diện">🔊</button><button id="bvt-mv-text-copy" class="ml-icon-btn" type="button" title="Sao chép nội dung nhận diện" aria-label="Sao chép nội dung nhận diện">📋</button><button id="bvt-mv-text-clear" class="ml-icon-btn" type="button" title="Xóa nội dung nhận diện" aria-label="Xóa nội dung nhận diện">✕</button></div>
+  <textarea id="bvt-mv-text" class="field ml-textarea" rows="3" placeholder=""></textarea>
  </div>
  <div class="card ml-card">
-  <div class="row between"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mv-speak" class="btn secondary tiny" type="button" title="Đọc kết quả">🔊</button><button id="bvt-mv-copy" class="btn secondary tiny" type="button">📋 SAO CHÉP</button></div></div>
+  <div class="ml-result-head"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mv-speak" class="ml-icon-btn" type="button" title="Đọc kết quả" aria-label="Đọc kết quả">🔊</button><button id="bvt-mv-copy" class="ml-icon-btn" type="button" title="Sao chép kết quả" aria-label="Sao chép kết quả">📋</button></div></div>
   <div id="bvt-mv-result" class="ml-output" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
  </div>
 </section>
 </main>
 </div><!-- /.app-shell -->
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.7</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.7.1</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button id="back-to-top" type="button" aria-label="Về đầu trang" title="Về đầu trang">↑</button>
 <div id="stroke-modal" class="stroke-modal" hidden>
@@ -1569,7 +1578,7 @@ const BVT_FUNCTION_COLORS = {
  combine:{main:'#D4E157',alt:'#99A23F'}, 'vocab-training':{main:'#A1887F',alt:'#74625B'},
  number:{main:'#4DD0E1',alt:'#3796A2'}, radicals:{main:'#9575CD',alt:'#6B5494'},
  library:{main:'#90A4AE',alt:'#68767D'},
- 'multilingual-image':{main:'#A21CAF',alt:'#701A75'}, 'multilingual-voice':{main:'#1E3A8A',alt:'#172554'}
+ 'multilingual-image':{main:'#75699A',alt:'#625783'}, 'multilingual-voice':{main:'#62769A',alt:'#506482'}
 };
 let combineScope = 'common';
 let selectedCombine = new Map();
@@ -5274,169 +5283,286 @@ switchTab=function(tab){if(tab!=='vocab-training'&&vocabTrainingRunning)stopVoca
 // Offline app shell caching is available when hosted on HTTPS (not when opened as a file:// URL).
 if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
 
-/* v42.7: standalone multilingual image and voice translation. Menus 1–13 handlers remain unchanged. */
+/* v42.7.1: isolated multilingual menus 14–15. Menus 1–13 remain unchanged. */
 const BVT_ML_TRANSLATE_ENDPOINT = 'https://bvt-asr.buivanthanh227.workers.dev/translate';
 const BVT_ML_OCR_ENDPOINT = 'https://bvt-ocr.buivanthanh227.workers.dev/ocr';
-const BVT_ML_LANGUAGES = Object.freeze({
- vi:{name:'TIẾNG VIỆT',locale:'vi-VN'}, zh:{name:'TIẾNG TRUNG',locale:'zh-CN'}, en:{name:'TIẾNG ANH',locale:'en-US'},
- ja:{name:'TIẾNG NHẬT',locale:'ja-JP'}, ko:{name:'TIẾNG HÀN',locale:'ko-KR'}, th:{name:'TIẾNG THÁI',locale:'th-TH'},
- fr:{name:'TIẾNG PHÁP',locale:'fr-FR'}, de:{name:'TIẾNG ĐỨC',locale:'de-DE'}, es:{name:'TIẾNG TÂY BAN NHA',locale:'es-ES'},
- it:{name:'TIẾNG Ý',locale:'it-IT'}, pt:{name:'TIẾNG BỒ ĐÀO NHA',locale:'pt-PT'}, ru:{name:'TIẾNG NGA',locale:'ru-RU'},
- id:{name:'TIẾNG INDONESIA',locale:'id-ID'}, ms:{name:'TIẾNG MALAY',locale:'ms-MY'}, hi:{name:'TIẾNG HINDI',locale:'hi-IN'}, ar:{name:'TIẾNG Ả RẬP',locale:'ar-SA'}
-});
+const BVT_ML_LANGUAGE_ROWS = Object.freeze([{"code":"af","api":"afrikaans","name":"TIẾNG AFRIKAANS","locale":"af-ZA"},{"code":"am","api":"amharic","name":"TIẾNG AMHARA","locale":"am-ET"},{"code":"ar","api":"arabic","name":"TIẾNG Ả RẬP","locale":"ar-SA"},{"code":"ast","api":"asturian","name":"TIẾNG ASTURIAN","locale":"ast-ES"},{"code":"az","api":"azerbaijani","name":"TIẾNG AZERBAIJAN","locale":"az-AZ"},{"code":"ba","api":"bashkir","name":"TIẾNG BASHKIR","locale":"ba-RU"},{"code":"be","api":"belarusian","name":"TIẾNG BELARUS","locale":"be-BY"},{"code":"bg","api":"bulgarian","name":"TIẾNG BULGARIA","locale":"bg-BG"},{"code":"bn","api":"bengali","name":"TIẾNG BENGALI","locale":"bn-BD"},{"code":"br","api":"breton","name":"TIẾNG BRETON","locale":"br-FR"},{"code":"bs","api":"bosnian","name":"TIẾNG BOSNIA","locale":"bs-BA"},{"code":"ca","api":"catalan","name":"TIẾNG CATALAN","locale":"ca-ES"},{"code":"ceb","api":"cebuano","name":"TIẾNG CEBUANO","locale":"ceb-PH"},{"code":"cs","api":"czech","name":"TIẾNG SÉC","locale":"cs-CZ"},{"code":"cy","api":"welsh","name":"TIẾNG WALES","locale":"cy-GB"},{"code":"da","api":"danish","name":"TIẾNG ĐAN MẠCH","locale":"da-DK"},{"code":"de","api":"german","name":"TIẾNG ĐỨC","locale":"de-DE"},{"code":"el","api":"greek","name":"TIẾNG HY LẠP","locale":"el-GR"},{"code":"en","api":"english","name":"TIẾNG ANH","locale":"en-US"},{"code":"es","api":"spanish","name":"TIẾNG TÂY BAN NHA","locale":"es-ES"},{"code":"et","api":"estonian","name":"TIẾNG ESTONIA","locale":"et-EE"},{"code":"fa","api":"persian","name":"TIẾNG BA TƯ","locale":"fa-IR"},{"code":"ff","api":"fulah","name":"TIẾNG FULAH","locale":"ff-SN"},{"code":"fi","api":"finnish","name":"TIẾNG PHẦN LAN","locale":"fi-FI"},{"code":"fr","api":"french","name":"TIẾNG PHÁP","locale":"fr-FR"},{"code":"fy","api":"western frisian","name":"TIẾNG FRISIAN TÂY","locale":"fy-NL"},{"code":"ga","api":"irish","name":"TIẾNG IRELAND","locale":"ga-IE"},{"code":"gd","api":"scottish gaelic","name":"TIẾNG GAELIC SCOTLAND","locale":"gd-GB"},{"code":"gl","api":"galician","name":"TIẾNG GALICIA","locale":"gl-ES"},{"code":"gu","api":"gujarati","name":"TIẾNG GUJARATI","locale":"gu-IN"},{"code":"ha","api":"hausa","name":"TIẾNG HAUSA","locale":"ha-NG"},{"code":"he","api":"hebrew","name":"TIẾNG HEBREW","locale":"he-IL"},{"code":"hi","api":"hindi","name":"TIẾNG HINDI","locale":"hi-IN"},{"code":"hr","api":"croatian","name":"TIẾNG CROATIA","locale":"hr-HR"},{"code":"ht","api":"haitian creole","name":"TIẾNG CREOLE HAITI","locale":"ht-HT"},{"code":"hu","api":"hungarian","name":"TIẾNG HUNGARY","locale":"hu-HU"},{"code":"hy","api":"armenian","name":"TIẾNG ARMENIA","locale":"hy-AM"},{"code":"id","api":"indonesian","name":"TIẾNG INDONESIA","locale":"id-ID"},{"code":"ig","api":"igbo","name":"TIẾNG IGBO","locale":"ig-NG"},{"code":"ilo","api":"iloko","name":"TIẾNG ILOKO","locale":"ilo-PH"},{"code":"is","api":"icelandic","name":"TIẾNG ICELAND","locale":"is-IS"},{"code":"it","api":"italian","name":"TIẾNG Ý","locale":"it-IT"},{"code":"ja","api":"japanese","name":"TIẾNG NHẬT","locale":"ja-JP"},{"code":"jv","api":"javanese","name":"TIẾNG JAVA","locale":"jv-ID"},{"code":"ka","api":"georgian","name":"TIẾNG GEORGIA","locale":"ka-GE"},{"code":"kk","api":"kazakh","name":"TIẾNG KAZAKH","locale":"kk-KZ"},{"code":"km","api":"central khmer","name":"TIẾNG KHMER","locale":"km-KH"},{"code":"kn","api":"kannada","name":"TIẾNG KANNADA","locale":"kn-IN"},{"code":"ko","api":"korean","name":"TIẾNG HÀN","locale":"ko-KR"},{"code":"lb","api":"luxembourgish","name":"TIẾNG LUXEMBOURG","locale":"lb-LU"},{"code":"lg","api":"ganda","name":"TIẾNG GANDA","locale":"lg-UG"},{"code":"ln","api":"lingala","name":"TIẾNG LINGALA","locale":"ln-CD"},{"code":"lo","api":"lao","name":"TIẾNG LÀO","locale":"lo-LA"},{"code":"lt","api":"lithuanian","name":"TIẾNG LITHUANIA","locale":"lt-LT"},{"code":"lv","api":"latvian","name":"TIẾNG LATVIA","locale":"lv-LV"},{"code":"mg","api":"malagasy","name":"TIẾNG MALAGASY","locale":"mg-MG"},{"code":"mk","api":"macedonian","name":"TIẾNG MACEDONIA","locale":"mk-MK"},{"code":"ml","api":"malayalam","name":"TIẾNG MALAYALAM","locale":"ml-IN"},{"code":"mn","api":"mongolian","name":"TIẾNG MÔNG CỔ","locale":"mn-MN"},{"code":"mr","api":"marathi","name":"TIẾNG MARATHI","locale":"mr-IN"},{"code":"ms","api":"malay","name":"TIẾNG MALAY","locale":"ms-MY"},{"code":"my","api":"burmese","name":"TIẾNG MYANMAR","locale":"my-MM"},{"code":"ne","api":"nepali","name":"TIẾNG NEPAL","locale":"ne-NP"},{"code":"nl","api":"dutch","name":"TIẾNG HÀ LAN","locale":"nl-NL"},{"code":"no","api":"norwegian","name":"TIẾNG NA UY","locale":"no-NO"},{"code":"ns","api":"northern sotho","name":"TIẾNG SOTHO PHÍA BẮC","locale":"ns-ZA"},{"code":"oc","api":"occitan","name":"TIẾNG OCCITAN","locale":"oc-FR"},{"code":"or","api":"oriya","name":"TIẾNG ODIA","locale":"or-IN"},{"code":"pa","api":"punjabi","name":"TIẾNG PUNJABI","locale":"pa-IN"},{"code":"pl","api":"polish","name":"TIẾNG BA LAN","locale":"pl-PL"},{"code":"ps","api":"pashto","name":"TIẾNG PASHTO","locale":"ps-AF"},{"code":"pt","api":"portuguese","name":"TIẾNG BỒ ĐÀO NHA","locale":"pt-PT"},{"code":"ro","api":"romanian","name":"TIẾNG ROMANIA","locale":"ro-RO"},{"code":"ru","api":"russian","name":"TIẾNG NGA","locale":"ru-RU"},{"code":"sd","api":"sindhi","name":"TIẾNG SINDHI","locale":"sd-PK"},{"code":"si","api":"sinhala","name":"TIẾNG SINHALA","locale":"si-LK"},{"code":"sk","api":"slovak","name":"TIẾNG SLOVAK","locale":"sk-SK"},{"code":"sl","api":"slovenian","name":"TIẾNG SLOVENIA","locale":"sl-SI"},{"code":"so","api":"somali","name":"TIẾNG SOMALI","locale":"so-SO"},{"code":"sq","api":"albanian","name":"TIẾNG ALBANIA","locale":"sq-AL"},{"code":"sr","api":"serbian","name":"TIẾNG SERBIA","locale":"sr-RS"},{"code":"ss","api":"swati","name":"TIẾNG SWATI","locale":"ss-SZ"},{"code":"su","api":"sundanese","name":"TIẾNG SUNDANESE","locale":"su-ID"},{"code":"sv","api":"swedish","name":"TIẾNG THỤY ĐIỂN","locale":"sv-SE"},{"code":"sw","api":"swahili","name":"TIẾNG SWAHILI","locale":"sw-KE"},{"code":"ta","api":"tamil","name":"TIẾNG TAMIL","locale":"ta-IN"},{"code":"th","api":"thai","name":"TIẾNG THÁI","locale":"th-TH"},{"code":"tl","api":"tagalog","name":"TIẾNG TAGALOG","locale":"tl-PH"},{"code":"tn","api":"tswana","name":"TIẾNG TSWANA","locale":"tn-BW"},{"code":"tr","api":"turkish","name":"TIẾNG THỔ NHĨ KỲ","locale":"tr-TR"},{"code":"uk","api":"ukrainian","name":"TIẾNG UKRAINA","locale":"uk-UA"},{"code":"ur","api":"urdu","name":"TIẾNG URDU","locale":"ur-PK"},{"code":"uz","api":"uzbek","name":"TIẾNG UZBEK","locale":"uz-UZ"},{"code":"vi","api":"vietnamese","name":"TIẾNG VIỆT","locale":"vi-VN"},{"code":"wo","api":"wolof","name":"TIẾNG WOLOF","locale":"wo-SN"},{"code":"xh","api":"xhosa","name":"TIẾNG XHOSA","locale":"xh-ZA"},{"code":"yi","api":"yiddish","name":"TIẾNG YIDDISH","locale":"yi-US"},{"code":"yo","api":"yoruba","name":"TIẾNG YORUBA","locale":"yo-NG"},{"code":"zh","api":"chinese","name":"TIẾNG TRUNG","locale":"zh-CN"},{"code":"zu","api":"zulu","name":"TIẾNG ZULU","locale":"zu-ZA"}]);
+const BVT_ML_LANGUAGES = Object.freeze(Object.fromEntries(BVT_ML_LANGUAGE_ROWS.map(row=>[row.code,row])));
+const BVT_ML_SPEECH_CODES = new Set(["af","am","ar","az","ba","be","bg","bn","br","bs","ca","cs","cy","da","de","el","en","es","et","fa","fi","fr","gl","gu","ha","he","hi","hr","ht","hu","hy","id","is","it","ja","jv","ka","kk","km","kn","ko","lb","ln","lo","lt","lv","mg","mk","ml","mn","mr","ms","my","ne","nl","no","oc","pa","pl","ps","pt","ro","ru","sd","si","sk","sl","so","sq","sr","su","sv","sw","ta","th","tl","tr","uk","ur","uz","vi","yi","yo","zh"]);
+const BVT_ML_STATE = {
+ 'bvt-mi':{sequence:0,timer:null},
+ 'bvt-mv':{sequence:0,timer:null}
+};
+let bvtMlTranslationQueue=Promise.resolve();
+function bvtMlNormalize(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/đ/g,'d');}
 function bvtMlDetectLanguage(value){
- const t=String(value||'').trim(); if(!t)return null;
+ const t=String(value||'').trim();if(!t)return null;
+ // Scripts that identify a language or a narrow group very reliably.
  if(/[\u3040-\u30ff]/u.test(t))return 'ja';
  if(/[\uac00-\ud7af]/u.test(t))return 'ko';
  if(/[\u0e00-\u0e7f]/u.test(t))return 'th';
  if(/[\u0600-\u06ff\u0750-\u077f]/u.test(t))return 'ar';
  if(/[\u0900-\u097f]/u.test(t))return 'hi';
- if(/[\u0400-\u052f]/u.test(t))return 'ru';
+ if(/[\u0980-\u09ff]/u.test(t))return 'bn';
+ if(/[\u0a00-\u0a7f]/u.test(t))return 'pa';
+ if(/[\u0a80-\u0aff]/u.test(t))return 'gu';
+ if(/[\u0b00-\u0b7f]/u.test(t))return 'or';
+ if(/[\u0b80-\u0bff]/u.test(t))return 'ta';
+ if(/[\u0c80-\u0cff]/u.test(t))return 'kn';
+ if(/[\u0d00-\u0d7f]/u.test(t))return 'ml';
+ if(/[\u0d80-\u0dff]/u.test(t))return 'si';
+ if(/[\u0e80-\u0eff]/u.test(t))return 'lo';
+ if(/[\u1000-\u109f]/u.test(t))return 'my';
+ if(/[\u1780-\u17ff]/u.test(t))return 'km';
+ if(/[\u1200-\u137f]/u.test(t))return 'am';
+ if(/[\u0370-\u03ff]/u.test(t))return 'el';
+ if(/[\u0590-\u05ff]/u.test(t))return 'he';
+ if(/[\u0530-\u058f]/u.test(t))return 'hy';
+ if(/[\u10a0-\u10ff]/u.test(t))return 'ka';
  if(/[\u3400-\u9fff\uf900-\ufaff]/u.test(t))return 'zh';
- const lower=' '+t.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ')+' ';
- const has=(words)=>words.some(w=>lower.includes(' '+w+' '));
- if(/[ăâđêôơư]/i.test(t)||has(['xin chào','cảm ơn','không','người','chúng tôi','bạn','tôi','được','tiếng việt']))return 'vi';
- if(/[ßäöü]/i.test(t)||has(['der','die','das','und','ich','nicht','ist','mit','für']))return 'de';
- if(/[ñ¿¡]/i.test(t)||has(['hola','gracias','usted','cómo','para','que','por favor']))return 'es';
- if(/[çœ]/i.test(t)||has(['bonjour','merci','avec','vous','nous','une','des','est','je']))return 'fr';
- if(/[ãõ]/i.test(t)||has(['olá','obrigado','obrigada','você','não','uma','com']))return 'pt';
- if(has(['ciao','grazie','buongiorno','sono','che','per favore','il','gli']))return 'it';
- if(has(['yang','tidak','saya','anda','terima kasih','selamat']))return 'id';
- if(has(['the','and','you','are','what','where','when','how','this','that','is','have','for','with','hello','thank','please','good morning']))return 'en';
+ if(/[\u0400-\u052f]/u.test(t)){
+  if(/[іїєґ]/iu.test(t))return 'uk';
+  if(/[ў]/iu.test(t))return 'be';
+  if(/[јљњћђџ]/iu.test(t))return 'sr';
+  if(/[ёыэ]/iu.test(t))return 'ru';
+  return null; // other Cyrillic languages are not guessed from script alone.
+ }
+ const lower=' '+bvtMlNormalize(t).replace(/[^\p{L}\p{N}]+/gu,' ')+' ';
+ const has=words=>words.some(word=>lower.includes(' '+bvtMlNormalize(word)+' '));
+ if(/[ăâđêôơư]/iu.test(t)||has(['xin chào','cảm ơn','không','người','chúng tôi','bạn','tôi','được','tiếng việt']))return 'vi';
+ if(/[ßäöü]/iu.test(t)||has(['der','die','das','und','ich','nicht','ist','mit','für','guten morgen']))return 'de';
+ if(/[ñ¿¡]/iu.test(t)||has(['hola','gracias','usted','cómo','por favor','buenos días']))return 'es';
+ if(/[çœ]/iu.test(t)||has(['bonjour','merci','avec','vous','nous','une','des','je suis','bonsoir']))return 'fr';
+ if(/[ãõ]/iu.test(t)||has(['olá','obrigado','obrigada','você','não','bom dia']))return 'pt';
+ if(has(['ciao','grazie','buongiorno','sono','per favore','buonasera']))return 'it';
+ if(has(['the','and','you','are','what','where','when','how','this','that','have','with','hello','thank you','please','good morning']))return 'en';
+ if(has(['yang','tidak','terima kasih','selamat pagi','saya','anda']))return null; // Indonesian/Malay overlap: choose manually.
+ if(has(['goedemorgen','dank je','het','een','ik ben']))return 'nl';
+ if(/[ğış]/iu.test(t))return 'tr';
+ if(/[łżźąęćńś]/iu.test(t))return 'pl';
+ if(/[åäö]/iu.test(t)&&has(['och','jag','det','tack']))return 'sv';
+ if(/[æø]/iu.test(t)&&has(['jeg','ikke','god morgen']))return 'da';
  return null;
 }
-async function bvtMlTranslate(text,source,target){
- const value=String(text||'').trim(); if(!value)throw new Error('Chưa có nội dung để dịch.');
- if(value.length>5000)throw new Error('Nội dung quá dài. Hãy chia thành các phần ngắn hơn (tối đa 5.000 ký tự mỗi lượt).');
+function bvtMlPopulateOneSelect(selectId,searchId,kind,allowAuto,allowedCodes,defaultValue){
+ const select=$(selectId),search=$(searchId);if(!select||!search)return;
+ const codes=allowedCodes||Object.keys(BVT_ML_LANGUAGES);
+ const makeOptions=query=>{
+  const q=bvtMlNormalize(query).trim();
+  const rows=codes.map(code=>BVT_ML_LANGUAGES[code]).filter(Boolean).sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+  let filtered=q?rows.filter(row=>[row.name,row.api,row.code].some(value=>bvtMlNormalize(value).includes(q))):rows;
+  const current=select.value;
+  select.replaceChildren();
+  if(allowAuto){const opt=document.createElement('option');opt.value='auto';opt.textContent='TỰ ĐỘNG NHẬN DIỆN';select.append(opt);}
+  // Keep the real selection while filtering, but hide it from the filtered choice list.
+  if(q&&current&&current!=='auto'&&!filtered.some(row=>row.code===current)){
+   const keep=BVT_ML_LANGUAGES[current];if(keep){const opt=document.createElement('option');opt.value=current;opt.textContent=keep.name;opt.hidden=true;opt.disabled=true;select.append(opt);}
+  }
+  if(!filtered.length){const opt=document.createElement('option');opt.value='';opt.textContent='KHÔNG CÓ NGÔN NGỮ PHÙ HỢP';select.append(opt);}
+  filtered.forEach(row=>{const opt=document.createElement('option');opt.value=row.code;opt.textContent=row.name;select.append(opt);});
+  if([...select.options].some(opt=>opt.value===current))select.value=current;
+  else if([...select.options].some(opt=>opt.value===defaultValue))select.value=defaultValue;
+  else select.selectedIndex=0;
+ };
+ select.dataset.defaultValue=defaultValue||'';
+ let queryActive=false,savedSelection=defaultValue||'';
+ makeOptions('');
+ search.addEventListener('input',()=>{
+  const query=search.value;
+  if(query&&!queryActive){savedSelection=select.value;queryActive=true;}
+  if(!query&&queryActive){makeOptions('');if([...select.options].some(opt=>opt.value===savedSelection))select.value=savedSelection;queryActive=false;savedSelection=select.value;return;}
+  makeOptions(query);
+ });
+ select.addEventListener('change',()=>{savedSelection=select.value;search.value='';queryActive=false;makeOptions('');select.value=savedSelection;});
+}
+function bvtMlInitLanguagePickers(){
+ bvtMlPopulateOneSelect('bvt-mi-source','bvt-mi-source-search','source',true,Object.keys(BVT_ML_LANGUAGES),'auto');
+ bvtMlPopulateOneSelect('bvt-mi-target','bvt-mi-target-search','target',false,Object.keys(BVT_ML_LANGUAGES),'vi');
+ bvtMlPopulateOneSelect('bvt-mv-source','bvt-mv-source-search','source',true,[...BVT_ML_SPEECH_CODES],'auto');
+ bvtMlPopulateOneSelect('bvt-mv-target','bvt-mv-target-search','target',false,Object.keys(BVT_ML_LANGUAGES),'vi');
+}
+function bvtMlSelectedSource(prefix,text){
+ const chosen=$(prefix+'-source')?.value||'auto';
+ return chosen==='auto'?bvtMlDetectLanguage(text):chosen;
+}
+function bvtMlLanguageName(code){return BVT_ML_LANGUAGES[code]?.name||'NGÔN NGỮ CHƯA XÁC ĐỊNH';}
+async function bvtMlTranslateNow(text,source,target,isCurrent){
+ const value=String(text||'').trim();if(!value)throw new Error('Chưa có nội dung để dịch.');
+ if(value.length>5000)throw new Error('Nội dung vượt giới hạn 5.000 ký tự mỗi lượt.');
  const actualSource=source==='auto'?bvtMlDetectLanguage(value):source;
- if(!actualSource)throw new Error('Chưa xác định chắc chắn ngôn ngữ nguồn. Hãy chọn ngôn ngữ trong danh sách.');
+ if(!actualSource)throw new Error('Chưa xác định chắc chắn ngôn ngữ nguồn. Hãy chọn ngôn ngữ nguồn trong danh sách.');
  if(!BVT_ML_LANGUAGES[actualSource]||!BVT_ML_LANGUAGES[target])throw new Error('Ngôn ngữ nguồn hoặc đích chưa được hỗ trợ.');
  if(actualSource===target)return {text:value,source:actualSource,same:true};
- const token=await getBvtTurnstileToken(); if(!token)throw new Error('Không xác minh được yêu cầu dịch. Hãy thử lại.');
- const form=new FormData(); form.append('text',value); form.append('source_lang',actualSource); form.append('target_lang',target); form.append('cf-turnstile-response',token);
- const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),90000);
+ if(!isCurrent())return {cancelled:true};
+ const token=await getBvtTurnstileToken();if(!token)throw new Error('Không xác minh được yêu cầu dịch. Hãy thử lại.');
+ if(!isCurrent())return {cancelled:true};
+ const form=new FormData();form.append('text',value);form.append('source_lang',actualSource);form.append('target_lang',target);form.append('cf-turnstile-response',token);
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),90000);
  try{
   const response=await fetch(BVT_ML_TRANSLATE_ENDPOINT,{method:'POST',body:form,signal:controller.signal,cache:'no-store'});
   let data={};try{data=await response.json();}catch(_){}
   if(!response.ok)throw new Error(data.error||('Dịch vụ dịch trả về lỗi '+response.status+'.'));
-  const translated=String(data.translated_text||'').trim(); if(!translated)throw new Error('Dịch vụ chưa trả về bản dịch.');
+  const translated=String(data.translated_text||'').trim();if(!translated)throw new Error('Dịch vụ chưa trả về bản dịch.');
   return {text:translated,source:actualSource,same:false};
  }catch(error){if(error?.name==='AbortError')throw new Error('Dịch vụ phản hồi quá lâu. Hãy thử lại.');throw error;}
  finally{clearTimeout(timer);}
+}
+function bvtMlTranslate(text,source,target,isCurrent=()=>true){
+ const run=()=>bvtMlTranslateNow(text,source,target,isCurrent);
+ const pending=bvtMlTranslationQueue.then(run,run);
+ bvtMlTranslationQueue=pending.catch(()=>{});
+ return pending;
 }
 function bvtMlSpeak(text,language){
  const value=String(text||'').trim();if(!value)return;
  if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){alert('Thiết bị chưa hỗ trợ đọc văn bản.');return;}
  try{
-  const locale=BVT_ML_LANGUAGES[language]?.locale||'en-US';
-  const utterance=new SpeechSynthesisUtterance(value);utterance.lang=locale;utterance.rate=.92;
-  let voice=null;const voices=bvtNativeVoices();
-  if(language==='zh')voice=bvtFindChineseVoice(voices);else if(language==='vi')voice=bvtFindVietnameseVoice(voices);else voice=voices.find(v=>String(v.lang||'').toLowerCase().startsWith(language+'-'))||voices.find(v=>String(v.lang||'').toLowerCase()===language)||null;
+  const lang=language||bvtMlDetectLanguage(value);if(!lang||!BVT_ML_LANGUAGES[lang]){alert('Hãy chọn ngôn ngữ nguồn để phát âm chính xác.');return;}
+  const utterance=new SpeechSynthesisUtterance(value);utterance.lang=BVT_ML_LANGUAGES[lang].locale;utterance.rate=.92;
+  const voices=typeof bvtNativeVoices==='function'?bvtNativeVoices():[];
+  let voice=null;
+  if(lang==='zh'&&typeof bvtFindChineseVoice==='function')voice=bvtFindChineseVoice(voices);
+  else if(lang==='vi'&&typeof bvtFindVietnameseVoice==='function')voice=bvtFindVietnameseVoice(voices);
+  else voice=voices.find(v=>String(v.lang||'').toLowerCase().startsWith(lang+'-'))||voices.find(v=>String(v.lang||'').toLowerCase()===lang)||null;
   if(voice)utterance.voice=voice;
   window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance);
  }catch(error){console.warn('Multilingual speech output:',error);}
 }
 async function bvtMlCopy(elementId){
- const value=String($(elementId)?.textContent||'').trim();if(!value)return;
+ const element=$(elementId);const value=String(element&&('value'in element)?element.value:element?.textContent||'').trim();if(!value)return;
  try{await navigator.clipboard.writeText(value);if(typeof showToast==='function')showToast('Đã sao chép nội dung.');}
- catch(_){const box=document.createElement('textarea');box.value=value;box.style.position='fixed';box.style.opacity='0';document.body.appendChild(box);box.select();try{document.execCommand('copy');}catch(__){}box.remove();}
+ catch(_){const box=document.createElement('textarea');box.value=value;box.style.position='fixed';box.style.opacity='0';document.body.appendChild(box);box.select();try{document.execCommand('copy');if(typeof showToast==='function')showToast('Đã sao chép nội dung.');}catch(__){}box.remove();}
 }
+function bvtMlScheduleTranslation(prefix,delay=520){
+ const state=BVT_ML_STATE[prefix];if(!state)return;
+ clearTimeout(state.timer);const sequence=++state.sequence;
+ state.timer=setTimeout(()=>bvtMlRunTranslation(prefix,sequence),delay);
+}
+async function bvtMlRunTranslation(prefix,sequence){
+ const state=BVT_ML_STATE[prefix];if(!state||state.sequence!==sequence)return;
+ const text=String($(prefix+'-text')?.value||'').trim(),result=$(prefix+'-result'),status=$(prefix+'-status');
+ if(!text){result.textContent='Bản dịch sẽ hiển thị tại đây.';if(status)status.textContent='Sẵn sàng.';return;}
+ const source=$(prefix+'-source')?.value||'auto',target=$(prefix+'-target')?.value||'vi';
+ if(status)status.textContent='Đang dịch sang '+bvtMlLanguageName(target)+'…';
+ result.textContent='Đang dịch…';
+ try{
+  const translated=await bvtMlTranslate(text,source,target,()=>state.sequence===sequence);
+  if(translated.cancelled||state.sequence!==sequence)return;
+  result.textContent=translated.text;
+  if(status)status.textContent=(translated.same?'Hai ngôn ngữ giống nhau · ':'Đã dịch xong · ')+bvtMlLanguageName(translated.source)+' → '+bvtMlLanguageName(target);
+ }catch(error){
+  if(state.sequence!==sequence)return;
+  result.textContent='Chưa dịch được nội dung.';
+  if(status)status.textContent=String(error?.message||error);
+ }
+}
+function bvtMlResolvedTranscriptLanguage(prefix){
+ const text=String($(prefix+'-text')?.value||'').trim();return bvtMlSelectedSource(prefix,text);
+}
+function bvtMlClearTranscript(prefix){
+ const state=BVT_ML_STATE[prefix];if(state){clearTimeout(state.timer);state.sequence++;}
+ const field=$(prefix+'-text');if(field)field.value='';
+ const result=$(prefix+'-result');if(result)result.textContent='Bản dịch sẽ hiển thị tại đây.';
+ const status=$(prefix+'-status');if(status)status.textContent='Đã xóa nội dung nhận diện.';
+}
+function bvtMlBindTranscriptTools(prefix){
+ $(prefix+'-text')?.addEventListener('input',()=>bvtMlScheduleTranslation(prefix,700));
+ $(prefix+'-source')?.addEventListener('change',()=>bvtMlScheduleTranslation(prefix,180));
+ $(prefix+'-target')?.addEventListener('change',()=>bvtMlScheduleTranslation(prefix,180));
+ $(prefix+'-text-speak')?.addEventListener('click',()=>{
+  const language=bvtMlResolvedTranscriptLanguage(prefix);
+  if(!language){const status=$(prefix+'-status');if(status)status.textContent='Hãy chọn ngôn ngữ nguồn trước khi phát âm.';return;}
+  bvtMlSpeak($(prefix+'-text').value,language);
+ });
+ $(prefix+'-text-copy')?.addEventListener('click',()=>bvtMlCopy(prefix+'-text'));
+ $(prefix+'-text-clear')?.addEventListener('click',()=>bvtMlClearTranscript(prefix));
+ $(prefix+'-speak')?.addEventListener('click',()=>bvtMlSpeak($(prefix+'-result').textContent,$(prefix+'-target').value));
+ $(prefix+'-copy')?.addEventListener('click',()=>bvtMlCopy(prefix+'-result'));
+}
+bvtMlInitLanguagePickers();
+bvtMlBindTranscriptTools('bvt-mi');
+bvtMlBindTranscriptTools('bvt-mv');
 let bvtMiFiles=[],bvtMiObjectUrls=[];
 function bvtMiRenderFiles(){
- const host=$('bvt-mi-preview'); bvtMiObjectUrls.forEach(u=>{try{URL.revokeObjectURL(u);}catch(_){}});bvtMiObjectUrls=[];
+ const host=$('bvt-mi-preview');bvtMiObjectUrls.forEach(url=>{try{URL.revokeObjectURL(url);}catch(_){}});bvtMiObjectUrls=[];
  host.replaceChildren();host.hidden=!bvtMiFiles.length;
  bvtMiFiles.forEach((file,index)=>{const figure=document.createElement('figure'),img=document.createElement('img'),button=document.createElement('button');const url=URL.createObjectURL(file);bvtMiObjectUrls.push(url);img.src=url;img.alt='Ảnh '+(index+1);button.type='button';button.textContent='×';button.setAttribute('aria-label','Xóa ảnh '+(index+1));button.addEventListener('click',()=>{bvtMiFiles.splice(index,1);bvtMiRenderFiles();});figure.append(img,button);host.append(figure);});
  $('bvt-mi-scan').disabled=!bvtMiFiles.length;$('bvt-mi-clear').disabled=!bvtMiFiles.length;
 }
 function bvtMiAddFiles(fileList){
- const incoming=[...(fileList||[])].filter(f=>String(f.type||'').startsWith('image/'));
- for(const file of incoming){if(bvtMiFiles.length>=8)break;if(!bvtMiFiles.some(x=>x.name===file.name&&x.size===file.size&&x.lastModified===file.lastModified))bvtMiFiles.push(file);}
+ const incoming=[...(fileList||[])].filter(file=>String(file.type||'').startsWith('image/'));
+ for(const file of incoming){if(bvtMiFiles.length>=8)break;if(!bvtMiFiles.some(item=>item.name===file.name&&item.size===file.size&&item.lastModified===file.lastModified))bvtMiFiles.push(file);}
  bvtMiRenderFiles();$('bvt-mi-status').textContent=bvtMiFiles.length?'Đã chọn '+bvtMiFiles.length+' ảnh.':'Chưa chọn ảnh.';
 }
 async function bvtMiPrepareImage(file){
  const bitmap=await decodeOcrImage(file);try{
-  const w=bitmap.width||bitmap.naturalWidth,h=bitmap.height||bitmap.naturalHeight;if(!w||!h)throw new Error('Không đọc được kích thước ảnh.');
-  const scale=Math.min(1.5,1900/Math.max(w,h));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));
+  const width=bitmap.width||bitmap.naturalWidth,height=bitmap.height||bitmap.naturalHeight;if(!width||!height)throw new Error('Không đọc được kích thước ảnh.');
+  const scale=Math.min(1.5,1900/Math.max(width,height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));
   const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Thiết bị không hỗ trợ xử lý ảnh.');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
   let blob=await canvasBlob(canvas,'image/jpeg',.86);if(blob.size>930*1024)blob=await canvasBlob(canvas,'image/jpeg',.72);
-  if(blob.size>1024*1024){const down=Math.min(.85,Math.sqrt((900*1024)/blob.size));const small=document.createElement('canvas');small.width=Math.max(1,Math.round(canvas.width*down));small.height=Math.max(1,Math.round(canvas.height*down));const sc=small.getContext('2d');sc.fillStyle='#fff';sc.fillRect(0,0,small.width,small.height);sc.drawImage(canvas,0,0,small.width,small.height);blob=await canvasBlob(small,'image/jpeg',.7);}
+  if(blob.size>1024*1024){const down=Math.min(.85,Math.sqrt((900*1024)/blob.size)),small=document.createElement('canvas');small.width=Math.max(1,Math.round(canvas.width*down));small.height=Math.max(1,Math.round(canvas.height*down));const smallCtx=small.getContext('2d');smallCtx.fillStyle='#fff';smallCtx.fillRect(0,0,small.width,small.height);smallCtx.drawImage(canvas,0,0,small.width,small.height);blob=await canvasBlob(small,'image/jpeg',.7);}
   if(blob.size>1024*1024)throw new Error('Ảnh vẫn vượt giới hạn 1 MB sau khi nén.');return blob;
  }finally{try{bitmap.close?.();}catch(_){}}
 }
 async function bvtMiScan(){
  if(!bvtMiFiles.length){$('bvt-mi-status').textContent='Hãy chọn ảnh trước.';return;}
- const button=$('bvt-mi-scan');button.disabled=true;$('bvt-mi-translate').disabled=true;$('bvt-mi-status').textContent='Đang nhận diện '+bvtMiFiles.length+' ảnh…';
+ clearTimeout(BVT_ML_STATE['bvt-mi'].timer);BVT_ML_STATE['bvt-mi'].sequence++;
+ $('bvt-mi-text').value='';$('bvt-mi-result').textContent='Bản dịch sẽ hiển thị tại đây.';
+ const button=$('bvt-mi-scan');button.disabled=true;$('bvt-mi-status').textContent='Đang nhận diện '+bvtMiFiles.length+' ảnh…';
  try{
   const results=[];
   for(let i=0;i<bvtMiFiles.length;i++){
    $('bvt-mi-status').textContent='Đang quét ảnh '+(i+1)+'/'+bvtMiFiles.length+'…';
-   const blob=await bvtMiPrepareImage(bvtMiFiles[i]);const form=new FormData();form.append('file',blob,'multilingual-image-'+(i+1)+'.jpg');
+   const blob=await bvtMiPrepareImage(bvtMiFiles[i]),form=new FormData();form.append('file',blob,'multilingual-image-'+(i+1)+'.jpg');
    const response=await fetch(BVT_ML_OCR_ENDPOINT,{method:'POST',body:form,cache:'no-store'});let data={};try{data=await response.json();}catch(_){}
    if(!response.ok)throw new Error(data.error||('OCR trả về lỗi '+response.status));if(data.text)results.push(String(data.text).trim());
   }
-  $('bvt-mi-text').value=results.join('\n\n').trim();if(!$('bvt-mi-text').value)throw new Error('Không nhận diện được nội dung trong ảnh.');
-  const chosen=$('bvt-mi-source').value;const detected=chosen==='auto'?bvtMlDetectLanguage($('bvt-mi-text').value):chosen;
-  $('bvt-mi-status').textContent='Đã nhận diện '+results.length+' ảnh · '+(BVT_ML_LANGUAGES[detected]?.name||'HÃY CHỌN NGÔN NGỮ NGUỒN')+'. Có thể sửa văn bản rồi dịch.';
-  $('bvt-mi-translate').disabled=false;
+  const recognized=results.join('\n\n').trim();if(!recognized)throw new Error('Không nhận diện được nội dung trong ảnh.');
+  $('bvt-mi-text').value=recognized;
+  const detected=bvtMlSelectedSource('bvt-mi',recognized);
+  $('bvt-mi-status').textContent='Đã nhận diện '+results.length+' ảnh'+(detected?' · '+bvtMlLanguageName(detected):'')+'. Đang dịch…';
+  bvtMlScheduleTranslation('bvt-mi',120);
  }catch(error){$('bvt-mi-status').textContent='Không nhận diện được ảnh: '+String(error?.message||error);}
- finally{button.disabled=!bvtMiFiles.length;$('bvt-mi-translate').disabled=!String($('bvt-mi-text').value||'').trim();}
+ finally{button.disabled=!bvtMiFiles.length;}
 }
-async function bvtMiTranslate(){
- const text=$('bvt-mi-text').value.trim();if(!text){$('bvt-mi-status').textContent='Chưa có văn bản để dịch.';return;}
- const button=$('bvt-mi-translate');button.disabled=true;$('bvt-mi-status').textContent='Đang dịch…';$('bvt-mi-result').textContent='Đang dịch…';
- try{const result=await bvtMlTranslate(text,$('bvt-mi-source').value,$('bvt-mi-target').value);$('bvt-mi-result').textContent=result.text;$('bvt-mi-status').textContent=(result.same?'Hai ngôn ngữ giống nhau · ':'Đã dịch xong · ')+(BVT_ML_LANGUAGES[result.source]?.name||'')+' → '+(BVT_ML_LANGUAGES[$('bvt-mi-target').value]?.name||'');}
- catch(error){$('bvt-mi-result').textContent='Chưa dịch được nội dung.';$('bvt-mi-status').textContent='Lỗi dịch: '+String(error?.message||error);}
- finally{button.disabled=false;}
-}
-$('bvt-mi-camera')?.addEventListener('change',e=>{bvtMiAddFiles(e.target.files);e.target.value='';});
-$('bvt-mi-upload')?.addEventListener('change',e=>{bvtMiAddFiles(e.target.files);e.target.value='';});
+$('bvt-mi-camera')?.addEventListener('change',event=>{bvtMiAddFiles(event.target.files);event.target.value='';});
+$('bvt-mi-upload')?.addEventListener('change',event=>{bvtMiAddFiles(event.target.files);event.target.value='';});
 $('bvt-mi-scan')?.addEventListener('click',bvtMiScan);
-$('bvt-mi-translate')?.addEventListener('click',bvtMiTranslate);
-$('bvt-mi-text')?.addEventListener('input',()=>{$('bvt-mi-translate').disabled=!$('bvt-mi-text').value.trim();});
-$('bvt-mi-clear')?.addEventListener('click',()=>{bvtMiFiles=[];bvtMiRenderFiles();$('bvt-mi-text').value='';$('bvt-mi-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('bvt-mi-status').textContent='Đã xóa. Sẵn sàng.';});
-$('bvt-mi-speak')?.addEventListener('click',()=>bvtMlSpeak($('bvt-mi-result').textContent,$('bvt-mi-target').value));
-$('bvt-mi-copy')?.addEventListener('click',()=>bvtMlCopy('bvt-mi-result'));
+$('bvt-mi-clear')?.addEventListener('click',()=>{bvtMiFiles=[];bvtMiRenderFiles();bvtMlClearTranscript('bvt-mi');$('bvt-mi-status').textContent='Đã xóa ảnh và nội dung nhận diện.';});
 let bvtMvRecorder=null,bvtMvStream=null,bvtMvChunks=[],bvtMvBusy=false;
-function bvtMvSetRecording(active){$('bvt-mv-mic').classList.toggle('recording',active);$('bvt-mv-mic').setAttribute('aria-pressed',String(active));$('bvt-mv-mic').querySelector('.ml-mic-icon').textContent=active?'⏹️':'🎙️';$('bvt-mv-mic-label').textContent=active?'DỪNG VÀ DỊCH':'BẮT ĐẦU NÓI';}
+function bvtMvSetRecording(active){
+ $('bvt-mv-mic').classList.toggle('recording',active);$('bvt-mv-mic').setAttribute('aria-pressed',String(active));$('bvt-mv-mic').querySelector('.ml-mic-icon').textContent=active?'⏹️':'🎙️';$('bvt-mv-mic-label').textContent=active?'DỪNG VÀ DỊCH':'BẮT ĐẦU NÓI';
+}
 async function bvtMvStart(){
  if(bvtMvBusy)return;bvtMvBusy=true;
  try{
   if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw new Error('Trình duyệt không hỗ trợ ghi âm. Hãy dùng Safari hoặc Chrome phiên bản mới.');
   bvtMvStream=await navigator.mediaDevices.getUserMedia({audio:true});let options={};try{const preferred=chooseReflexRecordingOptions();if(preferred)options=preferred;}catch(_){}
   bvtMvRecorder=new MediaRecorder(bvtMvStream,options);bvtMvChunks=[];const recorder=bvtMvRecorder,stream=bvtMvStream;
-  recorder.ondataavailable=e=>{if(e.data&&e.data.size)bvtMvChunks.push(e.data);};
-  recorder.onerror=e=>{$('bvt-mv-status').textContent='Lỗi ghi âm: '+(e.error?.message||e.message||'Không thể ghi âm.');};
-  recorder.onstop=async()=>{const chunks=bvtMvChunks.slice();bvtMvChunks=[];const type=recorder.mimeType||(chunks.find(c=>c.type)?.type)||'audio/webm';const blob=new Blob(chunks,{type});if(bvtMvRecorder===recorder)bvtMvRecorder=null;if(bvtMvStream===stream)bvtMvStream=null;stream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});await bvtMvProcess(blob);};
+  recorder.ondataavailable=event=>{if(event.data&&event.data.size)bvtMvChunks.push(event.data);};
+  recorder.onerror=event=>{$('bvt-mv-status').textContent='Lỗi ghi âm: '+(event.error?.message||event.message||'Không thể ghi âm.');};
+  recorder.onstop=async()=>{const chunks=bvtMvChunks.slice();bvtMvChunks=[];const type=recorder.mimeType||(chunks.find(chunk=>chunk.type)?.type)||'audio/webm',blob=new Blob(chunks,{type});if(bvtMvRecorder===recorder)bvtMvRecorder=null;if(bvtMvStream===stream)bvtMvStream=null;stream.getTracks().forEach(track=>{try{track.stop();}catch(_){}});await bvtMvProcess(blob);};
   recorder.start(250);bvtMvSetRecording(true);$('bvt-mv-status').textContent='Đang ghi âm… chạm lại để kết thúc.';
- }catch(error){if(bvtMvStream){bvtMvStream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});bvtMvStream=null;}bvtMvSetRecording(false);$('bvt-mv-status').textContent='Không mở được micro: '+String(error?.message||error);}
+ }catch(error){if(bvtMvStream){bvtMvStream.getTracks().forEach(track=>{try{track.stop();}catch(_){}});bvtMvStream=null;}bvtMvSetRecording(false);$('bvt-mv-status').textContent='Không mở được micro: '+String(error?.message||error);}
  finally{bvtMvBusy=false;}
 }
 function bvtMvStop(){const recorder=bvtMvRecorder;bvtMvSetRecording(false);$('bvt-mv-status').textContent='Đang hoàn tất bản ghi…';if(recorder&&recorder.state!=='inactive'){try{recorder.requestData?.();recorder.stop();}catch(error){$('bvt-mv-status').textContent='Không dừng được ghi âm: '+String(error?.message||error);}}else $('bvt-mv-status').textContent='Không có bản ghi đang hoạt động.';}
 async function bvtMvProcess(blob){
  if(!blob||!blob.size){$('bvt-mv-status').textContent='Không thu được âm thanh. Hãy thử lại.';return;}
  if(blob.size>15*1024*1024){$('bvt-mv-status').textContent='Bản ghi quá dài. Hãy thu âm một đoạn ngắn hơn rồi thử lại.';return;}
- const button=$('bvt-mv-mic');button.disabled=true;$('bvt-mv-translate').disabled=true;
+ clearTimeout(BVT_ML_STATE['bvt-mv'].timer);BVT_ML_STATE['bvt-mv'].sequence++;
+ const button=$('bvt-mv-mic');button.disabled=true;
  try{
   $('bvt-mv-status').textContent='Đang nhận diện giọng nói…';const source=$('bvt-mv-source').value;
-  const transcript=await transcribeBvtCloudAudio(blob,source==='auto'?'auto':source);$('bvt-mv-text').value=transcript;
-  const detected=source==='auto'?bvtMlDetectLanguage(transcript):source;
-  $('bvt-mv-status').textContent='Đã nhận diện giọng nói · '+(BVT_ML_LANGUAGES[detected]?.name||'HÃY CHỌN NGÔN NGỮ NGUỒN')+'. Đang dịch…';
-  await bvtMvTranslate();
+  const transcript=await transcribeBvtCloudAudio(blob,source==='auto'?'auto':source);
+  $('bvt-mv-text').value=transcript;
+  const detected=bvtMlSelectedSource('bvt-mv',transcript);
+  $('bvt-mv-status').textContent='Đã nhận diện giọng nói'+(detected?' · '+bvtMlLanguageName(detected):'')+'. Đang dịch…';
+  bvtMlScheduleTranslation('bvt-mv',120);
  }catch(error){$('bvt-mv-status').textContent='Lỗi nhận diện: '+String(error?.message||error);}
- finally{button.disabled=false;$('bvt-mv-translate').disabled=!String($('bvt-mv-text').value||'').trim();}
-}
-async function bvtMvTranslate(){
- const text=$('bvt-mv-text').value.trim();if(!text){$('bvt-mv-status').textContent='Chưa có nội dung để dịch.';return;}
- const button=$('bvt-mv-translate');button.disabled=true;$('bvt-mv-result').textContent='Đang dịch…';
- try{const result=await bvtMlTranslate(text,$('bvt-mv-source').value,$('bvt-mv-target').value);$('bvt-mv-result').textContent=result.text;$('bvt-mv-status').textContent=(result.same?'Hai ngôn ngữ giống nhau · ':'Đã dịch xong · ')+(BVT_ML_LANGUAGES[result.source]?.name||'')+' → '+(BVT_ML_LANGUAGES[$('bvt-mv-target').value]?.name||'');}
- catch(error){$('bvt-mv-result').textContent='Chưa dịch được nội dung.';$('bvt-mv-status').textContent='Lỗi dịch: '+String(error?.message||error);}
  finally{button.disabled=false;}
 }
 $('bvt-mv-mic')?.addEventListener('click',()=>{if(bvtMvBusy)return;if(bvtMvRecorder&&bvtMvRecorder.state==='recording')bvtMvStop();else bvtMvStart();});
-$('bvt-mv-translate')?.addEventListener('click',bvtMvTranslate);
-$('bvt-mv-text')?.addEventListener('input',()=>{$('bvt-mv-translate').disabled=!$('bvt-mv-text').value.trim();});
-$('bvt-mv-speak')?.addEventListener('click',()=>bvtMlSpeak($('bvt-mv-result').textContent,$('bvt-mv-target').value));
-$('bvt-mv-copy')?.addEventListener('click',()=>bvtMlCopy('bvt-mv-result'));
 
 </script>
 
