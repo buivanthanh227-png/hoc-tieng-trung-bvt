@@ -1,6 +1,6 @@
-HOC TIENG TRUNG BVT - PHIEN BAN V42.7.3
+HOC TIENG TRUNG BVT - PHIEN BAN V42.7.4
 
-V42.7.3 - CHINH CHU MENU, DONG HO, DOC TU VA TU DIEN
+V42.7.4 - CHINH CHU MENU, DONG HO, DOC TU VA TU DIEN
 - Menu 14 va 15: chu va so tren menu trai mau den; tieu de chuc nang ben phai nen trong, so thu tu hien theo mau menu.
 - Cac nut loa, sao chep va xoa cua hai menu moi dung nen mau do/xanh, bieu tuong mau trang.
 - Hien thi so ngon ngu nguon va dich theo danh sach ho tro thuc te: hinh anh 100/100; giong noi 84/100.
@@ -20,3 +20,5 @@ CLOUDFLARE WORKER
 SAU KHI CAP NHAT
 - May tinh: Ctrl+F5.
 - Dien thoai/may tinh bang: dong tab/app roi mo lai. Neu van con giao dien cu, xoa cache website.
+
+V42.7.4: Clock repositioned for desktop/tablet, readable language count labels, black status/result headings, horizontal dictionary word line.
