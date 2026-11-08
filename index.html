@@ -5565,53 +5565,9 @@ const BVT_ML_STATE = {
 };
 let bvtMlTranslationQueue=Promise.resolve();
 function bvtMlNormalize(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/đ/g,'d');}
-function bvtMlDetectLanguage(value){
- const t=String(value||'').trim();if(!t)return null;
- // Scripts that identify a language or a narrow group very reliably.
- if(/[\u3040-\u30ff]/u.test(t))return 'ja';
- if(/[\uac00-\ud7af]/u.test(t))return 'ko';
- if(/[\u0e00-\u0e7f]/u.test(t))return 'th';
- if(/[\u0600-\u06ff\u0750-\u077f]/u.test(t))return 'ar';
- if(/[\u0900-\u097f]/u.test(t))return 'hi';
- if(/[\u0980-\u09ff]/u.test(t))return 'bn';
- if(/[\u0a00-\u0a7f]/u.test(t))return 'pa';
- if(/[\u0a80-\u0aff]/u.test(t))return 'gu';
- if(/[\u0b00-\u0b7f]/u.test(t))return 'or';
- if(/[\u0b80-\u0bff]/u.test(t))return 'ta';
- if(/[\u0c80-\u0cff]/u.test(t))return 'kn';
- if(/[\u0d00-\u0d7f]/u.test(t))return 'ml';
- if(/[\u0d80-\u0dff]/u.test(t))return 'si';
- if(/[\u0e80-\u0eff]/u.test(t))return 'lo';
- if(/[\u1000-\u109f]/u.test(t))return 'my';
- if(/[\u1780-\u17ff]/u.test(t))return 'km';
- if(/[\u1200-\u137f]/u.test(t))return 'am';
- if(/[\u0370-\u03ff]/u.test(t))return 'el';
- if(/[\u0590-\u05ff]/u.test(t))return 'he';
- if(/[\u0530-\u058f]/u.test(t))return 'hy';
- if(/[\u10a0-\u10ff]/u.test(t))return 'ka';
- if(/[\u3400-\u9fff\uf900-\ufaff]/u.test(t))return 'zh';
- if(/[\u0400-\u052f]/u.test(t)){
-  if(/[іїєґ]/iu.test(t))return 'uk';
-  if(/[ў]/iu.test(t))return 'be';
-  if(/[јљњћђџ]/iu.test(t))return 'sr';
-  if(/[ёыэ]/iu.test(t))return 'ru';
-  return null; // other Cyrillic languages are not guessed from script alone.
- }
- const lower=' '+bvtMlNormalize(t).replace(/[^\p{L}\p{N}]+/gu,' ')+' ';
- const has=words=>words.some(word=>lower.includes(' '+bvtMlNormalize(word)+' '));
- if(/[ăâđêôơư]/iu.test(t)||has(['xin chào','cảm ơn','không','người','chúng tôi','bạn','tôi','được','tiếng việt']))return 'vi';
- if(/[ßäöü]/iu.test(t)||has(['der','die','das','und','ich','nicht','ist','mit','für','guten morgen']))return 'de';
- if(/[ñ¿¡]/iu.test(t)||has(['hola','gracias','usted','cómo','por favor','buenos días']))return 'es';
- if(/[çœ]/iu.test(t)||has(['bonjour','merci','avec','vous','nous','une','des','je suis','bonsoir']))return 'fr';
- if(/[ãõ]/iu.test(t)||has(['olá','obrigado','obrigada','você','não','bom dia']))return 'pt';
- if(has(['ciao','grazie','buongiorno','sono','per favore','buonasera']))return 'it';
- if(has(['the','and','you','are','what','where','when','how','this','that','have','with','hello','thank you','please','good morning']))return 'en';
- if(has(['yang','tidak','terima kasih','selamat pagi','saya','anda']))return null; // Indonesian/Malay overlap: choose manually.
- if(has(['goedemorgen','dank je','het','een','ik ben']))return 'nl';
- if(/[ğış]/iu.test(t))return 'tr';
- if(/[łżźąęćńś]/iu.test(t))return 'pl';
- if(/[åäö]/iu.test(t)&&has(['och','jag','det','tack']))return 'sv';
- if(/[æø]/iu.test(t)&&has(['jeg','ikke','god morgen']))return 'da';
+function bvtMlDetectLanguage(){
+ // Ngôn ngữ tự động được xác định ở Cloudflare Worker bằng mô hình đa ngôn ngữ.
+ // Không đoán cục bộ theo từ khóa để tránh gửi sai source_lang cho bộ dịch.
  return null;
 }
 function bvtMlPopulateOneSelect(selectId,kind,allowAuto,allowedCodes,defaultValue){
@@ -5641,32 +5597,41 @@ function bvtMlInitLanguagePickers(){
 }
 function bvtMlSelectedSource(prefix,text){
  const chosen=$(prefix+'-source')?.value||'auto';
- return chosen==='auto'?bvtMlDetectLanguage(text):chosen;
+ if(chosen!=='auto')return chosen;
+ const field=$(prefix+'-text');
+ const cached=String(field?.dataset?.bvtDetectedLanguage||'');
+ const cachedText=String(field?.dataset?.bvtDetectedText||'');
+ return cached&&cachedText===String(text||'').trim()?cached:null;
 }
 function bvtMlLanguageName(code){return BVT_ML_LANGUAGES[code]?.name||'NGÔN NGỮ CHƯA XÁC ĐỊNH';}
 async function bvtMlTranslateNow(text,source,target,isCurrent){
  const value=String(text||'').trim();if(!value)throw new Error('Chưa có nội dung để dịch.');
  if(value.length>5000)throw new Error('Nội dung vượt giới hạn 5.000 ký tự mỗi lượt.');
- const actualSource=source==='auto'?bvtMlDetectLanguage(value):source;
- if(!actualSource)throw new Error('Chưa xác định chắc chắn ngôn ngữ nguồn. Hãy chọn ngôn ngữ nguồn trong danh sách.');
- if(!BVT_ML_LANGUAGES[actualSource]||!BVT_ML_LANGUAGES[target])throw new Error('Ngôn ngữ nguồn hoặc đích chưa được hỗ trợ.');
- if(actualSource===target)return {text:value,source:actualSource,same:true};
+ const requestedSource=source||'auto';
+ if(requestedSource!=='auto'&&!BVT_ML_LANGUAGES[requestedSource])throw new Error('Ngôn ngữ nguồn chưa được hỗ trợ.');
+ if(!BVT_ML_LANGUAGES[target])throw new Error('Ngôn ngữ đích chưa được hỗ trợ.');
  if(!isCurrent())return {cancelled:true};
  const token=await getBvtTurnstileToken();if(!token)throw new Error('Không xác minh được yêu cầu dịch. Hãy thử lại.');
  if(!isCurrent())return {cancelled:true};
- const form=new FormData();form.append('text',value);form.append('source_lang',actualSource);form.append('target_lang',target);form.append('cf-turnstile-response',token);
- const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),90000);
+ const form=new FormData();form.append('text',value);form.append('source_lang',requestedSource);form.append('target_lang',target);form.append('cf-turnstile-response',token);
+ const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),120000);
  try{
   const response=await fetch(BVT_ML_TRANSLATE_ENDPOINT,{method:'POST',body:form,signal:controller.signal,cache:'no-store'});
   let data={};try{data=await response.json();}catch(_){}
-  if(!response.ok)throw new Error(data.error||('Dịch vụ dịch trả về lỗi '+response.status+'.'));
+  if(!response.ok){
+   if(data.requires_manual_source)throw new Error(data.error||'Không xác định đủ chắc chắn ngôn ngữ nguồn. Hãy chọn ngôn ngữ trong danh sách.');
+   throw new Error(data.error||('Dịch vụ dịch trả về lỗi '+response.status+'.'));
+  }
   const translated=String(data.translated_text||'').trim();if(!translated)throw new Error('Dịch vụ chưa trả về bản dịch.');
-  return {text:translated,source:actualSource,same:false};
+  const resolvedSource=String(data.source_lang||data.detected_source_lang|| (requestedSource!=='auto'?requestedSource:''));
+  if(!BVT_ML_LANGUAGES[resolvedSource])throw new Error('Dịch vụ không trả về ngôn ngữ nguồn hợp lệ. Hãy chọn nguồn thủ công và thử lại.');
+  return {text:translated,source:resolvedSource,same:!!data.same_language||resolvedSource===target,model:data.translation_model||'',detector:data.detector_model||'',confidence:Number(data.detection_confidence)||null};
  }catch(error){if(error?.name==='AbortError')throw new Error('Dịch vụ phản hồi quá lâu. Hãy thử lại.');throw error;}
  finally{clearTimeout(timer);}
 }
-function bvtMlTranslate(text,source,target,isCurrent=()=>true){
- const run=()=>bvtMlTranslateNow(text,source,target,isCurrent);
+function bvtMlTranslate(text,source,target,isCurrent=()=>true,knownSource=''){
+ const effectiveSource=(source==='auto'&&knownSource&&BVT_ML_LANGUAGES[knownSource])?knownSource:(source||'auto');
+ const run=()=>bvtMlTranslateNow(text,effectiveSource,target,isCurrent);
  const pending=bvtMlTranslationQueue.then(run,run);
  bvtMlTranslationQueue=pending.catch(()=>{});
  return pending;
@@ -5698,15 +5663,17 @@ function bvtMlScheduleTranslation(prefix,delay=520){
 }
 async function bvtMlRunTranslation(prefix,sequence){
  const state=BVT_ML_STATE[prefix];if(!state||state.sequence!==sequence)return;
- const text=String($(prefix+'-text')?.value||'').trim(),result=$(prefix+'-result'),status=$(prefix+'-status');
+ const field=$(prefix+'-text'),text=String(field?.value||'').trim(),result=$(prefix+'-result'),status=$(prefix+'-status');
  if(!text){result.textContent='Bản dịch sẽ hiển thị tại đây.';if(status)status.textContent='Sẵn sàng.';return;}
  const source=$(prefix+'-source')?.value||'auto',target=$(prefix+'-target')?.value||'vi';
- if(status)status.textContent='Đang dịch sang '+bvtMlLanguageName(target)+'…';
+ const cachedSource=source==='auto'&&field?.dataset?.bvtDetectedText===text?field.dataset.bvtDetectedLanguage||'':'';
+ if(status)status.textContent=(source==='auto'&&!cachedSource?'Đang xác định ngôn ngữ nguồn và ':'')+'đang dịch sang '+bvtMlLanguageName(target)+'…';
  result.textContent='Đang dịch…';
  try{
-  const translated=await bvtMlTranslate(text,source,target,()=>state.sequence===sequence);
+  const translated=await bvtMlTranslate(text,source,target,()=>state.sequence===sequence,cachedSource);
   if(translated.cancelled||state.sequence!==sequence)return;
   result.textContent=translated.text;
+  if(field&&translated.source){field.dataset.bvtDetectedLanguage=translated.source;field.dataset.bvtDetectedText=text;}
   if(status)status.textContent=(translated.same?'Hai ngôn ngữ giống nhau · ':'Đã dịch xong · ')+bvtMlLanguageName(translated.source)+' → '+bvtMlLanguageName(target);
  }catch(error){
   if(state.sequence!==sequence)return;
@@ -5719,17 +5686,23 @@ function bvtMlResolvedTranscriptLanguage(prefix){
 }
 function bvtMlClearTranscript(prefix){
  const state=BVT_ML_STATE[prefix];if(state){clearTimeout(state.timer);state.sequence++;}
- const field=$(prefix+'-text');if(field)field.value='';
+ const field=$(prefix+'-text');if(field){field.value='';delete field.dataset.bvtDetectedLanguage;delete field.dataset.bvtDetectedText;}
  const result=$(prefix+'-result');if(result)result.textContent='Bản dịch sẽ hiển thị tại đây.';
  const status=$(prefix+'-status');if(status)status.textContent='Đã xóa nội dung nhận diện.';
 }
 function bvtMlBindTranscriptTools(prefix){
- $(prefix+'-text')?.addEventListener('input',()=>bvtMlScheduleTranslation(prefix,700));
- $(prefix+'-source')?.addEventListener('change',()=>bvtMlScheduleTranslation(prefix,180));
+ $(prefix+'-text')?.addEventListener('input',event=>{
+  const field=event.currentTarget;delete field.dataset.bvtDetectedLanguage;delete field.dataset.bvtDetectedText;
+  bvtMlScheduleTranslation(prefix,700);
+ });
+ $(prefix+'-source')?.addEventListener('change',()=>{
+  const field=$(prefix+'-text');if(field){delete field.dataset.bvtDetectedLanguage;delete field.dataset.bvtDetectedText;}
+  bvtMlScheduleTranslation(prefix,180);
+ });
  $(prefix+'-target')?.addEventListener('change',()=>bvtMlScheduleTranslation(prefix,180));
  $(prefix+'-text-speak')?.addEventListener('click',()=>{
   const language=bvtMlResolvedTranscriptLanguage(prefix);
-  if(!language){const status=$(prefix+'-status');if(status)status.textContent='Hãy chọn ngôn ngữ nguồn trước khi phát âm.';return;}
+  if(!language){const status=$(prefix+'-status');if(status)status.textContent='Chưa xác định được ngôn ngữ nguồn. Hãy chọn nguồn thủ công hoặc dịch trước.';return;}
   bvtMlSpeak($(prefix+'-text').value,language);
  });
  $(prefix+'-text-copy')?.addEventListener('click',()=>bvtMlCopy(prefix+'-text'));
@@ -5777,8 +5750,9 @@ async function bvtMiScan(){
   }
   const recognized=results.join('\n\n').trim();if(!recognized)throw new Error('Không nhận diện được nội dung trong ảnh.');
   $('bvt-mi-text').value=recognized;
-  const detected=bvtMlSelectedSource('bvt-mi',recognized);
-  $('bvt-mi-status').textContent='Đã nhận diện '+results.length+' ảnh'+(detected?' · '+bvtMlLanguageName(detected):'')+'. Đang dịch…';
+  delete $('bvt-mi-text').dataset.bvtDetectedLanguage;delete $('bvt-mi-text').dataset.bvtDetectedText;
+  const chosenSource=$('bvt-mi-source').value||'auto';
+  $('bvt-mi-status').textContent='Đã nhận diện '+results.length+' ảnh. '+(chosenSource==='auto'?'Đang xác định ngôn ngữ nguồn và dịch…':'Đang dịch từ '+bvtMlLanguageName(chosenSource)+'…');
   bvtMlScheduleTranslation('bvt-mi',120);
  }catch(error){$('bvt-mi-status').textContent='Không nhận diện được ảnh: '+String(error?.message||error);}
  finally{button.disabled=!bvtMiFiles.length;}
@@ -5814,8 +5788,8 @@ async function bvtMvProcess(blob){
   $('bvt-mv-status').textContent='Đang nhận diện giọng nói…';const source=$('bvt-mv-source').value;
   const transcript=await transcribeBvtCloudAudio(blob,source==='auto'?'auto':source);
   $('bvt-mv-text').value=transcript;
-  const detected=bvtMlSelectedSource('bvt-mv',transcript);
-  $('bvt-mv-status').textContent='Đã nhận diện giọng nói'+(detected?' · '+bvtMlLanguageName(detected):'')+'. Đang dịch…';
+  delete $('bvt-mv-text').dataset.bvtDetectedLanguage;delete $('bvt-mv-text').dataset.bvtDetectedText;
+  $('bvt-mv-status').textContent='Đã nhận diện giọng nói. '+(source==='auto'?'Đang xác định ngôn ngữ nguồn và dịch…':'Đang dịch từ '+bvtMlLanguageName(source)+'…');
   bvtMlScheduleTranslation('bvt-mv',120);
  }catch(error){$('bvt-mv-status').textContent='Lỗi nhận diện: '+String(error?.message||error);}
  finally{button.disabled=false;}
