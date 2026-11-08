@@ -10,6 +10,14 @@
 const MODEL = '@cf/openai/whisper-large-v3-turbo';
 const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
 const EXPECTED_ACTION = 'bvt_asr';
+const TRANSLATION_MODEL = '@cf/meta/m2m100-1.2b';
+const TRANSLATION_LANGUAGES = Object.freeze({
+  vi:'vietnamese', zh:'chinese', en:'english', ja:'japanese', ko:'korean', th:'thai',
+  fr:'french', de:'german', es:'spanish', it:'italian', pt:'portuguese', ru:'russian',
+  id:'indonesian', ms:'malay', hi:'hindi', ar:'arabic'
+});
+const ASR_LANGUAGES = new Set(Object.keys(TRANSLATION_LANGUAGES));
+const MAX_TRANSLATION_CHARS = 5000;
 
 function json(data, status, origin) {
   return new Response(JSON.stringify(data), {
@@ -35,7 +43,7 @@ function toBase64(bytes) {
   return btoa(binary);
 }
 
-async function verifyTurnstile(token, request, env, expectedHostname) {
+async function verifyTurnstile(token, request, env, expectedHostname, expectedAction = EXPECTED_ACTION) {
   if (typeof token !== 'string' || !token || token.length > 2048) {
     return { success: false, reason: 'missing-input-response' };
   }
@@ -59,7 +67,7 @@ async function verifyTurnstile(token, request, env, expectedHostname) {
     const result = await response.json();
     const valid = !!result.success &&
       result.hostname === expectedHostname &&
-      result.action === EXPECTED_ACTION;
+      result.action === expectedAction;
     return {
       success: valid,
       reason: valid ? '' : (Array.isArray(result['error-codes']) ? result['error-codes'].join(',') : 'turnstile-validation-failed')
@@ -68,6 +76,53 @@ async function verifyTurnstile(token, request, env, expectedHostname) {
     return { success: false, reason: String(error?.message || 'siteverify-unavailable') };
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+
+function splitTranslationInput(value, maxChars = 850) {
+  const chars = Array.from(String(value || ''));
+  const chunks = [];
+  let rest = chars;
+  while (rest.length > maxChars) {
+    let cut = maxChars;
+    const floor = Math.floor(maxChars * 0.62);
+    for (let i = maxChars; i >= floor; i--) {
+      if (/\s/.test(rest[i] || '')) { cut = i; break; }
+    }
+    chunks.push(rest.slice(0, cut).join('').trim());
+    rest = rest.slice(cut);
+    while (rest.length && /\s/.test(rest[0])) rest.shift();
+  }
+  if (rest.length) chunks.push(rest.join('').trim());
+  return chunks.filter(Boolean);
+}
+async function handleMultilingualTranslation(form, env, request, expectedHostname, allowedOrigin) {
+  const text = String(form.get('text') || '').trim();
+  const source = String(form.get('source_lang') || '').trim().toLowerCase();
+  const target = String(form.get('target_lang') || '').trim().toLowerCase();
+  if (!text) return json({ error: 'Chưa có văn bản để dịch.' }, 400, allowedOrigin);
+  if (text.length > MAX_TRANSLATION_CHARS) return json({ error: 'Nội dung vượt giới hạn 5.000 ký tự mỗi lượt.' }, 413, allowedOrigin);
+  if (!TRANSLATION_LANGUAGES[source] || !TRANSLATION_LANGUAGES[target]) return json({ error: 'Ngôn ngữ nguồn hoặc đích chưa được hỗ trợ.' }, 400, allowedOrigin);
+  const verification = await verifyTurnstile(form.get('cf-turnstile-response'), request, env, expectedHostname, EXPECTED_ACTION);
+  if (!verification.success) return json({ error: 'Xác minh bảo mật thất bại. Hãy thử lại.', details: verification.reason }, 401, allowedOrigin);
+  if (source === target) return json({ translated_text: text, source_lang: source, target_lang: target, model: TRANSLATION_MODEL }, 200, allowedOrigin);
+  try {
+    const chunks = splitTranslationInput(text);
+    const translated = [];
+    for (const chunk of chunks) {
+      const result = await env.AI.run(TRANSLATION_MODEL, {
+        text: chunk,
+        source_lang: TRANSLATION_LANGUAGES[source],
+        target_lang: TRANSLATION_LANGUAGES[target]
+      });
+      const output = String(result?.translated_text || '').trim();
+      if (!output) throw new Error('Mô hình dịch không trả về văn bản.');
+      translated.push(output);
+    }
+    return json({ translated_text: translated.join(' '), source_lang: source, target_lang: target, model: TRANSLATION_MODEL }, 200, allowedOrigin);
+  } catch (error) {
+    return json({ error: String(error?.message || error || 'Không thể dịch văn bản lúc này.') }, 502, allowedOrigin);
   }
 }
 
@@ -111,7 +166,12 @@ export default {
     if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Worker is missing TURNSTILE_SECRET_KEY. Add the Turnstile Secret Key as a Worker Secret.' }, 500, allowedOrigin);
 
     try {
+      const url = new URL(request.url);
       const form = await request.formData();
+      if (url.pathname === '/translate') {
+        return await handleMultilingualTranslation(form, env, request, expectedHostname, allowedOrigin);
+      }
+      if (url.pathname !== '/' && url.pathname !== '') return json({ error: 'Đường dẫn không hợp lệ.' }, 404, allowedOrigin);
       const audio = form.get('audio');
       if (!audio || typeof audio.arrayBuffer !== 'function') return json({ error: 'Missing audio file.' }, 400, allowedOrigin);
       if (!audio.size || audio.size > MAX_AUDIO_BYTES) return json({ error: 'Audio must be between 1 byte and 15 MB.' }, 413, allowedOrigin);
@@ -122,7 +182,7 @@ export default {
       }
 
       const requestedLanguage = String(form.get('language') || 'auto').toLowerCase();
-      const language = requestedLanguage === 'vi' ? 'vi' : requestedLanguage === 'zh' ? 'zh' : 'auto';
+      const language = ASR_LANGUAGES.has(requestedLanguage) ? requestedLanguage : 'auto';
       const bytes = new Uint8Array(await audio.arrayBuffer());
       const params = {
         audio: toBase64(bytes),

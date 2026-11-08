@@ -1063,6 +1063,41 @@
 }
 </style>
 
+
+<style id="v427-multilingual-menu-style">
+/* v42.7: isolated styles for the two new multilingual tools; menus 1–13 are untouched. */
+.app-shell #main-tabs .tab[data-tab="multilingual-image"]{--menu-color:#A21CAF}
+.app-shell #main-tabs .tab[data-tab="multilingual-voice"]{--menu-color:#1E3A8A}
+#panel-multilingual-image,#panel-multilingual-voice{max-width:940px;margin-left:auto;margin-right:auto;min-width:0}
+#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:clamp(12px,2vw,18px);margin-bottom:12px;min-width:0}
+#panel-multilingual-image .ml-heading[data-function-number]::before,
+#panel-multilingual-voice .ml-heading[data-function-number]::before{content:attr(data-function-number);display:inline-grid;place-items:center;min-width:27px;height:27px;padding:0 5px;margin-right:8px;border-radius:8px;background:var(--ml-accent);color:#fff;font-size:14px;font-weight:900;vertical-align:middle}
+#panel-multilingual-image .ml-heading{--ml-accent:#A21CAF}
+#panel-multilingual-voice .ml-heading{--ml-accent:#1E3A8A}
+.ml-language-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
+.ml-language-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ml-language-field label{font-size:12px;font-weight:800;color:var(--ink)}
+.ml-language-field select{min-width:0;width:100%;min-height:44px;border:1px solid var(--line);border-radius:11px;background:#fff;padding:9px 11px;font-size:14px;color:var(--ink)}
+.ml-action-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.ml-action-row>.btn,.ml-action-row>label.btn{flex:1 1 170px;min-height:44px;display:flex;align-items:center;justify-content:center;text-align:center}
+.ml-file-input{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.ml-image-preview{display:flex;gap:8px;overflow-x:auto;padding:4px 1px 8px;margin-top:9px}
+.ml-image-preview figure{position:relative;flex:0 0 78px;width:78px;height:78px;margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#f8fafc}
+.ml-image-preview img{width:100%;height:100%;object-fit:cover}
+.ml-image-preview button{position:absolute;right:3px;top:3px;width:23px;height:23px;border:0;border-radius:50%;background:#111827d9;color:#fff;font-weight:900}
+.ml-text-label{display:block;margin:11px 0 5px;font-size:12px;font-weight:850;color:var(--ink)}
+.ml-textarea{width:100%;min-height:92px;max-height:280px;resize:vertical;font-size:14px;line-height:1.5}
+.ml-output{white-space:pre-wrap;overflow-wrap:anywhere;min-height:60px;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:15px;line-height:1.6;color:var(--ink)}
+.ml-output-actions{display:flex;gap:7px;justify-content:flex-end;margin-top:8px}
+.ml-output-actions .btn{min-height:35px;padding:6px 10px}
+.ml-status{min-height:20px;margin:8px 0 0;font-size:12px;line-height:1.4;color:var(--muted)}
+.ml-voice-mic{width:100%;min-height:76px;border:0;border-radius:15px;background:linear-gradient(135deg,#1E3A8A,#172554);color:#fff;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 4px 13px #1e3a8a30}
+.ml-voice-mic .ml-mic-icon{font-size:25px}
+.ml-voice-mic.recording{background:linear-gradient(135deg,#b91c1c,#7f1d1d);animation:mlVoicePulse 1.2s infinite}
+@keyframes mlVoicePulse{0%,100%{box-shadow:0 0 0 0 #b91c1c20}50%{box-shadow:0 0 0 8px #b91c1c12}}
+@media(max-width:620px){.ml-language-grid{grid-template-columns:1fr}.ml-action-row{gap:7px}.ml-action-row>.btn,.ml-action-row>label.btn{flex-basis:100%}#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:12px}}
+@media(min-width:621px) and (max-width:950px){#panel-multilingual-image,#panel-multilingual-voice{max-width:100%}.ml-language-grid{gap:12px}}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -1090,6 +1125,8 @@
 <button class="tab" data-tab="number" type="button"><span class="tab-number" aria-hidden="true">11</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🔢</span><span class="tab-label">LUYỆN SỐ TIẾNG TRUNG</span></span></button>
 <button class="tab" data-tab="radicals" type="button"><span class="tab-number" aria-hidden="true">12</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">部</span><span class="tab-label">DANH SÁCH BỘ THỦ</span></span></button>
 <button class="tab" data-tab="library" type="button"><span class="tab-number" aria-hidden="true">13</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🗂️</span><span class="tab-label">TÀI LIỆU CỦA BẠN</span></span></button>
+<button class="tab" data-tab="multilingual-image" type="button"><span class="tab-number" aria-hidden="true">14</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🌐</span><span class="tab-label">DỊCH HÌNH ẢNH ĐA NGÔN NGỮ</span></span></button>
+<button class="tab" data-tab="multilingual-voice" type="button"><span class="tab-number" aria-hidden="true">15</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🎧</span><span class="tab-label">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</span></span></button>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
@@ -1399,9 +1436,51 @@
  </div>
  <div class="card library-saved-card"><div class="row between wrap library-saved-heading"><h3 class="section-title" style="margin:0">Tài liệu đã lưu</h3><input id="library-search" class="field library-search" type="search" placeholder="Vui lòng nhập nội dung bạn muốn..." autocomplete="off" aria-label="Tìm tài liệu đã lưu"></div><div id="library-list" class="library-list"><div class="empty">Đang mở kho tài liệu…</div></div></div>
 </section>
+
+<section id="panel-multilingual-image" class="panel">
+ <div class="card ml-card">
+  <h2 class="section-title ml-heading" data-function-number="14">DỊCH HÌNH ẢNH ĐA NGÔN NGỮ</h2>
+  <div class="ml-language-grid">
+   <div class="ml-language-field"><label for="bvt-mi-source">NGÔN NGỮ TRONG ẢNH</label><select id="bvt-mi-source" class="field"><option value="auto">TỰ ĐỘNG NHẬN DIỆN</option><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
+   <div class="ml-language-field"><label for="bvt-mi-target">DỊCH SANG</label><select id="bvt-mi-target" class="field"><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
+  </div>
+  <div class="ml-action-row">
+   <label class="btn" for="bvt-mi-camera">📷 CHỤP ẢNH</label><input id="bvt-mi-camera" class="ml-file-input" type="file" accept="image/*" capture="environment">
+   <label class="btn secondary" for="bvt-mi-upload">🖼️ TẢI ẢNH LÊN</label><input id="bvt-mi-upload" class="ml-file-input" type="file" accept="image/*" multiple>
+  </div>
+  <div id="bvt-mi-preview" class="ml-image-preview" hidden></div>
+  <div class="ml-action-row"><button id="bvt-mi-scan" class="btn" type="button" disabled>🔎 NHẬN DIỆN ẢNH</button><button id="bvt-mi-clear" class="btn secondary" type="button" disabled>✕ XÓA</button></div>
+  <label class="ml-text-label" for="bvt-mi-text">VĂN BẢN NHẬN DIỆN</label>
+  <textarea id="bvt-mi-text" class="field ml-textarea" rows="3" placeholder="Văn bản từ hình ảnh sẽ hiển thị tại đây."></textarea>
+  <div class="ml-action-row"><button id="bvt-mi-translate" class="btn" type="button" disabled>DỊCH VĂN BẢN</button></div>
+  <p id="bvt-mi-status" class="ml-status" role="status" aria-live="polite">Sẵn sàng.</p>
+ </div>
+ <div class="card ml-card">
+  <div class="row between"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mi-speak" class="btn secondary tiny" type="button" title="Đọc kết quả">🔊</button><button id="bvt-mi-copy" class="btn secondary tiny" type="button">📋 SAO CHÉP</button></div></div>
+  <div id="bvt-mi-result" class="ml-output" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
+ </div>
+</section>
+<section id="panel-multilingual-voice" class="panel">
+ <div class="card ml-card">
+  <h2 class="section-title ml-heading" data-function-number="15">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</h2>
+  <div class="ml-language-grid">
+   <div class="ml-language-field"><label for="bvt-mv-source">NGÔN NGỮ BẠN NÓI</label><select id="bvt-mv-source" class="field"><option value="auto">TỰ ĐỘNG NHẬN DIỆN</option><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
+   <div class="ml-language-field"><label for="bvt-mv-target">DỊCH SANG</label><select id="bvt-mv-target" class="field"><option value="vi">TIẾNG VIỆT</option><option value="zh">TIẾNG TRUNG</option><option value="en">TIẾNG ANH</option><option value="ja">TIẾNG NHẬT</option><option value="ko">TIẾNG HÀN</option><option value="th">TIẾNG THÁI</option><option value="fr">TIẾNG PHÁP</option><option value="de">TIẾNG ĐỨC</option><option value="es">TIẾNG TÂY BAN NHA</option><option value="it">TIẾNG Ý</option><option value="pt">TIẾNG BỒ ĐÀO NHA</option><option value="ru">TIẾNG NGA</option><option value="id">TIẾNG INDONESIA</option><option value="ms">TIẾNG MALAY</option><option value="hi">TIẾNG HINDI</option><option value="ar">TIẾNG Ả RẬP</option></select></div>
+  </div>
+  <button id="bvt-mv-mic" class="ml-voice-mic" type="button" aria-pressed="false"><span class="ml-mic-icon">🎙️</span><span id="bvt-mv-mic-label">BẮT ĐẦU NÓI</span></button>
+  <p id="bvt-mv-status" class="ml-status" role="status" aria-live="polite">Sẵn sàng.</p>
+  <label class="ml-text-label" for="bvt-mv-text">NỘI DUNG NHẬN DIỆN</label>
+  <textarea id="bvt-mv-text" class="field ml-textarea" rows="3" placeholder="Nội dung giọng nói sẽ hiển thị tại đây."></textarea>
+  <div class="ml-action-row"><button id="bvt-mv-translate" class="btn" type="button" disabled>DỊCH VĂN BẢN</button></div>
+ </div>
+ <div class="card ml-card">
+  <div class="row between"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mv-speak" class="btn secondary tiny" type="button" title="Đọc kết quả">🔊</button><button id="bvt-mv-copy" class="btn secondary tiny" type="button">📋 SAO CHÉP</button></div></div>
+  <div id="bvt-mv-result" class="ml-output" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
+ </div>
+</section>
 </main>
 </div><!-- /.app-shell -->
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.6</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.7</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button id="back-to-top" type="button" aria-label="Về đầu trang" title="Về đầu trang">↑</button>
 <div id="stroke-modal" class="stroke-modal" hidden>
@@ -1489,7 +1568,8 @@ const BVT_FUNCTION_COLORS = {
  write:{main:'#F06292',alt:'#AD4769'}, read:{main:'#7986CB',alt:'#576092'},
  combine:{main:'#D4E157',alt:'#99A23F'}, 'vocab-training':{main:'#A1887F',alt:'#74625B'},
  number:{main:'#4DD0E1',alt:'#3796A2'}, radicals:{main:'#9575CD',alt:'#6B5494'},
- library:{main:'#90A4AE',alt:'#68767D'}
+ library:{main:'#90A4AE',alt:'#68767D'},
+ 'multilingual-image':{main:'#A21CAF',alt:'#701A75'}, 'multilingual-voice':{main:'#1E3A8A',alt:'#172554'}
 };
 let combineScope = 'common';
 let selectedCombine = new Map();
@@ -1840,7 +1920,9 @@ const BVT_FUNCTION_HEADING_SELECTORS={
  'vocab-training':'#panel-vocab-training h2[data-function-number]',
  number:'#panel-number h2[data-function-number]',
  radicals:'#panel-radicals h2[data-function-number]',
- library:'#panel-library h2[data-function-number]'
+ library:'#panel-library h2[data-function-number]',
+ 'multilingual-image':'#panel-multilingual-image h2[data-function-number]',
+ 'multilingual-voice':'#panel-multilingual-voice h2[data-function-number]'
 };
 function bvtSyncFunctionHeading(element,tab){
  if(!element)return;
@@ -5191,6 +5273,171 @@ switchTab=function(tab){if(tab!=='vocab-training'&&vocabTrainingRunning)stopVoca
 
 // Offline app shell caching is available when hosted on HTTPS (not when opened as a file:// URL).
 if('serviceWorker'in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
+/* v42.7: standalone multilingual image and voice translation. Menus 1–13 handlers remain unchanged. */
+const BVT_ML_TRANSLATE_ENDPOINT = 'https://bvt-asr.buivanthanh227.workers.dev/translate';
+const BVT_ML_OCR_ENDPOINT = 'https://bvt-ocr.buivanthanh227.workers.dev/ocr';
+const BVT_ML_LANGUAGES = Object.freeze({
+ vi:{name:'TIẾNG VIỆT',locale:'vi-VN'}, zh:{name:'TIẾNG TRUNG',locale:'zh-CN'}, en:{name:'TIẾNG ANH',locale:'en-US'},
+ ja:{name:'TIẾNG NHẬT',locale:'ja-JP'}, ko:{name:'TIẾNG HÀN',locale:'ko-KR'}, th:{name:'TIẾNG THÁI',locale:'th-TH'},
+ fr:{name:'TIẾNG PHÁP',locale:'fr-FR'}, de:{name:'TIẾNG ĐỨC',locale:'de-DE'}, es:{name:'TIẾNG TÂY BAN NHA',locale:'es-ES'},
+ it:{name:'TIẾNG Ý',locale:'it-IT'}, pt:{name:'TIẾNG BỒ ĐÀO NHA',locale:'pt-PT'}, ru:{name:'TIẾNG NGA',locale:'ru-RU'},
+ id:{name:'TIẾNG INDONESIA',locale:'id-ID'}, ms:{name:'TIẾNG MALAY',locale:'ms-MY'}, hi:{name:'TIẾNG HINDI',locale:'hi-IN'}, ar:{name:'TIẾNG Ả RẬP',locale:'ar-SA'}
+});
+function bvtMlDetectLanguage(value){
+ const t=String(value||'').trim(); if(!t)return null;
+ if(/[\u3040-\u30ff]/u.test(t))return 'ja';
+ if(/[\uac00-\ud7af]/u.test(t))return 'ko';
+ if(/[\u0e00-\u0e7f]/u.test(t))return 'th';
+ if(/[\u0600-\u06ff\u0750-\u077f]/u.test(t))return 'ar';
+ if(/[\u0900-\u097f]/u.test(t))return 'hi';
+ if(/[\u0400-\u052f]/u.test(t))return 'ru';
+ if(/[\u3400-\u9fff\uf900-\ufaff]/u.test(t))return 'zh';
+ const lower=' '+t.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ')+' ';
+ const has=(words)=>words.some(w=>lower.includes(' '+w+' '));
+ if(/[ăâđêôơư]/i.test(t)||has(['xin chào','cảm ơn','không','người','chúng tôi','bạn','tôi','được','tiếng việt']))return 'vi';
+ if(/[ßäöü]/i.test(t)||has(['der','die','das','und','ich','nicht','ist','mit','für']))return 'de';
+ if(/[ñ¿¡]/i.test(t)||has(['hola','gracias','usted','cómo','para','que','por favor']))return 'es';
+ if(/[çœ]/i.test(t)||has(['bonjour','merci','avec','vous','nous','une','des','est','je']))return 'fr';
+ if(/[ãõ]/i.test(t)||has(['olá','obrigado','obrigada','você','não','uma','com']))return 'pt';
+ if(has(['ciao','grazie','buongiorno','sono','che','per favore','il','gli']))return 'it';
+ if(has(['yang','tidak','saya','anda','terima kasih','selamat']))return 'id';
+ if(has(['the','and','you','are','what','where','when','how','this','that','is','have','for','with','hello','thank','please','good morning']))return 'en';
+ return null;
+}
+async function bvtMlTranslate(text,source,target){
+ const value=String(text||'').trim(); if(!value)throw new Error('Chưa có nội dung để dịch.');
+ if(value.length>5000)throw new Error('Nội dung quá dài. Hãy chia thành các phần ngắn hơn (tối đa 5.000 ký tự mỗi lượt).');
+ const actualSource=source==='auto'?bvtMlDetectLanguage(value):source;
+ if(!actualSource)throw new Error('Chưa xác định chắc chắn ngôn ngữ nguồn. Hãy chọn ngôn ngữ trong danh sách.');
+ if(!BVT_ML_LANGUAGES[actualSource]||!BVT_ML_LANGUAGES[target])throw new Error('Ngôn ngữ nguồn hoặc đích chưa được hỗ trợ.');
+ if(actualSource===target)return {text:value,source:actualSource,same:true};
+ const token=await getBvtTurnstileToken(); if(!token)throw new Error('Không xác minh được yêu cầu dịch. Hãy thử lại.');
+ const form=new FormData(); form.append('text',value); form.append('source_lang',actualSource); form.append('target_lang',target); form.append('cf-turnstile-response',token);
+ const controller=new AbortController(); const timer=setTimeout(()=>controller.abort(),90000);
+ try{
+  const response=await fetch(BVT_ML_TRANSLATE_ENDPOINT,{method:'POST',body:form,signal:controller.signal,cache:'no-store'});
+  let data={};try{data=await response.json();}catch(_){}
+  if(!response.ok)throw new Error(data.error||('Dịch vụ dịch trả về lỗi '+response.status+'.'));
+  const translated=String(data.translated_text||'').trim(); if(!translated)throw new Error('Dịch vụ chưa trả về bản dịch.');
+  return {text:translated,source:actualSource,same:false};
+ }catch(error){if(error?.name==='AbortError')throw new Error('Dịch vụ phản hồi quá lâu. Hãy thử lại.');throw error;}
+ finally{clearTimeout(timer);}
+}
+function bvtMlSpeak(text,language){
+ const value=String(text||'').trim();if(!value)return;
+ if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){alert('Thiết bị chưa hỗ trợ đọc văn bản.');return;}
+ try{
+  const locale=BVT_ML_LANGUAGES[language]?.locale||'en-US';
+  const utterance=new SpeechSynthesisUtterance(value);utterance.lang=locale;utterance.rate=.92;
+  let voice=null;const voices=bvtNativeVoices();
+  if(language==='zh')voice=bvtFindChineseVoice(voices);else if(language==='vi')voice=bvtFindVietnameseVoice(voices);else voice=voices.find(v=>String(v.lang||'').toLowerCase().startsWith(language+'-'))||voices.find(v=>String(v.lang||'').toLowerCase()===language)||null;
+  if(voice)utterance.voice=voice;
+  window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance);
+ }catch(error){console.warn('Multilingual speech output:',error);}
+}
+async function bvtMlCopy(elementId){
+ const value=String($(elementId)?.textContent||'').trim();if(!value)return;
+ try{await navigator.clipboard.writeText(value);if(typeof showToast==='function')showToast('Đã sao chép nội dung.');}
+ catch(_){const box=document.createElement('textarea');box.value=value;box.style.position='fixed';box.style.opacity='0';document.body.appendChild(box);box.select();try{document.execCommand('copy');}catch(__){}box.remove();}
+}
+let bvtMiFiles=[],bvtMiObjectUrls=[];
+function bvtMiRenderFiles(){
+ const host=$('bvt-mi-preview'); bvtMiObjectUrls.forEach(u=>{try{URL.revokeObjectURL(u);}catch(_){}});bvtMiObjectUrls=[];
+ host.replaceChildren();host.hidden=!bvtMiFiles.length;
+ bvtMiFiles.forEach((file,index)=>{const figure=document.createElement('figure'),img=document.createElement('img'),button=document.createElement('button');const url=URL.createObjectURL(file);bvtMiObjectUrls.push(url);img.src=url;img.alt='Ảnh '+(index+1);button.type='button';button.textContent='×';button.setAttribute('aria-label','Xóa ảnh '+(index+1));button.addEventListener('click',()=>{bvtMiFiles.splice(index,1);bvtMiRenderFiles();});figure.append(img,button);host.append(figure);});
+ $('bvt-mi-scan').disabled=!bvtMiFiles.length;$('bvt-mi-clear').disabled=!bvtMiFiles.length;
+}
+function bvtMiAddFiles(fileList){
+ const incoming=[...(fileList||[])].filter(f=>String(f.type||'').startsWith('image/'));
+ for(const file of incoming){if(bvtMiFiles.length>=8)break;if(!bvtMiFiles.some(x=>x.name===file.name&&x.size===file.size&&x.lastModified===file.lastModified))bvtMiFiles.push(file);}
+ bvtMiRenderFiles();$('bvt-mi-status').textContent=bvtMiFiles.length?'Đã chọn '+bvtMiFiles.length+' ảnh.':'Chưa chọn ảnh.';
+}
+async function bvtMiPrepareImage(file){
+ const bitmap=await decodeOcrImage(file);try{
+  const w=bitmap.width||bitmap.naturalWidth,h=bitmap.height||bitmap.naturalHeight;if(!w||!h)throw new Error('Không đọc được kích thước ảnh.');
+  const scale=Math.min(1.5,1900/Math.max(w,h));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(w*scale));canvas.height=Math.max(1,Math.round(h*scale));
+  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Thiết bị không hỗ trợ xử lý ảnh.');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  let blob=await canvasBlob(canvas,'image/jpeg',.86);if(blob.size>930*1024)blob=await canvasBlob(canvas,'image/jpeg',.72);
+  if(blob.size>1024*1024){const down=Math.min(.85,Math.sqrt((900*1024)/blob.size));const small=document.createElement('canvas');small.width=Math.max(1,Math.round(canvas.width*down));small.height=Math.max(1,Math.round(canvas.height*down));const sc=small.getContext('2d');sc.fillStyle='#fff';sc.fillRect(0,0,small.width,small.height);sc.drawImage(canvas,0,0,small.width,small.height);blob=await canvasBlob(small,'image/jpeg',.7);}
+  if(blob.size>1024*1024)throw new Error('Ảnh vẫn vượt giới hạn 1 MB sau khi nén.');return blob;
+ }finally{try{bitmap.close?.();}catch(_){}}
+}
+async function bvtMiScan(){
+ if(!bvtMiFiles.length){$('bvt-mi-status').textContent='Hãy chọn ảnh trước.';return;}
+ const button=$('bvt-mi-scan');button.disabled=true;$('bvt-mi-translate').disabled=true;$('bvt-mi-status').textContent='Đang nhận diện '+bvtMiFiles.length+' ảnh…';
+ try{
+  const results=[];
+  for(let i=0;i<bvtMiFiles.length;i++){
+   $('bvt-mi-status').textContent='Đang quét ảnh '+(i+1)+'/'+bvtMiFiles.length+'…';
+   const blob=await bvtMiPrepareImage(bvtMiFiles[i]);const form=new FormData();form.append('file',blob,'multilingual-image-'+(i+1)+'.jpg');
+   const response=await fetch(BVT_ML_OCR_ENDPOINT,{method:'POST',body:form,cache:'no-store'});let data={};try{data=await response.json();}catch(_){}
+   if(!response.ok)throw new Error(data.error||('OCR trả về lỗi '+response.status));if(data.text)results.push(String(data.text).trim());
+  }
+  $('bvt-mi-text').value=results.join('\n\n').trim();if(!$('bvt-mi-text').value)throw new Error('Không nhận diện được nội dung trong ảnh.');
+  const chosen=$('bvt-mi-source').value;const detected=chosen==='auto'?bvtMlDetectLanguage($('bvt-mi-text').value):chosen;
+  $('bvt-mi-status').textContent='Đã nhận diện '+results.length+' ảnh · '+(BVT_ML_LANGUAGES[detected]?.name||'HÃY CHỌN NGÔN NGỮ NGUỒN')+'. Có thể sửa văn bản rồi dịch.';
+  $('bvt-mi-translate').disabled=false;
+ }catch(error){$('bvt-mi-status').textContent='Không nhận diện được ảnh: '+String(error?.message||error);}
+ finally{button.disabled=!bvtMiFiles.length;$('bvt-mi-translate').disabled=!String($('bvt-mi-text').value||'').trim();}
+}
+async function bvtMiTranslate(){
+ const text=$('bvt-mi-text').value.trim();if(!text){$('bvt-mi-status').textContent='Chưa có văn bản để dịch.';return;}
+ const button=$('bvt-mi-translate');button.disabled=true;$('bvt-mi-status').textContent='Đang dịch…';$('bvt-mi-result').textContent='Đang dịch…';
+ try{const result=await bvtMlTranslate(text,$('bvt-mi-source').value,$('bvt-mi-target').value);$('bvt-mi-result').textContent=result.text;$('bvt-mi-status').textContent=(result.same?'Hai ngôn ngữ giống nhau · ':'Đã dịch xong · ')+(BVT_ML_LANGUAGES[result.source]?.name||'')+' → '+(BVT_ML_LANGUAGES[$('bvt-mi-target').value]?.name||'');}
+ catch(error){$('bvt-mi-result').textContent='Chưa dịch được nội dung.';$('bvt-mi-status').textContent='Lỗi dịch: '+String(error?.message||error);}
+ finally{button.disabled=false;}
+}
+$('bvt-mi-camera')?.addEventListener('change',e=>{bvtMiAddFiles(e.target.files);e.target.value='';});
+$('bvt-mi-upload')?.addEventListener('change',e=>{bvtMiAddFiles(e.target.files);e.target.value='';});
+$('bvt-mi-scan')?.addEventListener('click',bvtMiScan);
+$('bvt-mi-translate')?.addEventListener('click',bvtMiTranslate);
+$('bvt-mi-text')?.addEventListener('input',()=>{$('bvt-mi-translate').disabled=!$('bvt-mi-text').value.trim();});
+$('bvt-mi-clear')?.addEventListener('click',()=>{bvtMiFiles=[];bvtMiRenderFiles();$('bvt-mi-text').value='';$('bvt-mi-result').textContent='Bản dịch sẽ hiển thị tại đây.';$('bvt-mi-status').textContent='Đã xóa. Sẵn sàng.';});
+$('bvt-mi-speak')?.addEventListener('click',()=>bvtMlSpeak($('bvt-mi-result').textContent,$('bvt-mi-target').value));
+$('bvt-mi-copy')?.addEventListener('click',()=>bvtMlCopy('bvt-mi-result'));
+let bvtMvRecorder=null,bvtMvStream=null,bvtMvChunks=[],bvtMvBusy=false;
+function bvtMvSetRecording(active){$('bvt-mv-mic').classList.toggle('recording',active);$('bvt-mv-mic').setAttribute('aria-pressed',String(active));$('bvt-mv-mic').querySelector('.ml-mic-icon').textContent=active?'⏹️':'🎙️';$('bvt-mv-mic-label').textContent=active?'DỪNG VÀ DỊCH':'BẮT ĐẦU NÓI';}
+async function bvtMvStart(){
+ if(bvtMvBusy)return;bvtMvBusy=true;
+ try{
+  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw new Error('Trình duyệt không hỗ trợ ghi âm. Hãy dùng Safari hoặc Chrome phiên bản mới.');
+  bvtMvStream=await navigator.mediaDevices.getUserMedia({audio:true});let options={};try{const preferred=chooseReflexRecordingOptions();if(preferred)options=preferred;}catch(_){}
+  bvtMvRecorder=new MediaRecorder(bvtMvStream,options);bvtMvChunks=[];const recorder=bvtMvRecorder,stream=bvtMvStream;
+  recorder.ondataavailable=e=>{if(e.data&&e.data.size)bvtMvChunks.push(e.data);};
+  recorder.onerror=e=>{$('bvt-mv-status').textContent='Lỗi ghi âm: '+(e.error?.message||e.message||'Không thể ghi âm.');};
+  recorder.onstop=async()=>{const chunks=bvtMvChunks.slice();bvtMvChunks=[];const type=recorder.mimeType||(chunks.find(c=>c.type)?.type)||'audio/webm';const blob=new Blob(chunks,{type});if(bvtMvRecorder===recorder)bvtMvRecorder=null;if(bvtMvStream===stream)bvtMvStream=null;stream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});await bvtMvProcess(blob);};
+  recorder.start(250);bvtMvSetRecording(true);$('bvt-mv-status').textContent='Đang ghi âm… chạm lại để kết thúc.';
+ }catch(error){if(bvtMvStream){bvtMvStream.getTracks().forEach(t=>{try{t.stop();}catch(_){}});bvtMvStream=null;}bvtMvSetRecording(false);$('bvt-mv-status').textContent='Không mở được micro: '+String(error?.message||error);}
+ finally{bvtMvBusy=false;}
+}
+function bvtMvStop(){const recorder=bvtMvRecorder;bvtMvSetRecording(false);$('bvt-mv-status').textContent='Đang hoàn tất bản ghi…';if(recorder&&recorder.state!=='inactive'){try{recorder.requestData?.();recorder.stop();}catch(error){$('bvt-mv-status').textContent='Không dừng được ghi âm: '+String(error?.message||error);}}else $('bvt-mv-status').textContent='Không có bản ghi đang hoạt động.';}
+async function bvtMvProcess(blob){
+ if(!blob||!blob.size){$('bvt-mv-status').textContent='Không thu được âm thanh. Hãy thử lại.';return;}
+ if(blob.size>15*1024*1024){$('bvt-mv-status').textContent='Bản ghi quá dài. Hãy thu âm một đoạn ngắn hơn rồi thử lại.';return;}
+ const button=$('bvt-mv-mic');button.disabled=true;$('bvt-mv-translate').disabled=true;
+ try{
+  $('bvt-mv-status').textContent='Đang nhận diện giọng nói…';const source=$('bvt-mv-source').value;
+  const transcript=await transcribeBvtCloudAudio(blob,source==='auto'?'auto':source);$('bvt-mv-text').value=transcript;
+  const detected=source==='auto'?bvtMlDetectLanguage(transcript):source;
+  $('bvt-mv-status').textContent='Đã nhận diện giọng nói · '+(BVT_ML_LANGUAGES[detected]?.name||'HÃY CHỌN NGÔN NGỮ NGUỒN')+'. Đang dịch…';
+  await bvtMvTranslate();
+ }catch(error){$('bvt-mv-status').textContent='Lỗi nhận diện: '+String(error?.message||error);}
+ finally{button.disabled=false;$('bvt-mv-translate').disabled=!String($('bvt-mv-text').value||'').trim();}
+}
+async function bvtMvTranslate(){
+ const text=$('bvt-mv-text').value.trim();if(!text){$('bvt-mv-status').textContent='Chưa có nội dung để dịch.';return;}
+ const button=$('bvt-mv-translate');button.disabled=true;$('bvt-mv-result').textContent='Đang dịch…';
+ try{const result=await bvtMlTranslate(text,$('bvt-mv-source').value,$('bvt-mv-target').value);$('bvt-mv-result').textContent=result.text;$('bvt-mv-status').textContent=(result.same?'Hai ngôn ngữ giống nhau · ':'Đã dịch xong · ')+(BVT_ML_LANGUAGES[result.source]?.name||'')+' → '+(BVT_ML_LANGUAGES[$('bvt-mv-target').value]?.name||'');}
+ catch(error){$('bvt-mv-result').textContent='Chưa dịch được nội dung.';$('bvt-mv-status').textContent='Lỗi dịch: '+String(error?.message||error);}
+ finally{button.disabled=false;}
+}
+$('bvt-mv-mic')?.addEventListener('click',()=>{if(bvtMvBusy)return;if(bvtMvRecorder&&bvtMvRecorder.state==='recording')bvtMvStop();else bvtMvStart();});
+$('bvt-mv-translate')?.addEventListener('click',bvtMvTranslate);
+$('bvt-mv-text')?.addEventListener('input',()=>{$('bvt-mv-translate').disabled=!$('bvt-mv-text').value.trim();});
+$('bvt-mv-speak')?.addEventListener('click',()=>bvtMlSpeak($('bvt-mv-result').textContent,$('bvt-mv-target').value));
+$('bvt-mv-copy')?.addEventListener('click',()=>bvtMlCopy('bvt-mv-result'));
+
 </script>
 
 <script>
