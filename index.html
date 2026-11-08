@@ -1118,6 +1118,101 @@
 @media(max-width:620px){.ml-language-grid{grid-template-columns:1fr;gap:8px}.ml-action-row{gap:6px}.ml-action-row>.btn,.ml-action-row>label.btn{flex:1 1 calc(50% - 6px);min-height:36px;font-size:11.5px}#panel-multilingual-image .ml-card,#panel-multilingual-voice .ml-card{padding:10px}.ml-voice-mic{min-height:46px}}
 @media(min-width:621px) and (max-width:950px){.ml-language-grid{gap:9px}}
 </style>
+
+<style id="v4273-visual-polish-clock-dictionary-and-practice-audio">
+/* v42.7.3: nav labels for menus 14/15 follow the dark text used by the existing menus. */
+.app-shell #main-tabs .tab[data-tab="multilingual-image"] .tab-label,
+.app-shell #main-tabs .tab[data-tab="multilingual-image"] .tab-icon,
+.app-shell #main-tabs .tab[data-tab="multilingual-image"] .tab-number,
+.app-shell #main-tabs .tab[data-tab="multilingual-voice"] .tab-label,
+.app-shell #main-tabs .tab[data-tab="multilingual-voice"] .tab-icon,
+.app-shell #main-tabs .tab[data-tab="multilingual-voice"] .tab-number{
+ color:#17212b!important;
+}
+/* Keep the right-side function title plain; reserve the menu colour for actual controls. */
+#panel-multilingual-image .ml-heading,#panel-multilingual-voice .ml-heading{
+ display:flex!important;align-items:center!important;gap:8px!important;
+ background:transparent!important;color:#17212b!important;border:0!important;
+ border-radius:0!important;padding:0!important;margin:0 0 12px!important;
+ font-size:clamp(15px,1.45vw,18px)!important;font-weight:850!important;line-height:1.3!important;
+}
+#panel-multilingual-image .ml-heading[data-function-number]::before,
+#panel-multilingual-voice .ml-heading[data-function-number]::before{
+ content:attr(data-function-number)!important;display:inline!important;place-items:initial!important;
+ flex:0 0 auto!important;width:auto!important;height:auto!important;margin-right:0!important;
+ border-radius:0!important;background:transparent!important;color:#17212b!important;
+ border:0!important;box-shadow:none!important;font-size:inherit!important;font-weight:900!important;
+}
+#panel-multilingual-image .ml-heading .function-title-icon,
+#panel-multilingual-voice .ml-heading .function-title-icon{color:var(--ml-accent)!important}
+/* Speaker, copy and clear controls are solid accent buttons with white symbols. */
+#panel-multilingual-image .ml-icon-btn,#panel-multilingual-voice .ml-icon-btn{
+ display:inline-grid!important;place-items:center!important;width:36px!important;min-width:36px!important;max-width:36px!important;
+ height:34px!important;min-height:34px!important;max-height:34px!important;flex:0 0 36px!important;padding:0!important;
+ background:var(--ml-accent)!important;color:#fff!important;border:1px solid var(--ml-accent)!important;
+ border-radius:8px!important;font-weight:900!important;line-height:1!important;
+}
+#panel-multilingual-image .ml-icon-btn svg,#panel-multilingual-voice .ml-icon-btn svg{
+ display:block;width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;
+ stroke-linecap:round;stroke-linejoin:round;
+}
+#panel-multilingual-image .ml-icon-btn:disabled,#panel-multilingual-voice .ml-icon-btn:disabled{opacity:.48!important}
+/* Make detected language / translation and the translated text prominent in the menu's own colour. */
+#panel-multilingual-image .ml-output,#panel-multilingual-voice .ml-output{
+ min-height:54px;padding:12px 14px!important;border-color:color-mix(in srgb,var(--ml-accent) 32%,white)!important;
+ background:color-mix(in srgb,var(--ml-accent) 6%,white)!important;
+ color:var(--ml-accent)!important;font-size:clamp(16px,1.55vw,19px)!important;font-weight:850!important;
+ line-height:1.55!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;
+}
+#panel-multilingual-image .ml-status,#panel-multilingual-voice .ml-status{
+ min-height:20px;padding:6px 8px!important;border-radius:8px!important;
+ background:color-mix(in srgb,var(--ml-accent) 7%,white)!important;
+ color:var(--ml-accent)!important;font-size:12px!important;font-weight:800!important;line-height:1.4!important;
+ overflow-wrap:anywhere!important;
+}
+#panel-multilingual-image .ml-result-head>b,#panel-multilingual-voice .ml-result-head>b{
+ color:var(--ml-accent)!important;font-size:14px!important;font-weight:900!important;
+}
+#panel-multilingual-image .ml-textarea,#panel-multilingual-voice .ml-textarea{
+ font-size:15px!important;font-weight:650!important;line-height:1.5!important;color:#17212b!important;
+}
+/* Live clock: white digital time above the local Vietnamese weekday/date. */
+.topbar .bvt-header-clock{display:flex;flex-direction:column;align-items:flex-end;gap:1px;margin:0 0 2px;color:#fff!important;text-align:right;white-space:nowrap}
+.topbar .bvt-clock-time-row{display:flex;align-items:center;justify-content:flex-end;gap:6px;color:#fff!important;font-size:clamp(17px,1.7vw,22px);font-weight:900;letter-spacing:.06em;line-height:1.15;font-variant-numeric:tabular-nums}
+.topbar .bvt-clock-icon{width:19px;height:19px;display:block;flex:0 0 auto;color:#fff!important}
+.topbar .bvt-clock-date{color:#fff!important;font-size:10px;font-weight:800;line-height:1.2;letter-spacing:.035em;text-transform:uppercase}
+@media(min-width:701px){.topbar .top-meta{max-width:100%!important}.topbar .toprow{min-height:78px!important}}
+@media(max-width:700px){
+ .topbar .bvt-header-clock{gap:0;margin-bottom:1px}
+ .topbar .bvt-clock-time-row{font-size:14px;gap:4px;letter-spacing:.02em}
+ .topbar .bvt-clock-icon{width:15px;height:15px}
+ .topbar .bvt-clock-date{font-size:8px;letter-spacing:0}
+ /* The added clock makes the header taller; keep the horizontal menu toggle below it. */
+ .app-shell #main-tabs{top:auto}
+}
+@media(max-width:380px){.topbar .bvt-clock-time-row{font-size:12px}.topbar .bvt-clock-date{font-size:7px}}
+/* Dictionary: keep Hanzi as the visual anchor and make Pinyin + Vietnamese meaning easy to read. */
+#panel-dict .word{align-items:flex-start!important}
+#panel-dict .word-main{
+ display:flex!important;flex:1 1 auto!important;flex-direction:column!important;align-items:flex-start!important;
+ justify-content:flex-start!important;gap:3px!important;width:100%!important;min-width:0!important;
+}
+#panel-dict .hanzi{font-size:clamp(24px,2vw,29px)!important;font-weight:900!important;line-height:1.2!important;color:#101828!important;white-space:normal!important;overflow-wrap:anywhere!important}
+#panel-dict .pinyin{
+ display:block!important;flex:0 1 auto!important;max-width:100%!important;margin:2px 0 0!important;
+ font-size:clamp(14px,1.2vw,16px)!important;font-weight:850!important;line-height:1.35!important;
+ color:var(--red)!important;white-space:normal!important;overflow-wrap:anywhere!important;
+}
+#panel-dict .meaning{
+ display:block!important;flex:0 1 auto!important;min-width:0!important;max-width:100%!important;margin:0!important;
+ font-size:clamp(14px,1.15vw,16px)!important;font-weight:750!important;line-height:1.45!important;
+ color:#344054!important;white-space:normal!important;overflow:visible!important;overflow-wrap:anywhere!important;word-break:normal!important;
+ -webkit-line-clamp:unset!important;-webkit-box-orient:initial!important;
+}
+@media(max-width:520px){#panel-dict .pinyin{font-size:14px!important}#panel-dict .meaning{font-size:14px!important}}
+@media(max-width:380px){#panel-dict .hanzi{font-size:23px!important}#panel-dict .pinyin{font-size:13.5px!important}#panel-dict .meaning{font-size:13.5px!important}}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -1128,7 +1223,7 @@
  <div class="brand-flag" role="img" aria-label="Quốc kỳ Trung Quốc">
   <svg viewBox="0 0 60 40" aria-hidden="true" focusable="false"><rect width="60" height="40" fill="#de2910"/><polygon fill="#ffde00" points="12,4 13.8,9.4 19.5,9.4 14.9,12.8 16.7,18.2 12,14.8 7.3,18.2 9.1,12.8 4.5,9.4 10.2,9.4"/><polygon fill="#ffde00" points="24,3.3 25.2,6.3 28.4,6.1 25.9,8.1 26.8,11.1 24,9.3 21.3,11.2 22.1,8.1 19.7,6.2 22.8,6.2"/><polygon fill="#ffde00" points="29.5,9 30.7,12 33.9,11.8 31.4,13.8 32.3,16.8 29.5,15 26.8,16.9 27.6,13.8 25.2,11.9 28.3,11.9"/><polygon fill="#ffde00" points="29.5,17 30.7,20 33.9,19.8 31.4,21.8 32.3,24.8 29.5,23 26.8,24.9 27.6,21.8 25.2,19.9 28.3,19.9"/><polygon fill="#ffde00" points="24,24 25.2,27 28.4,26.8 25.9,28.8 26.8,31.8 24,30 21.3,31.9 22.1,28.8 19.7,26.9 22.8,26.9"/></svg>
  </div>
-</div><div class="top-meta"><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
+</div><div class="top-meta"><div class="bvt-header-clock" id="bvt-header-clock" aria-label="Giờ và ngày hiện tại"><div class="bvt-clock-time-row"><svg class="bvt-clock-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 6.5v5.8l4 2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="bvt-clock-time">--:--:--</span></div><div id="bvt-clock-date" class="bvt-clock-date">ĐANG TẢI NGÀY THÁNG…</div></div><span class="count-pill" id="count-pill">Tổng số từ vựng: đang nạp…</span><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
 <div class="app-shell">
 <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
 <nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
@@ -1461,8 +1556,8 @@
  <div class="card ml-card">
   <h2 class="section-title ml-heading" data-function-number="14">DỊCH HÌNH ẢNH ĐA NGÔN NGỮ</h2>
   <div class="ml-language-grid">
-   <div class="ml-language-field"><label for="bvt-mi-source">NGÔN NGỮ TRONG ẢNH</label><select id="bvt-mi-source" class="field" aria-label="Ngôn ngữ trong ảnh"></select></div>
-   <div class="ml-language-field"><label for="bvt-mi-target">DỊCH SANG</label><select id="bvt-mi-target" class="field" aria-label="Ngôn ngữ đích"></select></div>
+   <div class="ml-language-field"><label for="bvt-mi-source">NGÔN NGỮ TRONG ẢNH (<span id="bvt-mi-source-count">100</span>)</label><select id="bvt-mi-source" class="field" aria-label="Ngôn ngữ trong ảnh"></select></div>
+   <div class="ml-language-field"><label for="bvt-mi-target">DỊCH SANG (<span id="bvt-mi-target-count">100</span>)</label><select id="bvt-mi-target" class="field" aria-label="Ngôn ngữ đích"></select></div>
   </div>
   <div class="ml-action-row">
    <label class="btn ml-primary" for="bvt-mi-camera">📷 CHỤP ẢNH</label><input id="bvt-mi-camera" class="ml-file-input" type="file" accept="image/*" capture="environment">
@@ -1471,12 +1566,12 @@
   <div id="bvt-mi-preview" class="ml-image-preview" hidden></div>
   <div class="ml-action-row"><button id="bvt-mi-scan" class="btn ml-primary" type="button" disabled>🔎 NHẬN DIỆN ẢNH</button><button id="bvt-mi-clear" class="btn secondary" type="button" disabled>✕ XÓA ẢNH</button></div>
   <label class="ml-text-label" for="bvt-mi-text">NỘI DUNG NHẬN DIỆN</label>
-  <div class="ml-recognition-actions"><button id="bvt-mi-text-speak" class="ml-icon-btn" type="button" title="Phát âm nội dung nhận diện" aria-label="Phát âm nội dung nhận diện">🔊</button><button id="bvt-mi-text-copy" class="ml-icon-btn" type="button" title="Sao chép nội dung nhận diện" aria-label="Sao chép nội dung nhận diện">📋</button><button id="bvt-mi-text-clear" class="ml-icon-btn" type="button" title="Xóa nội dung nhận diện" aria-label="Xóa nội dung nhận diện">✕</button></div>
+  <div class="ml-recognition-actions"><button id="bvt-mi-text-speak" class="ml-icon-btn" type="button" title="Phát âm nội dung nhận diện" aria-label="Phát âm nội dung nhận diện"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg></button><button id="bvt-mi-text-copy" class="ml-icon-btn" type="button" title="Sao chép nội dung nhận diện" aria-label="Sao chép nội dung nhận diện"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 5V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h1"/></svg></button><button id="bvt-mi-text-clear" class="ml-icon-btn" type="button" title="Xóa nội dung nhận diện" aria-label="Xóa nội dung nhận diện"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <textarea id="bvt-mi-text" class="field ml-textarea" rows="3" placeholder=""></textarea>
   <p id="bvt-mi-status" class="ml-status" role="status" aria-live="polite">Sẵn sàng.</p>
  </div>
  <div class="card ml-card">
-  <div class="ml-result-head"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mi-speak" class="ml-icon-btn" type="button" title="Đọc kết quả" aria-label="Đọc kết quả">🔊</button><button id="bvt-mi-copy" class="ml-icon-btn" type="button" title="Sao chép kết quả" aria-label="Sao chép kết quả">📋</button></div></div>
+  <div class="ml-result-head"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mi-speak" class="ml-icon-btn" type="button" title="Đọc kết quả" aria-label="Đọc kết quả"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg></button><button id="bvt-mi-copy" class="ml-icon-btn" type="button" title="Sao chép kết quả" aria-label="Sao chép kết quả"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 5V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h1"/></svg></button></div></div>
   <div id="bvt-mi-result" class="ml-output" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
  </div>
 </section>
@@ -1484,23 +1579,23 @@
  <div class="card ml-card">
   <h2 class="section-title ml-heading" data-function-number="15">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</h2>
   <div class="ml-language-grid">
-   <div class="ml-language-field"><label for="bvt-mv-source">NGÔN NGỮ BẠN NÓI</label><select id="bvt-mv-source" class="field" aria-label="Ngôn ngữ bạn nói"></select></div>
-   <div class="ml-language-field"><label for="bvt-mv-target">DỊCH SANG</label><select id="bvt-mv-target" class="field" aria-label="Ngôn ngữ đích"></select></div>
+   <div class="ml-language-field"><label for="bvt-mv-source">NGÔN NGỮ BẠN NÓI (<span id="bvt-mv-source-count">84</span>)</label><select id="bvt-mv-source" class="field" aria-label="Ngôn ngữ bạn nói"></select></div>
+   <div class="ml-language-field"><label for="bvt-mv-target">DỊCH SANG (<span id="bvt-mv-target-count">100</span>)</label><select id="bvt-mv-target" class="field" aria-label="Ngôn ngữ đích"></select></div>
   </div>
   <button id="bvt-mv-mic" class="ml-voice-mic" type="button" aria-pressed="false"><span class="ml-mic-icon">🎙️</span><span id="bvt-mv-mic-label">BẮT ĐẦU NÓI</span></button>
   <p id="bvt-mv-status" class="ml-status" role="status" aria-live="polite">Sẵn sàng.</p>
   <label class="ml-text-label" for="bvt-mv-text">NỘI DUNG NHẬN DIỆN</label>
-  <div class="ml-recognition-actions"><button id="bvt-mv-text-speak" class="ml-icon-btn" type="button" title="Phát âm nội dung nhận diện" aria-label="Phát âm nội dung nhận diện">🔊</button><button id="bvt-mv-text-copy" class="ml-icon-btn" type="button" title="Sao chép nội dung nhận diện" aria-label="Sao chép nội dung nhận diện">📋</button><button id="bvt-mv-text-clear" class="ml-icon-btn" type="button" title="Xóa nội dung nhận diện" aria-label="Xóa nội dung nhận diện">✕</button></div>
+  <div class="ml-recognition-actions"><button id="bvt-mv-text-speak" class="ml-icon-btn" type="button" title="Phát âm nội dung nhận diện" aria-label="Phát âm nội dung nhận diện"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg></button><button id="bvt-mv-text-copy" class="ml-icon-btn" type="button" title="Sao chép nội dung nhận diện" aria-label="Sao chép nội dung nhận diện"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 5V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h1"/></svg></button><button id="bvt-mv-text-clear" class="ml-icon-btn" type="button" title="Xóa nội dung nhận diện" aria-label="Xóa nội dung nhận diện"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
   <textarea id="bvt-mv-text" class="field ml-textarea" rows="3" placeholder=""></textarea>
  </div>
  <div class="card ml-card">
-  <div class="ml-result-head"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mv-speak" class="ml-icon-btn" type="button" title="Đọc kết quả" aria-label="Đọc kết quả">🔊</button><button id="bvt-mv-copy" class="ml-icon-btn" type="button" title="Sao chép kết quả" aria-label="Sao chép kết quả">📋</button></div></div>
+  <div class="ml-result-head"><b>KẾT QUẢ DỊCH</b><div class="ml-output-actions"><button id="bvt-mv-speak" class="ml-icon-btn" type="button" title="Đọc kết quả" aria-label="Đọc kết quả"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l5 4V6l-5 4H4"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M18.5 6.5a8 8 0 0 1 0 11"/></svg></button><button id="bvt-mv-copy" class="ml-icon-btn" type="button" title="Sao chép kết quả" aria-label="Sao chép kết quả"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 5V4a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h1"/></svg></button></div></div>
   <div id="bvt-mv-result" class="ml-output" aria-live="polite">Bản dịch sẽ hiển thị tại đây.</div>
  </div>
 </section>
 </main>
 </div><!-- /.app-shell -->
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.7.2</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.7.3</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button id="back-to-top" type="button" aria-label="Về đầu trang" title="Về đầu trang">↑</button>
 <div id="stroke-modal" class="stroke-modal" hidden>
@@ -1598,6 +1693,8 @@ let sentencePage = 1;
 const SENTENCES_PER_PAGE = 10;
 let currentSentencePracticeDeck = [];
 let practiceMode = 'vi-zh';
+// Do not autoplay a practice prompt at page startup; enable only after the learner opens menu 5 or 6.
+let practicePromptSpeechAllowed = false;
 let practiceWordLength = '1';
 try { const savedPracticeLength = localStorage.getItem('bvt-practice-word-length-v1'); if (/^[1-6]$/.test(savedPracticeLength || '') || savedPracticeLength === '7+') practiceWordLength = savedPracticeLength; } catch (_) {}
 let practiceIndex = 0;
@@ -2011,7 +2108,9 @@ document.querySelector('.tabs').addEventListener('click',e=>{
  if(PRACTICE_NAV_MODES.has(tab)){
   if(tab==='read'&&practiceMode!=='read')selectedReadTarget=null;
   practiceReturnTab=null;currentCustomSentence=null;currentSentencePracticeDeck=[];forcedPracticeRow=null;
-  practiceMode=tab;practiceIndex=0;practiceChecked=false;sessionDone=0;sessionCorrect=0;
+  practiceMode=tab;
+  if(tab==='vi-zh'||tab==='zh-vi')practicePromptSpeechAllowed=true;
+  practiceIndex=0;practiceChecked=false;sessionDone=0;sessionCorrect=0;
   updateModeButtons();loadPractice();
  }else if(tab==='translate'){
   // Keep the last practice mode in memory while the translation screen is open.
@@ -2814,7 +2913,7 @@ function loadPractice(){
  // Menu 5 reads its Vietnamese prompt; menu 6 reads its Chinese prompt.
  // Menus 7 and 8 read the selected Chinese word/sentence immediately after selection.
  // These calls occur in the selection/menu event flow to preserve mobile audio permission.
- if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){
+ if((practiceMode==='vi-zh'||practiceMode==='zh-vi')&&practicePromptSpeechAllowed){
   const questionText=String($('practice-question')?.textContent||'').trim();
   if(questionText)speakAuto(questionText,qSpeak);
  }else if(practiceMode==='write'||practiceMode==='read'){
@@ -5366,10 +5465,19 @@ function bvtMlPopulateOneSelect(selectId,kind,allowAuto,allowedCodes,defaultValu
  select.value=defaultValue|| (allowAuto?'auto':(rows[0]?.code||''));
 }
 function bvtMlInitLanguagePickers(){
+ const translateCount=Object.keys(BVT_ML_LANGUAGES).length;
+ const speechCount=BVT_ML_SPEECH_CODES.size;
  bvtMlPopulateOneSelect('bvt-mi-source','source',true,Object.keys(BVT_ML_LANGUAGES),'auto');
  bvtMlPopulateOneSelect('bvt-mi-target','target',false,Object.keys(BVT_ML_LANGUAGES),'vi');
  bvtMlPopulateOneSelect('bvt-mv-source','source',true,[...BVT_ML_SPEECH_CODES],'auto');
  bvtMlPopulateOneSelect('bvt-mv-target','target',false,Object.keys(BVT_ML_LANGUAGES),'vi');
+ const counts={
+  'bvt-mi-source-count':translateCount,
+  'bvt-mi-target-count':translateCount,
+  'bvt-mv-source-count':speechCount,
+  'bvt-mv-target-count':translateCount
+ };
+ Object.entries(counts).forEach(([id,count])=>{const el=$(id);if(el)el.textContent=String(count);});
 }
 function bvtMlSelectedSource(prefix,text){
  const chosen=$(prefix+'-source')?.value||'auto';
@@ -6071,6 +6179,26 @@ const mo=new MutationObserver(records=>{for(const rec of records)for(const node 
  byId('library-list')?.addEventListener('click',e=>{const b=e.target.closest('[data-lib-action]');if(b)handleItemAction(b).catch(err=>status('Lỗi thao tác: '+(err?.message||String(err))));});
  openDB().then(refresh).catch(error=>{byId('library-list').innerHTML='<div class="empty">Không mở được kho tài liệu: '+escapeHTML(error.message||String(error))+'</div>';status('Kho tài liệu không sẵn sàng. Hãy dùng trình duyệt mới qua HTTPS và cho phép lưu trữ trang web.');});
  window.addEventListener('pagehide',revokeUrls);
+})();
+</script>
+
+
+<script id="bvt-v4273-header-clock">
+(function(){
+ const timeNode=document.getElementById('bvt-clock-time');
+ const dateNode=document.getElementById('bvt-clock-date');
+ if(!timeNode||!dateNode)return;
+ const zone='Asia/Ho_Chi_Minh';
+ const timeFormatter=new Intl.DateTimeFormat('vi-VN',{timeZone:zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+ const dateFormatter=new Intl.DateTimeFormat('vi-VN',{timeZone:zone,weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+ function update(){
+  const now=new Date();
+  timeNode.textContent=timeFormatter.format(now);
+  dateNode.textContent=dateFormatter.format(now).toLocaleUpperCase('vi-VN');
+ }
+ update();
+ window.setInterval(update,1000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)update();});
 })();
 </script>
 
