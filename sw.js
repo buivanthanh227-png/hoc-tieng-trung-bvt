@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-7-5-dictionary-actions-hanzi-font-20261108';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-7-5-banner-theme-sync-20261108';
 const APP_FILES = ['./index.html', './luyen-so-tieng-trung.html', './manifest.webmanifest', './icon.svg', './icon.svg?v=41-gold-logo-stroke-practice-20261028', './icon-v41-192.png', './icon-v41-192.png?v=41-gold-logo-stroke-practice-20261028', './icon-v41-512.png', './icon-v41-512.png?v=41-gold-logo-stroke-practice-20261028', './apple-touch-icon-v41.png', './apple-touch-icon-v41.png?v=41-gold-logo-stroke-practice-20261028', './sw.js', './asr-worker.js', './asr-voice-worker.js', './asr-cloudflare-worker.js', './ocr-worker.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 self.addEventListener('install', event => {

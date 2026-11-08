@@ -24,3 +24,8 @@ SAU KHI CAP NHAT
 V42.7.5: Clock repositioned for desktop/tablet, readable language count labels, black status/result headings, horizontal dictionary word line.
 
 V42.7.5: Dictionary action controls stay on one horizontal row on phone/tablet/desktop; speech activation preserves the "Nghe phat am" label; Hanzi uses a medium-weight CJK font with increased spacing between Hanzi, Pinyin and Vietnamese meaning.
+
+V42.7.5 FIX BANNER MENU 14/15
+- Dong bo mau thanh tieu de tren cung voi mau chuc nang dang chon: menu 14 do (#E4575D), menu 15 xanh la (#2FA66A).
+- Cap nhat khoa cache Service Worker de trinh duyet tai phien ban index.html da sua.
+- Khong thay doi cac menu khac, du lieu tu dien, logic dich hoac Cloudflare Worker.
