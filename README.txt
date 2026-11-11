@@ -26,3 +26,20 @@ LUU Y CHAT LUONG
 SAU KHI CAP NHAT
 - May tinh: Ctrl+F5.
 - Dien thoai/may tinh bang: dong tab/app roi mo lai. Neu van con giao dien cu, xoa cache website.
+
+
+V42.8 - THEM MENU 16 LUYEN NGHE PHAT AM PINYIN
+- Bo sung menu 16, giu nguyen 15 menu truoc do; them mau rieng xanh duong.
+- Su dung dung bang Pinyin trong PDF nguoi dung cung cap: 23 hang phu am dau, 36 cot van mau, 391 am tiet; khong tu tao cac o trong.
+- Them nghe mau cho 23 thanh mau va 36 van mau; moi muc co nut loa va nut sao chep. Thanh mau duoc nghe qua am tiet dan co cung thanh mau, khong doc ten chu cai tieng Anh.
+- Bang ghep am co bo loc 16.1/16.2/16.3/16.4; bam loa tai moi o de nghe am tiet theo thanh dang chon.
+- Muc 16.5 tao bai nghe ngau nhien tu tap 391 am tiet x 4 thanh. Hai nhom dap an doc lap: thanh dieu so may va am tiet Pinyin khong dau; co the chon chi mot nhom hoac ca hai.
+- Giong doc dung bo ghi am nguoi that Chen Wang tu hugolpz/audio-cmn (64k/syllabs), ghim theo commit f759a0f18f27690742957619e1248ed91e9b3f2c; khong dung giong doc mac dinh cua thiet bi.
+- 1.564 tep ghi am can thiet (co xu ly ten tep dac biet ju4 -> jv4) duoc tai va luu vao Cache Storage cua trinh duyet tren tung thiet bi. Lan dau can Internet; co nut tai tron bo de dung ngoai tuyen sau khi tai du va Service Worker da kich hoat (mo lai trang sau khi deploy de worker nhan quyen kiem soat).
+- Ghi cong: hugolpz/audio-cmn; nguoi doc am tiet Chen Wang; nguon tuyen bo giay phep CC BY-SA. Kiem tra README nguon de biet dieu khoan/phiên ban ap dung.
+- Giao dien menu 16 co CSS va JavaScript rieng, tu dong co gian tren desktop, tablet va dien thoai. Khong sua logic 15 menu cu.
+
+CAP NHAT GITHUB PAGES
+- PATCH_GITHUB_3_TEP.zip: ghi de index.html, manifest.webmanifest, sw.js.
+- FULL_14_TEP.zip: goi day du cac tep ung dung, bao gom sw.js cap nhat.
+- Sau khi deploy: PC nhan Ctrl+F5; dien thoai dong app/tab roi mo lai.

@@ -1,7 +1,7 @@
 {
-  "name": "HỌC TIẾNG TRUNG BVT · V42.7.6",
+  "name": "HỌC TIẾNG TRUNG BVT · V42.8",
   "short_name": "HỌC TIẾNG TRUNG",
-  "description": "Từ điển Trung–Việt và công cụ dịch đa ngôn ngữ bằng hình ảnh, giọng nói.",
+  "description": "Từ điển Trung–Việt, công cụ dịch đa ngôn ngữ và luyện nghe phát âm Pinyin.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
