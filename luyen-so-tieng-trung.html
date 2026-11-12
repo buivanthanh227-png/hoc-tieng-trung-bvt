@@ -241,6 +241,15 @@
       .stat-card { min-height: 54px; }
     }
   </style>
+<style id="number-seconds-stepper-style">
+.seconds-stepper{position:relative;display:block;width:100%;min-width:0}
+.seconds-stepper>input{width:100%!important;max-width:100%!important;padding-right:43px!important;appearance:textfield;-moz-appearance:textfield}
+.seconds-stepper>input::-webkit-outer-spin-button,.seconds-stepper>input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.seconds-stepper-controls{position:absolute;top:3px;right:3px;bottom:3px;display:grid;grid-template-rows:1fr 1fr;width:34px;overflow:hidden;border:1px solid #cbd5e1;border-radius:7px;background:#f8fafc}
+.seconds-stepper-controls button{display:grid;place-items:center;min-height:0;padding:0;border:0;background:#f8fafc;color:#334155;font-size:10px;font-weight:900;line-height:1;cursor:pointer;touch-action:manipulation}
+.seconds-stepper-controls button+button{border-top:1px solid #cbd5e1}
+.seconds-stepper-controls button:active{background:#dbeafe;color:#1d4ed8}
+</style>
 </head>
 <body>
   <main class="app">
@@ -1057,6 +1066,15 @@
  document.addEventListener('click',function(){setTimeout(sendHeight,120);},true);
  window.addEventListener('message',function(event){if(event.data&&event.data.type==='bvt-number-app-measure')sendHeight();});
  setTimeout(sendHeight,200);setTimeout(sendHeight,900);
+})();
+</script>
+<script id="number-seconds-stepper-script">
+(()=>{
+ const input=document.getElementById('delaySec');if(!input||input.dataset.secondsStepper==='1')return;input.dataset.secondsStepper='1';
+ const wrap=document.createElement('div');wrap.className='seconds-stepper';input.parentNode.insertBefore(wrap,input);wrap.appendChild(input);
+ const controls=document.createElement('div');controls.className='seconds-stepper-controls';controls.setAttribute('aria-label','Tăng hoặc giảm thời gian');
+ const make=(dir,label,title)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;b.setAttribute('aria-label',title);b.addEventListener('click',()=>{const step=Number(input.step)>0?Number(input.step):.1,min=input.min!==''?Number(input.min):-Infinity,max=input.max!==''?Number(input.max):Infinity;let n=Number(input.value);if(!Number.isFinite(n))n=5;n=Math.min(max,Math.max(min,n+dir*step));input.value=String(Number(n.toFixed(3)));input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));});return b;};
+ controls.append(make(1,'▲','Tăng thời gian'),make(-1,'▼','Giảm thời gian'));wrap.appendChild(controls);
 })();
 </script>
 </body>
