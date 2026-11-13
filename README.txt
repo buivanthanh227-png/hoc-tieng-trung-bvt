@@ -32,4 +32,6 @@ CAP NHAT v42.8.9 - MENU 16.1
 
 V42.8.9 - Dieu chinh vi tri hai nhan tren o goc cheo bang Pinyin 16.1; dua VẬN MẪU va THANH MẪU vao tron ven hai nua tam giac, khong de duong cheo de len chu.
 
-V42.8.9 FIX - Dieu chinh kich thuoc va vi tri nhan THANH MẪU trong nua tam giac duoi-trai; nhan VẬN MẪU giu tron ven trong nua tam giac tren-phai, khong bi duong cheo de len chu.
+V42.8.9 FIX - Chinh lai dung huong o cheo: VẬN MẪU nam tron trong nua tam giac tren-trai; THANH MẪU nam tron trong nua tam giac doi dien phia duoi-phai. Duong cheo di tu goc tren-phai xuong goc duoi-trai, khong cat qua chu.
+- Tu dong do do rong tung cot van mau theo am tiet dai nhat trong cot va ca bon thanh dieu; cac cot ngan giu toi thieu 39px, cot uang duoc mo rong de chua tron cac am tiet zhuāng, chuāng, shuāng.
+- Giu nguyen so phien ban v42.8.9; chi thay ma cache noi bo cua Service Worker de trinh duyet tai lai index.html da sua.
