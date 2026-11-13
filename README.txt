@@ -1,6 +1,6 @@
-HOC TIENG TRUNG BVT - PHIEN BAN V42.8.6
+HOC TIENG TRUNG BVT - PHIEN BAN V42.8.7
 
-V42.8.6 - CAI THIEN MENU 16 VA ON TAP SAU LUYEN NGHE
+V42.8.7 - CAI THIEN MENU 16 VA ON TAP SAU LUYEN NGHE
 
 - So menu 16 nam tren o dem xam nhat giong 15 menu con lai; huy hieu duoc ep mau ca khi menu dang chon.
 - Bieu tuong loa trong dong huong dan 16.1 chi la hinh minh hoa, khong phat am thanh khi bam.
@@ -17,3 +17,5 @@ CAP NHAT GITHUB PAGES
 - PATCH_GITHUB_4_TEP.zip: giai nen va ghi de index.html, luyen-so-tieng-trung.html, manifest.webmanifest, sw.js vao thu muc goc repository, sau do Commit changes.
 - FULL_14_TEP.zip: goi day du 14 tep ung dung.
 - Sau khi deploy: PC nhan Ctrl+F5; dien thoai/may tinh bang dong tab/app roi mo lai de Service Worker cap nhat.
+
+V42.8.7 - Bo sung o phat am toan hang/toan cot trong bang Pinyin 16.1; thu gon bon thanh cuon.
