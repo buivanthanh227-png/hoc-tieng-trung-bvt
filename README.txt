@@ -47,3 +47,11 @@ V42.9 - MENU 17: THU THACH NHO MAT CHU HAN (DIEU CHINH GIAO DIEN VA LOGIC).
 - Them dong ho xem dap an; het thoi gian se tu dong chuyen cau tiep theo.
 - Tang kich thuoc chu dap an va chu trong bang tong ket; thu hep khoang cach cac chu tren bang thu thach.
 - Service Worker doi ma cache de trinh duyet tai ban index.html moi; giu so phien ban v42.9.
+
+
+MENU 17 – BẢN TINH CHỈNH TIẾP THEO (GIỮ PHIÊN BẢN ỨNG DỤNG v42.9)
+- Đã bỏ hai dòng mô tả dưới tiêu đề, biểu tượng chữ 记忆 và nút lấy từ riêng từ điển menu 1. Ô tìm kiếm trong menu 17 vẫn tra trực tiếp từ điển và hiện gợi ý khi nhập.
+- Bảng chữ hiển thị theo vị trí rải ngẫu nhiên trong vùng chơi; thuật toán đo kích thước từng chữ và tránh chồng lấn, tự mở rộng vùng chơi khi cần.
+- Ở mức KHÓ và RẤT KHÓ, chữ thay đổi cả màu, font và vị trí; bổ sung các lựa chọn font chữ giản thể như SimHei, FangSong, DengXian và Noto Sans SC bên cạnh các font hiện có.
+- Giảm cỡ chữ trên bảng; ô nhập chữ Hán có cùng chiều rộng với nút thu âm; nút BỎ QUA CÂU NÀY và KẾT THÚC SỚM được tăng kích thước, tô màu nổi bật.
+- Ba chỉ số lượt chơi, trạng thái ẩn chữ và điểm đúng được tăng cỡ đồng đều.

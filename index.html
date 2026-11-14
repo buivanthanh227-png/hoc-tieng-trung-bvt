@@ -2293,14 +2293,14 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 
 <section id="panel-hanzi-memory" class="panel">
  <div class="hm-wrap">
-  <div class="hm-hero"><div><h2 class="section-title" data-function-number="17">THỬ THÁCH NHỚ MẶT CHỮ HÁN</h2><p>Quan sát chữ Hán, ghi nhớ hình dạng và tìm chữ đã biến mất. Luyện khả năng nhận mặt chữ khi tài liệu không có phiên âm.</p></div><div class="hm-hero-icon" aria-hidden="true">记忆</div></div>
-  <div class="hm-card"><h3>17.1 · CHỌN NGUỒN TỪ VỰNG</h3><p class="hm-note">Có thể gom từ nhiều menu vào cùng một bộ chơi. Các mục phải có chữ Hán; phiên âm và nghĩa được lưu để xem lại sau lượt chơi.</p>
-   <div class="hm-source-actions"><button type="button" id="hm-add-dict" class="hm-source-btn">＋ TỪ ĐIỂN MENU 1 (TRANG ĐANG MỞ)</button><button type="button" id="hm-add-ocr" class="hm-source-btn">＋ NHẬN DIỆN ẢNH (MENU 2)</button><button type="button" id="hm-add-translation" class="hm-source-btn">＋ KẾT QUẢ DỊCH</button><button type="button" id="hm-add-bank" class="hm-source-btn">＋ BỘ TỪ VỰNG (MENU 10)</button><button type="button" id="hm-add-combine" class="hm-source-btn">＋ GHÉP CÂU (MENU 9)</button></div>
+  <div class="hm-hero"><div><h2 class="section-title" data-function-number="17">THỬ THÁCH NHỚ MẶT CHỮ HÁN</h2></div></div>
+  <div class="hm-card"><h3>17.1 · CHỌN NGUỒN TỪ VỰNG</h3>
+   <div class="hm-source-actions"><button type="button" id="hm-add-ocr" class="hm-source-btn">＋ NHẬN DIỆN ẢNH (MENU 2)</button><button type="button" id="hm-add-translation" class="hm-source-btn">＋ KẾT QUẢ DỊCH</button><button type="button" id="hm-add-bank" class="hm-source-btn">＋ BỘ TỪ VỰNG (MENU 10)</button><button type="button" id="hm-add-combine" class="hm-source-btn">＋ GHÉP CÂU (MENU 9)</button></div>
    <div class="hm-search-row"><input id="hm-dict-search" class="field" type="search" autocomplete="off" aria-label="Tìm từ trong từ điển" placeholder="Nhập chữ Hán / pinyin / nghĩa – danh sách gợi ý hiện tự động…"></div><div id="hm-search-results" class="hm-search-results" hidden></div>
    <div class="hm-bank-head"><strong id="hm-bank-count">0 từ đã chọn</strong><button type="button" id="hm-clear-bank" class="hm-clear">XÓA BỘ TỪ</button></div><div id="hm-bank-list" class="hm-bank-list"><div class="hm-empty">Chưa có từ. Hãy chọn nguồn ở trên hoặc tìm trong từ điển.</div></div><div id="hm-source-status" class="hm-status" role="status"></div>
   </div>
   <div class="hm-card"><h3>17.2 · THIẾT LẬP THỬ THÁCH</h3><div class="hm-settings"><label>SỐ TỪ XUẤT HIỆN<input id="hm-word-count" type="number" min="2" max="30" step="1" value="5"></label><label>THỜI GIAN QUAN SÁT (GIÂY)<input id="hm-seconds" type="number" min="1" max="60" step="1" value="5"></label><label>SỐ LƯỢT CHƠI<input id="hm-rounds" type="number" min="1" max="50" step="1" value="5"></label><label>THỜI GIAN XEM ĐÁP ÁN (GIÂY)<input id="hm-answer-seconds" type="number" min="1" max="60" step="1" value="5"></label></div>
-   <div class="hm-levels"><label class="hm-level easy"><input type="radio" name="hm-level" value="easy" checked><span><b>DỄ</b><small>Cùng font · màu đen · vị trí cố định</small></span></label><label class="hm-level hard"><input type="radio" name="hm-level" value="hard"><span><b>KHÓ</b><small>Cùng font · nhiều màu · đổi vị trí</small></span></label><label class="hm-level expert"><input type="radio" name="hm-level" value="expert"><span><b>RẤT KHÓ</b><small>Đổi font · màu · vị trí</small></span></label></div>
+   <div class="hm-levels"><label class="hm-level easy"><input type="radio" name="hm-level" value="easy" checked><span><b>DỄ</b><small>Cùng font · màu đen · vị trí ngẫu nhiên</small></span></label><label class="hm-level hard"><input type="radio" name="hm-level" value="hard"><span><b>KHÓ</b><small>Đổi font · đổi màu · đổi vị trí</small></span></label><label class="hm-level expert"><input type="radio" name="hm-level" value="expert"><span><b>RẤT KHÓ</b><small>Nhiều font · nhiều màu · vị trí ngẫu nhiên</small></span></label></div>
    <button type="button" id="hm-start" class="hm-start">▶ BẮT ĐẦU THỬ THÁCH</button><div id="hm-setup-status" class="hm-status" role="status"></div>
   </div>
   <div id="hm-game" class="hm-card hm-game" hidden><div class="hm-game-top"><strong id="hm-round-label">LƯỢT 1/5</strong><span id="hm-timer">Quan sát: 5 giây</span><span id="hm-score-live">Đúng: 0</span></div><div id="hm-board" class="hm-board" aria-live="polite"></div><div id="hm-missing-prompt" class="hm-missing-prompt" hidden>CHỮ NÀO VỪA BIẾN MẤT?</div>
@@ -7330,6 +7330,20 @@ renderChart();bindChartScrollbars();renderChoices();
 #panel-hanzi-memory .hm-review-table td:nth-child(3){font-size:20px;font-weight:800}
 #panel-hanzi-memory .hm-next{background:#BE185D;color:#fff}
 @media(max-width:700px){#panel-hanzi-memory .hm-settings{grid-template-columns:repeat(2,minmax(0,1fr))}#panel-hanzi-memory .hm-levels{grid-template-columns:1fr}#panel-hanzi-memory .hm-review-table{font-size:13px}#panel-hanzi-memory .hm-review-table td:nth-child(2) b{font-size:24px}}
+/* Menu 17 – spatial memory board and clearer controls */
+#panel-hanzi-memory .hm-hero{justify-content:flex-start;min-height:0;padding:14px 18px}
+#panel-hanzi-memory .hm-hero h2{margin:0}
+#panel-hanzi-memory .hm-game-top{align-items:center;gap:10px}
+#panel-hanzi-memory .hm-game-top strong,#panel-hanzi-memory .hm-game-top span{font-size:18px!important;line-height:1.35;font-weight:900!important;color:#9d174d}
+#panel-hanzi-memory .hm-board{display:block;min-height:300px;height:300px;position:relative;overflow:hidden;padding:0;}
+#panel-hanzi-memory .hm-tile{position:absolute;display:grid;place-items:center;min-width:44px;min-height:50px;max-width:calc(100% - 36px);padding:4px 7px;margin:0;border-radius:10px;font-size:clamp(25px,3.2vw,38px);line-height:1.12;white-space:normal;overflow-wrap:anywhere;text-align:center;transform:none!important;}
+#panel-hanzi-memory .hm-answer-area{display:grid;grid-template-columns:1fr;gap:8px;max-width:520px;margin:10px auto 0}
+#panel-hanzi-memory #hm-answer{width:100%;box-sizing:border-box;min-height:46px;height:46px;font-size:18px;padding:8px 12px}
+#panel-hanzi-memory .hm-answer-area .hm-mic,#panel-hanzi-memory #hm-submit{grid-column:auto;width:100%;min-height:46px}
+#panel-hanzi-memory #hm-skip,#panel-hanzi-memory #hm-stop{display:block;width:100%;min-height:48px;margin-top:10px;padding:12px 16px;border:0;border-radius:12px;background:linear-gradient(100deg,#db2777,#9d174d);color:#fff;font-size:15px;font-weight:950;letter-spacing:.02em;box-shadow:0 5px 14px #9d174d35}
+#panel-hanzi-memory #hm-skip{background:linear-gradient(100deg,#ec4899,#be185d)}
+#panel-hanzi-memory #hm-stop{background:linear-gradient(100deg,#9d174d,#831843)}
+@media(max-width:700px){#panel-hanzi-memory .hm-game-top strong,#panel-hanzi-memory .hm-game-top span{font-size:16px!important}#panel-hanzi-memory .hm-board{min-height:300px}#panel-hanzi-memory .hm-tile{font-size:clamp(24px,7vw,34px)}}
 </style>
 <script id="bvt-v429-menu17-script">
 (()=>{
@@ -7340,7 +7354,6 @@ renderChart();bindChartScrollbars();renderChoices();
  function addRows(rows,label){let n=0;for(const r of rows||[]){const v=normRow(r?.row||r);if(!v)continue;const k=v.zh.normalize('NFKC').replace(/\s/g,'');if(!bank.has(k)){bank.set(k,v);n++;}}renderBank();$hm('hm-source-status').textContent=label+': thêm '+n+' từ. Tổng bộ từ: '+bank.size+'.';}
  function renderBank(){const box=$hm('hm-bank-list');$hm('hm-bank-count').textContent=bank.size+' từ đã chọn';if(!bank.size){box.innerHTML='<div class="hm-empty">Chưa có từ. Hãy chọn nguồn ở trên hoặc tìm trong từ điển.</div>';return;}box.innerHTML=[...bank].map(([k,v])=>`<span class="hm-chip"><b>${esc(v.zh)}</b><small>${esc(v.py)} · ${esc(v.vi)}</small><button type="button" data-hm-remove="${esc(k)}">×</button></span>`).join('');box.querySelectorAll('[data-hm-remove]').forEach(b=>b.onclick=()=>{bank.delete(b.dataset.hmRemove);renderBank();});}
  function esc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
- $hm('hm-add-dict').onclick=()=>{const rows=[...document.querySelectorAll('#dict-list .word')].map(card=>({zh:card.querySelector('.hanzi')?.childNodes?.[0]?.textContent||card.querySelector('.hanzi')?.textContent,py:card.querySelector('.pinyin')?.textContent,vi:card.querySelector('.meaning')?.textContent}));if(rows.length)addRows(rows,'Các từ đang hiển thị ở trang Từ điển menu 1');else $hm('hm-source-status').textContent='Menu 1 chưa có kết quả đang hiển thị. Hãy tìm từ trong từ điển hoặc dùng ô tìm kiếm bên dưới.';};
  $hm('hm-add-ocr').onclick=()=>addRows(ctx.detectedOcrWords||[],'Nhận diện hình ảnh menu 2');
  $hm('hm-add-bank').onclick=()=>addRows(ctx.vocabTrainingBank?[...ctx.vocabTrainingBank.values()]:[],'Bộ từ luyện tập menu 10');
  $hm('hm-add-combine').onclick=()=>addRows(ctx.selectedCombine?[...ctx.selectedCombine.values()].map(x=>x.row):[],'Từ đã chọn menu 9');
@@ -7348,11 +7361,48 @@ renderChart();bindChartScrollbars();renderChoices();
  let searchTimer=null;
  function searchDict(){const q=clean($hm('hm-dict-search').value);const box=$hm('hm-search-results');if(!q){box.hidden=true;box.innerHTML='';return;}if(!ctx.dictionary||!ctx.dictionary.length){box.hidden=false;box.innerHTML='<div class="hm-empty">Từ điển đang nạp.</div>';return;}const nq=typeof ctx.norm==='function'?ctx.norm(q):q.toLowerCase();const found=[];for(let i=0;i<ctx.dictionary.length;i++){const r=ctx.dictionary[i];const hay=[r[0],r[2],r[3]].join(' ').toLowerCase();if(hay.includes(q.toLowerCase())||(typeof ctx.searchScoreForRow==='function'&&ctx.searchScoreForRow(i,nq)>0))found.push(r);if(found.length>=25)break;}box.hidden=false;box.innerHTML=found.length?found.map((r,i)=>`<button type="button" class="hm-result" data-hm-found="${i}"><b>${esc(r[0])}</b><small>${esc(r[2]||'')} · ${esc(r[3]||'')}</small><strong>＋</strong></button>`).join(''):'<div class="hm-empty">Không tìm thấy từ phù hợp.</div>';box.querySelectorAll('[data-hm-found]').forEach(b=>b.onclick=()=>{addRows([found[Number(b.dataset.hmFound)]],'Từ điển');$hm('hm-dict-search').value='';box.hidden=true;box.innerHTML='';});}
  $hm('hm-dict-search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchDict,120);});$hm('hm-dict-search').addEventListener('focus',()=>{if(clean($hm('hm-dict-search').value))searchDict();});document.addEventListener('click',e=>{if(!e.target.closest('#panel-hanzi-memory .hm-search-row')&&!e.target.closest('#hm-search-results'))$hm('hm-search-results').hidden=true;});
- function setBoard(items,level){const box=$hm('hm-board');box.innerHTML='';items.forEach((v,i)=>{const el=document.createElement('div');el.className='hm-tile';el.dataset.hanzi=v.zh;el.textContent=v.zh;if(level==='easy'){el.style.color='#111827';el.style.fontFamily='Arial,"Microsoft YaHei",sans-serif';}else if(level==='hard'){el.style.color=['#e11d48','#2563eb','#059669','#9333ea','#d97706','#0891b2'][i%6];el.style.fontFamily='Arial,"Microsoft YaHei",sans-serif';}else{el.style.color=['#db2777','#2563eb','#059669','#9333ea','#d97706','#0f766e'][i%6];el.style.fontFamily=['KaiTi','SimSun','Microsoft YaHei','serif','sans-serif'][i%5];el.style.transform=`rotate(${(i%3-1)*4}deg)`;}box.appendChild(el);});/* Initial positions stay readable; hard/expert rearrange only after a character disappears. */}
+ const hmFonts=['"Microsoft YaHei",sans-serif','SimHei,sans-serif','SimSun,serif','KaiTi,serif','FangSong,serif','DengXian,sans-serif','"Noto Sans SC",sans-serif','serif'];
+ const hmColors=['#e11d48','#2563eb','#059669','#9333ea','#d97706','#0891b2','#c026d3','#0f766e','#7c3aed','#be123c'];
+ function scatterTiles(box,nodes){
+   const pad=18,gap=17,w=Math.max(260,box.clientWidth||box.getBoundingClientRect().width||600);
+   box.style.height='auto';box.style.minHeight='300px';
+   let h=Math.max(300,Math.ceil(nodes.length/Math.max(2,Math.floor((w-36)/82)))*92+36);
+   for(let attempt=0;attempt<12;attempt++){
+     box.style.height=h+'px';const placed=[];let failed=false;
+     for(const el of nodes){
+       const ew=Math.min(w-2*pad,Math.max(48,el.offsetWidth||el.getBoundingClientRect().width));
+       const eh=Math.max(52,el.offsetHeight||el.getBoundingClientRect().height);
+       let found=null;
+       for(let k=0;k<650;k++){
+         const x=pad+Math.random()*Math.max(0,w-2*pad-ew);
+         const y=pad+Math.random()*Math.max(0,h-2*pad-eh);
+         const rect={x,y,w:ew,h:eh};
+         if(placed.every(r=>rect.x+rect.w+gap<=r.x||r.x+r.w+gap<=rect.x||rect.y+rect.h+gap<=r.y||r.y+r.h+gap<=rect.y)){found=rect;break;}
+       }
+       if(!found){failed=true;break;}
+       placed.push(found);el.style.left=found.x+'px';el.style.top=found.y+'px';
+     }
+     if(!failed)return;
+     h+=Math.max(90,Math.round(h*.35));
+   }
+   // Guaranteed non-overlap fallback: randomized row positions with measured widths.
+   let x=pad,y=pad,rowH=0;const placedRows=[];
+   for(const el of nodes){const ew=Math.min(w-2*pad,Math.max(48,el.offsetWidth||el.getBoundingClientRect().width));const eh=Math.max(52,el.offsetHeight||el.getBoundingClientRect().height);
+     if(x+ew>w-pad){x=pad;y+=rowH+gap;rowH=0;}
+     const jitter=Math.random()*Math.max(0,rowH?Math.min(12,rowH-eh):0);
+     el.style.left=x+'px';el.style.top=(y+jitter)+'px';x+=ew+gap;rowH=Math.max(rowH,eh);
+   }
+   box.style.height=Math.max(300,y+rowH+pad)+'px';
+ }
+ function styleTile(el,level,i,afterHide=false){
+   if(level==='easy'){el.style.color='#111827';el.style.fontFamily='"Microsoft YaHei",Arial,sans-serif';el.style.fontWeight='600';}
+   else {el.style.color=hmColors[(i+(afterHide?3:0))%hmColors.length];el.style.fontFamily=hmFonts[(i+(afterHide?2:0))%hmFonts.length];el.style.fontWeight=(i%3===0?'700':'500');}
+ }
+ function setBoard(items,level){const box=$hm('hm-board');box.innerHTML='';items.forEach((v,i)=>{const el=document.createElement('div');el.className='hm-tile';el.dataset.hanzi=v.zh;el.textContent=v.zh;styleTile(el,level,i,false);box.appendChild(el);});scatterTiles(box,[...box.children]);}
  function stopClock(){if(timer){clearInterval(timer);timer=null;}}
  function startGame(){const count=Math.max(2,Math.min(30,Number($hm('hm-word-count').value)||5)),secs=Math.max(1,Math.min(60,Number($hm('hm-seconds').value)||5)),rounds=Math.max(1,Math.min(50,Number($hm('hm-rounds').value)||5)),answerSecs=Math.max(1,Math.min(60,Number($hm('hm-answer-seconds').value)||5));if(bank.size<count){$hm('hm-setup-status').textContent=`Cần ít nhất ${count} từ trong bộ từ; hiện có ${bank.size}.`;return;}deck=[...bank.values()];round=0;score=0;results.length=0;started=true;$hm('hm-game').hidden=false;$hm('hm-review').hidden=true;$hm('hm-setup-status').textContent='';$hm('hm-start').disabled=true;$hm('hm-start').textContent='ĐANG TRONG LƯỢT CHƠI';$hm('hm-rounds').dataset.actual=String(rounds);$hm('hm-seconds').dataset.actual=String(secs);$hm('hm-answer-seconds').dataset.actual=String(answerSecs);nextRound();}
  function nextRound(){stopClock();const rounds=Number($hm('hm-rounds').dataset.actual||10);if(round>=rounds){finishGame();return;}round++;const count=Math.max(2,Math.min(30,Number($hm('hm-word-count').value)||5));const pool=[...deck].sort(()=>Math.random()-.5).slice(0,count);missing=pool[Math.floor(Math.random()*pool.length)];const level=document.querySelector('input[name="hm-level"]:checked')?.value||'easy';setBoard(pool,level);$hm('hm-round-label').textContent=`LƯỢT ${round}/${rounds}`;$hm('hm-score-live').textContent='Đúng: '+score;$hm('hm-timer').textContent='Quan sát: '+Number($hm('hm-seconds').dataset.actual)+' giây';$hm('hm-missing-prompt').hidden=true;$hm('hm-answer-area').hidden=true;$hm('hm-next').hidden=true;$hm('hm-skip').hidden=true;$hm('hm-feedback').textContent='Hãy ghi nhớ tất cả chữ Hán đang xuất hiện.';remaining=Number($hm('hm-seconds').dataset.actual);timer=setInterval(()=>{remaining--; $hm('hm-timer').textContent='Quan sát: '+Math.max(0,remaining)+' giây';if(remaining<=0){stopClock();revealMissing(level,pool);}},1000);}
- function revealMissing(level,pool){const board=$hm('hm-board');const target=[...board.children].find(el=>el.dataset.hanzi===missing.zh);if(target)target.remove();if(level!=='easy'){const moving=[...board.children];for(let i=moving.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[moving[i],moving[j]]=[moving[j],moving[i]];}moving.forEach(el=>board.appendChild(el));[...board.children].forEach((el,i)=>{if(level==='hard'){el.style.transform=`translate(${(i%3-1)*12}px,${(i%2?1:-1)*8}px)`;}else{el.style.color=['#d946ef','#0ea5e9','#f97316','#16a34a'][i%4];el.style.fontFamily=['KaiTi','SimSun','serif','sans-serif'][i%4];el.style.transform=`translate(${(i%3-1)*15}px,${(i%2?1:-1)*10}px) rotate(${(i%3-1)*6}deg)`;}});}
+ function revealMissing(level,pool){const board=$hm('hm-board');const target=[...board.children].find(el=>el.dataset.hanzi===missing.zh);if(target)target.remove();if(level!=='easy'){[...board.children].forEach((el,i)=>styleTile(el,level,i,true));scatterTiles(board,[...board.children]);}
  $hm('hm-missing-prompt').hidden=false;$hm('hm-answer-area').hidden=false;$hm('hm-answer').value='';$hm('hm-next').hidden=true;$hm('hm-skip').hidden=false;$hm('hm-answer').focus();$hm('hm-feedback').textContent='Chữ đã biến mất. Hãy nhập chữ Hán hoặc trả lời bằng giọng nói.';$hm('hm-timer').textContent='ĐÃ ẨN 1 CHỮ';}
  function submitAnswer(source='keyboard',text=null){if(!missing||$hm('hm-answer-area').hidden)return;const answer=clean(text??$hm('hm-answer').value).replace(/[，。,.!?！？\s]/g,'');if(!answer){$hm('hm-feedback').textContent='Bạn chưa nhập câu trả lời. Có thể bấm BỎ QUA CÂU NÀY để sang câu tiếp theo.';return;}const correct=answer===missing.zh;score+=correct?1:0;results.push({round,expected:missing.zh,py:missing.py,vi:missing.vi,answer,correct,source});$hm('hm-score-live').textContent='Đúng: '+score;$hm('hm-feedback').innerHTML=(correct?'<span class="hm-correct">✓ Chính xác!</span>':'<span class="hm-wrong">✕ Chưa đúng.</span>')+' Đáp án: <b>'+esc(missing.zh)+'</b> · '+esc(missing.py)+' · '+esc(missing.vi);$hm('hm-answer-area').hidden=true;$hm('hm-skip').hidden=true;$hm('hm-next').hidden=true;const wait=Math.max(1,Math.min(60,Number($hm('hm-answer-seconds').dataset.actual||5)));remaining=wait;$hm('hm-timer').textContent='Xem đáp án: '+remaining+' giây';stopClock();timer=setInterval(()=>{remaining--;$hm('hm-timer').textContent='Xem đáp án: '+Math.max(0,remaining)+' giây';if(remaining<=0){stopClock();missing=null;nextRound();}},1000);missing=null;}
  function skipRound(){if(!missing)return;results.push({round,expected:missing.zh,py:missing.py,vi:missing.vi,answer:'(Bỏ qua)',correct:false,source:'skip'});$hm('hm-score-live').textContent='Đúng: '+score;$hm('hm-feedback').innerHTML='Đã bỏ qua. Đáp án: <b>'+esc(missing.zh)+'</b> · '+esc(missing.py)+' · '+esc(missing.vi);$hm('hm-answer-area').hidden=true;$hm('hm-skip').hidden=true;const wait=Math.max(1,Math.min(60,Number($hm('hm-answer-seconds').dataset.actual||5)));remaining=wait;$hm('hm-timer').textContent='Xem đáp án: '+remaining+' giây';missing=null;stopClock();timer=setInterval(()=>{remaining--;$hm('hm-timer').textContent='Xem đáp án: '+Math.max(0,remaining)+' giây';if(remaining<=0){stopClock();nextRound();}},1000);}
