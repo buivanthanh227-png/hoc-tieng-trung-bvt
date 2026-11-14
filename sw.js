@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-9-menu17-spatial-v2-20261114';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-9-menu17-spatial-v3-20261114';
 const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-9';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';

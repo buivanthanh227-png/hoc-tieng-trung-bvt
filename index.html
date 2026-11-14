@@ -7278,7 +7278,7 @@ renderChart();bindChartScrollbars();renderChoices();
 <script id="bvt-v4285-seconds-steppers">
 (()=>{
  'use strict';
- const ids=['vocab-training-show-seconds','vocab-training-next-seconds','p16-question-count','p16-show-answer-seconds','p16-next-question-seconds','p16-3-question-count','p16-3-show-answer-seconds','p16-3-next-question-seconds'];
+ const ids=['vocab-training-show-seconds','vocab-training-next-seconds','p16-question-count','p16-show-answer-seconds','p16-next-question-seconds','p16-3-question-count','p16-3-show-answer-seconds','p16-3-next-question-seconds','hm-seconds','hm-answer-seconds'];
  function add(input){
   if(!input||input.dataset.secondsStepper==='1')return;input.dataset.secondsStepper='1';
   const unit=input.id.includes('question-count')?'số câu':'số giây';
@@ -7306,6 +7306,8 @@ renderChart();bindChartScrollbars();renderChoices();
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"]{background:#DB2777!important;border-color:#9D174D!important;color:#fff!important}
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"].active{background:#9D174D!important;border-color:#831843!important;color:#fff!important}
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-label,.app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-icon{color:#fff!important}
+/* Menu 17 label follows the black text treatment used by the other menu names. */
+.app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-label,.app-shell #main-tabs .tab[data-tab="hanzi-memory"].active .tab-label{color:#111827!important}
 #panel-hanzi-memory .hm-hero{background:linear-gradient(120deg,#FCE7F3,#FBCFE8 55%,#FDF2F8);border-color:#F472B6}
 #panel-hanzi-memory .hm-source-btn{background:#FCE7F3;color:#9D174D}
 #panel-hanzi-memory .hm-settings input{appearance:auto;-webkit-appearance:auto;padding-right:5px;font-variant-numeric:tabular-nums}

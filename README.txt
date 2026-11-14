@@ -55,3 +55,9 @@ MENU 17 – BẢN TINH CHỈNH TIẾP THEO (GIỮ PHIÊN BẢN ỨNG DỤNG v42.
 - Ở mức KHÓ và RẤT KHÓ, chữ thay đổi cả màu, font và vị trí; bổ sung các lựa chọn font chữ giản thể như SimHei, FangSong, DengXian và Noto Sans SC bên cạnh các font hiện có.
 - Giảm cỡ chữ trên bảng; ô nhập chữ Hán có cùng chiều rộng với nút thu âm; nút BỎ QUA CÂU NÀY và KẾT THÚC SỚM được tăng kích thước, tô màu nổi bật.
 - Ba chỉ số lượt chơi, trạng thái ẩn chữ và điểm đúng được tăng cỡ đồng đều.
+
+
+BẢN TINH CHỈNH MENU 17 (SPATIAL V3)
+- Tên menu 17 ở thanh bên trái hiển thị màu đen giống các tên menu khác.
+- Hai trường THỜI GIAN QUAN SÁT và THỜI GIAN XEM ĐÁP ÁN có nút ▲/▼ tăng giảm số giây theo cùng kiểu điều khiển ở menu 16.2/16.3.
+- Giữ nguyên số phiên bản công khai v42.9; đổi cache service worker để trình duyệt nhận bản cập nhật.
