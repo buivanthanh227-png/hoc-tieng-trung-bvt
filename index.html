@@ -7363,8 +7363,14 @@ renderChart();bindChartScrollbars();renderChoices();
  let searchTimer=null;
  function searchDict(){const q=clean($hm('hm-dict-search').value);const box=$hm('hm-search-results');if(!q){box.hidden=true;box.innerHTML='';return;}if(!ctx.dictionary||!ctx.dictionary.length){box.hidden=false;box.innerHTML='<div class="hm-empty">Từ điển đang nạp.</div>';return;}const nq=typeof ctx.norm==='function'?ctx.norm(q):q.toLowerCase();const found=[];for(let i=0;i<ctx.dictionary.length;i++){const r=ctx.dictionary[i];const hay=[r[0],r[2],r[3]].join(' ').toLowerCase();if(hay.includes(q.toLowerCase())||(typeof ctx.searchScoreForRow==='function'&&ctx.searchScoreForRow(i,nq)>0))found.push(r);if(found.length>=25)break;}box.hidden=false;box.innerHTML=found.length?found.map((r,i)=>`<button type="button" class="hm-result" data-hm-found="${i}"><b>${esc(r[0])}</b><small>${esc(r[2]||'')} · ${esc(r[3]||'')}</small><strong>＋</strong></button>`).join(''):'<div class="hm-empty">Không tìm thấy từ phù hợp.</div>';box.querySelectorAll('[data-hm-found]').forEach(b=>b.onclick=()=>{addRows([found[Number(b.dataset.hmFound)]],'Từ điển');$hm('hm-dict-search').value='';box.hidden=true;box.innerHTML='';});}
  $hm('hm-dict-search').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(searchDict,120);});$hm('hm-dict-search').addEventListener('focus',()=>{if(clean($hm('hm-dict-search').value))searchDict();});document.addEventListener('click',e=>{if(!e.target.closest('#panel-hanzi-memory .hm-search-row')&&!e.target.closest('#hm-search-results'))$hm('hm-search-results').hidden=true;});
- const hmFonts=['"Microsoft YaHei",sans-serif','SimHei,sans-serif','SimSun,serif','KaiTi,serif','FangSong,serif','DengXian,sans-serif','"Noto Sans SC",sans-serif','serif'];
- const hmColors=['#e11d48','#2563eb','#059669','#9333ea','#d97706','#0891b2','#c026d3','#0f766e','#7c3aed','#be123c'];
+ // Bộ font CJK mở rộng: chọn ngẫu nhiên riêng cho từng chữ và buộc đổi font ở pha sau khi ẩn.
+ const hmFonts=[
+  '"Microsoft YaHei"','"Microsoft JhengHei"','SimHei','SimSun','NSimSun','KaiTi','FangSong','DengXian',
+  'YouYuan','STXihei','STKaiti','STSong','STFangsong','FZShuTi','FZYaoti','LiSu',
+  '"Noto Sans SC"','"Noto Serif SC"','"Source Han Sans SC"','"Source Han Serif SC"',
+  '"WenQuanYi Micro Hei"','"WenQuanYi Zen Hei"','serif','sans-serif'
+ ];
+ const hmColors=['#e11d48','#2563eb','#059669','#9333ea','#d97706','#0891b2','#c026d3','#0f766e','#7c3aed','#be123c','#4f46e5','#15803d','#c2410c','#a21caf'];
  function scatterTiles(box,nodes){
    const pad=18,gap=17,w=Math.max(260,box.clientWidth||box.getBoundingClientRect().width||600);
    box.style.height='auto';box.style.minHeight='300px';
@@ -7396,9 +7402,18 @@ renderChart();bindChartScrollbars();renderChoices();
    }
    box.style.height=Math.max(300,y+rowH+pad)+'px';
  }
+ function pickDifferent(list,previous){if(list.length<2)return list[0];let choice;do{choice=Math.floor(Math.random()*list.length);}while(choice===previous);return choice;}
  function styleTile(el,level,i,afterHide=false){
-   if(level==='easy'){el.style.color='#111827';el.style.fontFamily='"Microsoft YaHei",Arial,sans-serif';el.style.fontWeight='600';}
-   else {el.style.color=hmColors[(i+(afterHide?3:0))%hmColors.length];el.style.fontFamily=hmFonts[(i+(afterHide?2:0))%hmFonts.length];el.style.fontWeight=(i%3===0?'700':'500');}
+   if(level==='easy'){el.style.color='#111827';el.style.fontFamily='"Microsoft YaHei",Arial,sans-serif';el.style.fontWeight='600';el.style.fontStyle='normal';el.dataset.hmFont='easy';el.dataset.hmColor='easy';return;}
+   const oldFont=Number(el.dataset.hmFont),oldColor=Number(el.dataset.hmColor);
+   const fontIndex=pickDifferent(hmFonts,Number.isInteger(oldFont)?oldFont:-1);
+   const colorIndex=pickDifferent(hmColors,Number.isInteger(oldColor)?oldColor:-1);
+   el.dataset.hmFont=String(fontIndex);el.dataset.hmColor=String(colorIndex);
+   el.style.fontFamily=hmFonts[fontIndex]+(hmFonts[fontIndex]==='serif'?',serif':(hmFonts[fontIndex]==='sans-serif'?',sans-serif':',sans-serif'));
+   el.style.color=hmColors[colorIndex];
+   el.style.fontWeight=level==='expert'?(Math.random()<.5?'700':'900'):(Math.random()<.5?'600':'800');
+   el.style.fontStyle=level==='expert'&&Math.random()<.28?'italic':'normal';
+   el.style.letterSpacing=level==='expert'?(Math.random()*1.2-0.3).toFixed(2)+'px':'normal';
  }
  function setBoard(items,level){const box=$hm('hm-board');box.innerHTML='';items.forEach((v,i)=>{const el=document.createElement('div');el.className='hm-tile';el.dataset.hanzi=v.zh;el.textContent=v.zh;styleTile(el,level,i,false);box.appendChild(el);});scatterTiles(box,[...box.children]);}
  function stopClock(){if(timer){clearInterval(timer);timer=null;}}

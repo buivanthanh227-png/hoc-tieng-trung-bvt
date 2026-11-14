@@ -67,3 +67,10 @@ BẢN TINH CHỈNH MENU 17 (SPATIAL V4)
 - Bổ sung cụm nút tăng/giảm ▲ / ▼ cho ô SỐ TỪ XUẤT HIỆN (2–30) và SỐ LƯỢT CHƠI (1–50), cùng kiểu điều khiển với menu 16.2/16.3.
 - Nút tăng/giảm thay đổi mỗi lần 1 đơn vị, tự tuân thủ giới hạn min/max và phát sự kiện input/change để đồng bộ logic hiện có.
 - Giữ nguyên phiên bản ứng dụng v42.9; cập nhật tên cache để trình duyệt tải lại bản mới.
+
+
+BẢN TINH CHỈNH MENU 17 (FONT RANDOM V5)
+- Ở chế độ KHÓ và RẤT KHÓ, từng chữ trên bảng được chọn font ngẫu nhiên độc lập trong bộ font CJK mở rộng.
+- Khi một chữ biến mất, tất cả chữ còn lại đều được chọn lại font khác với font ngay trước đó, đồng thời đổi màu và được bố trí lại vị trí ngẫu nhiên, không chỉ đổi màu.
+- RẤT KHÓ bổ sung biến thiên độ đậm, kiểu nghiêng và khoảng cách ký tự để tăng khác biệt thị giác.
+- Chế độ DỄ giữ nguyên font và màu đen. Giữ nguyên số phiên bản ứng dụng v42.9; cập nhật cache service worker sang V5.
