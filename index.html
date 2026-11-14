@@ -7278,10 +7278,10 @@ renderChart();bindChartScrollbars();renderChoices();
 <script id="bvt-v4285-seconds-steppers">
 (()=>{
  'use strict';
- const ids=['vocab-training-show-seconds','vocab-training-next-seconds','p16-question-count','p16-show-answer-seconds','p16-next-question-seconds','p16-3-question-count','p16-3-show-answer-seconds','p16-3-next-question-seconds','hm-seconds','hm-answer-seconds'];
+ const ids=['vocab-training-show-seconds','vocab-training-next-seconds','p16-question-count','p16-show-answer-seconds','p16-next-question-seconds','p16-3-question-count','p16-3-show-answer-seconds','p16-3-next-question-seconds','hm-word-count','hm-seconds','hm-rounds','hm-answer-seconds'];
  function add(input){
   if(!input||input.dataset.secondsStepper==='1')return;input.dataset.secondsStepper='1';
-  const unit=input.id.includes('question-count')?'số câu':'số giây';
+  const unit=input.id==='hm-word-count'?'số từ':(input.id==='hm-rounds'?'lượt chơi':(input.id.includes('question-count')?'số câu':'số giây'));
   const wrap=document.createElement('div');wrap.className='seconds-stepper';input.parentNode.insertBefore(wrap,input);wrap.appendChild(input);
   const controls=document.createElement('div');controls.className='seconds-stepper-controls';controls.setAttribute('aria-label','Tăng hoặc giảm '+unit);
   const make=(dir,label,title)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.title=title;b.setAttribute('aria-label',title);b.addEventListener('click',()=>{

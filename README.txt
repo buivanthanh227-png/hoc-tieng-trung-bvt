@@ -61,3 +61,9 @@ BẢN TINH CHỈNH MENU 17 (SPATIAL V3)
 - Tên menu 17 ở thanh bên trái hiển thị màu đen giống các tên menu khác.
 - Hai trường THỜI GIAN QUAN SÁT và THỜI GIAN XEM ĐÁP ÁN có nút ▲/▼ tăng giảm số giây theo cùng kiểu điều khiển ở menu 16.2/16.3.
 - Giữ nguyên số phiên bản công khai v42.9; đổi cache service worker để trình duyệt nhận bản cập nhật.
+
+
+BẢN TINH CHỈNH MENU 17 (SPATIAL V4)
+- Bổ sung cụm nút tăng/giảm ▲ / ▼ cho ô SỐ TỪ XUẤT HIỆN (2–30) và SỐ LƯỢT CHƠI (1–50), cùng kiểu điều khiển với menu 16.2/16.3.
+- Nút tăng/giảm thay đổi mỗi lần 1 đơn vị, tự tuân thủ giới hạn min/max và phát sự kiện input/change để đồng bộ logic hiện có.
+- Giữ nguyên phiên bản ứng dụng v42.9; cập nhật tên cache để trình duyệt tải lại bản mới.
