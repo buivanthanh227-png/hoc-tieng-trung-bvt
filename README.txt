@@ -37,8 +37,13 @@ V42.9 FIX - Chinh lai dung huong o cheo: VẬN MẪU nam tron trong nua tam giac
 - Giu nguyen so phien ban v42.9; chi thay ma cache noi bo cua Service Worker de trinh duyet tai lai index.html da sua.
 
 
-V42.9 - BO SUNG MENU 17: THU THACH NHO MAT CHU HAN.
-- Chon nguon tu vung tu tu dien menu 1, OCR menu 2, ket qua dich, bo tu menu 10 va tu da chon o menu 9.
-- Cau hinh so chu Hán, thoi gian quan sat, so luot va 3 cap do De/Kho/Rat kho.
-- Tra loi bang go chu Han, thu am tieng Trung hoac chon dap an; tong ket va xem lai tung luot kem pinyin/nghia.
-- Dong bo phien ban manifest va Service Worker cache v42.9.
+V42.9 - MENU 17: THU THACH NHO MAT CHU HAN (DIEU CHINH GIAO DIEN VA LOGIC).
+- Bo dong chu gioi thieu tieng Anh; danh so hai phan 17.1 va 17.2.
+- Mau menu trai va panel phai dong bo cung he hong; ba muc Do/Kho/Rat kho dung ba sac hong tu nhat den dam.
+- Doi ten nguon menu 10 thanh BO TU VUNG (MENU 10).
+- O tim tu hien danh sach goi y truc tiep khi nguoi dung nhap, khong can bam nut Tim tu.
+- Mac dinh 5 tu, 5 giay quan sat, 5 luot va 5 giay xem dap an; cac o so co mui ten tang/giam.
+- Bo lua chon dap an; chi giu nhap chu Han va thu am. Them nut Bo qua cau nay de khong bi ket o mot cau.
+- Them dong ho xem dap an; het thoi gian se tu dong chuyen cau tiep theo.
+- Tang kich thuoc chu dap an va chu trong bang tong ket; thu hep khoang cach cac chu tren bang thu thach.
+- Service Worker doi ma cache de trinh duyet tai ban index.html moi; giu so phien ban v42.9.
