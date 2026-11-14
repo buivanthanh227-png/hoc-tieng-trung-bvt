@@ -1,6 +1,6 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-8-9-diagonal-column-sizing-20261113';
-const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-8-9';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-9-menu17-hanzi-memory-20261114';
+const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-9';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
 const APP_FILES = ['./index.html', './luyen-so-tieng-trung.html', './manifest.webmanifest', './icon.svg', './icon.svg?v=41-gold-logo-stroke-practice-20261028', './icon-v41-192.png', './icon-v41-192.png?v=41-gold-logo-stroke-practice-20261028', './icon-v41-512.png', './icon-v41-512.png?v=41-gold-logo-stroke-practice-20261028', './apple-touch-icon-v41.png', './apple-touch-icon-v41.png?v=41-gold-logo-stroke-practice-20261028', './sw.js', './asr-worker.js', './asr-voice-worker.js', './asr-cloudflare-worker.js', './ocr-worker.js'];
