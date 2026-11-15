@@ -44,8 +44,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: qa-tests/package.json
       - name: Cài đặt thư viện kiểm thử
         run: npm install
       - name: Cài Chromium và WebKit
