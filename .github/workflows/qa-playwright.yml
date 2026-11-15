@@ -1,0 +1,64 @@
+name: QA tự động Học Tiếng Trung
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Website cần kiểm thử
+        required: false
+        default: 'https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/'
+        type: string
+      repeat_steps:
+        description: Số lần chuyển menu trong stress test
+        required: false
+        default: '120'
+        type: string
+  workflow_run:
+    workflows: ['Build and deploy Học Tiếng Trung']
+    branches: [main]
+    types: [completed]
+  schedule:
+    - cron: '0 19 * * 0'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  playwright-qa:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: qa-tests
+    env:
+      BASE_URL: ${{ github.event.inputs.base_url || 'https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/' }}
+      QA_REPEAT_STEPS: ${{ github.event.inputs.repeat_steps || '120' }}
+      QA_RANDOM_SEED: '20261115'
+      CI: 'true'
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+      - name: Thiết lập Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Cài đặt thư viện kiểm thử
+        run: npm install
+      - name: Cài Chromium và WebKit
+        run: npx playwright install --with-deps chromium webkit
+      - name: Chạy hàng trăm kịch bản QA
+        run: npm test
+      - name: Lưu báo cáo, ảnh, video và trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hoc-tieng-trung-qa-${{ github.run_number }}
+          path: |
+            qa-tests/playwright-report/
+            qa-tests/test-results/
+          if-no-files-found: warn
+          retention-days: 21
