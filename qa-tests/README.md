@@ -9,7 +9,7 @@ https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/
 - Menu matrix: tối đa 24 menu trên 5 cấu hình trình duyệt/thiết bị (tối đa 120 test case).
 - Responsive: Desktop Chrome, mobile Chromium, Pixel/Android Chromium, iPhone WebKit và iPad WebKit.
 - Input fuzz: Hán tự, tiếng Việt, Pinyin có dấu, văn bản hỗn hợp, chuỗi dài, ký tự đặc biệt và số.
-- Stress navigation: mặc định 120 lần chuyển menu theo chuỗi ngẫu nhiên có seed cố định bằng fast-check.
+- Stress navigation: bao phủ mọi cặp chuyển menu có hướng (N × N), sau đó thêm mặc định 120 lượt ngẫu nhiên có seed cố định. Với 16 menu, phần pairwise tạo 256 chuyển đổi; tổng tối thiểu 376 lượt chuyển menu.
 - Accessibility: quét WCAG bằng axe-core, fail với lỗi mức critical, lưu cả serious/moderate vào JSON.
 - PWA offline: bài test riêng, tùy chọn.
 - Diagnostics: JavaScript page error, console error, request thất bại, HTTP lỗi, trace, screenshot và video khi fail.
@@ -34,6 +34,11 @@ Tăng stress lên 200 bước:
     $env:QA_REPEAT_STEPS="200"
     $env:QA_RANDOM_SEED="20261115"
     npm run test:stress
+
+Chụp ảnh giao diện mỗi menu để lưu artifact (tùy chọn):
+
+    $env:QA_CAPTURE_VISUALS="1"
+    npm run test:layout
 
 Kiểm tra offline:
 
