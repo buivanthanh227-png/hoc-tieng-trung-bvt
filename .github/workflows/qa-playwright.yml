@@ -1,6 +1,8 @@
 name: QA tự động Học Tiếng Trung
 
 on:
+  pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
       base_url:
