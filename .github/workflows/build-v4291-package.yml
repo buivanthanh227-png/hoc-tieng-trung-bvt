@@ -1,0 +1,61 @@
+name: Build package Học Tiếng Trung v42.9.1
+
+on:
+  push:
+    branches: ['release/v42.9.1']
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  patch-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply QA fixes and bump version
+        run: python3 tools/patch_v4291.py
+      - name: Validate source syntax and release markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/patch_v4291.py
+          grep -q 'HỌC TIẾNG TRUNG · V42.9.1' index.html
+          grep -q 'Phiên bản v42.9.1' index.html
+          grep -q 'V42.9.1' manifest.webmanifest
+          grep -q 'hoc-trung-app-shell-v42-9-1' sw.js
+          grep -q 'function translateCsvText' index.html
+          grep -q 'function bvtMiIsNoTextDetected' index.html
+          grep -q 'hmReflowActiveBoard' index.html
+      - name: Commit v42.9.1 source on release branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html manifest.webmanifest sw.js RELEASE_NOTES_v42.9.1.md
+          git commit -m "Release Học Tiếng Trung v42.9.1" || echo "No source changes to commit"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+      - name: Create upload-ready ZIP package
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=package/HOC_TIEN_TRUNG_BVT_v42.9.1
+          mkdir -p "$DEST/.github/workflows"
+          cp index.html manifest.webmanifest sw.js icon.svg icon-v41-192.png icon-v41-512.png apple-touch-icon-v41.png "$DEST/"
+          cp asr-worker.js asr-voice-worker.js asr-cloudflare-worker.js asr-cloudflare-worker-fixed.js ocr-worker.js "$DEST/"
+          cp luyen-so-tieng-trung.html LICENSES.txt README.md RELEASE_NOTES_v42.9.1.md "$DEST/"
+          cp -a luyen-so tools "$DEST/"
+          cp .github/workflows/deploy-pages.yml "$DEST/.github/workflows/"
+          cd package
+          zip -rq ../HOC_TIEN_TRUNG_BVT_v42.9.1.zip HOC_TIEN_TRUNG_BVT_v42.9.1
+      - name: Upload ZIP package
+        uses: actions/upload-artifact@v4
+        with:
+          name: HOC_TIEN_TRUNG_BVT_v42.9.1
+          path: HOC_TIEN_TRUNG_BVT_v42.9.1.zip
+          if-no-files-found: error
+          retention-days: 30
