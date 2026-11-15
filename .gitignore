@@ -1,0 +1,4 @@
+qa-tests/node_modules/
+qa-tests/playwright-report/
+qa-tests/test-results/
+qa-tests/blob-report/
