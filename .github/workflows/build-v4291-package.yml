@@ -1,8 +1,7 @@
 name: Build package Học Tiếng Trung v42.9.1
 
 on:
-  push:
-    branches: ['release/v42.9.1']
+  workflow_dispatch:
 
 permissions:
   contents: write
