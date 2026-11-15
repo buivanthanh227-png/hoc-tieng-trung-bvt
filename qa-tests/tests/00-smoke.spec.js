@@ -11,7 +11,7 @@ test('Smoke: trang chính tải thành công và khám phá menu', async ({ page
   await attachJson(testInfo, 'application-discovery.json', {
     url: page.url(),
     title: snapshot.title,
-    versionText: (snapshot.textSample.match(/v\\s?\\d+(?:\\.\\d+)+/i) || [])[0] || 'Không đọc được',
+    versionText: (snapshot.textSample.match(/v\s?\d+(?:\.\d+)+/i) || [])[0] || 'Không đọc được',
     discoveredMenuCount: menus.length,
     menus: menus.map((item, index) => ({ order: index + 1, label: item.label, tag: item.tag }))
   });
