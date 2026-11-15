@@ -4,7 +4,7 @@ const CLICKABLE_SELECTOR = 'button, a[href], [role="button"], [role="tab"], [tab
 const MENU_TEXT_HINT = /từ điển|luyện|dịch|ghép|nhận diện|bộ thủ|tài liệu|pinyin|thanh mẫu|vận mẫu|hán tự|tiếng trung|phản xạ/i;
 
 function normalizeText(value) {
-  return String(value || '').replace(/\\s+/g, ' ').trim();
+  return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
 async function openApplication(page) {
@@ -17,14 +17,14 @@ async function openApplication(page) {
 
 async function discoverMenuItems(page) {
   const raw = await page.locator(CLICKABLE_SELECTOR).evaluateAll((elements) => elements.map((el, index) => {
-    const text = (el.innerText || el.textContent || '').replace(/\\s+/g, ' ').trim();
+    const text = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
     const label = (el.getAttribute('aria-label') || el.getAttribute('title') || text).trim();
     const scope = el.closest('nav, aside, [role="navigation"], [class*="sidebar" i], [class*="menu" i], [id*="menu" i]');
     const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true';
     return { index, label, disabled, inNavigationScope: Boolean(scope), tag: el.tagName.toLowerCase() };
   }));
   const usable = raw.filter(item => item.label && !item.disabled && item.label.length <= 110);
-  const numbered = usable.filter(item => /^\\d{1,2}(?:\\s|[.)\\-:]|$)/.test(normalizeText(item.label)));
+  const numbered = usable.filter(item => /^\d{1,2}(?:\s|[.)\-:]|$)/.test(normalizeText(item.label)));
   let candidates = numbered.length ? numbered : usable.filter(item => item.inNavigationScope || MENU_TEXT_HINT.test(item.label));
   const seen = new Set();
   candidates = candidates.filter(item => {
@@ -34,8 +34,8 @@ async function discoverMenuItems(page) {
     return true;
   });
   candidates.sort((a, b) => {
-    const an = Number((normalizeText(a.label).match(/^(\\d{1,2})/) || [])[1] || 999);
-    const bn = Number((normalizeText(b.label).match(/^(\\d{1,2})/) || [])[1] || 999);
+    const an = Number((normalizeText(a.label).match(/^(\d{1,2})/) || [])[1] || 999);
+    const bn = Number((normalizeText(b.label).match(/^(\d{1,2})/) || [])[1] || 999);
     return an - bn || a.index - b.index;
   });
   return candidates;
@@ -64,7 +64,14 @@ async function getPageSnapshot(page) {
         clientHeight: root?.clientHeight || 0,
         scrollHeight: Math.max(root?.scrollHeight || 0, body?.scrollHeight || 0)
       },
-      replacementCharacterCount: (bodyText.match(/\\uFFFD/g) || []).length
+      replacementCharacterCount: (bodyText.match(/\uFFFD/g) || []).length,
+      fontAudit: {
+        status: document.fonts?.status || 'unsupported',
+        loadedFaces: document.fonts ? [...document.fonts].filter(face => face.status === 'loaded').length : 0,
+        failedFaces: document.fonts ? [...document.fonts].filter(face => face.status === 'error').map(face => face.family) : [],
+        families: [...new Set([...document.querySelectorAll('body *')].filter(el => el.children.length === 0 && (el.innerText || '').trim()).slice(0, 120).map(el => getComputedStyle(el).fontFamily))].slice(0, 20),
+        samples: [...document.querySelectorAll('body *')].filter(el => el.children.length === 0 && (el.innerText || '').trim() && el.getClientRects().length).slice(0, 30).map(el => ({ text: (el.innerText || '').trim().slice(0, 35), fontFamily: getComputedStyle(el).fontFamily, fontSize: getComputedStyle(el).fontSize, lineHeight: getComputedStyle(el).lineHeight }))
+      }
     };
   });
 }
