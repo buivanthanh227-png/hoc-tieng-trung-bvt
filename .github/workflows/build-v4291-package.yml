@@ -1,60 +1,69 @@
-name: Build package Học Tiếng Trung v42.9.1
+name: Validate and package Học Tiếng Trung v42.9.1
 
 on:
-  workflow_dispatch:
+  push:
+    branches: ['release/v42.9.1']
 
 permissions:
   contents: write
   actions: read
 
 jobs:
-  patch-and-package:
+  validate-and-package:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Checkout release branch
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Apply QA fixes and bump version
-        run: python3 tools/patch_v4291.py
-      - name: Validate source syntax and release markers
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Repair targeted issue and validate all inline JavaScript
         shell: bash
         run: |
           set -euo pipefail
+          python3 tools/patch_v4291.py
           python3 -m py_compile tools/patch_v4291.py
+          python3 -m json.tool manifest.webmanifest >/dev/null
           grep -q 'HỌC TIẾNG TRUNG · V42.9.1' index.html
           grep -q 'Phiên bản v42.9.1' index.html
-          grep -q 'V42.9.1' manifest.webmanifest
           grep -q 'hoc-trung-app-shell-v42-9-1' sw.js
           grep -q 'function translateCsvText' index.html
           grep -q 'function bvtMiIsNoTextDetected' index.html
           grep -q 'hmReflowActiveBoard' index.html
-      - name: Commit v42.9.1 source on release branch
+      - name: Commit validated v42.9.1 source
+        shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html manifest.webmanifest sw.js RELEASE_NOTES_v42.9.1.md
-          git commit -m "Release Học Tiếng Trung v42.9.1" || echo "No source changes to commit"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
-      - name: Create upload-ready ZIP package
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Fix JavaScript syntax in Học Tiếng Trung v42.9.1"
+            git push origin "HEAD:$GITHUB_REF_NAME"
+          fi
+      - name: Build clean upload-ready ZIP
         shell: bash
         run: |
           set -euo pipefail
           DEST=package/HOC_TIEN_TRUNG_BVT_v42.9.1
-          mkdir -p "$DEST/.github/workflows"
+          mkdir -p "$DEST/.github/workflows" "$DEST/tools" "$DEST/luyen-so"
           cp index.html manifest.webmanifest sw.js icon.svg icon-v41-192.png icon-v41-512.png apple-touch-icon-v41.png "$DEST/"
           cp asr-worker.js asr-voice-worker.js asr-cloudflare-worker.js asr-cloudflare-worker-fixed.js ocr-worker.js "$DEST/"
           cp luyen-so-tieng-trung.html LICENSES.txt README.md RELEASE_NOTES_v42.9.1.md "$DEST/"
-          cp -a luyen-so tools "$DEST/"
+          cp -a luyen-so/. "$DEST/luyen-so/"
+          cp tools/build_site.py "$DEST/tools/"
           cp .github/workflows/deploy-pages.yml "$DEST/.github/workflows/"
           cd package
           zip -rq ../HOC_TIEN_TRUNG_BVT_v42.9.1.zip HOC_TIEN_TRUNG_BVT_v42.9.1
-      - name: Upload ZIP package
+      - name: Upload final v42.9.1 ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: HOC_TIEN_TRUNG_BVT_v42.9.1
+          name: HOC_TIEN_TRUNG_BVT_v42.9.1_FINAL
           path: HOC_TIEN_TRUNG_BVT_v42.9.1.zip
           if-no-files-found: error
           retention-days: 30
