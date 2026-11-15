@@ -6294,7 +6294,7 @@ function bvtMlScheduleTranslation(prefix,delay=520){
 async function bvtMlRunTranslation(prefix,sequence){
  const state=BVT_ML_STATE[prefix];if(!state||state.sequence!==sequence)return;
  const field=$(prefix+'-text'),text=String(field?.value||'').trim(),result=$(prefix+'-result'),status=$(prefix+'-status');
- if(!text){result.textContent='Bản dịch sẽ hiển thị tại đây.';result.dataset.bvtTranslationReady='false';const recordingActive=prefix==='bvt-mv'&&typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder?.state==='recording';if(status)status.textContent=recordingActive?'Đang ghi âm… chạm lại để kết thúc.':'Sẵn sàng.';return;
+ if(!text){result.textContent='Bản dịch sẽ hiển thị tại đây.';result.dataset.bvtTranslationReady='false';const recordingActive=prefix==='bvt-mv'&&typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder?.state==='recording';if(status)status.textContent=recordingActive?'Đang ghi âm… chạm lại để kết thúc.':'Sẵn sàng.';return;}
  const source=$(prefix+'-source')?.value||'auto',target=$(prefix+'-target')?.value||'vi';
  const cachedSource=source==='auto'&&field?.dataset?.bvtDetectedText===text?field.dataset.bvtDetectedLanguage||'':'';
  if(status)status.textContent=(source==='auto'&&!cachedSource?'Đang xác định ngôn ngữ nguồn và ':'')+'đang dịch sang '+bvtMlLanguageName(target)+'…';
