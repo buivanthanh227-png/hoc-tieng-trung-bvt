@@ -1,4 +1,4 @@
-const AxeBuilder = require('@axe-core/playwright').default;
+const AxeBuilder = require('@axe-core/playwright');
 const { test, expect, openApplication, discoverMenuItems, clickMenuItem, attachJson } = require('./helpers');
 
 test('Accessibility: rà soát WCAG trên trang chủ và từng menu', async ({ page }, testInfo) => {
