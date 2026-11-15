@@ -1,5 +1,22 @@
 HOC TIENG TRUNG BVT - PHIEN BAN V42.9
 
+BAN VA LOI TOAN DIEN - 15/11/2026 (V42.9 BUGFIX)
+- Menu 5/6: sau khi cham diem khong con bi ket; nut "Cau tiep" hien ra de luyen tu/cau tiep theo.
+- Menu 7 (Luyen viet): bam "Cau tiep" nap tu moi thay vi de trong khung cau hoi.
+- Menu 8 (Luyen doc): bam "Cau tiep" doi sang tu moi thay vi lap lai mai mot tu da chon.
+- Menu 9: khi chua xao tron cau, bam "Cau tiep" bao "Chua co cau de luyen" thay vi hien "vong 0 luot".
+- Menu 10: khi roi menu hoac dung luot, dong dem nguoc duoc xoa han, khong con so cu.
+- Menu 11 (Luyen so): doc dung 2000 -> liang qian (两 千), 20000 -> liang wan (两 万); chan so ngoai pham vi 0-999.999 va xoa ket qua cu; nam sinh 0000 va so dien thoai sai dinh dang duoc bao ro rang.
+- Menu 16.2/16.3: khi chuyen sang menu khac, dong ho va am thanh tu tam dung; quay lai bam "Tiep tuc luyen tap".
+- Menu 17: dong ho quan sat/xem dap an tu dung khi roi menu va tiep tuc dung nhip khi quay lai.
+- Menu 3: chi bao "Da dich xong." khi mot phan, tranh cau "Da dich xong 1 phan.".
+- Tieu de cac menu co khoang trang giua bieu tuong va ten menu.
+- O tim kiem tu dien cho 250 ms truoc khi loc de giam lag khi go nhanh.
+- Hop thoai xac minh Cloudflare (Turnstile) an han khi khong dung, khong con o trong suot 300x65 che nut.
+- Doi ma cache Service Worker de trinh duyet nhan ban va loi moi.
+
+HOC TIENG TRUNG BVT - PHIEN BAN V42.9
+
 V42.9 - CAI THIEN MENU 16 VA ON TAP SAU LUYEN NGHE
 
 - So menu 16 nam tren o dem xam nhat giong 15 menu con lai; huy hieu duoc ep mau ca khi menu dang chon.
