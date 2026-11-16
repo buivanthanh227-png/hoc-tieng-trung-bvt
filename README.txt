@@ -1,22 +1,5 @@
 HOC TIENG TRUNG BVT - PHIEN BAN V42.9
 
-BAN VA LOI TOAN DIEN - 15/11/2026 (V42.9 BUGFIX)
-- Menu 5/6: sau khi cham diem khong con bi ket; nut "Cau tiep" hien ra de luyen tu/cau tiep theo.
-- Menu 7 (Luyen viet): bam "Cau tiep" nap tu moi thay vi de trong khung cau hoi.
-- Menu 8 (Luyen doc): bam "Cau tiep" doi sang tu moi thay vi lap lai mai mot tu da chon.
-- Menu 9: khi chua xao tron cau, bam "Cau tiep" bao "Chua co cau de luyen" thay vi hien "vong 0 luot".
-- Menu 10: khi roi menu hoac dung luot, dong dem nguoc duoc xoa han, khong con so cu.
-- Menu 11 (Luyen so): doc dung 2000 -> liang qian (两 千), 20000 -> liang wan (两 万); chan so ngoai pham vi 0-999.999 va xoa ket qua cu; nam sinh 0000 va so dien thoai sai dinh dang duoc bao ro rang.
-- Menu 16.2/16.3: khi chuyen sang menu khac, dong ho va am thanh tu tam dung; quay lai bam "Tiep tuc luyen tap".
-- Menu 17: dong ho quan sat/xem dap an tu dung khi roi menu va tiep tuc dung nhip khi quay lai.
-- Menu 3: chi bao "Da dich xong." khi mot phan, tranh cau "Da dich xong 1 phan.".
-- Tieu de cac menu co khoang trang giua bieu tuong va ten menu.
-- O tim kiem tu dien cho 250 ms truoc khi loc de giam lag khi go nhanh.
-- Hop thoai xac minh Cloudflare (Turnstile) an han khi khong dung, khong con o trong suot 300x65 che nut.
-- Doi ma cache Service Worker de trinh duyet nhan ban va loi moi.
-
-HOC TIENG TRUNG BVT - PHIEN BAN V42.9
-
 V42.9 - CAI THIEN MENU 16 VA ON TAP SAU LUYEN NGHE
 
 - So menu 16 nam tren o dem xam nhat giong 15 menu con lai; huy hieu duoc ep mau ca khi menu dang chon.
@@ -91,3 +74,40 @@ BẢN TINH CHỈNH MENU 17 (FONT RANDOM V5)
 - Khi một chữ biến mất, tất cả chữ còn lại đều được chọn lại font khác với font ngay trước đó, đồng thời đổi màu và được bố trí lại vị trí ngẫu nhiên, không chỉ đổi màu.
 - RẤT KHÓ bổ sung biến thiên độ đậm, kiểu nghiêng và khoảng cách ký tự để tăng khác biệt thị giác.
 - Chế độ DỄ giữ nguyên font và màu đen. Giữ nguyên số phiên bản ứng dụng v42.9; cập nhật cache service worker sang V5.
+
+
+V42.9.1 – QA FIX (15/11/2026)
+
+Bản nền: HOC_TIENG_TRUNG_BVT_v42_9_FULL_MENU17_FONT_RANDOM_V5.zip. Giữ nguyên toàn bộ cấu trúc ứng dụng, dữ liệu từ điển nhúng, menu 1–17 và cải tiến Menu 17 Random V5.
+
+Đã xử lý 16 phát hiện trong báo cáo bang-chung-qa.zip:
+- BVT-01: xử lý CSV theo cột dữ liệu, giữ tiêu đề và dữ liệu đích đã có; không đưa dòng tiêu đề vào dịch như văn bản thường.
+- BVT-02: hoàn tất chấm thứ tự nét ở Menu 7 được ghi vào thống kê luyện tập dùng chung.
+- BVT-03: câu trả lời hỏi–đáp đổi ngôi người nói/người nghe (你 ↔ 我).
+- BVT-04: kết quả tìm chữ ở Menu 7 có bố cục riêng cho Hán tự, Pinyin, nghĩa và nút thao tác; nội dung dài được xuống dòng trên màn hình hẹp.
+- BVT-05: bổ sung nhận diện cặp nghĩa tương đương đã kiểm thử chè ↔ trà khi chấm Menu 6.
+- BVT-06: Menu 17 sắp xếp lại vị trí các chữ đang hiển thị khi đổi kích thước màn hình; không khởi động lại lượt hoặc đồng hồ.
+- BVT-07: mục từ 鱼/魚 được bổ sung nghĩa thông dụng “cá”, đồng thời giữ nghĩa họ Yu nếu có.
+- BVT-08: lỗi nhập JSON hỏng hiển thị thông báo tiếng Việt dễ hiểu; không đưa lỗi parser tiếng Anh ra giao diện.
+- BVT-09: chỉ dùng câu mẫu offline khi toàn bộ Pinyin khớp; “ni hao” không bị mở rộng thành “ni hao ma”.
+- BVT-10: không sao chép placeholder hoặc trạng thái đang dịch như thể đó là bản dịch thật.
+- BVT-11: bộ đếm ảnh Menu 14 cập nhật sau thao tác xóa từng ảnh.
+- BVT-12: hai ô thời gian Menu 10 tự chuẩn hóa giá trị theo giới hạn đang dùng (hiện đáp án 1–120 giây; chuyển từ 0–60 giây).
+- BVT-13: truy vấn emoji/không có ký tự tìm kiếm hợp lệ trong Menu 12 trả 0 kết quả, không trả toàn bộ bộ thủ.
+- BVT-14: truy vấn emoji/không có ký tự tìm kiếm hợp lệ trong từ điển trả 0 kết quả, không hiển thị toàn bộ từ điển.
+- BVT-15: đổi ngôn ngữ nguồn khi Menu 15 đang ghi âm không làm trạng thái chuyển sai thành “Sẵn sàng”.
+- BVT-16: kết quả OCR “No text detected” được coi là không có văn bản; không đưa thông báo kỹ thuật sang bước dịch.
+
+Kiểm tra kỹ thuật đã thực hiện trong gói này:
+- Kiểm tra cú pháp tất cả script JavaScript nội tuyến bằng Node.js.
+- Kiểm tra JSON của manifest.webmanifest.
+- Kiểm tra cấu trúc và CRC của các gói ZIP sau khi đóng gói.
+- Đã đối chiếu mã nguồn với 16 finding ID trong báo cáo QA.
+
+Giới hạn xác minh:
+- Môi trường trình duyệt tự động trong phiên này chặn điều hướng local/localhost nên không hoàn tất được kiểm thử tương tác trình duyệt sau sửa.
+- Chưa kiểm thử trực tiếp trên Safari iOS, Chrome Android hoặc Windows thật.
+- Báo cáo QA ban đầu cũng ghi rõ giọng đọc, micro, Service Worker/offline và một số request Cloudflare chưa được xác minh đầy đủ; bản sửa này không tuyên bố các phần đó đã PASS.
+- Các lỗi mã nguồn/UI trong BVT-01 đến BVT-16 đã được chỉnh theo finding; cần chạy lại bộ QA trên môi trường triển khai để xác nhận đóng lỗi.
+
+Phiên bản công khai: v42.9.1. Service Worker cache đổi sang hoc-trung-app-shell-v42-9-1-qa-fix-20261115 để buộc tải lại bản mới. Chưa tự triển khai lên GitHub Pages.

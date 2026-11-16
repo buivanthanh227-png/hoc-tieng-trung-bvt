@@ -473,7 +473,7 @@
 
     function numberToChinese(value) {
       const num = Math.trunc(Number(value));
-      if (!Number.isFinite(num) || num < 0 || num > 999999) return { zh: '', pinyin: '', invalid: true };
+      if (!Number.isFinite(num) || num < 0 || num > 999999) return { zh: String(value), pinyin: '' };
       if (num === 0) return { zh: '零', pinyin: 'líng' };
 
       const wan = Math.floor(num / 10000);
@@ -484,8 +484,8 @@
       let pinyin = '';
 
       if (wan > 0) {
-        zh = (wan === 2 ? '两' : high.zh) + '万';
-        pinyin = (wan === 2 ? 'liǎng' : high.py) + ' wàn';
+        zh = high.zh + '万';
+        pinyin = high.py + ' wàn';
         if (rest > 0) {
           if (rest < 1000) { zh += '零'; pinyin += ' líng'; }
           zh += low.zh;
@@ -494,10 +494,6 @@
       } else {
         zh = low.zh;
         pinyin = low.py;
-        if (rest >= 2000 && rest < 3000 && zh.startsWith('二')) {
-          zh = '两' + zh.slice(1);
-          if (pinyin.startsWith('èr')) pinyin = 'liǎng' + pinyin.slice(2);
-        }
       }
       return { zh, pinyin };
     }
@@ -543,14 +539,6 @@
       return Math.round(sec * 1000);
     }
 
-    function clearNumberDisplay() {
-      $('feedbackText').textContent = '';
-      $('feedbackText').className = 'feedback';
-      $('displayNum').textContent = '';
-      $('displayZh').textContent = '';
-      $('displayPinyin').textContent = '';
-    }
-
     function setDisplay(original, zh, pinyin, hideAnswer = false) {
       $('feedbackText').textContent = '';
       $('feedbackText').className = 'feedback';
@@ -561,12 +549,6 @@
 
     function updateNumberDisplay(num, hideAnswer = false) {
       const data = numberToChinese(num);
-      if (data.invalid) {
-        clearNumberDisplay();
-        $('feedbackText').textContent = 'Chỉ hỗ trợ số nguyên từ 0 đến 999.999.';
-        $('feedbackText').className = 'feedback wrong';
-        return;
-      }
       setDisplay(num, data.zh, data.pinyin, hideAnswer);
     }
 
@@ -701,7 +683,6 @@
 
     function speakSingleNumber() {
       stopAll();
-      clearNumberDisplay();
       const raw = $('singleNum').value.trim();
       const num = Number(raw);
       if (raw === '' || !Number.isInteger(num) || num < 0 || num > 999999) {
@@ -1015,10 +996,9 @@
 
     function speakBirthYear() {
       stopAll();
-      clearNumberDisplay();
       const year = $('birthYear').value.trim();
-      if (!/^\d{4}$/.test(year) || year === '0000') {
-        $('feedbackText').textContent = 'Vui lòng nhập năm sinh gồm đúng 4 chữ số (0001–9999).';
+      if (!/^\d{4}$/.test(year)) {
+        $('feedbackText').textContent = 'Vui lòng nhập năm sinh gồm đúng 4 chữ số.';
         $('feedbackText').className = 'feedback wrong';
         return;
       }
@@ -1029,7 +1009,6 @@
 
     function speakPhoneNumber() {
       stopAll();
-      clearNumberDisplay();
       const phone = $('phoneNumber').value.replace(/\D/g, '');
       $('phoneNumber').value = phone;
       if (!/^\d{3,20}$/.test(phone)) {
