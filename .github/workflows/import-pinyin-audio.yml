@@ -1,0 +1,69 @@
+name: Import Pinyin MP3 assets into repository
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/import-pinyin-audio.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: import-pinyin-audio
+  cancel-in-progress: false
+
+jobs:
+  import-audio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout application repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download the pinned 24k audio dataset
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audio/pinyin
+          git clone --filter=blob:none --no-checkout https://github.com/hugolpz/audio-cmn.git /tmp/audio-cmn
+          cd /tmp/audio-cmn
+          git fetch --depth 1 origin f759a0f18f27690742957619e1248ed91e9b3f2c
+          git checkout FETCH_HEAD -- 24k-abr/syllabs
+          cd "$GITHUB_WORKSPACE"
+          cp -a /tmp/audio-cmn/24k-abr/syllabs/. audio/pinyin/
+          cat > audio/pinyin/ATTRIBUTION.txt <<'EOF'
+Pinyin audio dataset: audio-cmn
+Source: https://github.com/hugolpz/audio-cmn
+Pinned source commit: f759a0f18f27690742957619e1248ed91e9b3f2c
+Imported quality: 24k-abr
+Original speakers credited by the dataset: Chen Wang and Yue Tan
+License: Creative Commons Attribution-ShareAlike (CC BY-SA).
+See the source repository for the complete license and attribution terms.
+EOF
+          COUNT="$(find audio/pinyin -maxdepth 1 -type f -name '*.mp3' | wc -l | tr -d ' ')"
+          echo "Imported MP3 count: $COUNT"
+          test "$COUNT" -eq 1707
+
+      - name: Commit MP3 files to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/pinyin
+          if git diff --cached --quiet; then
+            echo "Audio files already exist; no new commit is needed."
+          else
+            git commit -m "Add local Pinyin MP3 audio dataset (24k)"
+            git push origin HEAD:main
+          fi
+
+      - name: Trigger Pages deployment with the imported audio
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run deploy-pages.yml --ref main
