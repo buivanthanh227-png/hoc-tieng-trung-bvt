@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -24,6 +24,39 @@ jobs:
       - name: Lấy mã nguồn ứng dụng
         uses: actions/checkout@v4
 
+      - name: Đưa bộ MP3 Pinyin 24k vào repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p audio/pinyin
+          COUNT="$(find audio/pinyin -maxdepth 1 -type f -name '*.mp3' | wc -l | tr -d ' ')"
+          if [ "$COUNT" -ne 1707 ]; then
+            git clone --filter=blob:none --no-checkout https://github.com/hugolpz/audio-cmn.git /tmp/audio-cmn
+            cd /tmp/audio-cmn
+            git fetch --depth 1 origin f759a0f18f27690742957619e1248ed91e9b3f2c
+            git checkout FETCH_HEAD -- 24k-abr/syllabs
+            cd "$GITHUB_WORKSPACE"
+            rm -f audio/pinyin/*.mp3
+            cp -a /tmp/audio-cmn/24k-abr/syllabs/. audio/pinyin/
+            cat > audio/pinyin/ATTRIBUTION.txt <<'EOF'
+Pinyin audio dataset: audio-cmn
+Source: https://github.com/hugolpz/audio-cmn
+Pinned source commit: f759a0f18f27690742957619e1248ed91e9b3f2c
+Imported quality: 24k-abr
+Original speakers credited by the dataset: Chen Wang and Yue Tan
+License: Creative Commons Attribution-ShareAlike (CC BY-SA).
+See the source repository for the complete license and attribution terms.
+EOF
+            COUNT="$(find audio/pinyin -maxdepth 1 -type f -name '*.mp3' | wc -l | tr -d ' ')"
+            echo "Imported MP3 count: $COUNT"
+            test "$COUNT" -eq 1707
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add audio/pinyin
+            git commit -m "Add local Pinyin MP3 audio dataset (24k)"
+            git push origin HEAD:main
+          fi
+
       - name: Chuẩn bị thư mục site
         shell: bash
         run: |
@@ -35,6 +68,12 @@ jobs:
           [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
           [ -f icon.svg ] && cp icon.svg site/ || true
           [ -f sw.js ] && cp sw.js site/ || true
+
+          # Phục vụ MP3 Pinyin trực tiếp từ GitHub Pages
+          if [ -d audio/pinyin ]; then
+            mkdir -p site/audio/pinyin
+            cp -a audio/pinyin/. site/audio/pinyin/
+          fi
 
           # Đưa toàn bộ ứng dụng luyện số vào website ở /luyen-so/
           if [ ! -f luyen-so/index.html ]; then
