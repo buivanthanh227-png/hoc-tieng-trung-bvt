@@ -111,3 +111,9 @@ Giới hạn xác minh:
 - Các lỗi mã nguồn/UI trong BVT-01 đến BVT-16 đã được chỉnh theo finding; cần chạy lại bộ QA trên môi trường triển khai để xác nhận đóng lỗi.
 
 Phiên bản công khai: v42.9.1. Service Worker cache đổi sang hoc-trung-app-shell-v42-9-1-qa-fix-20261115 để buộc tải lại bản mới. Chưa tự triển khai lên GitHub Pages.
+
+
+V42.9.2 - MOMENTIC QA FIX (2026-11-16)
+- Sua 13 loi duoc ghi nhan trong bao cao Momentic: nhan dien tieng Viet co dau trong menu 3; nghia ca cho 鱼; chan sao chep placeholder menu 14/15; tim Pinyin co so thanh dieu; responsive ket qua menu 9; trang thai bat dau lai menu 10; ban dich CSV 再见; kiem tra bien so menu 11; giu emoji khi dich doan; khoi phuc cau hoi quiz khi quay lai; xoa bo tu menu 17; va xu ly anh OCR khong co chu.
+- Tang cache version Service Worker va cap nhat nhan ung dung v42.9.2.
+- Kiem tra da thuc hien: cau truc ZIP, JSON manifest, ma hoa Pinyin embed, cu phap JavaScript. Chua co browser E2E tren thiet bi that trong moi truong dong goi.
