@@ -1,6 +1,6 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-9-3-p0-fix-20261116';
-const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-9';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-9-4-local-pinyin-audio-20261116';
+const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-10';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
 const APP_FILES = ['./index.html', './luyen-so-tieng-trung.html', './manifest.webmanifest', './icon.svg', './icon.svg?v=41-gold-logo-stroke-practice-20261028', './icon-v41-192.png', './icon-v41-192.png?v=41-gold-logo-stroke-practice-20261028', './icon-v41-512.png', './icon-v41-512.png?v=41-gold-logo-stroke-practice-20261028', './apple-touch-icon-v41.png', './apple-touch-icon-v41.png?v=41-gold-logo-stroke-practice-20261028', './sw.js', './asr-worker.js', './asr-voice-worker.js', './asr-cloudflare-worker.js', './ocr-worker.js'];
@@ -28,14 +28,34 @@ async function withAudioRange(response, rangeHeader) {
 }
 async function handlePinyinAudio(request, url) {
   const cache = await caches.open(PINYIN_AUDIO_CACHE);
+  const range = request.headers.get('range');
+  // Prefer the MP3 bundled in this repository. Keep the original CDN URL
+  // as a compatibility key so the app's existing AUDIO_BASE need not change.
+  const fileName = url.pathname.slice(PINYIN_AUDIO_PATH.length);
+  const localUrl = new URL('audio/pinyin/' + fileName, self.registration.scope);
+  try {
+    let local = await cache.match(localUrl.href);
+    if (!local) {
+      const localResponse = await fetch(new Request(localUrl.href, { method: 'GET' }));
+      if (localResponse.ok && localResponse.type !== 'opaque') {
+        local = localResponse.clone();
+        cache.put(localUrl.href, localResponse.clone()).catch(() => {});
+      }
+    }
+    if (local) {
+      cache.put(url.href, local.clone()).catch(() => {});
+      return withAudioRange(local, range);
+    }
+  } catch (_) {}
+  // Fallback to the pinned upstream CDN if a local asset is absent.
   const cached = await cache.match(url.href);
-  if (cached) return withAudioRange(cached, request.headers.get('range'));
+  if (cached) return withAudioRange(cached, range);
   try {
     const networkRequest = new Request(url.href, { method: 'GET', mode: 'cors', credentials: 'omit' });
     const response = await fetch(networkRequest);
     if (response.ok && response.type !== 'opaque') {
       cache.put(url.href, response.clone()).catch(() => {});
-      return withAudioRange(response, request.headers.get('range'));
+      return withAudioRange(response, range);
     }
     return response;
   } catch (_) {
