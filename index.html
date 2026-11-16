@@ -1836,6 +1836,15 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 #combine-choices .suggestion-add{grid-column:2;grid-row:2;justify-self:start;white-space:nowrap}
 @media(max-width:390px){#combine-choices .combine-suggestion{padding:8px 5px!important;grid-template-columns:32px minmax(0,1fr)!important}#combine-search-results .suggestion-hanzi{min-width:0!important}}
 </style>
+<style id="v42-9-2-qa-fix">
+/* v42.9.2 QA fix · BUG-02: thông báo và gợi ý trong "Tài liệu lưu trữ" (thông báo giới hạn 25 MB, tên tệp dài không dấu cách) luôn tự xuống dòng, không tràn lề trên màn hình hẹp. Chỉ áp dụng cho hai phần tử này và ô chọn tệp. */
+#panel-library .library-status,#panel-library .library-field-hint{min-width:0;max-width:100%;overflow-wrap:break-word;overflow-wrap:anywhere;word-break:break-word}
+#panel-library .library-file-field{min-width:0;max-width:100%}
+/* v42.9.2 QA fix · BUG-03: khối hướng dẫn khi kho từ vựng của Luyện tập từ vựng còn trống. Khối này chỉ được tạo khi kho rỗng nên không chiếm diện tích khi đã có từ. */
+#panel-vocab-training .vocab-training-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px}
+#panel-vocab-training .vocab-training-empty-note{margin:0;font-size:12px;line-height:1.5;color:var(--muted,#667085);overflow-wrap:anywhere}
+#panel-vocab-training .vocab-training-empty .btn{max-width:100%;white-space:normal;line-height:1.3;text-align:center}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -2042,7 +2051,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
    </div>
   </div>
   <div class="row between wrap" style="margin-top:14px"><b>Từ vựng của lượt luyện</b><button id="vocab-training-clear" class="btn secondary tiny" type="button">Xóa danh sách</button></div>
-  <div id="vocab-training-bank" class="vocab-training-bank"><div class="empty">Chưa có từ. Hãy chọn từ từ một hoặc nhiều nguồn ở trên.</div></div>
+  <div id="vocab-training-bank" class="vocab-training-bank"><div class="empty vocab-training-empty"><div>Chưa có từ. Hãy chọn từ từ một hoặc nhiều nguồn ở trên.</div><p class="vocab-training-empty-note">Chưa biết bắt đầu từ đâu? Hãy vào Tra cứu từ vựng để tìm từ, rồi quay lại đây để thêm vào danh sách.</p><button type="button" class="btn secondary" data-vocab-go-dict aria-label="Đi tới Menu 1 – Tra cứu từ vựng">📚 Đi tới Tra cứu từ vựng (Menu 1)</button></div></div>
   <div class="vocab-training-settings">
    <label>Số giây chờ hiện đáp án <input id="vocab-training-show-seconds" class="field" type="number" min="1" max="120" value="5" inputmode="numeric"></label>
    <label>Số giây chờ qua từ tiếp theo <input id="vocab-training-next-seconds" class="field" type="number" min="0" max="60" value="2" inputmode="numeric"></label>
@@ -4566,6 +4575,7 @@ function isOnlineOcrConfigured(){
 function setOcrProgressPercent(percent, message){
  const box=$('ocr-progress'),fill=$('ocr-progress-fill');
  if(!box||!fill)return;
+ if(ocrProgressToken&&ocrProgressToken!==ocrRunToken)return; // lượt quét cũ đã hết hiệu lực: không ghi tiến trình
  box.hidden=false;fill.classList.remove('indeterminate');
  const p=Math.max(0,Math.min(100,Math.round(percent)));
  fill.style.width=p+'%';box.setAttribute('aria-valuenow',String(p));
@@ -4644,26 +4654,39 @@ function normalizeOnlineOcrText(text){
  t=t.split('\n').map(line=>line.replace(/^\s*\|/,'').replace(/\|\s*$/,'').replace(/\s*\|\s*/g,' ')).join('\n');
  return t.replace(/^\s*[-=|: +]{3,}\s*$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
 }
+// v42.9.2 QA fix (BUG-04): phân biệt "OCR đã quét xong và không có chữ" với "dịch vụ OCR bị lỗi".
+function makeOcrNoTextError(message){const err=new Error(message||'OCR online không nhận ra chữ trong ảnh.');err.code='OCR_NO_TEXT';return err;}
+function isOcrNoTextError(err){return !!err&&err.code==='OCR_NO_TEXT';}
+function isOcrNoTextResponse(status,data){
+ if(data&&(data.code==='NO_TEXT'||data.noText===true))return true;
+ const message=String((data&&(data.error||data.message))||'');
+ return status===422&&/không nhận diện được chữ|không nhận ra chữ|no text (?:was )?(?:detected|found)/i.test(message);
+}
+function withOcrTimeout(promise,ms,message){let timer;return Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(message)),ms);})]).finally(()=>clearTimeout(timer));}
 async function runOnlineOcr(file,progressRange=null){
  if(!isOnlineOcrConfigured())throw new Error('Chưa cấu hình địa chỉ Cloudflare Worker. Hãy làm theo README trong gói cập nhật; khóa API phải được lưu dưới dạng Worker Secret, không dán vào HTML.');
  const prepared=await makeGridlineCleanedUpload(file,progressRange);
  reportOcrProgress(38,'Đang tải ảnh đã làm sạch lên OCR.Space Engine 3…',progressRange);
  const form=new FormData();form.append('file',prepared.blob,'chinese-vocabulary-cleaned.jpg');
- let controller=null,timer=null;
+ let controller=null,timer=null,ticker=null;
  try{
   if(window.AbortController){controller=new AbortController();timer=setTimeout(()=>controller.abort(),65000);}
+  // Báo tiến trình trong lúc chờ máy chủ để người dùng không nghĩ ứng dụng bị treo.
+  const waitStarted=Date.now();
+  ticker=setInterval(()=>{const s=Math.round((Date.now()-waitStarted)/1000);reportOcrProgress(Math.min(74,38+s*2),'Đang chờ máy chủ OCR phản hồi… đã chờ '+s+' giây. Ứng dụng vẫn đang xử lý, vui lòng không đóng trang.',progressRange);},1000);
   const response=await fetch(ONLINE_OCR_ENDPOINT,{method:'POST',body:form,signal:controller?controller.signal:undefined,cache:'no-store'});
+  clearInterval(ticker);ticker=null;
   reportOcrProgress(78,'Máy chủ online đã phản hồi. Đang kiểm tra văn bản nhận diện…',progressRange);
   let data;try{data=await response.json();}catch(_){throw new Error('Máy chủ OCR online trả về nội dung không hợp lệ. Kiểm tra Worker URL và trạng thái triển khai.');}
-  if(!response.ok||!data||data.ok===false){throw new Error((data&&data.error)||('Máy chủ OCR online trả mã HTTP '+response.status+'.'));}
+  if(!response.ok||!data||data.ok===false){if(isOcrNoTextResponse(response.status,data))throw makeOcrNoTextError(data&&data.error);throw new Error((data&&data.error)||('Máy chủ OCR online trả mã HTTP '+response.status+'.'));}
   const text=normalizeOnlineOcrText(data.text||'');
-  if(!text)throw new Error('OCR online không nhận ra chữ trong ảnh. Hãy chụp gần hơn, rõ nét hơn hoặc chọn ảnh khác.');
+  if(!text)throw makeOcrNoTextError('OCR online không nhận ra chữ trong ảnh. Hãy chụp gần hơn, rõ nét hơn hoặc chọn ảnh khác.');
   return {text,rowsRemoved:prepared.rowsRemoved,colsRemoved:prepared.colsRemoved,size:prepared.blob.size,engine:data.engine||3,processingTimeMs:data.processingTimeMs||null};
  }catch(err){
   if(err?.name==='AbortError')throw new Error('OCR online quá thời gian chờ 65 giây. Hãy thử lại hoặc đổi mạng.');
   if(err instanceof TypeError)throw new Error('Không kết nối được máy chủ OCR online. Có thể Worker URL chưa đúng hoặc cấu hình CORS chưa khớp với GitHub Pages.');
   throw err;
- }finally{if(timer)clearTimeout(timer);}
+ }finally{if(timer)clearTimeout(timer);if(ticker)clearInterval(ticker);}
 }
 // ===== End online OCR helpers =====
 const OCR_ATOMIC_WORDS = new Set(('我 你 您 他 她 它 我们 你们 他们 她们 不 没 没有 是 有 吗 呢 了 的 很 也 都 在 和 爱 想 要 会 能 可以 喜欢 学习 工作 说 听 看 读 写 吃 喝 买 卖 去 来 回 做 住 坐 认识 知道 帮助 问 回答 告诉 给 找 等 开 关 今天 明天 昨天 现在 每天 中文 汉语 中国 北京 家 学校 医院 商店 饭店 书店 机场 水 茶 咖啡 米饭 苹果 水果 菜 东西 钱 书 手机 电脑 衣服 天气 音乐 电影 电视 爸爸 妈妈 老师 学生 同学 医生 朋友 孩子 累 冷 热 忙 高兴 好 大 小 多 少 漂亮 贵 便宜 快 慢 好吃').split(' '));
@@ -4768,6 +4791,7 @@ const OCR_PROVIDERS=[
 function updateOcrProgress(message,provider){
  const box=$('ocr-progress'),fill=$('ocr-progress-fill');
  if(!box||!fill)return;
+ if(ocrProgressToken&&ocrProgressToken!==ocrRunToken)return; // lượt quét cũ đã hết hiệu lực: không ghi tiến trình
  box.hidden=false;
  const status=String(message?.status||'');
  const progress=Number(message?.progress);
@@ -4828,7 +4852,9 @@ async function createOcrWorkerWithFallback(T){
  }
  throw new Error('Không thể khởi tạo bộ nhận diện từ cả hai nguồn. '+(lastError?.message||'')+' Hãy thử đổi mạng Wi-Fi/4G hoặc thử lại sau.');
 }
+let ocrRunToken=0,ocrProgressToken=0; // v42.9.2 QA fix (BUG-04): mỗi lượt quét có mã riêng; đổi danh sách ảnh làm mã cũ hết hiệu lực để kết quả và tiến trình của ảnh cũ không ghi đè.
 function resetOcrOutputForNewSelection(){
+ ocrRunToken++;
  $('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];activeOcrCandidate=0;
  $('ocr-recognized-text').value='';detectedOcrWords=[];renderOcrWords();
  $('ocr-progress').hidden=true;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
@@ -4913,11 +4939,11 @@ async function runLocalOcrForFile(file,progressRange){
   const T=await loadTesseractScript();worker=await createOcrWorkerWithFallback(T);
   ocrPassIndex=0;report(12,'OCR cục bộ lượt 1/2: đang đọc ảnh gốc…');
   try{await worker.setParameters({tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'});}catch(e){console.warn('Không đặt được chế độ OCR 6:',e);}
-  const first=await worker.recognize(file),firstText=String(first?.data?.text||'').trim(),firstConfidence=Number(first?.data?.confidence||0);
+  const first=await withOcrTimeout(worker.recognize(file),90000,'OCR cục bộ lượt 1 quá thời gian chờ 90 giây.'),firstText=String(first?.data?.text||'').trim(),firstConfidence=Number(first?.data?.confidence||0);
   report(55,'Đang tăng tương phản ảnh để thử lần hai…');const enhanced=await makeEnhancedOcrImage(file);
   ocrPassIndex=1;report(62,'OCR cục bộ lượt 2/2: đang đọc ảnh đã tăng tương phản…');
   try{await worker.setParameters({tessedit_pageseg_mode:'11',preserve_interword_spaces:'1'});}catch(e){console.warn('Không đặt được chế độ OCR 11:',e);}
-  const second=await worker.recognize(enhanced),secondText=String(second?.data?.text||'').trim(),secondConfidence=Number(second?.data?.confidence||0);
+  const second=await withOcrTimeout(worker.recognize(enhanced),90000,'OCR cục bộ lượt 2 quá thời gian chờ 90 giây.'),secondText=String(second?.data?.text||'').trim(),secondConfidence=Number(second?.data?.confidence||0);
   const candidates=[{text:firstText,confidence:firstConfidence},{text:secondText,confidence:secondConfidence}].filter(c=>c.text);
   if(!candidates.length)throw new Error('OCR cục bộ cũng không nhận diện được chữ.');
   candidates.sort((a,b)=>b.confidence-a.confidence);return candidates[0].text;
@@ -4925,6 +4951,8 @@ async function runLocalOcrForFile(file,progressRange){
 }
 $('ocr-run-button').addEventListener('click',async()=>{
  const files=ocrSelectedFiles.slice();if(!files.length){toast('Hãy chụp ảnh hoặc tải lên ít nhất một ảnh trước.');return;}
+ const runToken=++ocrRunToken,stale=()=>runToken!==ocrRunToken;let cancelled=false;ocrProgressToken=runToken;
+ document.querySelectorAll('#ocr-image-preview [data-remove-ocr-file]').forEach(b=>{b.disabled=true;});
  const btn=$('ocr-run-button'),cameraInput=$('combine-image-input'),uploadInput=$('combine-upload-input');
  btn.disabled=true;$('ocr-clear-images').disabled=true;cameraInput.disabled=true;uploadInput.disabled=true;$('ocr-segment-button').disabled=true;
  $('ocr-progress').hidden=false;$('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];$('ocr-batch-log').hidden=false;$('ocr-batch-log').innerHTML='';
@@ -4942,22 +4970,38 @@ $('ocr-run-button').addEventListener('click',async()=>{
      entry={name:file.name,status:'ok',detail:'OCR online Engine '+result.engine+' · '+Math.max(1,Math.round(result.size/1024))+' KB sau nén · đã làm sạch '+result.rowsRemoved+' dòng kẻ ngang và '+result.colsRemoved+' cột kẻ dọc.'};
     }catch(remoteErr){
      const reason=remoteErr?.message||String(remoteErr);
-     entry={name:file.name,status:'warn',detail:'OCR online lỗi: '+reason+' Đang thử OCR cục bộ.'};
-     renderOcrBatchLog(entries.concat(entry));
-     try{text=await runLocalOcrForFile(file,range);localCount++;entry={name:file.name,status:'warn',detail:'Đã nhận diện bằng OCR cục bộ dự phòng; kết quả có thể kém chính xác hơn. Lý do online: '+reason};}
-     catch(localErr){failedCount++;entry={name:file.name,status:'error',detail:'OCR online lỗi: '+reason+' OCR cục bộ cũng lỗi: '+(localErr?.message||String(localErr))};}
+     if(isOcrNoTextError(remoteErr)){
+      // OCR online đã quét xong và xác nhận không có chữ: kết thúc sớm, không chạy OCR cục bộ chậm (tải thư viện + dữ liệu chữ Trung + 2 lượt đọc).
+      text='';entry={name:file.name,status:'warn',detail:'Không phát hiện chữ Hán trong ảnh này (OCR online đã quét xong nhưng không thấy chữ). Ảnh được bỏ qua, không đưa nội dung giả vào ô nhận diện. Nếu ảnh thật sự có chữ nhỏ hoặc mờ, hãy chụp gần hơn hoặc cắt sát vùng chữ rồi quét lại.'};
+     }else{
+      entry={name:file.name,status:'warn',detail:'OCR online lỗi: '+reason+' Đang thử OCR cục bộ.'};
+      renderOcrBatchLog(entries.concat(entry));
+      try{text=await runLocalOcrForFile(file,range);localCount++;entry={name:file.name,status:'warn',detail:'Đã nhận diện bằng OCR cục bộ dự phòng; kết quả có thể kém chính xác hơn. Lý do online: '+reason};}
+      catch(localErr){failedCount++;entry={name:file.name,status:'error',detail:'OCR online lỗi: '+reason+' OCR cục bộ cũng lỗi: '+(localErr?.message||String(localErr))};}
+     }
     }
    }else{
     const reason='URL OCR online chưa được cấu hình.';
     try{text=await runLocalOcrForFile(file,range);localCount++;entry={name:file.name,status:'warn',detail:'Đã nhận diện bằng OCR cục bộ dự phòng vì chưa cấu hình online.'};}
     catch(localErr){failedCount++;entry={name:file.name,status:'error',detail:reason+' '+(localErr?.message||String(localErr))};}
    }
+   if(stale()){cancelled=true;break;}
    if(text.trim()&&!/^\*?\[?no text detected\]?\*?$/i.test(text.trim())&&!/^không phát hiện (được )?văn bản\.?$/i.test(text.trim()))textParts.push('--- ẢNH '+(i+1)+' ---\n'+text.trim());
    else if(entry.status==='ok'||(entry.status==='warn'&&entry.detail.includes('OCR cục bộ dự phòng'))){if(entry.status==='ok')onlineCount=Math.max(0,onlineCount-1);else localCount=Math.max(0,localCount-1);entry={name:file.name,status:'warn',detail:'Không phát hiện chữ trong ảnh này. Ảnh được bỏ qua, không đưa nội dung giả vào ô nhận diện.'};}
    entries.push(entry);renderOcrBatchLog(entries);
    reportOcrProgress(((i+1)/files.length)*100,'Đã xử lý '+(i+1)+'/'+files.length+' ảnh.',{base:0,span:100,index:i+1,total:files.length});
   }
-  if(!textParts.length)throw new Error('Không nhận diện được chữ từ ảnh nào. Xem chi tiết lỗi ở danh sách từng ảnh bên trên.');
+  if(cancelled)return;
+  if(!textParts.length){
+   const noTextOnly=entries.length>0&&!failedCount&&entries.every(e=>e.status==='warn'&&e.detail.includes('Không phát hiện chữ'));
+   if(noTextOnly){
+    // Tất cả ảnh đều không có chữ: thông báo rõ ràng, không dùng giao diện lỗi và không báo thành công.
+    $('ocr-progress').hidden=true;$('ocr-status').className='source-status';
+    $('ocr-status').textContent=files.length>1?'Không phát hiện chữ Hán trong '+files.length+' ảnh đã chọn. Hãy chọn ảnh có chữ rõ nét hơn hoặc chụp gần hơn.':'Không phát hiện chữ Hán trong ảnh. Hãy chọn ảnh có chữ rõ nét hơn hoặc chụp gần hơn.';
+    return;
+   }
+   throw new Error('Không nhận diện được chữ từ ảnh nào. Xem chi tiết lỗi ở danh sách từng ảnh bên trên.');
+  }
   $('ocr-recognized-text').value=textParts.join('\n\n');ocrCandidates=[];activeOcrCandidate=0;$('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';
   segmentCurrentOcrText();
   const successCount=onlineCount+localCount;const noTextCount=entries.filter(e=>e.status==='warn'&&e.detail.includes('Không phát hiện chữ')).length;
@@ -4965,12 +5009,14 @@ $('ocr-run-button').addEventListener('click',async()=>{
   $('ocr-status').className=failedCount||localCount?'source-status': 'source-status ok';
   setOcrProgressPercent(100,summary);
  }catch(err){
+  if(stale())return;
   $('ocr-status').className='source-status error';$('ocr-status').textContent='Không thể hoàn thành lượt quét: '+(err?.message||String(err))+'. Kiểm tra chi tiết theo từng ảnh bên trên; bạn vẫn có thể sửa văn bản thủ công.';
   $('ocr-progress-fill').classList.remove('indeterminate');$('ocr-progress-fill').style.width='0%';$('ocr-progress').setAttribute('aria-valuenow','0');
  }finally{
   ocrActiveProgressRange=null;$('ocr-progress-fill').classList.remove('indeterminate');
   cameraInput.disabled=false;uploadInput.disabled=false;$('ocr-clear-images').disabled=!ocrSelectedFiles.length;
   btn.disabled=!ocrSelectedFiles.length;btn.textContent='🔎 Quét tất cả ảnh ('+ocrSelectedFiles.length+')';$('ocr-segment-button').disabled=false;
+  document.querySelectorAll('#ocr-image-preview [data-remove-ocr-file]').forEach(b=>{b.disabled=false;});
  }
 });
 $('ocr-segment-button').addEventListener('click',segmentCurrentOcrText);
@@ -5762,6 +5808,7 @@ updateStats();updateModeButtons();loadPractice();init();
 
 // =================== V42.3 · LUYỆN TẬP TỪ VỰNG ===================
 let vocabTrainingBank = new Map();
+const VOCAB_TRAINING_EMPTY_HTML = '<div class="empty vocab-training-empty"><div>Chưa có từ. Hãy chọn từ từ một hoặc nhiều nguồn ở trên.</div><p class="vocab-training-empty-note">Chưa biết bắt đầu từ đâu? Hãy vào Tra cứu từ vựng để tìm từ, rồi quay lại đây để thêm vào danh sách.</p><button type="button" class="btn secondary" data-vocab-go-dict aria-label="Đi tới Menu 1 – Tra cứu từ vựng">📚 Đi tới Tra cứu từ vựng (Menu 1)</button></div>';
 let vocabTrainingDeck = [];
 let vocabTrainingIndex = 0;
 let vocabTrainingMode = 'vi-to-zh';
@@ -5811,7 +5858,7 @@ function trainingAddRows(rows,sourceLabel){
 function renderVocabularyTrainingBank(){
  const box=$('vocab-training-bank');if(!box)return;
  $('vocab-training-count').textContent=vocabTrainingBank.size+' từ đã nạp';
- if(!vocabTrainingBank.size){box.innerHTML='<div class="empty">Chưa có từ. Hãy chọn từ từ một hoặc nhiều nguồn ở trên.</div>';return;}
+ if(!vocabTrainingBank.size){box.innerHTML=VOCAB_TRAINING_EMPTY_HTML;return;}
  box.innerHTML=[...vocabTrainingBank.entries()].map(([key,item])=>`<span class="vocab-training-chip"><b>${escapeHTML(item.zh)}</b><small>${escapeHTML(item.py)} · ${escapeHTML(simpleGloss(item.vi))}</small><button type="button" data-vocab-remove="${escapeHTML(key)}" aria-label="Bỏ ${escapeHTML(item.zh)}" title="Bỏ từ">×</button></span>`).join('');
  box.querySelectorAll('[data-vocab-remove]').forEach(btn=>btn.addEventListener('click',()=>{vocabTrainingBank.delete(btn.dataset.vocabRemove);renderVocabularyTrainingBank();}));
 }
@@ -5843,6 +5890,8 @@ $('vocab-training-add-combine').addEventListener('click',()=>{
  trainingAddRows(rows,'Từ đã chọn ở Ghép câu');
 });
 $('vocab-training-clear').addEventListener('click',()=>{vocabTrainingBank.clear();renderVocabularyTrainingBank();$('vocab-training-source-status').textContent='Đã xóa danh sách từ của lượt luyện.';});
+// v42.9.2 QA fix (BUG-03): nút trong trạng thái rỗng chuyển sang Menu 1 - Tra cứu từ vựng bằng đúng cơ chế bấm tab sẵn có (tự đóng menu mobile, không đổi kho từ).
+$('vocab-training-bank').addEventListener('click',e=>{const go=e.target.closest('[data-vocab-go-dict]');if(!go)return;e.preventDefault();document.querySelector('#main-tabs .tab[data-tab="dict"]')?.click();});
 function trainingSeconds(id,fallback,min=0,max=120){const n=Number($(id)?.value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;}
 function trainingCurrentItem(){return vocabTrainingDeck[vocabTrainingIndex]||null;}
 function trainingModeConfig(){return VOCAB_TRAINING_MODES[vocabTrainingMode]||VOCAB_TRAINING_MODES['vi-to-zh'];}

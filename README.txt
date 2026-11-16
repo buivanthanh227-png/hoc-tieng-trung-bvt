@@ -124,3 +124,11 @@ V42.9.2 – QA TITLE SYNC HOTFIX (2026-11-16)
 - Doi ten cache Service Worker sang hoc-trung-app-shell-v42-9-2-title-sync-20261116 de trinh duyet nhan dien app shell moi; cac cache app shell cu duoc don dep theo logic activate hien co.
 - Khong thay doi logic hoc tap, du lieu tu dien, giao dien menu hoac cac chuc nang khac.
 - Da kiem tra tinh nhat quan title/footer/manifest va cu phap JavaScript; chua thuc hien browser E2E tren GitHub Pages hoac thiet bi that.
+
+V42.9.2 – QA FIX BUG-02 / BUG-03 / BUG-04 (2026-11-16)
+- Giữ nguyên phiên bản v42.9.2. Service Worker cache đổi sang hoc-trung-app-shell-v42-9-2-qa-fix-20261116 để trình duyệt nhận bản mới; cơ chế cache giữ nguyên.
+- BUG-02: thông báo và gợi ý trong Tài liệu lưu trữ (thông báo giới hạn 25 MB, tên tệp dài không dấu cách) luôn tự xuống dòng, không tràn lề trên màn hình hẹp. Chỉ sửa CSS cho #panel-library .library-status, .library-field-hint và ô chọn tệp.
+- BUG-03: Luyện tập từ vựng (menu 10 trong giao diện hiện tại) – khi kho từ rỗng có thêm lời hướng dẫn và nút “Đi tới Tra cứu từ vựng (Menu 1)”. Khối này chỉ tồn tại khi kho rỗng; không thêm từ giả; không đổi logic luyện tập.
+- BUG-04: OCR menu 2 – khi OCR online đã quét xong và xác nhận không có chữ thì kết thúc ngay, không chạy OCR cục bộ chậm; vẫn dùng OCR cục bộ khi dịch vụ lỗi, hết thời gian hoặc mất mạng. Thêm bộ đếm giây khi chờ máy chủ, giới hạn 90 giây cho mỗi lượt OCR cục bộ, mã lượt quét để kết quả của ảnh cũ không ghi đè danh sách ảnh mới, và khóa nút xóa ảnh trong lúc đang quét.
+- Không sửa BUG-01 (micro), Cloudflare ASR, Speech Recognition, TTS, dữ liệu từ điển, bộ thủ, bảng Pinyin. ocr-worker.js không đổi.
+- Chi tiết kiểm thử và giới hạn: xem CHANGELOG_QA_FIX.md và QA_REGRESSION_RESULTS.md.
