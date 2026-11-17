@@ -1,0 +1,7 @@
+Chinese Pinyin syllable audio dataset
+Source: https://github.com/hugolpz/audio-cmn
+Pinned source commit: f759a0f18f27690742957619e1248ed91e9b3f2c
+Imported directory: 24k-abr/syllabs
+Audio files: recorded syllable pronunciations; speaker credit: Chen Wang.
+License: Creative Commons Attribution-ShareAlike (CC BY-SA).
+This repository retains the source attribution and license notice.
