@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
   workflow_run:
-    workflows: ["Vendor Pinyin MP3"]
+    workflows: ["Vendor Pinyin MP3", "Patch Pinyin chart ueng and w-series"]
     types: [completed]
 
 permissions:
