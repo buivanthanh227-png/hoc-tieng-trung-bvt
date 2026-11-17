@@ -29,14 +29,14 @@ jobs:
 
           index = Path("index.html")
           source = index.read_text(encoding="utf-8")
-          mcols = re.search(r'const COLS=(\\[.*?\\]);', source)
+          mcols = re.search(r'const COLS=(\[.*?\]);', source)
           if not mcols:
               raise SystemExit("Không tìm thấy COLS; dừng để tránh sửa sai.")
           cols = json.loads(mcols.group(1))
           if "en" not in cols:
               raise SystemExit("Bảng không có vận mẫu en.")
           en = cols.index("en")
-          mcells = re.search(r'const CELLS=(\\[.*?\\]);\\nconst AUDIO_BASE=', source, re.S)
+          mcells = re.search(r'const CELLS=(\[.*?\]);\nconst AUDIO_BASE=', source, re.S)
           if not mcells:
               raise SystemExit("Không tìm thấy khối CELLS; dừng để tránh sửa sai.")
           cells = json.loads(mcells.group(1))
@@ -49,7 +49,7 @@ jobs:
           if row[en] not in ("", "den"):
               raise SystemExit(f"Ô d + en đang có dữ liệu khác dự kiến: {row[en]!r}")
           row[en] = "den"
-          new_cells = "const CELLS=" + json.dumps(cells, ensure_ascii=False, separators=(",", ":")) + ";\\nconst AUDIO_BASE="
+          new_cells = "const CELLS=" + json.dumps(cells, ensure_ascii=False, separators=(",", ":")) + ";\nconst AUDIO_BASE="
           source = source[:mcells.start()] + new_cells + source[mcells.end():]
           index.write_text(source, encoding="utf-8")
 
@@ -79,8 +79,8 @@ jobs:
           from pathlib import Path
           import json, re
           s=Path("index.html").read_text(encoding="utf-8")
-          cols=json.loads(re.search(r'const COLS=(\\[.*?\\]);',s).group(1))
-          cells=json.loads(re.search(r'const CELLS=(\\[.*?\\]);\\nconst AUDIO_BASE=',s,re.S).group(1))
+          cols=json.loads(re.search(r'const COLS=(\[.*?\]);',s).group(1))
+          cells=json.loads(re.search(r'const CELLS=(\[.*?\]);\nconst AUDIO_BASE=',s,re.S).group(1))
           assert cells[5][cols.index("en")] == "den"
           assert all(Path(f"audio/pinyin/cmn-den{t}.mp3").is_file() for t in range(1,5))
           sw=Path("sw.js").read_text(encoding="utf-8")
