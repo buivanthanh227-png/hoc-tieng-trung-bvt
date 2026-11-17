@@ -42,7 +42,7 @@ jobs:
           cells = json.loads(mcells.group(1))
           if len(cells) != 23 or any(len(row) != len(cols) for row in cells):
               raise SystemExit(f"Kích thước bảng không như dự kiến: {len(cells)} hàng; độ dài {[len(r) for r in cells]}")
-          drow = 5
+          drow = 4
           row = cells[drow]
           if row[2] != "de" or row[9] != "dan" or row[11] != "dang" or row[12] != "deng":
               raise SystemExit(f"Không xác nhận được hàng thanh mẫu d: {row}")
@@ -81,7 +81,7 @@ jobs:
           s=Path("index.html").read_text(encoding="utf-8")
           cols=json.loads(re.search(r'const COLS=(\[.*?\]);',s).group(1))
           cells=json.loads(re.search(r'const CELLS=(\[.*?\]);\nconst AUDIO_BASE=',s,re.S).group(1))
-          assert cells[5][cols.index("en")] == "den"
+          assert cells[4][cols.index("en")] == "den"
           assert all(Path(f"audio/pinyin/cmn-den{t}.mp3").is_file() for t in range(1,5))
           sw=Path("sw.js").read_text(encoding="utf-8")
           assert "hoc-trung-app-shell-v42-9-5-den-cell-20261118" in sw
