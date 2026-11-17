@@ -1,0 +1,102 @@
+name: Patch Pinyin chart den syllable
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/patch-pinyin-chart-den.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: patch-pinyin-chart-den
+  cancel-in-progress: false
+jobs:
+  patch-den:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Add d + en = den and verify audio
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          index = Path("index.html")
+          source = index.read_text(encoding="utf-8")
+          mcols = re.search(r'const COLS=(\\[.*?\\]);', source)
+          if not mcols:
+              raise SystemExit("Không tìm thấy COLS; dừng để tránh sửa sai.")
+          cols = json.loads(mcols.group(1))
+          if "en" not in cols:
+              raise SystemExit("Bảng không có vận mẫu en.")
+          en = cols.index("en")
+          mcells = re.search(r'const CELLS=(\\[.*?\\]);\\nconst AUDIO_BASE=', source, re.S)
+          if not mcells:
+              raise SystemExit("Không tìm thấy khối CELLS; dừng để tránh sửa sai.")
+          cells = json.loads(mcells.group(1))
+          if len(cells) != 23 or any(len(row) != len(cols) for row in cells):
+              raise SystemExit(f"Kích thước bảng không như dự kiến: {len(cells)} hàng; độ dài {[len(r) for r in cells]}")
+          drow = 5
+          row = cells[drow]
+          if row[2] != "de" or row[9] != "dan" or row[11] != "dang" or row[12] != "deng":
+              raise SystemExit(f"Không xác nhận được hàng thanh mẫu d: {row}")
+          if row[en] not in ("", "den"):
+              raise SystemExit(f"Ô d + en đang có dữ liệu khác dự kiến: {row[en]!r}")
+          row[en] = "den"
+          new_cells = "const CELLS=" + json.dumps(cells, ensure_ascii=False, separators=(",", ":")) + ";\\nconst AUDIO_BASE="
+          source = source[:mcells.start()] + new_cells + source[mcells.end():]
+          index.write_text(source, encoding="utf-8")
+
+          audio_dir = Path("audio/pinyin")
+          missing = [f"cmn-den{tone}.mp3" for tone in range(1, 5) if not (audio_dir / f"cmn-den{tone}.mp3").is_file()]
+          if missing:
+              raise SystemExit("Thiếu audio den: " + ", ".join(missing))
+          print(f"PASS: đã thêm den vào hàng d, cột en (index {en}); đủ 4 file audio den1–den4.")
+          PY
+      - name: Bump Service Worker cache
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("sw.js")
+          s=p.read_text(encoding="utf-8")
+          updated=re.sub(r"const CACHE_NAME = '[^']+';", "const CACHE_NAME = 'hoc-trung-app-shell-v42-9-5-den-cell-20261118';", s, count=1)
+          if updated == s and "hoc-trung-app-shell-v42-9-5-den-cell-20261118" not in s:
+              raise SystemExit("Không tìm thấy CACHE_NAME để cập nhật.")
+          p.write_text(updated, encoding="utf-8")
+          print("PASS: Service Worker cache key đã được tăng để tải lại app.")
+          PY
+      - name: Verify chart and audio mapping
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+          s=Path("index.html").read_text(encoding="utf-8")
+          cols=json.loads(re.search(r'const COLS=(\\[.*?\\]);',s).group(1))
+          cells=json.loads(re.search(r'const CELLS=(\\[.*?\\]);\\nconst AUDIO_BASE=',s,re.S).group(1))
+          assert cells[5][cols.index("en")] == "den"
+          assert all(Path(f"audio/pinyin/cmn-den{t}.mp3").is_file() for t in range(1,5))
+          sw=Path("sw.js").read_text(encoding="utf-8")
+          assert "hoc-trung-app-shell-v42-9-5-den-cell-20261118" in sw
+          print("PASS: ô d + en = den; đủ audio den1, den2, den3, den4; cache mới.")
+          PY
+      - name: Commit patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html sw.js
+          if git diff --cached --quiet; then
+            echo "Không có thay đổi cần commit."
+            exit 0
+          fi
+          git commit -m "Add den syllable to Pinyin chart and verify audio"
+          git push origin HEAD:main
