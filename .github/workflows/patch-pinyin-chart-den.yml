@@ -1,4 +1,5 @@
 name: Patch Pinyin chart den syllable
+# Redeploy after the chart patch commit so Pages packages the updated index.html.
 on:
   push:
     branches: [main]
