@@ -1,9 +1,9 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-9-4-local-pinyin-audio-20261116';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-9-5-local-pinyin-audio-20261117';
 const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-10';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
-const LOCAL_PINYIN_AUDIO_ENABLED = false; // Enable after audio/pinyin/*.mp3 has been committed.
+const LOCAL_PINYIN_AUDIO_ENABLED = true; // Prefer repository-hosted 24k-abr MP3; CDN remains fallback.
 const APP_FILES = ['./index.html', './luyen-so-tieng-trung.html', './manifest.webmanifest', './icon.svg', './icon.svg?v=41-gold-logo-stroke-practice-20261028', './icon-v41-192.png', './icon-v41-192.png?v=41-gold-logo-stroke-practice-20261028', './icon-v41-512.png', './icon-v41-512.png?v=41-gold-logo-stroke-practice-20261028', './apple-touch-icon-v41.png', './apple-touch-icon-v41.png?v=41-gold-logo-stroke-practice-20261028', './sw.js', './asr-worker.js', './asr-voice-worker.js', './asr-cloudflare-worker.js', './ocr-worker.js'];
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
 async function withAudioRange(response, rangeHeader) {
