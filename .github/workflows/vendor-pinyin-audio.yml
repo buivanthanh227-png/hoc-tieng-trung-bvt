@@ -1,0 +1,68 @@
+name: Vendor Pinyin MP3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/vendor-pinyin-audio.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-pinyin-audio
+  cancel-in-progress: false
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ứng dụng
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Tải bộ MP3 Pinyin 24k-abr từ nguồn đã ghim phiên bản
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_COMMIT="f759a0f18f27690742957619e1248ed91e9b3f2c"
+          git clone --filter=blob:none --no-checkout https://github.com/hugolpz/audio-cmn.git /tmp/audio-cmn
+          git -C /tmp/audio-cmn sparse-checkout init --cone
+          git -C /tmp/audio-cmn sparse-checkout set 24k-abr/syllabs README.md
+          git -C /tmp/audio-cmn checkout "$SOURCE_COMMIT"
+
+          mkdir -p audio/pinyin
+          cp -f /tmp/audio-cmn/24k-abr/syllabs/*.mp3 audio/pinyin/
+          COUNT="$(find audio/pinyin -maxdepth 1 -type f -name '*.mp3' | wc -l | tr -d ' ')"
+          echo "Đã lấy $COUNT tệp MP3."
+          if [ "$COUNT" -lt 1500 ]; then
+            echo "::error::Số lượng MP3 không đủ; từ chối commit dữ liệu chưa đầy đủ."
+            exit 1
+          fi
+
+          cat > audio/pinyin/ATTRIBUTION.txt <<'EOF'
+          Chinese Pinyin syllable audio dataset
+          Source: https://github.com/hugolpz/audio-cmn
+          Pinned source commit: f759a0f18f27690742957619e1248ed91e9b3f2c
+          Imported directory: 24k-abr/syllabs
+          Audio files: recorded syllable pronunciations; speaker credit: Chen Wang.
+          License: Creative Commons Attribution-ShareAlike (CC BY-SA).
+          This repository retains the source attribution and license notice.
+          EOF
+
+      - name: Commit MP3 vào repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/pinyin
+          if git diff --cached --quiet; then
+            echo "MP3 đã có đầy đủ; không cần commit mới."
+            exit 0
+          fi
+          git commit -m "Add local Pinyin MP3 audio assets (24k-abr)"
+          git push origin HEAD:main
