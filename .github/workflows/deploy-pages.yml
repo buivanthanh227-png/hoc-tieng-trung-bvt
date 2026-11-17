@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Vendor Pinyin MP3"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -16,6 +19,7 @@ concurrency:
 
 jobs:
   build-deploy:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -35,6 +39,7 @@ jobs:
           [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
           [ -f icon.svg ] && cp icon.svg site/ || true
           [ -f sw.js ] && cp sw.js site/ || true
+          [ -d audio/pinyin ] && mkdir -p site/audio && cp -a audio/pinyin site/audio/ || true
 
           # Đưa toàn bộ ứng dụng luyện số vào website ở /luyen-so/
           if [ ! -f luyen-so/index.html ]; then
