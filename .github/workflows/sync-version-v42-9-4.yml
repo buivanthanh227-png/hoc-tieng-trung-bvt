@@ -1,0 +1,56 @@
+name: Sync application version to V42.9.4
+
+on:
+  push:
+    branches:
+      - fix/sync-version-v42-9-4
+
+permissions:
+  contents: write
+
+jobs:
+  sync-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Update app title and PWA manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          targets = {
+              Path("index.html"): "<title>HỌC TIẾNG TRUNG · V42.9.3</title>",
+              Path("manifest.webmanifest"): "HỌC TIẾNG TRUNG BVT · V42.9.3",
+          }
+
+          for path, old in targets.items():
+              source = path.read_text(encoding="utf-8")
+              if source.count(old) != 1:
+                  raise SystemExit(f"{path}: expected exactly one old version marker; found {source.count(old)}")
+              updated = source.replace(old, old.replace("V42.9.3", "V42.9.4"))
+              path.write_text(updated, encoding="utf-8")
+              print(f"Updated {path}")
+
+          for path in targets:
+              source = path.read_text(encoding="utf-8")
+              if "V42.9.3" in source or "V42.9.4" not in source:
+                  raise SystemExit(f"Version verification failed for {path}")
+          print("PASS: HTML title and PWA manifest both show V42.9.4")
+          PY
+
+      - name: Remove temporary workflow and commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/sync-version-v42-9-4.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html manifest.webmanifest .github/workflows/sync-version-v42-9-4.yml
+          git commit -m "chore(release): sync app version to V42.9.4"
+          git push origin HEAD:fix/sync-version-v42-9-4
