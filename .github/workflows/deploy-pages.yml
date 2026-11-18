@@ -37,6 +37,14 @@ jobs:
 
           # Trang chính hiện tại
           cp index.html site/
+          # Đồng bộ riêng số phiên bản ở nội dung trang; không thay đổi tiêu đề hay chức năng.
+          if grep -q '42.9.3' site/index.html; then
+            sed -i 's/42\.9\.3/42.9.4/g' site/index.html
+          fi
+          if grep -q '42.9.3' site/index.html; then
+            echo "::error::Footer version vẫn còn V42.9.3 sau khi cập nhật."
+            exit 1
+          fi
           [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
           [ -f icon.svg ] && cp icon.svg site/ || true
 
