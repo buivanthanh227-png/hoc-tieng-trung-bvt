@@ -87,15 +87,14 @@ jobs:
           #panel-pinyin-audio .p16-chart-table tbody td.p16-group-ue{background:#fce7f3!important;border-color:#f9a8d4!important}
           #panel-pinyin-audio .p16-chart-table tbody td.p16-group-ue .p16-cell-play:not(.p16-playing){background:#fdf2f8!important;color:#9d174d!important;border-color:#f9a8d4!important}
 
-          /* Biểu tượng loa và mũi tên đọc hàng/cột luôn trắng. */
-          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action button,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action button *,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action button svg,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action button svg *,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-row-action button,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-row-action button *,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-row-action button svg,
-          #panel-pinyin-audio .p16-chart-table thead th.p16-row-action button svg *{color:#fff!important;fill:#fff!important;stroke:#fff!important}
+          /* Nút phát âm hàng/cột có nền đậm để biểu tượng trắng luôn rõ. */
+          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn,
+          #panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn{background:#334155!important;color:#fff!important;border-color:#1e293b!important}
+          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn span,
+          #panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn span{filter:grayscale(1) brightness(0) invert(1)!important}
+          #panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn b,
+          #panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn b{color:#fff!important;filter:none!important}
+          #panel-pinyin-audio .p16-chart-table .p16-sequence-btn.p16-playing{background:#1d4ed8!important;color:#fff!important;border-color:#1e40af!important}
           </style>
           """
           style_pattern = re.compile(r'<style id="' + re.escape(style_id) + r'">.*?</style>', re.S)
@@ -112,11 +111,11 @@ jobs:
               raise SystemExit("Khối CSS nhóm màu bị thiếu hoặc lặp.")
 
           index.write_text(source, encoding="utf-8")
-          print("PASS: đã gắn màu trực tiếp lên header, ô trống và nút phát âm ở 9 cột a–ou / 5 cột an–ong.")
+          print("PASS: đã gắn màu trực tiếp lên header, ô dữ liệu và nút phát âm của đủ 5 nhóm vận mẫu.")
 
           sw = Path("sw.js")
           sw_source = sw.read_text(encoding="utf-8")
-          cache_name = "hoc-trung-app-shell-v42-9-7-pinyin-visible-final-colors-20261118"
+          cache_name = "hoc-trung-app-shell-v42-9-3-pinyin-final-groups-livefix-20261118"
           updated = re.sub(r"const CACHE_NAME = '[^']+';", f"const CACHE_NAME = '{cache_name}';", sw_source, count=1)
           if updated == sw_source and cache_name not in sw_source:
               raise SystemExit("Không tìm thấy CACHE_NAME trong sw.js.")
@@ -145,11 +144,13 @@ jobs:
               assert f'.p16-chart-table thead th.p16-group-{group}{{background:{color}!important' in s
               assert f'.p16-chart-table tbody td.p16-group-{group}{{background:' in s
               assert f'.p16-chart-table tbody td.p16-group-{group} .p16-cell-play' in s
-          assert 'p16-column-action button svg' in s and 'stroke:#fff!important' in s
-          assert 'p16-row-action button svg' in s
+          assert 'thead th.p16-column-action .p16-sequence-btn' in s
+          assert 'tbody td.p16-row-action-cell .p16-sequence-btn' in s
+          assert 'brightness(0) invert(1)' in s
+          assert '.p16-sequence-btn b{color:#fff!important' in s
           sw = Path("sw.js").read_text(encoding="utf-8")
-          assert "hoc-trung-app-shell-v42-9-7-pinyin-visible-final-colors-20261118" in sw
-          print("PASS: 9 cột basic và 5 cột nasal; header + cell + nút audio đều nhận màu riêng; cache key mới.")
+          assert "hoc-trung-app-shell-v42-9-3-pinyin-final-groups-livefix-20261118" in sw
+          print("PASS: đủ 5 nhóm vận mẫu; header + cell + nút audio nhận màu; loa/mũi tên hàng-cột trắng; cache key mới.")
           PY
       - name: Commit and push
         shell: bash
