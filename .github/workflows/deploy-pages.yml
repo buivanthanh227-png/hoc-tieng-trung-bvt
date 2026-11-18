@@ -1,4 +1,5 @@
 name: Build and deploy Học Tiếng Trung
+# Trigger Pages from the latest main commit, including the visible Pinyin color-group patch.
 
 on:
   push:
