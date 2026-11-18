@@ -1847,11 +1847,17 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 </style>
 
 <style id="bvt-pinyin-final-groups-20261118">
-/* 16.1: separate simple finals (a–ou) from nasal finals (an–ong). */
+/* Bảng 16.1: nhóm a–ou màu xanh dương; an–ong màu xanh ngọc.
+   Tô cả ô dữ liệu và nút phát âm bên trong để màu không bị che khuất. */
 #panel-pinyin-audio .p16-chart-table thead th.p16-group-basic{background:#2563eb!important;color:#fff!important}
-#panel-pinyin-audio .p16-chart-table tbody td.p16-group-basic{background:#eff6ff!important}
+#panel-pinyin-audio .p16-chart-table thead th.p16-group-basic button:not(.p16-playing){background:#1d4ed8!important;color:#fff!important;border-color:#1e40af!important}
+#panel-pinyin-audio .p16-chart-table tbody td.p16-group-basic{background:#dbeafe!important}
+#panel-pinyin-audio .p16-chart-table tbody td.p16-group-basic .p16-cell-play:not(.p16-playing){background:#eff6ff!important;color:#1e40af!important;border-color:#93c5fd!important}
+
 #panel-pinyin-audio .p16-chart-table thead th.p16-group-nasal{background:#0f766e!important;color:#fff!important}
-#panel-pinyin-audio .p16-chart-table tbody td.p16-group-nasal{background:#ecfdf5!important}
+#panel-pinyin-audio .p16-chart-table thead th.p16-group-nasal button:not(.p16-playing){background:#0d9488!important;color:#fff!important;border-color:#0f766e!important}
+#panel-pinyin-audio .p16-chart-table tbody td.p16-group-nasal{background:#ccfbf1!important}
+#panel-pinyin-audio .p16-chart-table tbody td.p16-group-nasal .p16-cell-play:not(.p16-playing){background:#f0fdfa!important;color:#115e59!important;border-color:#5eead4!important}
 </style>
 
 </head>
