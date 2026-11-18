@@ -2662,10 +2662,13 @@ function mergeRows(rows){const out=buildSeed();const seen=new Set(out.map(r=>r[0
 function makeSearchRecord(r){const simp=norm(r[0]);return {simp,trad:r[0]===r[1]?simp:norm(r[1]),py:norm(r[2]),meaning:norm(r[3])};}
 function searchScoreForRow(i,q){
  if(!q)return 1;const f=searchIndex[i];if(!f)return 0;let best=0;
+ const shortQuery=q.length<=2;
  const scoreField=(v,target,exact,prefix,inside)=>{if(!v||!target)return 0;if(v===target)return exact;if(v.startsWith(target))return prefix;if(target.length>=3&&v.includes(target))return inside;return 0;};
- best=Math.max(best,scoreField(f.simp,q,140,125,112),scoreField(f.trad,q,138,123,110),scoreField(f.py,q,125,112,96),((q.length>=3||!SEARCH_SYNONYMS[q])?scoreField(f.meaning,q,120,110,98):0));
+ // Short Vietnamese words such as "cá" normalize to two letters ("ca").
+ // Keep Pinyin discoverable, but rank short Pinyin hits below exact Vietnamese meanings.
+ best=Math.max(best,scoreField(f.simp,q,140,125,112),scoreField(f.trad,q,138,123,110),scoreField(f.py,q,shortQuery?105:125,shortQuery?95:112,shortQuery?80:96),((q.length>=3||!SEARCH_SYNONYMS[q])?scoreField(f.meaning,q,120,110,98):0));
  const expansions=SEARCH_SYNONYMS[q]||[];
- for(const raw of expansions){const x=norm(raw);if(!x)continue;best=Math.max(best,scoreField(f.simp,x,155,140,120),scoreField(f.trad,x,152,138,118),scoreField(f.py,x,125,108,90),scoreField(f.meaning,x,110,98,80));}
+ for(const raw of expansions){const x=norm(raw);if(!x)continue;best=Math.max(best,scoreField(f.simp,x,155,140,120),scoreField(f.trad,x,152,138,118),scoreField(f.py,x,shortQuery?90:125,shortQuery?82:108,shortQuery?70:90),scoreField(f.meaning,x,110,98,80));}
  // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
  return best;
 }
