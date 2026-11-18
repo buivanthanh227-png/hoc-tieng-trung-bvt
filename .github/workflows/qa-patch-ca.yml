@@ -1,0 +1,66 @@
+name: Add Vietnamese fish synonym and verify dictionary ranking
+on:
+  push:
+    branches: ["fix/v42.9.4-qa"]
+    paths:
+      - ".github/workflows/qa-patch-ca.yml"
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/v42.9.4-qa
+          fetch-depth: 0
+      - name: Add Vietnamese cá synonym
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          needle="den:['来','來','到','lái','dao'],"
+          replacement=needle+" ca:['鱼','魚','fish'],"
+          if s.count(needle)!=1:
+              raise SystemExit(f"Expected one synonym insertion point, found {s.count(needle)}; no changes made.")
+          if "ca:['鱼','魚','fish']" in s:
+              raise SystemExit("The cá synonym already exists; refusing duplicate insertion.")
+          if not ("鱼" in s and "魚" in s):
+              raise SystemExit("Fish headwords are not present in source; stop rather than add a broken alias.")
+          s=s.replace(needle,replacement,1)
+          p.write_text(s,encoding="utf-8")
+          print("PASS: added ca -> 鱼/魚/fish to Vietnamese dictionary synonyms.")
+          PY
+      - name: Test real scoring function with synonym expansion
+        shell: bash
+        run: |
+          node <<'JS'
+          const fs = require('fs');
+          const html = fs.readFileSync('index.html','utf8');
+          const m = html.match(/function searchScoreForRow\(i,q\)\{[\s\S]*?\n\}/);
+          if(!m) throw new Error('searchScoreForRow missing');
+          const searchIndex=[
+            {simp:'鱼',trad:'魚',py:'yu',meaning:'fish'},
+            {simp:'擦',trad:'擦',py:'ca',meaning:'wipe'},
+            {simp:'礤',trad:'礤',py:'ca',meaning:'grater'}
+          ];
+          const SEARCH_SYNONYMS={ca:['鱼','魚','fish']};
+          const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'d').toLowerCase().replace(/[\s\p{P}\p{S}]+/gu,'').trim();
+          const score=new Function('searchIndex','SEARCH_SYNONYMS','norm',m[0]+';return searchScoreForRow;')(searchIndex,SEARCH_SYNONYMS,norm);
+          const fish=score(0,'ca'), pinyin1=score(1,'ca'), pinyin2=score(2,'ca');
+          console.log({fish,pinyin1,pinyin2});
+          if(!(fish>pinyin1 && fish>pinyin2)) throw new Error('Fish meaning/headword did not rank first for cá query.');
+          console.log('PASS: 鱼 ranks above cā/cǎ Pinyin collisions for normalized cá query.');
+          JS
+      - name: Commit synonym patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+actions@users.noreply.github.com"
+          git add index.html
+          git commit -m "fix(dictionary): map Vietnamese ca query to fish vocabulary"
+          git push origin HEAD:fix/v42.9.4-qa
