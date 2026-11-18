@@ -1887,6 +1887,15 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 #panel-pinyin-audio .p16-chart-table .p16-sequence-btn.p16-playing{background:#1d4ed8!important;color:#fff!important;border-color:#1e40af!important}
 </style>
 
+
+<style id="bvt-pinyin-speaker-svg-20261118">
+/* Biểu tượng loa SVG rõ ràng, không bị filter thành blob trắng */
+#panel-pinyin-audio .p16-sequence-btn .p16-speaker-icon{vertical-align:middle;display:inline-block}
+#panel-pinyin-audio .p16-sequence-btn span{filter:none!important}
+#panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn span,
+#panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn span{filter:none!important}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -2309,7 +2318,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
    </div>
    <div class="p16-quiz-start-row"><button id="p16-start-quiz" class="p16-primary-btn" type="button">BẮT ĐẦU LUYỆN NGHE</button><span id="p16-quiz-summary" class="p16-quiz-summary" role="status" aria-live="polite">Chưa có lượt luyện nào.</span></div>
    <div id="p16-quiz-area" class="p16-quiz-area" hidden>
-    <div class="p16-question-top"><strong id="p16-question-number">CÂU 1/5</strong><button id="p16-replay-question" class="p16-replay-btn" type="button"><span aria-hidden="true">🔊</span> PHÁT LẠI PHIÊN ÂM VỪA ĐỌC</button></div>
+    <div class="p16-question-top"><strong id="p16-question-number">CÂU 1/5</strong><button id="p16-replay-question" class="p16-replay-btn" type="button"><span aria-hidden="true"><svg class="p16-speaker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/></svg></span> PHÁT LẠI PHIÊN ÂM VỪA ĐỌC</button></div>
     <p id="p16-question-countdown" class="p16-question-countdown" role="status" aria-live="polite">Đang chờ câu hỏi.</p>
     <div class="p16-answer-grid">
      <div id="p16-tone-answer-box" class="p16-answer-box"><div class="p16-answer-title"><span>1</span><strong>THANH ĐIỆU SỐ MẤY?</strong></div><div id="p16-tone-choices" class="p16-choice-row"></div></div>
@@ -2332,7 +2341,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
    </div>
    <div class="p16-quiz-start-row"><button id="p16-3-start-quiz" class="p16-primary-btn" type="button">BẮT ĐẦU LUYỆN NGHE NÂNG CAO</button><span id="p16-3-quiz-summary" class="p16-advanced-summary" role="status" aria-live="polite">Chưa có lượt luyện nào.</span></div>
    <div id="p16-3-quiz-area" class="p16-quiz-area" hidden>
-    <div class="p16-question-top"><strong id="p16-3-question-number">CÂU 1/5</strong><button id="p16-3-replay-question" class="p16-replay-btn" type="button"><span aria-hidden="true">🔊</span> PHÁT LẠI PHIÊN ÂM VỪA ĐỌC</button></div>
+    <div class="p16-question-top"><strong id="p16-3-question-number">CÂU 1/5</strong><button id="p16-3-replay-question" class="p16-replay-btn" type="button"><span aria-hidden="true"><svg class="p16-speaker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/></svg></span> PHÁT LẠI PHIÊN ÂM VỪA ĐỌC</button></div>
     <p id="p16-3-question-countdown" class="p16-question-countdown" role="status" aria-live="polite">Đang chờ câu hỏi.</p>
     <div class="p16-advanced-answers">
      <div class="p16-answer-box"><div class="p16-answer-title"><span>1</span><strong>THANH ĐIỆU SỐ MẤY?</strong></div><div id="p16-3-tone-choices" class="p16-choice-row"></div></div>
@@ -7208,10 +7217,10 @@ function renderChart(){
   chartTable.style.minWidth=(75+measuredWidths.reduce((a,b)=>a+b,0))+'px';
  }
  // The added top action row contains one vertical-play control above every final.
- const actionRow='<tr class="p16-column-action-row"><th class="p16-diagonal-corner" rowspan="2" colspan="2"><span class="p16-diagonal-final-label">VẬN MẪU</span><span class="p16-diagonal-initial-label">THANH MẪU</span></th>'+COLS.map((c,i)=>`<th class="p16-column-action p16-group-${groupClass(i)}"><button type="button" class="p16-sequence-btn p16-column-sequence-btn" data-play-column="${i}" title="Đọc toàn bộ cột ${c} từ trên xuống dưới" aria-label="Đọc toàn bộ cột vận mẫu ${c} từ trên xuống dưới"><span aria-hidden="true">🔊</span><b aria-hidden="true">↓</b></button></th>`).join('')+'</tr>';
+ const actionRow='<tr class="p16-column-action-row"><th class="p16-diagonal-corner" rowspan="2" colspan="2"><span class="p16-diagonal-final-label">VẬN MẪU</span><span class="p16-diagonal-initial-label">THANH MẪU</span></th>'+COLS.map((c,i)=>`<th class="p16-column-action p16-group-${groupClass(i)}"><button type="button" class="p16-sequence-btn p16-column-sequence-btn" data-play-column="${i}" title="Đọc toàn bộ cột ${c} từ trên xuống dưới" aria-label="Đọc toàn bộ cột vận mẫu ${c} từ trên xuống dưới"><span aria-hidden="true"><svg class="p16-speaker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/></svg></span><b aria-hidden="true">↓</b></button></th>`).join('')+'</tr>';
  const finalHeader='<tr>'+COLS.map((c,i)=>`<th class="p16-final-head p16-group-${groupClass(i)}"><button type="button" data-final-head="${i}" aria-label="Nghe vận mẫu ${c}">${c}</button></th>`).join('')+'</tr>';
  head.innerHTML=actionRow+finalHeader;
- body.innerHTML=ROWS.map((r,ri)=>'<tr><td class="p16-row-action-cell"><button type="button" class="p16-sequence-btn p16-row-sequence-btn" data-play-row="'+ri+'" title="Đọc toàn bộ hàng '+r+' từ trái sang phải" aria-label="Đọc toàn bộ hàng thanh mẫu '+r+' từ trái sang phải"><span aria-hidden="true">🔊</span><b aria-hidden="true">→</b></button></td><th class="p16-row-head"><button type="button" data-initial-head="'+ri+'" aria-label="Nghe thanh mẫu '+r+'">'+r+'</button></th>'+CELLS[ri].map((p,ci)=>p?`<td class="p16-group-cell p16-group-${groupClass(ci)}"><button type="button" class="p16-cell-play" data-chart-cell="${ri}-${ci}" data-chart-play="${p}" aria-label="Nghe ${pinyinTone(p,chartTone)}">${pinyinTone(p,chartTone)}</button></td>`:`<td class="p16-group-cell p16-group-${groupClass(ci)}"></td>`).join('')+'</tr>').join('');
+ body.innerHTML=ROWS.map((r,ri)=>'<tr><td class="p16-row-action-cell"><button type="button" class="p16-sequence-btn p16-row-sequence-btn" data-play-row="'+ri+'" title="Đọc toàn bộ hàng '+r+' từ trái sang phải" aria-label="Đọc toàn bộ hàng thanh mẫu '+r+' từ trái sang phải"><span aria-hidden="true"><svg class="p16-speaker-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" fill="currentColor"/></svg></span><b aria-hidden="true">→</b></button></td><th class="p16-row-head"><button type="button" data-initial-head="'+ri+'" aria-label="Nghe thanh mẫu '+r+'">'+r+'</button></th>'+CELLS[ri].map((p,ci)=>p?`<td class="p16-group-cell p16-group-${groupClass(ci)}"><button type="button" class="p16-cell-play" data-chart-cell="${ri}-${ci}" data-chart-play="${p}" aria-label="Nghe ${pinyinTone(p,chartTone)}">${pinyinTone(p,chartTone)}</button></td>`:`<td class="p16-group-cell p16-group-${groupClass(ci)}"></td>`).join('')+'</tr>').join('');
  chartCellButtons=new Map([...root.querySelectorAll('[data-chart-cell]')].map(b=>[b.dataset.chartCell,b]));
  initialHeadButtons=new Map([...root.querySelectorAll('[data-initial-head]')].map(b=>[b.dataset.initialHead,b]));
  finalHeadButtons=new Map([...root.querySelectorAll('[data-final-head]')].map(b=>[b.dataset.finalHead,b]));
