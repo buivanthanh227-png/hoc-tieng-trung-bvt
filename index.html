@@ -1877,15 +1877,14 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 #panel-pinyin-audio .p16-chart-table tbody td.p16-group-ue{background:#fce7f3!important;border-color:#f9a8d4!important}
 #panel-pinyin-audio .p16-chart-table tbody td.p16-group-ue .p16-cell-play:not(.p16-playing){background:#fdf2f8!important;color:#9d174d!important;border-color:#f9a8d4!important}
 
-/* Biểu tượng loa và mũi tên đọc hàng/cột luôn trắng. */
-#panel-pinyin-audio .p16-chart-table thead th.p16-column-action button,
-#panel-pinyin-audio .p16-chart-table thead th.p16-column-action button *,
-#panel-pinyin-audio .p16-chart-table thead th.p16-column-action button svg,
-#panel-pinyin-audio .p16-chart-table thead th.p16-column-action button svg *,
-#panel-pinyin-audio .p16-chart-table thead th.p16-row-action button,
-#panel-pinyin-audio .p16-chart-table thead th.p16-row-action button *,
-#panel-pinyin-audio .p16-chart-table thead th.p16-row-action button svg,
-#panel-pinyin-audio .p16-chart-table thead th.p16-row-action button svg *{color:#fff!important;fill:#fff!important;stroke:#fff!important}
+/* Nút phát âm hàng/cột có nền đậm để biểu tượng trắng luôn rõ. */
+#panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn,
+#panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn{background:#334155!important;color:#fff!important;border-color:#1e293b!important}
+#panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn span,
+#panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn span{filter:grayscale(1) brightness(0) invert(1)!important}
+#panel-pinyin-audio .p16-chart-table thead th.p16-column-action .p16-sequence-btn b,
+#panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn b{color:#fff!important;filter:none!important}
+#panel-pinyin-audio .p16-chart-table .p16-sequence-btn.p16-playing{background:#1d4ed8!important;color:#fff!important;border-color:#1e40af!important}
 </style>
 
 </head>
