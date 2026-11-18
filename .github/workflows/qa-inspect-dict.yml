@@ -1,72 +1,50 @@
-name: Patch dictionary search ranking for V42.9.4
+name: Verify V42.9.4 QA fixes
 on:
   push:
     branches: ["fix/v42.9.4-qa"]
     paths:
       - ".github/workflows/qa-inspect-dict.yml"
 permissions:
-  contents: write
+  contents: read
 jobs:
-  patch:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: fix/v42.9.4-qa
-          fetch-depth: 0
-      - name: Apply minimal short-query Pinyin demotion
+      - name: Verify dictionary ranking behavior with actual patched function
+        shell: bash
+        run: |
+          node <<'JS'
+          const fs = require('fs');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const match = html.match(/function searchScoreForRow\(i,q\)\{[\s\S]*?\n\}/);
+          if (!match) throw new Error('searchScoreForRow not found');
+          const searchIndex = [
+            {simp:'鱼', trad:'魚', py:'yu', meaning:'ca'},
+            {simp:'擦', trad:'擦', py:'ca', meaning:'wipe'},
+            {simp:'你', trad:'你', py:'ni', meaning:'you'}
+          ];
+          const SEARCH_SYNONYMS = {};
+          const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'d').toLowerCase().replace(/[\s\p{P}\p{S}]+/gu,'').trim();
+          const score = new Function('searchIndex','SEARCH_SYNONYMS','norm', match[0]+'; return searchScoreForRow;')(searchIndex,SEARCH_SYNONYMS,norm);
+          const meaningScore = score(0,'ca');
+          const pinyinScore = score(1,'ca');
+          const pinyinStillSearchable = score(2,'ni');
+          console.log({meaningScore,pinyinScore,pinyinStillSearchable});
+          if (!(meaningScore > pinyinScore)) throw new Error('Vietnamese meaning does not outrank Pinyin for short query');
+          if (!(pinyinStillSearchable > 0)) throw new Error('Short Pinyin lookup was removed instead of demoted');
+          console.log('PASS: meaning match ranks above short Pinyin match; Pinyin remains searchable.');
+          JS
+      - name: Verify PWA deployment package and cache version
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path("index.html")
-          s=p.read_text(encoding="utf-8")
-          old="""function searchScoreForRow(i,q){
-           if(!q)return 1;const f=searchIndex[i];if(!f)return 0;let best=0;
-           const scoreField=(v,target,exact,prefix,inside)=>{if(!v||!target)return 0;if(v===target)return exact;if(v.startsWith(target))return prefix;if(target.length>=3&&v.includes(target))return inside;return 0;};
-           best=Math.max(best,scoreField(f.simp,q,140,125,112),scoreField(f.trad,q,138,123,110),scoreField(f.py,q,125,112,96),((q.length>=3||!SEARCH_SYNONYMS[q])?scoreField(f.meaning,q,120,110,98):0));
-           const expansions=SEARCH_SYNONYMS[q]||[];
-           for(const raw of expansions){const x=norm(raw);if(!x)continue;best=Math.max(best,scoreField(f.simp,x,155,140,120),scoreField(f.trad,x,152,138,118),scoreField(f.py,x,125,108,90),scoreField(f.meaning,x,110,98,80));}
-           // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
-           return best;
-          }"""
-          new="""function searchScoreForRow(i,q){
-           if(!q)return 1;const f=searchIndex[i];if(!f)return 0;let best=0;
-           const shortQuery=q.length<=2;
-           const scoreField=(v,target,exact,prefix,inside)=>{if(!v||!target)return 0;if(v===target)return exact;if(v.startsWith(target))return prefix;if(target.length>=3&&v.includes(target))return inside;return 0;};
-           // Short Vietnamese words such as "cá" normalize to two letters ("ca").
-           // Keep Pinyin discoverable, but rank short Pinyin hits below exact Vietnamese meanings.
-           best=Math.max(best,scoreField(f.simp,q,140,125,112),scoreField(f.trad,q,138,123,110),scoreField(f.py,q,shortQuery?105:125,shortQuery?95:112,shortQuery?80:96),((q.length>=3||!SEARCH_SYNONYMS[q])?scoreField(f.meaning,q,120,110,98):0));
-           const expansions=SEARCH_SYNONYMS[q]||[];
-           for(const raw of expansions){const x=norm(raw);if(!x)continue;best=Math.max(best,scoreField(f.simp,x,155,140,120),scoreField(f.trad,x,152,138,118),scoreField(f.py,x,shortQuery?90:125,shortQuery?82:108,shortQuery?70:90),scoreField(f.meaning,x,110,98,80));}
-           // Accept raw pinyin either with tone marks or plain letters: norm() strips the tones.
-           return best;
-          }"""
-          if s.count(old)!=1:
-              raise SystemExit(f"Expected exactly one searchScoreForRow block, found {s.count(old)}. No source changes made.")
-          s=s.replace(old,new,1)
-          p.write_text(s,encoding="utf-8")
-          print("PASS: patched exactly one searchScoreForRow function.")
-          print("CHECK: short-query Pinyin exact=105; meaning exact remains=120; Hanzi exact=140.")
-          PY
-      - name: Verify patch and syntax
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          s=Path("index.html").read_text(encoding="utf-8")
-          assert s.count("const shortQuery=q.length<=2;")==1
-          assert "scoreField(f.py,q,shortQuery?105:125" in s
-          assert "scoreField(f.meaning,q,120,110,98)" in s
-          print("PASS: short-query ranking patch is present and unique.")
-          PY
-      - name: Commit patch to fix branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "fix(dictionary): rank short Vietnamese meaning matches above pinyin"
-          git push origin HEAD:fix/v42.9.4-qa
+          for icon in icon-v41-192.png icon-v41-512.png apple-touch-icon-v41.png; do
+            test -s "$icon"
+            grep -Fq "cp \"$icon\" site/" .github/workflows/deploy-pages.yml
+          done
+          grep -Fq "hoc-trung-app-shell-v42-9-4-pwa-icons-20261118" sw.js
+          grep -Fq "Thiếu PWA icon bắt buộc" .github/workflows/deploy-pages.yml
+          echo "PASS: all three PNG icons are present and included in Pages deployment; cache key bumped once."
