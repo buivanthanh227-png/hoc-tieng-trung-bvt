@@ -1845,6 +1845,15 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 #panel-vocab-training .vocab-training-empty-note{margin:0;font-size:12px;line-height:1.5;color:var(--muted,#667085);overflow-wrap:anywhere}
 #panel-vocab-training .vocab-training-empty .btn{max-width:100%;white-space:normal;line-height:1.3;text-align:center}
 </style>
+
+<style id="bvt-pinyin-final-groups-20261118">
+/* 16.1: separate simple finals (a–ou) from nasal finals (an–ong). */
+#panel-pinyin-audio .p16-chart-table thead th.p16-group-basic{background:#2563eb!important;color:#fff!important}
+#panel-pinyin-audio .p16-chart-table tbody td.p16-group-basic{background:#eff6ff!important}
+#panel-pinyin-audio .p16-chart-table thead th.p16-group-nasal{background:#0f766e!important;color:#fff!important}
+#panel-pinyin-audio .p16-chart-table tbody td.p16-group-nasal{background:#ecfdf5!important}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -7097,7 +7106,7 @@ function pinyinTone(p,t){
  if(a>=0)index=a;else if(e>=0)index=e;else if(ou>=0)index=ou;else{for(let i=p.length-1;i>=0;i--)if('iouü'.includes(p[i])){index=i;break;}}
  if(index<0)return p;const mark=marks[p[index]];return mark?p.slice(0,index)+mark[t-1]+p.slice(index+1):p;
 }
-function groupClass(index){return index<14?'aeo':index<24?'i':index<33?'u':'ue';}
+function groupClass(index){return index<9?'basic':index<14?'nasal':index<24?'i':index<33?'u':'ue';}
 function clearActive(){if(activeButton)activeButton.classList.remove('p16-playing');activeButton=null;}
 function setNeutralReadMode(active){
  neutralReadActive=!!active;root.classList.toggle('p16-neutral-reading',neutralReadActive);
