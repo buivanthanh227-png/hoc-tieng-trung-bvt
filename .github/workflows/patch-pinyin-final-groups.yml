@@ -1,0 +1,112 @@
+name: Patch Pinyin final color groups
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/patch-pinyin-final-groups.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: patch-pinyin-final-groups
+  cancel-in-progress: false
+jobs:
+  patch-groups:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Split Pinyin finals into requested color groups
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          index = Path("index.html")
+          source = index.read_text(encoding="utf-8")
+
+          old_logic = "function groupClass(index){return index<14?'aeo':index<24?'i':index<33?'u':'ue';}"
+          new_logic = "function groupClass(index){return index<9?'basic':index<14?'nasal':index<24?'i':index<33?'u':'ue';}"
+          if old_logic in source:
+              source = source.replace(old_logic, new_logic, 1)
+          elif new_logic not in source:
+              raise SystemExit("Không tìm thấy logic groupClass cũ/mới; dừng để tránh sửa nhầm.")
+
+          style_id = "bvt-pinyin-final-groups-20261118"
+          if f'id="{style_id}"' not in source:
+              style = """
+          <style id="bvt-pinyin-final-groups-20261118">
+          /* 16.1: separate simple finals (a–ou) from nasal finals (an–ong). */
+          #panel-pinyin-audio .p16-chart-table thead th.p16-group-basic{background:#2563eb!important;color:#fff!important}
+          #panel-pinyin-audio .p16-chart-table tbody td.p16-group-basic{background:#eff6ff!important}
+          #panel-pinyin-audio .p16-chart-table thead th.p16-group-nasal{background:#0f766e!important;color:#fff!important}
+          #panel-pinyin-audio .p16-chart-table tbody td.p16-group-nasal{background:#ecfdf5!important}
+          </style>
+          """
+              if "</head>" not in source:
+                  raise SystemExit("Không tìm thấy </head> để chèn CSS nhóm màu.")
+              source = source.replace("</head>", style + "\n</head>", 1)
+
+          m = re.search(r'const COLS=(\[.*?\]);', source)
+          if not m:
+              raise SystemExit("Không tìm thấy COLS.")
+          cols = json.loads(m.group(1))
+          expected = ["a","o","e","-i","er","ai","ei","ao","ou","an","en","ang","eng","ong"]
+          if cols[:14] != expected:
+              raise SystemExit(f"Thứ tự vận mẫu không như dự kiến: {cols[:14]}")
+
+          if new_logic not in source:
+              raise SystemExit("Thiếu logic chia nhóm mới.")
+          for class_name in ("basic", "nasal"):
+              if f"p16-group-{class_name}" not in source:
+                  raise SystemExit(f"Thiếu CSS cho nhóm {class_name}.")
+
+          index.write_text(source, encoding="utf-8")
+          print("PASS: a–ou = nhóm basic; an–ong = nhóm nasal; các nhóm i/u/ü giữ nguyên.")
+
+          sw = Path("sw.js")
+          sw_source = sw.read_text(encoding="utf-8")
+          cache_name = "hoc-trung-app-shell-v42-9-6-pinyin-final-groups-20261118"
+          updated = re.sub(r"const CACHE_NAME = '[^']+';", f"const CACHE_NAME = '{cache_name}';", sw_source, count=1)
+          if updated == sw_source and cache_name not in sw_source:
+              raise SystemExit("Không tìm thấy CACHE_NAME trong sw.js.")
+          sw.write_text(updated, encoding="utf-8")
+          print("PASS: Service Worker cache key đã được tăng.")
+          PY
+      - name: Verify final group boundaries and styling
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+          s = Path("index.html").read_text(encoding="utf-8")
+          cols = json.loads(re.search(r'const COLS=(\[.*?\]);', s).group(1))
+          assert cols[:9] == ["a","o","e","-i","er","ai","ei","ao","ou"]
+          assert cols[9:14] == ["an","en","ang","eng","ong"]
+          assert "index<9?'basic':index<14?'nasal':index<24?'i':index<33?'u':'ue'" in s
+          assert "thead th.p16-group-basic{background:#2563eb" in s
+          assert "thead th.p16-group-nasal{background:#0f766e" in s
+          assert "tbody td.p16-group-basic{background:#eff6ff" in s
+          assert "tbody td.p16-group-nasal{background:#ecfdf5" in s
+          sw = Path("sw.js").read_text(encoding="utf-8")
+          assert "hoc-trung-app-shell-v42-9-6-pinyin-final-groups-20261118" in sw
+          print("PASS: đúng 9 cột a–ou, đúng 5 cột an–ong; có màu riêng cho header và ô phiên âm; cache mới.")
+          PY
+      - name: Commit patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html sw.js
+          if git diff --cached --quiet; then
+            echo "Không có thay đổi cần commit."
+            exit 0
+          fi
+          git commit -m "Separate Pinyin final color groups in chart 16.1"
+          git push origin HEAD:main
