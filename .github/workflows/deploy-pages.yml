@@ -39,6 +39,17 @@ jobs:
           cp index.html site/
           [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
           [ -f icon.svg ] && cp icon.svg site/ || true
+
+          # PWA install icons: these files are referenced by manifest.webmanifest
+          # and index.html. Fail the build rather than silently deploying 404s.
+          for icon in icon-v41-192.png icon-v41-512.png apple-touch-icon-v41.png; do
+            if [ ! -f "$icon" ]; then
+              echo "::error::Thiếu PWA icon bắt buộc: $icon"
+              exit 1
+            fi
+            cp "$icon" site/
+          done
+
           [ -f sw.js ] && cp sw.js site/ || true
           [ -d audio/pinyin ] && mkdir -p site/audio && cp -a audio/pinyin site/audio/ || true
 
