@@ -60,7 +60,7 @@ jobs:
           checked = 0
           with tempfile.TemporaryDirectory() as tmp:
               for attrs, code in blocks:
-                  if re.search(r'\\bsrc\\s*=', attrs, re.I) or re.search(r'type\\s*=\\s*["\\']text/plain["\\']', attrs, re.I):
+                  if re.search(r'\\bsrc\\s*=', attrs, re.I) or re.search(r'type\\s*=\\s*[\"]text/plain[\"]', attrs, re.I):
                       continue
                   file = Path(tmp) / f"inline-{checked}.js"
                   file.write_text(code, encoding="utf-8")
