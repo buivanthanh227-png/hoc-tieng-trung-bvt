@@ -4171,17 +4171,21 @@ const MENU18_VERIFIED_SENTENCES=[
  {zh:'这个太酸了',py:'zhè ge tài suān le',vi:'Cái này chua quá.'},
  {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'}
 ];
-const PINYIN18_COMMON_CHARACTERS={wo:'我',ni:'你',nin:'您',ta:'他',ai:'爱',leng:'冷',lei:'累',ma:'吗',hao:'好',bu:'不',dong:'懂',pa:'怕',hen:'很',shi:'是',you:'有',mei:'没',ne:'呢',yao:'要',xiang:'想',chi:'吃',he:'喝',shui:'水',jia:'家',qu:'去',lai:'来',zai:'在',zuo:'做',zhi:'知',dao:'道',shenme:'什么'};
+const PINYIN18_COMMON_CHARACTERS={wo:'我',ni:'你',nin:'您',ta:'他',ai:'爱',leng:'冷',lei:'累',ma:'吗',hao:'好',bu:'不',dong:'懂',pa:'怕',hen:'很',shi:'是',you:'有',mei:'没',ne:'呢',yao:'要',xiang:'想',chi:'吃',he:'喝',shui:'水',jia:'家',qu:'去',lai:'来',zai:'在',zuo:'做',zhi:'知',dao:'道',shenme:'什么',jin:'今',tian:'天',ke:'客',ren:'人',zhong:'中',guo:'国'};
 let pinyin18IndexSource=null,pinyin18Lexicon=null,pinyin18SeedRows=null,pinyin18Syllables=null;
 function pinyin18Key(value){
  return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[üÜvV]/g,'u').replace(/[1-5]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+}
+// Keep syllable boundaries: "tiān" must not collide with "tí àn".
+function pinyin18LexiconKey(value){
+ return String(value||'').trim().split(/\s+/).map(pinyin18Key).filter(Boolean).join(' ');
 }
 function getPinyin18Lexicon(){
  const rows=dictionary.length?dictionary:(pinyin18SeedRows||(pinyin18SeedRows=buildSeed()));
  if(pinyin18IndexSource===rows&&pinyin18Lexicon)return pinyin18Lexicon;
  const index=new Map(),syllables=new Set();
  rows.forEach((row,rowIndex)=>{
-  const key=pinyin18Key(row[2]);
+  const key=pinyin18LexiconKey(row[2]);
   if(!key)return;
   if(!index.has(key))index.set(key,[]);
   const matches=index.get(key),item={row,rowIndex};
@@ -4191,7 +4195,7 @@ function getPinyin18Lexicon(){
    if(matches.length>=18)matches.pop();
    matches.unshift(item);
   }else if(matches.length<18){matches.push(item);}
-  if([...String(row[0]||'')].length===1&&key.length<=6)syllables.add(key);
+  if([...String(row[0]||'')].length===1&&!key.includes(' ')&&key.length<=6)syllables.add(key);
  });
  pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;
  return index;
@@ -4262,13 +4266,13 @@ function pinyinToChineseCandidates(raw){
   if(pinyin18Key(py)===key)addCandidate({zh,py,vi,source:'Từ điển tích hợp sẵn'},5000);
  }
  const hasExactPhraseSource=[...found.values()].some(item=>item.priority>=5000);
- for(const item of lexicon.get(key)||[]){
+ for(const item of lexicon.get(pinyin18LexiconKey(raw))||[]){
   addCandidate({zh:item.row[0],trad:item.row[1],py:item.row[2],vi:item.row[3],source:'Từ điển hiện có'},150+Math.min([...String(item.row[0]||'')].length,8)-Math.log(item.rowIndex+1)*.01);
  }
  const keepBest=(list,state)=>{
   const existing=list.findIndex(item=>item.zh===state.zh);
   if(existing>=0){if(list[existing].score>=state.score)return;list.splice(existing,1);}
-  list.push(state);list.sort((a,b)=>b.score-a.score);if(list.length>28)list.length=28;
+  list.push(state);list.sort((a,b)=>b.score-a.score);if(list.length>128)list.length=128;
  };
  if(!hasExactPhraseSource){
   for(const syllables of pinyin18SyllablePaths(raw,pinyin18Syllables)){
@@ -4278,12 +4282,12 @@ function pinyinToChineseCandidates(raw){
     if(!beams[position].length)continue;
     for(const state of beams[position]){
      for(let end=position+1;end<=Math.min(syllables.length,position+8);end++){
-      const syllable=syllables.slice(position,end).join(''),matches=lexicon.get(syllable);
+      const syllable=syllables.slice(position,end).join(' '),matches=lexicon.get(syllable);
       if(!matches)continue;
       for(const item of matches){
        const nextPosition=end,nextZH=state.zh+item.row[0];
        const wordLength=[...String(item.row[0]||'')].length;
-       const score=state.score+Math.min(wordLength,6)*1.5+(syllable.length>2?.2:0)-Math.log(item.rowIndex+1)*.015;
+       const score=state.score+Math.min(wordLength,6)*1.5+(syllable.length>2?.2:0)-Math.log(item.rowIndex+1)*.015+(PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?5:0);
        keepBest(beams[nextPosition],{position:nextPosition,zh:nextZH,rows:state.rows.concat(item.row),score});
       }
     }
