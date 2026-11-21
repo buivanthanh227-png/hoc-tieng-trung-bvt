@@ -25,15 +25,15 @@ jobs:
           source = path.read_text(encoding="utf-8")
           replacements = [
               (
-                  " {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'}\\n];",
-                  " {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'},\\n {zh:'今天我家有客人',py:'jīntiān wǒ jiā yǒu kèrén',vi:'Hôm nay nhà tôi có khách.'}\\n];"
+                  " {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'}\n];",
+                  " {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'},\n {zh:'今天我家有客人',py:'jīntiān wǒ jiā yǒu kèrén',vi:'Hôm nay nhà tôi có khách.'}\n];"
               ),
               (
-                  "  if([...String(row[0]||'')].length===1&&!key.includes(' ')&&key.length<=6)syllables.add(key);\\n });\\n pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;",
-                  "  if([...String(row[0]||'')].length===1&&!key.includes(' ')&&key.length<=6)syllables.add(key);\\n });\\n // Ensure common one-character syllables remain usable even when the main dictionary omits them.\\n for(const [py,zh] of Object.entries(PINYIN18_COMMON_CHARACTERS)){\\n  if([...String(zh||'')].length!==1||py.length>6)continue;\\n  syllables.add(py);\\n  if(!index.has(py))index.set(py,[{row:[zh,zh,py,''],rowIndex:rows.length+syllables.size}]);\\n }\\n pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;"
+                  "  if([...String(row[0]||'')].length===1&&!key.includes(' ')&&key.length<=6)syllables.add(key);\n });\n pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;",
+                  "  if([...String(row[0]||'')].length===1&&!key.includes(' ')&&key.length<=6)syllables.add(key);\n });\n // Ensure common one-character syllables remain usable even when the main dictionary omits them.\n for(const [py,zh] of Object.entries(PINYIN18_COMMON_CHARACTERS)){\n  if([...String(zh||'')].length!==1||py.length>6)continue;\n  syllables.add(py);\n  if(!index.has(py))index.set(py,[{row:[zh,zh,py,''],rowIndex:rows.length+syllables.size}]);\n }\n pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;"
               ),
               (
-                  "    if(syllables.length>2&&!state.rows.some(row=>[...String(row[0]||'')].length>1))continue;\\n",
+                  "    if(syllables.length>2&&!state.rows.some(row=>[...String(row[0]||'')].length>1))continue;\n",
                   ""
               )
           ]
