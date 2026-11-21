@@ -1,39 +1,47 @@
 # Học Tiếng Trung · BVT — bản dành cho GitHub Pages và điện thoại
 
-Bản này giữ giao diện/logic của ứng dụng được cung cấp, bổ sung kiểm tra dữ liệu từ điển khi xuất bản, tối ưu một số chi tiết cho Safari trên iPhone và dùng Service Worker theo phiên bản cache mới.
+Bản này giữ giao diện/logic của ứng dụng học tiếng Trung, tối ưu cho trình duyệt máy tính và điện thoại, đồng thời dùng Service Worker để hỗ trợ PWA/offline.
 
-## Điểm quan trọng về bộ từ điển
+## Trạng thái dữ liệu và quy trình xuất bản hiện hành
 
-File `index.html` trong kho là **mã nguồn mẫu**, chưa chứa dữ liệu lớn. GitHub Actions sẽ tự tải `CVDICT.u8` từ repo nguồn, xác minh có ít nhất 120.000 dòng mục từ hợp lệ, rồi tạo `site/index.html` với dữ liệu nhúng trực tiếp. Nếu tải dữ liệu thất bại hoặc không đủ số lượng, bước xuất bản sẽ dừng thay vì đưa ra một trang chỉ có từ cơ bản.
+Cập nhật ngày **21/11/2026**:
 
-Dữ liệu nguồn: [ph0ngp/CVDICT](https://github.com/ph0ngp/CVDICT). CVDICT được phát hành theo giấy phép **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. Phần ghi công và giấy phép cũng được giữ trong giao diện ứng dụng. Bản dịch có thể còn sai sót; vui lòng kiểm tra ngữ cảnh khi học.
+- `index.html` hiện đã chứa dữ liệu từ điển nhúng (khối `embedded-cvdict-data`); kích thước tệp trong repository khoảng **13,3 MB**.
+- Workflow `.github/workflows/deploy-pages.yml` hiện sao chép `index.html` đã commit vào thư mục xuất bản, cùng manifest, icon, worker, audio và ứng dụng luyện số. Workflow **không tự tải CVDICT.u8 và không chạy `tools/build_site.py`**.
+- `tools/build_site.py` thuộc quy trình template cũ, yêu cầu placeholder `EMBEDDED_CVDICT_DATA_SLOT`. Placeholder này không còn trong `index.html` hiện tại, nên không được xem là bước build đang hoạt động.
+- Sau khi deploy, workflow kiểm tra `build-info.json` để xác nhận Production đang phục vụ đúng Git commit. Kiểm tra SHA này xác nhận mã nguồn được xuất bản, **không thay thế kiểm tra chất lượng hoặc số lượng mục từ điển**.
+
+Vì vậy, thay đổi dữ liệu từ điển phải được tích hợp và kiểm tra vào `index.html` trước khi commit. Không nên giả định rằng chạy lại workflow sẽ tự tải bản CVDICT mới nhất.
+
+Dữ liệu từ điển được ghi công theo nguồn [ph0ngp/CVDICT](https://github.com/ph0ngp/CVDICT), giấy phép **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. Phần ghi công và giấy phép cần được giữ trong ứng dụng. Bản dịch có thể còn sai sót; vui lòng kiểm tra ngữ cảnh khi học.
 
 ## Cách đưa lên GitHub và lấy link mở trên điện thoại
 
 1. Tạo một **repository mới, Public** trên GitHub. Ví dụ đặt tên `hoc-tieng-trung-bvt`.
 2. Giải nén gói này và tải **toàn bộ nội dung bên trong** lên thư mục gốc của repository, gồm thư mục `.github/workflows` và `tools` (đừng chỉ tải riêng `index.html`). Dùng nhánh `main`.
 3. Vào **Settings → Pages**. Ở mục **Build and deployment**, đặt **Source = GitHub Actions**.
-4. Vào tab **Actions**, mở workflow “Build and deploy Học Tiếng Trung”. Chờ workflow hoàn thành màu xanh. Trong bước build, nhật ký sẽ ghi số dòng CVDICT đã xác minh và dung lượng HTML thành phẩm.
+4. Vào tab **Actions**, mở workflow “Build and deploy Học Tiếng Trung”. Chờ workflow hoàn thành màu xanh. Workflow tạo `build-info.json` và xác minh SHA trên Production khớp với commit vừa xuất bản.
 5. Mở trang đã xuất bản từ **Settings → Pages → Visit site**. Link thường có dạng `https://TEN-TAI-KHOAN.github.io/TEN-REPOSITORY/`; hãy dùng đúng link GitHub hiển thị, không tự đoán link.
 6. iPhone: mở link bằng **Safari** → **Chia sẻ** → **Thêm vào MH chính**. Android: mở bằng **Chrome** → menu ⋮ → **Cài đặt ứng dụng** hoặc **Thêm vào màn hình chính**.
 
 ## Kiểm tra dữ liệu đã tích hợp
 
-Khi mở bằng link GitHub Pages sau khi workflow thành công, phần đầu trang phải hiển thị tổng số từ vựng trên 120.000. Thẻ trạng thái từ điển sẽ báo CVDICT nhúng sẵn. Nếu workflow thất bại thì chưa có bản xuất bản mới; vào Actions để xem bước tải/kiểm tra CVDICT.
+Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong `build-info.json` với commit SHA trên GitHub. Việc này chỉ xác nhận đúng artifact; số lượng, nội dung và chất lượng từ điển vẫn cần bộ kiểm thử từ điển riêng. Nếu workflow thất bại thì chưa có bản xuất bản mới; vào Actions để xem bước build/deploy bị lỗi.
 
 ## Lưu ý khi dùng trên điện thoại
 
 - Lần mở website đầu tiên cần Internet để tải trang HTML lớn có sẵn dữ liệu từ điển.
 - Khi trình duyệt cài Service Worker và lưu cache thành công, ứng dụng có thể mở lại phần giao diện/từ điển trong chế độ offline. Dung lượng cache lớn nên không thể bảo đảm mọi trình duyệt/thiết bị đều giữ cache vô thời hạn; dữ liệu IndexedDB cũng được lưu riêng trên từng thiết bị.
 - Từ điển và ghép câu dựa trên dữ liệu hiện có. Dịch câu mới qua dịch vụ ngoài, tải thư viện/dữ liệu thứ tự nét, hoặc nhận dạng giọng nói có thể cần Internet/quyền microphone và phụ thuộc hỗ trợ của trình duyệt.
-- Để nhận bản từ điển mới nhất, chạy lại workflow (Actions → workflow → Run workflow) hoặc đẩy một commit mới lên `main`. Mỗi lần chạy sẽ tải lại dữ liệu và tạo mã phiên bản mới để tránh dùng nhầm bản cũ trong IndexedDB.
+- Chạy lại workflow (Actions → workflow → Run workflow) sẽ xuất bản các tệp hiện có trong commit; nó không tự tải dữ liệu CVDICT mới. Khi cập nhật từ điển, cần cập nhật payload trong `index.html` và chạy regression test từ điển trước khi xuất bản.
 
 ## Cấu trúc quan trọng
 
-- `index.html`: mã nguồn ứng dụng có vị trí chờ để nhúng dữ liệu.
-- `tools/build_site.py`: xác minh số mục từ và tạo HTML có CVDICT nhúng.
-- `.github/workflows/deploy-pages.yml`: tải dữ liệu, xây dựng và xuất bản GitHub Pages.
-- `sw.js`, `manifest.webmanifest`, `icon.svg`: hỗ trợ PWA.
+- `index.html`: ứng dụng cùng dữ liệu từ điển nhúng đang được xuất bản.
+- `tools/build_site.py`: helper của kiến trúc template cũ; hiện không được workflow deploy gọi.
+- `.github/workflows/deploy-pages.yml`: đóng gói các tệp đã commit, xuất bản GitHub Pages và xác minh SHA Production.
+- `sw.js`, `manifest.webmanifest`, `icon.svg`: hỗ trợ PWA/offline.
+- `qa-tests/sw.test.cjs`: regression test cho precache và điều hướng offline.
 
 ## Nguồn tham khảo
 
