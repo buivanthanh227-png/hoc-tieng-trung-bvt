@@ -29,8 +29,21 @@ jobs:
       - name: Lấy mã nguồn ứng dụng
         uses: actions/checkout@v4
 
+      - name: Ghi nhận mã nguồn được đóng gói
+        id: build-meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          APP_VERSION="$(python3 -c 'import json; print(json.load(open("manifest.webmanifest", encoding="utf-8"))["name"].rsplit("· ", 1)[-1])')"
+          echo "sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "version=$APP_VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Chuẩn bị thư mục site
         shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.build-meta.outputs.sha }}
+          APP_VERSION: ${{ steps.build-meta.outputs.version }}
         run: |
           set -euo pipefail
           mkdir -p site
@@ -45,7 +58,15 @@ jobs:
             echo "::error::Footer version vẫn còn V42.9.3 sau khi cập nhật."
             exit 1
           fi
-          [ -f manifest.webmanifest ] && cp manifest.webmanifest site/ || true
+
+          # Các tài nguyên PWA cốt lõi phải có mặt; thiếu thì dừng deploy.
+          for required in manifest.webmanifest sw.js luyen-so/index.html; do
+            if [ ! -f "$required" ]; then
+              echo "::error::Thiếu tài nguyên bắt buộc: $required"
+              exit 1
+            fi
+          done
+          cp manifest.webmanifest site/
           [ -f icon.svg ] && cp icon.svg site/ || true
 
           # PWA install icons: these files are referenced by manifest.webmanifest
@@ -58,16 +79,27 @@ jobs:
             cp "$icon" site/
           done
 
-          [ -f sw.js ] && cp sw.js site/ || true
+          cp sw.js site/
+
+          # Copy optional worker scripts when present so source paths and
+          # Service Worker precache paths resolve to published files.
+          for worker in asr-worker.js asr-voice-worker.js asr-cloudflare-worker.js ocr-worker.js; do
+            if [ -f "$worker" ]; then
+              cp "$worker" site/
+            else
+              echo "::warning::Không có worker tùy chọn: $worker"
+            fi
+          done
+
           [ -d audio/pinyin ] && mkdir -p site/audio && cp -a audio/pinyin site/audio/ || true
 
-          # Đưa toàn bộ ứng dụng luyện số vào website ở /luyen-so/
-          if [ ! -f luyen-so/index.html ]; then
-            echo "::error::Không tìm thấy luyen-so/index.html trong nhánh main."
-            exit 1
-          fi
+          # Publish the number-practice app at /luyen-so/ (not the retired
+          # root-level luyen-so-tieng-trung.html path).
           mkdir -p site/luyen-so
           cp -a luyen-so/. site/luyen-so/
+
+          # Public, non-sensitive build identity used by deployment verification.
+          printf '{\n  "git_sha": "%s",\n  "version": "%s"\n}\n' "$SOURCE_SHA" "$APP_VERSION" > site/build-info.json
 
           # Tắt xử lý Jekyll để giữ nguyên cấu trúc thư mục và tệp
           : > site/.nojekyll
@@ -83,3 +115,24 @@ jobs:
       - name: Xuất bản website
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Xác minh commit đang chạy trên Production
+        shell: bash
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_SHA: ${{ steps.build-meta.outputs.sha }}
+        run: |
+          set -euo pipefail
+          BASE_URL="${PAGE_URL%/}"
+          for attempt in $(seq 1 12); do
+            if body="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/build-info.json" 2>/dev/null)"; then
+              if actual_sha="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("git_sha", ""))' <<< "$body" 2>/dev/null)" && [ "$actual_sha" = "$EXPECTED_SHA" ]; then
+                echo "Production đang phục vụ đúng commit $EXPECTED_SHA."
+                exit 0
+              fi
+            fi
+            echo "Chưa thấy build SHA mong đợi trên Production (lần $attempt/12)."
+            sleep 5
+          done
+          echo "::error::Production không xác nhận được commit $EXPECTED_SHA."
+          exit 1
