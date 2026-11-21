@@ -1896,6 +1896,47 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 #panel-pinyin-audio .p16-chart-table tbody td.p16-row-action-cell .p16-sequence-btn span{filter:none!important}
 </style>
 
+<style id="menu18-experimental-styles">
+#panel-translate-experimental{--red:#BA68C8;--red2:#864B90}
+#panel-translate-experimental .card{border-top:3px solid color-mix(in srgb,var(--red) 62%,white)}
+#panel-translate-experimental .section-title{color:var(--red)}
+#panel-translate-experimental .btn:not(.secondary){background:var(--red)}
+#experimental-quick-translate-card{display:flex!important;flex-direction:column!important;gap:9px!important;padding:14px!important}
+#experimental-quick-translate-card[hidden]{display:none!important}
+#experimental-quick-translate-card .quick-translate-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+#experimental-quick-translate-card .quick-translate-main>.section-title{font-size:21px!important;line-height:1.3!important;margin:0!important}
+#experimental-quick-translate-card .quick-translate-intro{font-size:14px!important;line-height:1.5!important;margin:0!important}
+#experimental-quick-translate-card .quick-translate-search{gap:7px!important;align-items:stretch!important}
+#experimental-quick-translate-card .quick-translate-search .field{min-width:0;min-height:46px!important;padding:10px 12px!important;font-size:15px!important}
+#experimental-quick-translate-card .quick-translate-search .btn{min-height:44px!important;padding:9px 14px!important;font-size:13px!important;white-space:nowrap}
+#experimental-quick-translate-card .quick-translate-status{font-size:12px!important;line-height:1.45!important;margin:0!important}
+#experimental-quick-translate-card .homework-result{gap:6px!important;margin-top:2px!important}
+#experimental-quick-translate-card .translation-tools-grid{display:grid;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;align-items:stretch}
+#experimental-quick-translate-card .translation-tool-card{display:flex;flex-direction:column;gap:10px;min-width:0;padding:14px!important;border:1px solid var(--line,#e5e7eb);border-radius:12px;background:rgba(255,255,255,.62)}
+#experimental-quick-translate-card .translation-tool-card>.section-title{font-size:17px!important;line-height:1.35!important;margin:0!important}
+#experimental-quick-translate-card .translation-tool-card .field{min-width:0;min-height:42px!important;padding:9px 11px!important;font-size:14px!important;line-height:1.45!important;border-radius:8px!important}
+#experimental-quick-translate-card #long-translate-18-input{height:118px!important;min-height:118px!important;resize:vertical;line-height:1.4!important}
+#experimental-quick-translate-card .translation-file-input{padding:9px!important;font-size:13px!important}
+#experimental-quick-translate-card .translation-tool-buttons{gap:8px!important;margin:0!important}
+#experimental-quick-translate-card .translation-tool-buttons .btn{min-height:38px!important;padding:8px 11px!important;font-size:12.5px!important;line-height:1.2!important;border-radius:7px!important}
+#experimental-quick-translate-card .translation-tool-card .smallprint{font-size:11.5px!important;line-height:1.45!important;margin:0!important}
+#experimental-quick-translate-card .voice-result-text{min-height:54px!important;max-height:180px!important;overflow:auto;margin:0!important;padding:10px 12px!important;font-size:14px!important;line-height:1.5!important;border-radius:8px!important}
+#experimental-quick-translate-card .translation-result-actions{gap:8px!important;margin:0!important}
+#experimental-quick-translate-card .translation-result-actions .btn{min-height:34px!important;padding:7px 10px!important;font-size:11.5px!important;border-radius:7px!important}
+.homework18-candidates:not([hidden]){display:grid;gap:8px;margin:6px 0}
+.homework18-candidate{display:grid;gap:7px;min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+.homework18-candidate-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:start}
+.homework18-candidate-zh{font-size:22px;font-weight:850;line-height:1.35;overflow-wrap:anywhere}
+.homework18-candidate-trad,.homework18-candidate-meta{font-size:12px;color:var(--muted);line-height:1.45;overflow-wrap:anywhere}
+.homework18-candidate-actions{display:flex;flex-wrap:wrap;gap:7px}
+.homework18-candidate-actions .btn{min-height:36px}
+.homework18-selection{font-size:11px;color:#166534;font-weight:750}
+.homework18-candidate-note{font-size:11px;color:var(--muted);line-height:1.4}
+.app-shell #main-tabs .tab[data-tab="translate-experimental"]{--menu-color:#BA68C8}
+@media(max-width:700px){#experimental-quick-translate-card{padding:14px!important}#experimental-quick-translate-card .quick-translate-search{flex-direction:column!important;align-items:stretch!important}#experimental-quick-translate-card .quick-translate-search .btn{width:100%!important}}
+@media(max-width:390px){#experimental-quick-translate-card{padding:9px!important}#experimental-quick-translate-card .quick-translate-main>.section-title{font-size:15px!important}#experimental-quick-translate-card .translation-tool-buttons .btn{font-size:8.8px!important;padding:4px 5px!important}.homework18-candidate{padding:8px}.homework18-candidate-zh{font-size:19px}}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -1927,6 +1968,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 <button class="tab" data-tab="multilingual-voice" type="button"><span class="tab-number" aria-hidden="true">15</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🗣️</span><span class="tab-label">DỊCH GIỌNG NÓI ĐA NGÔN NGỮ</span></span></button>
 <button class="tab" data-tab="pinyin-audio" type="button"><span class="tab-number" aria-hidden="true">16</span><span class="tab-main"><span class="tab-icon pinyin-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3.5 13v-1a8.5 8.5 0 0 1 17 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="2.5" y="12" width="4.5" height="7.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="17" y="12" width="4.5" height="7.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19 19.5c-.7 1.3-2 2-4 2h-1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><b>Pinyin</b></span><span class="tab-label">LUYỆN NGHE PHIÊN ÂM TIẾNG TRUNG</span></span></button>
 <button class="tab" data-tab="hanzi-memory" type="button"><span class="tab-number" aria-hidden="true">17</span><span class="tab-main"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="25" height="25" focusable="false"><path d="M5 4.5h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h3m-3 4h3m4-4h3m-3 4h3M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m16.5 2.5 1.2 1.2 2.3-2.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="tab-label">THỬ THÁCH NHỚ MẶT CHỮ HÁN</span></span></button>
+<button class="tab" data-tab="translate-experimental" type="button"><span class="tab-number" aria-hidden="true">18</span><span class="tab-main"><span class="tab-icon translate-icon" aria-hidden="true">文 ⇄ A</span><span class="tab-label">DỊCH NHANH VIỆT ⇄ TRUNG (THỬ NGHIỆM)</span></span></button>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
@@ -2064,6 +2106,42 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
   <div class="row practice-answer-actions" id="practice-answer-actions" style="margin-top:12px"><button class="btn secondary" id="practice-change-question" type="button" hidden>🔄 Đổi câu hỏi</button><button class="btn outline" id="practice-show-answer" type="button" hidden>👁️ Hiện đáp án</button><button class="btn full" id="submit-answer" type="button">✓ Kiểm tra đáp án</button><button class="btn secondary" id="next-question" type="button" hidden>Câu tiếp →</button></div>
  </div>
  <div class="card" id="practice-stats-card"><div class="row between wrap"><h3 class="section-title" style="margin:0">Thống kê của bạn</h3><button class="btn secondary tiny" id="clear-history" type="button">Xóa lịch sử</button></div><div class="score-stats" style="margin-top:11px"><div class="stat"><b id="stat-done">0</b><span>Lượt đã làm</span></div><div class="stat"><b id="stat-correct">0</b><span>Đạt từ 80%</span></div><div class="stat"><b id="stat-percent">0%</b><span>Tỷ lệ chính xác</span></div></div><p class="smallprint" style="margin-bottom:0">Nút xóa sẽ đặt lại thống kê luyện tập trên thiết bị này; không xóa từ điển đã nạp.</p></div>
+</section>
+<section id="panel-translate-experimental" class="panel">
+ <div class="card homework-card" id="experimental-quick-translate-card">
+  <section class="quick-translate-main">
+   <h2 class="section-title" data-function-number="18">MENU 18 – DỊCH NHANH VIỆT ⇄ TRUNG (THỬ NGHIỆM)</h2>
+   <p class="subtle quick-translate-intro">Nhập tiếng Việt, chữ Hán hoặc Pinyin không dấu. Khi nhập Pinyin, hãy chọn ứng viên chữ Hán phù hợp.</p>
+   <div class="row quick-translate-search"><input id="homework18-query" class="field grow" type="search" autocomplete="off" autocapitalize="off" placeholder="Vui lòng nhập nội dung bạn muốn..."><button id="homework18-lookup" class="btn" type="button">Dịch câu</button></div>
+   <p id="homework18-status" class="smallprint quick-translate-status" role="status" aria-live="polite">Tra cứu mẫu có thể dùng offline. Dịch câu mới cần Internet.</p>
+   <div id="homework18-candidates" class="homework18-candidates" hidden aria-live="polite"></div>
+   <div id="homework18-results" class="homework-result" aria-live="polite"></div>
+  </section>
+  <div class="translation-tools-grid">
+   <section class="translation-tool-card">
+    <h3 class="section-title">Dịch cả đoạn văn bản</h3>
+    <textarea id="long-translate-18-input" class="field" rows="4" placeholder="Vui lòng nhập nội dung bạn muốn..."></textarea>
+    <div class="row wrap translation-tool-buttons"><button id="long-translate-18-to-zh" class="btn" type="button">🇨🇳 Dịch ra tiếng Trung</button><button id="long-translate-18-to-vi" class="btn secondary" type="button">🇻🇳 Dịch ra tiếng Việt</button></div>
+    <p id="long-translate-18-status" class="smallprint" role="status" aria-live="polite"></p>
+    <div id="long-translate-18-result" class="voice-result-text" aria-live="polite">Bản dịch đoạn văn sẽ hiển thị tại đây.</div>
+    <div class="row wrap translation-result-actions" aria-label="Thao tác với bản dịch đoạn văn">
+     <button id="long-translate-18-copy" class="btn secondary tiny" type="button" disabled>📋 Sao chép</button>
+     <button id="long-translate-18-speak" class="btn tiny" type="button" disabled>🔊 Đọc kết quả</button>
+    </div>
+   </section>
+   <section class="translation-tool-card">
+    <h3 class="section-title">Dịch nội dung từ tệp</h3>
+    <input id="translate-file-18-input" class="field translation-file-input" type="file" accept=".txt,.md,.csv,.docx,text/plain,text/markdown,text/csv,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+    <div class="row wrap translation-tool-buttons"><button id="file-translate-18-to-zh" class="btn" type="button">🇨🇳 Dịch tệp ra tiếng Trung</button><button id="file-translate-18-to-vi" class="btn secondary" type="button">🇻🇳 Dịch tệp ra tiếng Việt</button></div>
+    <p id="file-translate-18-status" class="smallprint" role="status" aria-live="polite">Hỗ trợ TXT, MD, CSV và DOCX. Chưa hỗ trợ PDF.</p>
+    <div id="file-translate-18-result" class="voice-result-text" aria-live="polite">Kết quả dịch từ tệp sẽ hiển thị tại đây.</div>
+    <div class="row wrap translation-result-actions" aria-label="Thao tác với bản dịch từ tệp">
+     <button id="file-translate-18-copy" class="btn secondary tiny" type="button" disabled>📋 Sao chép</button>
+     <button id="file-translate-18-speak" class="btn tiny" type="button" disabled>🔊 Đọc kết quả</button>
+    </div>
+   </section>
+  </div>
+ </div>
 </section>
 <section id="panel-voice-translate" class="panel">
  <div class="card voice-translate-card">
@@ -2461,7 +2539,7 @@ const pageSize = 10;
 let activeTab = 'dict';
 const BVT_FUNCTION_COLORS = {
  dict:{main:'#4DB6AC',alt:'#37837C'}, ocr:{main:'#FFB74D',alt:'#B88437'},
- translate:{main:'#BA68C8',alt:'#864B90'}, 'voice-translate':{main:'#64B5F6',alt:'#4882B1'},
+ translate:{main:'#BA68C8',alt:'#864B90'}, 'translate-experimental':{main:'#BA68C8',alt:'#864B90'}, 'voice-translate':{main:'#64B5F6',alt:'#4882B1'},
  'vi-zh':{main:'#FF8A65',alt:'#B86349'}, 'zh-vi':{main:'#81C784',alt:'#5D8F5F'},
  write:{main:'#F06292',alt:'#AD4769'}, read:{main:'#7986CB',alt:'#576092'},
  combine:{main:'#D4E157',alt:'#99A23F'}, 'vocab-training':{main:'#A1887F',alt:'#74625B'},
@@ -4089,6 +4167,201 @@ function renderHomeworkCard(result,sourceLabel=''){
  const zh=String(result.zh||'').trim();
  box.innerHTML=`<article class="homework-answer"><div class="subtle">${escapeHTML(sourceLabel||'Kết quả dịch')}</div><div class="homework-zh-row"><div class="homework-zh">${escapeHTML(zh)}</div><button type="button" class="iconbtn homework-speak" data-speak="${escapeHTML(zh)}" aria-label="Nghe phát âm câu tiếng Trung" title="Phát âm câu tiếng Trung">🔊</button></div><div class="homework-py"><b>Pinyin:</b> <span class="homework-pinyin-text">${escapeHTML(result.py||pinyinForChinese(zh))}</span></div><div class="homework-vi"><b>Nghĩa tiếng Việt:</b> <span class="homework-vietnamese-text">${escapeHTML(result.vi||'Chưa tìm được nghĩa.')}</span></div>${result.note?`<div class="homework-source">${escapeHTML(result.note)}</div>`:''}</article>`;
 }
+const MENU18_VERIFIED_SENTENCES=[
+ {zh:'这个太酸了',py:'zhè ge tài suān le',vi:'Cái này chua quá.'},
+ {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'}
+];
+const PINYIN18_COMMON_CHARACTERS={wo:'我',ni:'你',nin:'您',ta:'他',ai:'爱',leng:'冷',lei:'累',ma:'吗',hao:'好',bu:'不',dong:'懂',pa:'怕',hen:'很',shi:'是',you:'有',mei:'没',ne:'呢',yao:'要',xiang:'想',chi:'吃',he:'喝',shui:'水',jia:'家',qu:'去',lai:'来',zai:'在',zuo:'做',zhi:'知',dao:'道',shenme:'什么'};
+let pinyin18IndexSource=null,pinyin18Lexicon=null,pinyin18SeedRows=null,pinyin18Syllables=null;
+function pinyin18Key(value){
+ return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[üÜvV]/g,'u').replace(/[1-5]/g,'').toLowerCase().replace(/[^a-z]/g,'');
+}
+function getPinyin18Lexicon(){
+ const rows=dictionary.length?dictionary:(pinyin18SeedRows||(pinyin18SeedRows=buildSeed()));
+ if(pinyin18IndexSource===rows&&pinyin18Lexicon)return pinyin18Lexicon;
+ const index=new Map(),syllables=new Set();
+ rows.forEach((row,rowIndex)=>{
+  const key=pinyin18Key(row[2]);
+  if(!key)return;
+  if(!index.has(key))index.set(key,[]);
+  const matches=index.get(key),item={row,rowIndex};
+  if(PINYIN18_COMMON_CHARACTERS[key]===String(row[0]||'')){
+   const prior=matches.findIndex(entry=>entry.row[0]===row[0]);
+   if(prior>=0)matches.splice(prior,1);
+   if(matches.length>=18)matches.pop();
+   matches.unshift(item);
+  }else if(matches.length<18){matches.push(item);}
+  if([...String(row[0]||'')].length===1&&key.length<=6)syllables.add(key);
+ });
+ pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;
+ return index;
+}
+function pinyin18Traditional(zh){
+ const rows=dictionary.length?dictionary:(pinyin18SeedRows||(pinyin18SeedRows=buildSeed()));
+ return [...String(zh||'')].map(ch=>{
+  const row=rows.find(item=>item[0]===ch);
+  return row?.[1]||ch;
+ }).join('');
+}
+function pinyin18SyllablePaths(raw,syllables){
+ let paths=[[]];
+ for(const rawToken of String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean)){
+  const token=pinyin18Key(rawToken),memo=new Map([[token.length,[[]]]]);
+  for(let start=token.length-1;start>=0;start--){
+   const options=[];
+   for(let end=start+1;end<=Math.min(token.length,start+6);end++){
+    const syllable=token.slice(start,end),tails=memo.get(end);
+    if(!syllables.has(syllable)||!tails)continue;
+    for(const tail of tails){options.push([syllable].concat(tail));if(options.length>=16)break;}
+   }
+   options.sort((a,b)=>a.length-b.length);
+   const shortest=options.length?options[0].length:0;
+   memo.set(start,options.filter(option=>option.length===shortest).slice(0,4));
+  }
+  const splits=memo.get(0)||[];
+  if(!splits.length)return [];
+  const next=[];
+  for(const path of paths)for(const split of splits){next.push(path.concat(split));if(next.length>=8)break;}
+  paths=next.slice(0,8);
+ }
+ return paths;
+}
+function pinyinToChineseCandidates(raw){
+ const key=pinyin18Key(raw);
+ if(!key||key.length>120)return [];
+ const lexicon=getPinyin18Lexicon();
+ if(!pinyin18Syllables||!key)return [];
+ const found=new Map();
+ const addCandidate=(candidate,priority)=>{
+  const zh=String(candidate.zh||'').trim().replace(/[。！？.!?]+$/,'');
+  if(!zh||!/[\u3400-\u9fff]/.test(zh))return;
+  const identity=zh;
+  const prior=found.get(identity);
+  if(prior&&(prior.priority>priority||prior.priority===priority&&prior.zh===zh))return;
+  const rows=candidate.rows||[];
+  const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\s·,，;:：-]+/,'').trim();
+  const vi=rawMeaning.length>=2&&/[A-Za-zÀ-ỹ\u3400-\u9fff]/.test(rawMeaning)?rawMeaning:'';
+  found.set(identity,{
+   zh,trad:String(candidate.trad||pinyin18Traditional(zh)).replace(/[。！？.!?]+$/,''),py:String(candidate.py||pinyinForChinese(zh)).replace(/\s+/g,' ').trim(),
+   vi:vi||'Chưa có nghĩa tiếng Việt trong dữ liệu hiện tại.',
+   note:candidate.note||(!vi&&rows.length?'Chưa có nghĩa tiếng Việt cho toàn cụm trong dữ liệu hiện tại.':''),
+   source:candidate.source||'Từ điển hiện có',priority
+  });
+ };
+ for(const item of MENU18_VERIFIED_SENTENCES){
+  if(pinyin18Key(item.py)===key)addCandidate({...item,source:'Câu mẫu đã xác nhận'},6000);
+ }
+ for(const row of sentenceDeck){
+  if(pinyin18Key(row.py)===key)addCandidate({...row,source:'Câu mẫu tích hợp sẵn'},5000);
+ }
+ for(const row of Object.values(OFFLINE_SENTENCE_TRANSLATIONS)){
+  if(pinyin18Key(row.py)===key)addCandidate({...row,source:'Câu mẫu tích hợp sẵn'},5000);
+ }
+ for(const [zh,vi] of Object.entries(CURATED_ZH_VI)){
+  const py=pinyinForChinese(zh);
+  if(pinyin18Key(py)===key)addCandidate({zh,py,vi,source:'Từ điển tích hợp sẵn'},5000);
+ }
+ const hasExactPhraseSource=[...found.values()].some(item=>item.priority>=5000);
+ for(const item of lexicon.get(key)||[]){
+  addCandidate({zh:item.row[0],trad:item.row[1],py:item.row[2],vi:item.row[3],source:'Từ điển hiện có'},150+Math.min([...String(item.row[0]||'')].length,8)-Math.log(item.rowIndex+1)*.01);
+ }
+ const keepBest=(list,state)=>{
+  const existing=list.findIndex(item=>item.zh===state.zh);
+  if(existing>=0){if(list[existing].score>=state.score)return;list.splice(existing,1);}
+  list.push(state);list.sort((a,b)=>b.score-a.score);if(list.length>28)list.length=28;
+ };
+ if(!hasExactPhraseSource){
+  for(const syllables of pinyin18SyllablePaths(raw,pinyin18Syllables)){
+   const beams=Array.from({length:syllables.length+1},()=>[]);
+   beams[0].push({position:0,zh:'',rows:[],score:0});
+   for(let position=0;position<syllables.length;position++){
+    if(!beams[position].length)continue;
+    for(const state of beams[position]){
+     for(let end=position+1;end<=Math.min(syllables.length,position+8);end++){
+      const syllable=syllables.slice(position,end).join(''),matches=lexicon.get(syllable);
+      if(!matches)continue;
+      for(const item of matches){
+       const nextPosition=end,nextZH=state.zh+item.row[0];
+       const wordLength=[...String(item.row[0]||'')].length;
+       const score=state.score+Math.min(wordLength,6)*1.5+(syllable.length>2?.2:0)-Math.log(item.rowIndex+1)*.015;
+       keepBest(beams[nextPosition],{position:nextPosition,zh:nextZH,rows:state.rows.concat(item.row),score});
+      }
+    }
+   }
+   }
+   for(const state of beams[syllables.length]){
+    if(syllables.length>2&&!state.rows.some(row=>[...String(row[0]||'')].length>1))continue;
+    const fullRow=state.rows.length===1&&pinyin18Key(state.rows[0][2])===key;
+    addCandidate({
+     zh:state.zh,py:state.rows.map(row=>row[2]).join(' '),
+     vi:fullRow?state.rows[0][3]:'',
+     note:fullRow?'':'Chưa có nghĩa tiếng Việt cho toàn cụm trong dữ liệu hiện tại.',
+     source:fullRow?'Từ điển hiện có':'Từ điển hiện có · ghép theo cụm từ'
+    },100+state.score);
+   }
+  }
+ }
+ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,8);
+}
+function renderHomework18Card(result,sourceLabel=''){
+ const box=$('homework18-results'),zh=String(result.zh||'').trim(),traditional=String(result.trad||pinyin18Traditional(zh));
+ box.innerHTML=`<article class="homework-answer"><div class="subtle">${escapeHTML(sourceLabel||'Kết quả dịch')}</div><div class="homework-zh-row"><div class="homework-zh">${escapeHTML(zh)}${traditional&&traditional!==zh?` <span class="homework18-candidate-trad">（${escapeHTML(traditional)}）</span>`:''}</div><button type="button" class="iconbtn homework-speak" data-speak="${escapeHTML(zh)}" aria-label="Nghe phát âm câu tiếng Trung" title="Phát âm câu tiếng Trung">🔊</button></div><div class="homework-py"><b>Pinyin:</b> <span class="homework-pinyin-text">${escapeHTML(result.py||pinyinForChinese(zh))}</span></div><div class="homework-vi"><b>Nghĩa tiếng Việt:</b> <span class="homework-vietnamese-text">${escapeHTML(result.vi||'Chưa có nghĩa tiếng Việt trong dữ liệu hiện tại.')}</span></div>${result.note?`<div class="homework-source">${escapeHTML(result.note)}</div>`:''}</article>`;
+}
+let homework18Candidates=[];
+function renderHomework18Candidates(candidates){
+ const box=$('homework18-candidates');homework18Candidates=candidates;
+ if(!candidates.length){box.hidden=true;box.replaceChildren();return;}
+ box.hidden=false;
+ box.innerHTML='<div class="subtle">Các ứng viên khớp dữ liệu (chưa chọn):</div>'+candidates.map((candidate,index)=>`<article class="homework18-candidate"><div class="homework18-candidate-main"><div><div class="homework18-candidate-zh">${escapeHTML(candidate.zh)}${candidate.trad!==candidate.zh?` <span class="homework18-candidate-trad">（${escapeHTML(candidate.trad)}）</span>`:''}</div><div class="homework18-candidate-meta"><b>Pinyin:</b> ${escapeHTML(candidate.py)}</div><div class="homework18-candidate-meta"><b>Nghĩa:</b> ${escapeHTML(candidate.vi)}</div>${candidate.note?`<div class="homework18-candidate-note">${escapeHTML(candidate.note)}</div>`:''}</div><span class="homework18-selection" data-homework18-selected="${index}" hidden>Đã chọn</span></div><div class="homework18-candidate-actions"><button class="btn" type="button" data-homework18-select="${index}">CHỌN</button><button class="btn secondary" type="button" data-copy-control="1" data-copy-value="${escapeHTML(candidate.zh)}">SAO CHÉP</button></div></article>`).join('');
+ box.querySelectorAll('[data-homework18-select]').forEach(button=>button.addEventListener('click',()=>{
+  const selected=homework18Candidates[Number(button.dataset.homework18Select)];
+  if(!selected)return;
+  box.querySelectorAll('[data-homework18-selected]').forEach(marker=>{marker.hidden=Number(marker.dataset.homework18Selected)!==Number(button.dataset.homework18Select);});
+  renderHomework18Card(selected,'Ứng viên bạn đã chọn · '+selected.source);
+  $('homework18-status').textContent='Đã chọn ứng viên. Bạn có thể chọn ứng viên khác để đối chiếu.';
+ }));
+}
+function looksLikePinyin18(raw,local){
+ if(/[\u3400-\u9fff]/.test(raw)||local&&norm(raw)===norm(local.vi)||/[ăâđêôơư]/i.test(raw))return false;
+ getPinyin18Lexicon();
+ const tokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
+ if(!tokens.length)return false;
+ const paths=pinyin18SyllablePaths(raw,pinyin18Syllables);
+ return paths.length>0&&tokens.every(token=>pinyin18SyllablePaths(token,pinyin18Syllables).length>0);
+}
+let homework18LookupToken=0;
+async function lookupHomework18(){
+ const token=++homework18LookupToken,raw=$('homework18-query').value.trim(),box=$('homework18-results'),status=$('homework18-status');
+ const local=tryLocalTranslation(raw),hasChinese=/[\u3400-\u9fff]/.test(raw);
+ box.replaceChildren();renderHomework18Candidates([]);
+ if(!raw){status.textContent='Nhập câu tiếng Việt, chữ Hán hoặc Pinyin để dịch.';box.innerHTML='<div class="empty">Nội dung nhập đang trống.</div>';return;}
+ if(looksLikePinyin18(raw,local)){
+  const candidates=pinyinToChineseCandidates(raw);
+  if(!candidates.length){status.textContent='Không ghép được toàn bộ Pinyin từ dữ liệu hiện có. Hãy kiểm tra âm tiết hoặc thử thêm khoảng trắng; không tạo chữ Hán thay thế.';box.innerHTML='<div class="empty">Không tìm thấy ứng viên Pinyin hợp lệ.</div>';return;}
+  renderHomework18Candidates(candidates);
+  status.textContent='Đã tìm thấy '+candidates.length+' ứng viên dựa trên dữ liệu. Chưa có ứng viên nào được tự động chọn.';
+  return;
+ }
+ if(local){renderHomework18Card(local,local.source);status.textContent='Đã tìm thấy kết quả trong dữ liệu offline.';return;}
+ status.textContent='Đang dịch…';
+ const source=hasChinese?'zh-CN':'vi',target=hasChinese?'vi':'zh-CN';
+ try{
+  const translated=await machineTranslate(raw,source,target);
+  if(token!==homework18LookupToken)return;
+  if(hasChinese){
+   renderHomework18Card({zh:raw,py:pinyinForChinese(raw),vi:translated,note:'Bản dịch máy online'},'Trung → Việt');
+  }else{
+   const curated=OFFLINE_SENTENCE_TRANSLATIONS[norm(raw)];
+   const zh=curated?.zh||translated;
+   renderHomework18Card({zh,py:pinyinForChinese(zh,curated?.py||''),vi:raw,note:curated?'Câu mẫu đã kiểm chứng':'Bản dịch máy online'},'Việt → Trung');
+  }
+  status.textContent='Đã dịch xong. Hãy kiểm tra ngữ cảnh với câu dài hoặc đa nghĩa.';
+ }catch(error){
+  if(token!==homework18LookupToken)return;
+  status.textContent='Không dịch được nội dung mới: '+(error?.message||error);
+  box.innerHTML='<div class="homework-error">Không tìm thấy kết quả offline và dịch vụ online hiện không khả dụng. Không tạo bản dịch thay thế.</div>';
+ }
+}
 async function machineTranslate(text,source,target){
  if(typeof TextEncoder!=='undefined'&&new TextEncoder().encode(String(text||'')).length>480)throw new Error('Câu quá dài cho dịch vụ miễn phí; hãy rút ngắn câu dưới 480 byte.');
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),9000);
@@ -4409,7 +4682,7 @@ function splitLongText(text,maxBytes=420){
  flush();return chunks;
 }
 function setTranslationResultActions(resultId,enabled){
- const prefix=resultId==='long-translate-result'?'long-translate':'file-translate';
+ const prefix=resultId.replace(/-result$/,'');
  const copy=$(prefix+'-copy'),speak=$(prefix+'-speak');
  if(copy)copy.disabled=!enabled;if(speak)speak.disabled=!enabled;
 }
@@ -4464,6 +4737,21 @@ async function runFileTranslation(target){
 }
 $('file-translate-to-zh')?.addEventListener('click',()=>runFileTranslation('zh-CN'));
 $('file-translate-to-vi')?.addEventListener('click',()=>runFileTranslation('vi'));
+async function runLongTranslation18(target){
+ const status=$('long-translate-18-status'),out=$('long-translate-18-result');
+ setTranslationResultActions(out.id,false);out.dataset.translationLanguage='';
+ try{out.textContent='Đang chuẩn bị dịch…';await translateLongText($('long-translate-18-input').value,target,status,out);}catch(error){status.textContent='Không dịch được: '+(error.message||error);out.textContent='';setTranslationResultActions(out.id,false);}
+}
+$('long-translate-18-to-zh')?.addEventListener('click',()=>runLongTranslation18('zh-CN'));
+$('long-translate-18-to-vi')?.addEventListener('click',()=>runLongTranslation18('vi'));
+async function runFileTranslation18(target){
+ const file=$('translate-file-18-input').files?.[0],status=$('file-translate-18-status'),out=$('file-translate-18-result');
+ if(!file){status.textContent='Hãy chọn tệp TXT, MD, CSV hoặc DOCX trước.';return;}
+ setTranslationResultActions(out.id,false);out.dataset.translationLanguage='';
+ try{out.textContent='Đang đọc tệp '+file.name+'…';const content=await readTranslationFile(file);if(!content.trim())throw new Error('Tệp không có văn bản để dịch.');await translateLongText(content,target,status,out);}catch(error){status.textContent='Không xử lý được tệp: '+(error.message||error);out.textContent='';setTranslationResultActions(out.id,false);}
+}
+$('file-translate-18-to-zh')?.addEventListener('click',()=>runFileTranslation18('zh-CN'));
+$('file-translate-18-to-vi')?.addEventListener('click',()=>runFileTranslation18('vi'));
 async function copyTranslationOutput(resultId,statusId){
  const value=$(resultId)?.textContent?.trim()||'',status=$(statusId);
  if(!value||/^(Đang chuẩn bị dịch|Đang đọc tệp)/.test(value)){status.textContent='Chưa có kết quả để sao chép.';return;}
@@ -4490,6 +4778,10 @@ $('long-translate-copy')?.addEventListener('click',()=>copyTranslationOutput('lo
 $('long-translate-speak')?.addEventListener('click',()=>speakTranslationOutput('long-translate-result','long-translate-status'));
 $('file-translate-copy')?.addEventListener('click',()=>copyTranslationOutput('file-translate-result','file-translate-status'));
 $('file-translate-speak')?.addEventListener('click',()=>speakTranslationOutput('file-translate-result','file-translate-status'));
+$('long-translate-18-copy')?.addEventListener('click',()=>copyTranslationOutput('long-translate-18-result','long-translate-18-status'));
+$('long-translate-18-speak')?.addEventListener('click',()=>speakTranslationOutput('long-translate-18-result','long-translate-18-status'));
+$('file-translate-18-copy')?.addEventListener('click',()=>copyTranslationOutput('file-translate-18-result','file-translate-18-status'));
+$('file-translate-18-speak')?.addEventListener('click',()=>speakTranslationOutput('file-translate-18-result','file-translate-18-status'));
 
 function queryIsPinyin(raw){
  if(/[\u3400-\u9fff]/.test(raw))return false;
@@ -4618,6 +4910,12 @@ $('homework-query').addEventListener('input',()=>{
   const q=norm($('homework-query').value);
   if(q.length>=3){const local=tryLocalTranslation($('homework-query').value);if(local){renderHomeworkCard(local,local.source);$('homework-status').textContent='Đã tìm được câu mẫu offline. Bấm “Dịch câu” để dịch câu mới.';}}
  },160);
+});
+$('homework18-lookup').addEventListener('click',()=>lookupHomework18());
+$('homework18-query').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();lookupHomework18();}});
+$('homework18-query').addEventListener('input',()=>{
+ homework18LookupToken++;$('homework18-results').replaceChildren();renderHomework18Candidates([]);
+ $('homework18-status').textContent='';
 });
 
 // Searchable reading practice: the learner chooses the exact word or sentence instead of receiving random content.
