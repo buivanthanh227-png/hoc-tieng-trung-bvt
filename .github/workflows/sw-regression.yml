@@ -1,0 +1,33 @@
+name: Service Worker regression tests
+
+on:
+  push:
+    branches: [main, "fix/**"]
+    paths:
+      - "sw.js"
+      - "qa-tests/**"
+      - ".github/workflows/sw-regression.yml"
+  pull_request:
+    paths:
+      - "sw.js"
+      - "qa-tests/**"
+      - ".github/workflows/sw-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  service-worker-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test Service Worker offline and precache behavior
+        run: node --test qa-tests/sw.test.cjs
