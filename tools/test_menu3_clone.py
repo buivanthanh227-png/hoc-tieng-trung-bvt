@@ -18,6 +18,9 @@ required=[
  'function renderHomework3xCard(',
  'async function renderHomework3xCandidates(candidates)',
  'async function lookupHomework3x()',
+ 'data-homework3x-candidate',
+ 'data-homework3x-speak="zh"',
+ 'data-homework3x-speak="vi"',
  'function looksLikePinyin3x(',
  'runLongTranslation3x',
  'runFileTranslation3x',
@@ -39,7 +42,7 @@ if 'data-homework18-speak="py"' in html or 'const playPinyinWords=async()=>{' in
 logic_start=html.index('<script id="menu3-independent-lookup-logic">')
 logic_end=html.index('</script>',logic_start)
 logic=html[logic_start:logic_end]
-if re.search(r"\$\('homework18-",logic) or re.search(r"\bhomework18[A-Za-z0-9_]+",logic):
+if 'data-homework18-' in logic or re.search(r"\$\('homework18-",logic) or re.search(r"\bhomework18[A-Za-z0-9_]+",logic):
  raise SystemExit("New Menu 3 lookup logic shares Menu 18 IDs or state.")
 if "homework3xLookupToken" not in logic or "homework3xCandidates" not in logic:
  raise SystemExit("New Menu 3 lookup state is not independently namespaced.")
