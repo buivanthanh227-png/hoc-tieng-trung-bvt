@@ -64,16 +64,16 @@ if old_words != new_words:
     changes.append("preferred words and offline Vietnamese glosses")
 
 replace_once(
-    "const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();",
-    "const rawMeaning=String(candidate.preferredMeaning||candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();",
+    "  const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();",
+    "  const rawMeaning=String(candidate.preferredMeaning||candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();",
     "preferred Vietnamese gloss selection"
 )
 
 replace_once(
-    """const matches=index.get(key),existing=matches.findIndex(item=>item.row[0]===zh);
+    """  const matches=index.get(key),existing=matches.findIndex(item=>item.row[0]===zh);
   const item=existing>=0?matches.splice(existing,1)[0]:{row:[zh,zh,pronunciation,''],rowIndex:rows.length+syllables.size};
   item.preferredWord=true;matches.unshift(item);""",
-    """const matches=index.get(key),existing=matches.findIndex(item=>item.row[0]===zh),meaning=String(entry[2]||'').trim();
+    """  const matches=index.get(key),existing=matches.findIndex(item=>item.row[0]===zh),meaning=String(entry[2]||'').trim();
   const item=existing>=0?matches.splice(existing,1)[0]:{row:[zh,zh,pronunciation,meaning],rowIndex:rows.length+syllables.size};
   item.preferredWord=true;item.preferredMeaning=meaning||item.preferredMeaning||String(item.row[3]||'');
   if(meaning&&!String(item.row[3]||'').trim())item.row=[item.row[0],item.row[1],item.row[2],meaning];
@@ -82,13 +82,13 @@ replace_once(
 )
 
 replace_once(
-    "addCandidate({zh:item.row[0],trad:item.row[1],py:item.row[2],vi:item.row[3],source:'Từ điển hiện có'},150+Math.min([...String(item.row[0]||'')].length,8)-Math.log(item.rowIndex+1)*.01);",
+    "  addCandidate({zh:item.row[0],trad:item.row[1],py:item.row[2],vi:item.row[3],source:'Từ điển hiện có'},150+Math.min([...String(item.row[0]||'')].length,8)-Math.log(item.rowIndex+1)*.01);",
     "addCandidate({zh:item.row[0],trad:item.row[1],py:item.row[2],vi:item.preferredMeaning||item.row[3],preferredMeaning:item.preferredMeaning,source:'Từ điển hiện có'},150+Math.min([...String(item.row[0]||'')].length,8)-Math.log(item.rowIndex+1)*.01+(item.preferredWord?500:0));",
     "preferred-word ranking"
 )
 
 replace_once(
-    """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?5:0;
+    """       const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?5:0;
        const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?22:0;""",
     """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
        const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0;""",
