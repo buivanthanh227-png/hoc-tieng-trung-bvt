@@ -72,3 +72,13 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - Hiển thị danh sách phương án để người học chọn; khi chọn một câu ghép từ nhiều mục từ, nghĩa tiếng Việt được dịch theo toàn câu.
 - Giữ nguyên chuỗi người dùng nhập; chuẩn hóa chỉ dùng nội bộ để tra cứu, không ghi đè hoặc tự thêm/bớt khoảng trắng trong ô nhập.
 - Workflow kiểm tra bản vá chạy lặp, cú pháp Python/JavaScript và các kiểm thử hồi quy thanh điệu trước khi xuất bản.
+
+
+## Menu 18 — ánh xạ độc lập từng mục Pinyin (V42.9.9)
+
+- Giữ nguyên chuỗi người dùng nhập; chỉ tách nội bộ theo các dấu phân cách đã có, không sửa ô nhập.
+- Mỗi mục nhập được tra riêng trong CVDICT. Mỗi thanh điệu có trong từ điển tạo tối đa một kết quả cho mục đó; tổng số kết quả là tổng các lựa chọn của từng mục, không phải tích tổ hợp ghép thành câu.
+- Không ghép các mục nhập thành câu, không thay âm tiết, không tự tạo chữ Hán cho mục không có dữ liệu.
+- Với âm tiết đơn không dấu, hiển thị các thanh 1–4; thanh nhẹ chỉ xuất hiện khi người học nhập rõ thanh 5. Từ nhiều âm tiết vẫn giữ cách đọc thanh nhẹ nếu đó là cách đọc từ điển.
+- Bộ kiểm thử dùng trực tiếp 122.523 dòng CVDICT nhúng, gồm ví dụ `a ba` → 8 lựa chọn (4 + 4), `ni jin le ma`, Pinyin có dấu, từ viết liền `jintian`, và đầu vào không có trong từ điển.
+- Menu 3 và các menu khác không bị sửa.
