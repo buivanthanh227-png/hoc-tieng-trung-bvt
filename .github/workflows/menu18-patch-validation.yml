@@ -25,6 +25,12 @@ on:
       - 'tools/patch_menu18_word_mapping.py'
       - 'tools/patch_menu18_multicandidate.py'
       - 'tools/test_menu18_word_mapping.py'
+      - 'tools/patch_menu3_clone.py'
+      - 'tools/test_menu3_clone.py'
+      - 'tools/patch_menu3_ui_fix.py'
+      - 'tools/test_menu3_ui_fix.py'
+      - 'tools/patch_brand_header.py'
+      - 'tools/test_brand_header.py'
       - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
 
