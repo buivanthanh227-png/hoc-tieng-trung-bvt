@@ -37,7 +37,7 @@ if "found.size);" not in html:
     raise SystemExit("Whole-sentence mapper still caps results at 16")
 if "sourceList.slice(0,16)" in renderer:
     raise SystemExit("Menu 18 result verification still truncates the list to 16")
-for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{color:#7b3fa1!important}","homework18-candidate-py{color:#2563a6!important}",'role="dialog"','data-homework18-copy="hanzi"','data-homework18-copy="pinyin"','data-homework18-copy="meaning"','data-homework18-speak="zh"','data-homework18-speak="py"','data-homework18-speak="vi"',"navigator.clipboard.writeText(value)","document.execCommand('copy')","new Audio(url)"):
+for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{color:#7b3fa1!important}","homework18-candidate-py{order:0",'role="dialog"','data-homework18-copy="hanzi"','data-homework18-copy="pinyin"','data-homework18-copy="meaning"','data-homework18-speak="zh"','data-homework18-speak="py"','data-homework18-speak="vi"',"navigator.clipboard.writeText(value)","document.execCommand('copy')","const playPinyinSentence=()=>speakMandarinSentence(py,0.96)"):
     if marker not in html:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
 modal_start=html.index("function openHomework18CandidateModal(item,index,total){")
