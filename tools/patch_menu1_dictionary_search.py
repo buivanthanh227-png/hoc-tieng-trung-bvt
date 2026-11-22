@@ -146,7 +146,7 @@ js = r'''<script id="menu1-three-field-dictionary-search">
     const score=matchRow(rows[i],hanzi,pinyin,meaning,pinyin.trim()?state.tone:null);
     if(score>0)found.push({i,score});
    }
-   found.sort((a,b)=>b.score-a.score||a.i-b.i);
+   found.sort((a,b)=>Array.from(String(rows[a.i][0]||'')).length-Array.from(String(rows[b.i][0]||'')).length||b.score-a.score||a.i-b.i);
    filteredIndices=found.map(x=>x.i);
   }
   currentPage=1;
@@ -197,3 +197,4 @@ if source != original:
     target.write_text(source, encoding="utf-8", newline="\n")
 print("Menu 1 three-field dictionary search patch: verified")
 print("Hanzi, Pinyin, Vietnamese meaning and five single-select tone filters are independent.")
+print("Results rank by ascending Hanzi character count, then exactness and source order.")

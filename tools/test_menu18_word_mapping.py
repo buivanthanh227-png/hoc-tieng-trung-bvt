@@ -37,14 +37,18 @@ if "found.size);" not in html:
     raise SystemExit("Whole-sentence mapper still caps results at 16")
 if "sourceList.slice(0,16)" in renderer:
     raise SystemExit("Menu 18 result verification still truncates the list to 16")
-for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{color:#7b3fa1!important}","homework18-candidate-py{color:#2563a6!important}",'role="dialog"',"copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyButton(py,'Pinyin')","copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')"):
+for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{color:#7b3fa1!important}","homework18-candidate-py{color:#2563a6!important}",'role="dialog"','data-homework18-copy="hanzi"','data-homework18-copy="pinyin"','data-homework18-copy="meaning"','data-homework18-speak="zh"','data-homework18-speak="py"','data-homework18-speak="vi"',"navigator.clipboard.writeText(value)","document.execCommand('copy')","new Audio(url)"):
     if marker not in html:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
-card_start=html.index("function renderHomework18Card(result,sourceLabel=''){")
-card_end=html.index("\nlet homework18Candidates=[];",card_start)
-card=html[card_start:card_end]
-for marker in ("copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyButton(py,'Pinyin')","copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')"):
-    if marker not in card: raise SystemExit("Menu 18 copy/speaker action missing: "+marker)
+modal_start=html.index("function openHomework18CandidateModal(item,index,total){")
+modal_end=html.index("\nasync function renderHomework18Candidates(candidates){",modal_start)
+modal_source=html[modal_start:modal_end]
+if "copyButton(" in modal_source or "speakButton(" in modal_source:
+    raise SystemExit("Menu 18 modal must not depend on undefined copyButton/speakButton helpers")
+if "Không tìm thấy kết quả khớp chính xác" not in renderer:
+    raise SystemExit("Menu 18 submit-time no-result warning is missing")
+if "homework18QueryInput.addEventListener('input'" not in html:
+    raise SystemExit("Menu 18 must clear no-result warning while the user edits input")
 if "const token=++homework18LookupToken,raw=$('homework18-query').value,query=raw.trim()" not in html:
     raise SystemExit("Original input is not preserved separately from trimmed query")
 

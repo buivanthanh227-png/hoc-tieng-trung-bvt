@@ -23,6 +23,8 @@ if html.count('id="dict-search-hanzi"')!=1 or html.count('id="dict-search-pinyin
     raise SystemExit("Menu 1 must have exactly one input for each independent search field")
 if html.count('data-dict-tone="')<5:
     raise SystemExit("Menu 1 must expose all five tone filters")
+if "found.sort((a,b)=>Array.from(String(rows[a.i][0]||'')).length-Array.from(String(rows[b.i][0]||'')).length||b.score-a.score||a.i-b.i);" not in html:
+    raise SystemExit("Menu 1 results must be ranked by ascending Hán tự character count before relevance score")
 
 def extract_fn(name):
     start=html.index("function "+name+"(")
