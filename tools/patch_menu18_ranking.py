@@ -383,23 +383,55 @@ replace_once(
 selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
  const rawText=String(raw||'').trim();
  const inputTokens=rawText.split(/[\s,，、;；]+/).filter(Boolean);
- const inputKeys=inputTokens.map(pinyin18Key);
- const explicitlySegmented=inputTokens.length>1;
+ if(!inputTokens.length)return [];
+ const syllables=(pinyin18Syllables instanceof Set&&pinyin18Syllables.size)
+  ?pinyin18Syllables:new Set(inputTokens.map(pinyin18Key));
+ let expected=[{keys:[],tones:[]}];
+ let hasCompactToken=false;
+ for(const rawToken of inputTokens){
+  const tokenKey=pinyin18Key(rawToken);
+  if(!tokenKey)return [];
+  const isSyllable=syllables.has(tokenKey);
+  const splits=isSyllable?[[tokenKey]]:pinyin18SyllablePaths(rawToken,syllables);
+  if(!splits.length)return [];
+  if(!isSyllable)hasCompactToken=true;
+  const requestedTone=isSyllable?pinyin18ToneFromInput(rawToken):null;
+  const next=[];
+  for(const path of expected){
+   for(const split of splits){
+    const keys=path.keys.concat(split);
+    const tones=path.tones.concat(split.map((_,index)=>index===0?requestedTone:null));
+    next.push({keys,tones});
+    if(next.length>=32)break;
+   }
+   if(next.length>=32)break;
+  }
+  expected=next;
+ }
+ const expectedByBase=new Map();
+ for(const path of expected){
+  const base=path.keys.join(' ');
+  if(!expectedByBase.has(base))expectedByBase.set(base,[]);
+  expectedByBase.get(base).push(path);
+ }
  let ranked=(Array.isArray(candidates)?candidates:[]).map(item=>{
   const py=String(item.py||'').trim();
-  if(!py||pinyin18Key(py)!==pinyin18Key(rawText))return null;
+  if(!py)return null;
   const tokens=py.split(/\s+/).filter(Boolean);
-  if(explicitlySegmented){
-   if(tokens.length!==inputKeys.length||!tokens.every((token,index)=>pinyin18Key(token)===inputKeys[index]))return null;
-   for(let index=0;index<inputTokens.length;index++){
-    const requestedTone=pinyin18ToneFromInput(inputTokens[index]);
-    if(requestedTone!==null&&pinyin18ToneFromInput(tokens[index])!==requestedTone)return null;
-   }
-  }
-  return {item,tokens,base:tokens.map(pinyin18Key).join(' '),priority:Number(item.priority)||0};
+  const keys=tokens.map(pinyin18Key);
+  const base=keys.join(' ');
+  const paths=expectedByBase.get(base);
+  if(!paths)return null;
+  const matched=paths.find(path=>path.tones.every((tone,index)=>
+   tone===null||pinyin18ToneFromInput(tokens[index])===tone
+  ));
+  if(!matched)return null;
+  return {item,tokens,base,tones:matched.tones,priority:Number(item.priority)||0};
  }).filter(Boolean);
  if(!ranked.length)return [];
- if(!explicitlySegmented){
+ // If a compact input token admits several possible syllable boundaries,
+ // choose one dictionary-supported path instead of mixing incompatible splits.
+ if(hasCompactToken){
   const groups=new Map();
   for(const row of ranked){
    if(!groups.has(row.base))groups.set(row.base,[]);
@@ -428,7 +460,7 @@ selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
   return {index,toneRows};
  }):[];
  positions
-  .filter(position=>position.toneRows.size>1&&(!explicitlySegmented||pinyin18ToneFromInput(inputTokens[position.index])===null))
+  .filter(position=>position.toneRows.size>1&&ranked[0].tones[position.index]===null)
   .sort((a,b)=>b.toneRows.size-a.toneRows.size||a.index-b.index)
   .forEach(position=>{
    for(const tone of [...position.toneRows.keys()].sort((a,b)=>a-b))add(position.toneRows.get(tone));
