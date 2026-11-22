@@ -97,7 +97,7 @@ assert.equal(results[0].py,'nǐ jìn le ma','the selected sentence keeps the cor
 assert.equal(results[0].vi,'Bạn vào được chưa?','the complete sentence has a Vietnamese meaning');
 assert.ok(results.every(item=>[...item.zh].length>1),'all candidates are complete Chinese phrases, not isolated characters');
 assert.ok(results.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')),'candidate Pinyin matches the entire original input');
-const jinTones=results.map(item=>item.py.split(/\\s+/).find(token=>pinyin18Key(token)==='jin')).filter(Boolean).map(pinyin18ToneFromInput);
+console.log('DEBUG_PY',JSON.stringify(results.map(item=>item.py)));\nconst jinTones=results.map(item=>item.py.split(/\\s+/).find(token=>pinyin18Key(token)==='jin')).filter(Boolean).map(pinyin18ToneFromInput);
 assert.ok(new Set(jinTones).size>1,'different tone readings at jin are actually explored');
 const marked=pinyinToChineseCandidates('nǐ jìn le ma');
 assert.ok(marked.length>0&&marked.every(item=>pinyin18ToneFromInput(item.py.split(/\\s+/).find(token=>pinyin18Key(token)==='ni'))===3&&pinyin18ToneFromInput(item.py.split(/\\s+/).find(token=>pinyin18Key(token)==='jin'))===4),'explicit tone marks constrain the whole-sentence search');
