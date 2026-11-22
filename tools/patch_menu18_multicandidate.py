@@ -66,7 +66,7 @@ function renderHomework18Candidates(candidates){
    button.setAttribute('aria-pressed',selected?'true':'false');
   });
   const label='Phương án '+(index+1)+' / '+list.length+' · '+String(item.source||'Từ điển');
-  const needsWholeSentenceMeaning=Boolean(item.note&&/ghép từ điển|cụm từ/i.test(item.note));
+  const needsWholeSentenceMeaning=!String(item.vi||'').trim();
   renderHomework18Card({...item,vi:needsWholeSentenceMeaning?'Đang tra nghĩa tiếng Việt cho toàn câu…':item.vi},label);
   if(needsWholeSentenceMeaning){
    const status=$('homework18-status');
@@ -86,6 +86,7 @@ function renderHomework18Candidates(candidates){
   }
  };
  box.querySelectorAll('[data-homework18-candidate]').forEach(button=>button.addEventListener('click',()=>select(Number(button.dataset.homework18Candidate))));
+ select(0);
  return list[0];
 }'''
 source = source[:start] + renderer + source[end:]
