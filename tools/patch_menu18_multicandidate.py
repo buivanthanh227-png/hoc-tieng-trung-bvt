@@ -46,10 +46,21 @@ start = source.find("function renderHomework18Candidates(candidates){")
 end = source.find("\nfunction looksLikePinyin18(raw,local){", start)
 if start < 0 or end < 0:
     raise SystemExit("Menu 18 multicandidate patch: renderer boundaries not found.")
-renderer = r'''let homework18SelectedCandidateIndex=0,homework18CandidateModal=null;
+renderer = r'''function formatHomework18PinyinByInput(raw,py){
+ const inputTokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean),syllables=pinyin18Syllables instanceof Set?pinyin18Syllables:new Set(),output=[],tones=String(py||'').trim().split(/\\s+/).filter(Boolean);let at=0;
+ for(const inputToken of inputTokens){const key=pinyin18Key(inputToken);if(!key)continue;
+  if(syllables.has(key)){if(tones[at])output.push(tones[at]);at++;continue;}
+  let combined='',end=at,matched=false;
+  while(end<tones.length){combined+=tones[end];end++;if(pinyin18Key(combined)===key){output.push(tones.slice(at,end).join(''));at=end;matched=true;break;}if(combined.length>key.length+2)break;}
+  if(!matched&&at<tones.length){output.push(tones[at]);at++;}
+ }
+ if(at<tones.length)output.push(...tones.slice(at));
+ return output.join(' ');
+}
+let homework18SelectedCandidateIndex=0,homework18CandidateModal=null;
 function closeHomework18CandidateModal(){if(homework18CandidateModal){homework18CandidateModal.remove();homework18CandidateModal=null;}}
 function openHomework18CandidateModal(item,index,total){
- closeHomework18CandidateModal();const zh=String(item.zh||''),py=formatHomework18PinyinByWord(zh,item.py||pinyinForChinese(zh)),vi=String(item.vi||'').trim();
+ closeHomework18CandidateModal();const zh=String(item.zh||''),py=formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(zh)),vi=String(item.vi||'').trim();
  const modal=document.createElement('div');modal.className='homework18-modal-backdrop';
  modal.innerHTML='<section class="homework18-modal" role="dialog" aria-modal="true"><div class="homework18-modal-head"><strong>Kết quả '+(index+1)+' / '+total+'</strong><button type="button" class="homework18-modal-close">×</button></div>'+
  '<div class="homework18-modal-line is-hanzi"><b>HÁN TỰ</b><div class="homework18-modal-value">'+escapeHTML(zh)+'</div>'+copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')+'</div>'+
@@ -64,8 +75,10 @@ function openHomework18CandidateModal(item,index,total){
 }
 async function renderHomework18Candidates(candidates){
  const box=$('homework18-candidates');box.replaceChildren();
- const sourceList=(Array.isArray(candidates)?candidates:[]).filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
- if(!sourceList.length){box.hidden=true;return null;}
+ const rawInput=String($('homework18-query')?.value||'').trim(),rawCandidates=Array.isArray(candidates)?candidates:[];
+ if(!rawCandidates.length){box.hidden=false;box.textContent='Không tìm thấy kết quả khớp chính xác với nội dung và khoảng cách bạn đã nhập: “'+rawInput+'”. Hệ thống không tự thêm, bớt hoặc nối các âm tiết (ví dụ “ke ren” không được đổi thành “keren”). Vui lòng kiểm tra từ điển và khoảng cách giữa các âm tiết rồi nhập lại.';if(status)status.textContent='Không tìm thấy kết quả đúng theo cách tách âm tiết ban đầu.';return null;}
+ const sourceList=rawCandidates.filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
+ if(!sourceList.length){box.hidden=false;box.textContent='Có phương án chữ Hán nhưng chưa xác minh được nghĩa tiếng Việt. Vui lòng thử lại sau.';return null;}
  const requestToken=homework18LookupToken,status=$('homework18-status'),queue=sourceList,resolved=new Array(sourceList.length);let cursor=0,completed=0;
  box.hidden=false;box.innerHTML='<div class="homework18-candidate-heading">Đang kiểm tra nghĩa của các câu hoàn chỉnh…</div>';
  if(status)status.textContent='Đang xác minh nghĩa toàn câu: 0 / '+queue.length+'…';
@@ -79,7 +92,7 @@ async function renderHomework18Candidates(candidates){
  const renderHomework18Page=()=>{
   const pageCount=Math.max(1,Math.ceil(list.length/homework18PageSize)),start=homework18CandidatePage*homework18PageSize,end=Math.min(start+homework18PageSize,list.length);
   const nav=position=>'<div class="homework18-pagination" data-pagination="'+position+'"><button type="button" data-page-prev '+(homework18CandidatePage===0?'disabled':'')+'>‹ Trang trước</button><span>Trang '+(homework18CandidatePage+1)+' / '+pageCount+'</span><button type="button" data-page-next '+(homework18CandidatePage>=pageCount-1?'disabled':'')+'>Trang sau ›</button></div>';
-  box.innerHTML=nav('top')+'<div class="homework18-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
+  box.innerHTML=nav('top')+'<div class="homework18-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
   box.querySelectorAll('[data-page-prev]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage>0){homework18CandidatePage--;renderHomework18Page();}}));
   box.querySelectorAll('[data-page-next]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage<pageCount-1){homework18CandidatePage++;renderHomework18Page();}}));
   box.querySelectorAll('[data-homework18-candidate]').forEach(button=>button.addEventListener('click',()=>{const index=Number(button.dataset.homework18Candidate),item=list[index];if(!item)return;homework18SelectedCandidateIndex=index;box.querySelectorAll('[data-homework18-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework18Candidate)===index));openHomework18CandidateModal(item,index,list.length);if(status)status.textContent='Đang xem kết quả '+(index+1)+' / '+list.length+'.';}));
