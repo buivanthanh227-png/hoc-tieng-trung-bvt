@@ -507,11 +507,11 @@ function renderHomework18Candidates(candidates){
     const enriched={...item,vi,note:'Nghĩa tiếng Việt được dịch từ toàn câu.'};
     if(!homework18ValidVietnameseMeaning(enriched))throw new Error('Dịch vụ không trả về nghĩa tiếng Việt hợp lệ.');
     homework18Candidates[index]=enriched;
-    renderHomework18Card(enriched,label);
+    renderHomework18Card({...enriched,py:formatHomework18PinyinByWord(enriched.zh,enriched.py)},label);
     if(status)status.textContent='Đã tra nghĩa tiếng Việt cho phương án '+(index+1)+'.';
    }).catch(()=>{
     if(requestToken!==homework18LookupToken||homework18SelectedIndex!==index)return;
-    renderHomework18Card({...item,vi:'Chưa tra được nghĩa tiếng Việt.'},label);
+    renderHomework18Card({...item,py:formatHomework18PinyinByWord(item.zh,item.py),vi:'Chưa tra được nghĩa tiếng Việt.'},label);
     if(status)status.textContent='Đã ghép được chữ Hán; dịch vụ nghĩa tiếng Việt hiện không khả dụng.';
    });
   }else if(status){
