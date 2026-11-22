@@ -176,8 +176,15 @@ replace_once(
  const rawTokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean);
  if(rawTokens.length===1){
   const tone=pinyin18ToneFromInput(rawTokens[0]);
-  const entry=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])]?.[tone];
-  if(entry)addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
+  const variants=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])];
+  if(tone&&variants?.[tone]){
+   const entry=variants[tone];
+   addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
+  }else if(variants){
+   for(const [candidateTone,entry] of Object.entries(variants)){
+    addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Một cách đọc theo thanh điệu '+candidateTone},6200-Number(candidateTone));
+   }
+  }
  }
  for(const item of MENU18_VERIFIED_SENTENCES){""",
     "contextual exact phrase and single-syllable tone selection"
@@ -285,13 +292,6 @@ replace_once(
     "remove placeholder output and mark gloss as pending"
 )
 replace_once(
-    """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
-       const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0;""",
-    """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
-        const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0;""",
-    "increase common word and common character preference"
-)
-replace_once(
     """ if(!hasExactPhraseSource){""",
     """ // Keep the exact verified sentence first, while also exploring alternate readings.
  const shouldGenerateAlternates=true;
@@ -309,26 +309,6 @@ replace_once(
     """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,8);""",
     """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,16);""",
     "return more ranked Pinyin alternatives for the selector"
-)
-replace_once(
-    """ if(rawTokens.length===1){
-  const tone=pinyin18ToneFromInput(rawTokens[0]);
-  const entry=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])]?.[tone];
-  if(entry)addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
- }""",
-    """ if(rawTokens.length===1){
-  const tone=pinyin18ToneFromInput(rawTokens[0]);
-  const variants=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])];
-  if(tone&&variants?.[tone]){
-   const entry=variants[tone];
-   addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
-  }else if(variants){
-   for(const [candidateTone,entry] of Object.entries(variants)){
-    addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Một cách đọc theo thanh điệu '+candidateTone},6200-Number(candidateTone));
-   }
-  }
- }""",
-    "show tone alternatives for unmarked single-syllable inputs"
 )
 replace_once(
     """ const vi=String(result.vi||'Chưa tìm được nghĩa tiếng Việt cho toàn câu.');""",
@@ -369,7 +349,7 @@ required = [
     "'zhong wen':['中文','zhōng wén','tiếng Trung']",
     "item.preferredMeaning=meaning",
     "item.preferredWord?500:0",
-    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0",
+    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0",
     "const PINYIN18_SINGLE_TONE_WORDS={",
     "function pinyin18ToneFromInput(value)",
     "if(!key||key.length>600)return [];",
@@ -396,7 +376,7 @@ required.extend([
     "Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.",
     "6200-Number(candidateTone)",
     ".slice(0,5)",
-    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0"
+    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0"
 ])
 
 missing = [needle for needle in required if needle not in source]
