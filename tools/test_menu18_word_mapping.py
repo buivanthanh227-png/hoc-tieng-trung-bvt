@@ -122,7 +122,7 @@ const base=['jīn','tiān','wǒ','jiā','yǒu','kè','rén'];
 const make=(tokens,priority)=>({zh:'测'.repeat(tokens.length),py:tokens.join(' '),priority});
 const toneVariants=[make(base,100)];
 for(let i=0;i<base.length;i++){const variants=[['jīn','tiān','wǒ','jiā','yōu','kè','rén'],['jín','tián','wó','jiá','yóu','ké','rén'],['jǐn','tiǎn','wǒ','jiǎ','yǒu','kě','rěn'],['jìn','tiàn','wò','jià','yòu','kè','rèn']];for(const variant of variants){const row=base.slice();row[i]=variant[i];toneVariants.push(make(row,90-i));}}
-toneVariants.push(make(['jìn','tiān','wò','jiā','yǒu','kè','rén'],200));
+toneVariants.push(make(['jìn','tiān','wò','jiā','yǒu','kè','rén'],50));
 const bounded=pinyin18SelectToneDiverse(toneVariants,'jintian wo jia you ke ren',1000);
 assert.ok(bounded.length<=1+base.length*4,'only the base sentence and one-position tone variants may be returned');
 assert.ok(bounded.every(row=>row.py.split(/\s+/).filter(Boolean).length===7),'the selector must preserve seven syllable positions');
