@@ -99,7 +99,8 @@ assert.ok(results.every(item=>[...item.zh].length>1),'all candidates are complet
 assert.ok(results.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')),'candidate Pinyin matches the entire original input');
 const jinForms=results.map(item=>item.py.split(/\s+/).find(token=>pinyin18Key(token)==='jin')).filter(Boolean);
 assert.ok(new Set(jinForms).size>1,'different tone readings at jin are actually explored');
-const marked=pinyinToChineseCandidates('nǐ jìn le ma');\nconsole.log('DEBUG_MARKED',JSON.stringify(marked.map(item=>item.py)),'tones',pinyin18ToneFromInput('nǐ'),pinyin18ToneFromInput('jìn'));
+const marked=pinyinToChineseCandidates('nǐ jìn le ma');
+console.log('DEBUG_MARKED',JSON.stringify(marked.map(item=>item.py)),'tones',pinyin18ToneFromInput('nǐ'),pinyin18ToneFromInput('jìn'));
 assert.ok(marked.length>0&&marked.every(item=>item.py.split(/\s+/)[0]==='nǐ'&&item.py.split(/\s+/)[1]==='jìn'),'explicit tone marks constrain the whole-sentence search');
 console.log('Actual CVDICT Menu 18 whole-sentence mapping and tone-diversity tests: PASS');
 """
