@@ -75,10 +75,17 @@ async function renderHomework18Candidates(candidates){
  }catch(_){resolved[index]=null;}completed++;if(requestToken===homework18LookupToken&&status)status.textContent='Đang xác minh nghĩa toàn câu: '+completed+' / '+queue.length+'…';}};
  await Promise.all(Array.from({length:Math.min(4,queue.length)},worker));if(requestToken!==homework18LookupToken)return null;
  const list=resolved.filter(Boolean);if(!list.length){box.hidden=true;box.replaceChildren();if(status)status.textContent='Không xác minh được câu hoàn chỉnh có nghĩa tiếng Việt.';return null;}
- homework18Candidates=list;homework18SelectedCandidateIndex=0;box.hidden=false;
- box.innerHTML='<div class="homework18-candidate-heading">Chọn câu phù hợp với ý bạn · '+list.length+' kết quả</div>'+list.map((item,index)=>'<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>').join('');
- box.querySelectorAll('[data-homework18-candidate]').forEach(button=>button.addEventListener('click',()=>{const index=Number(button.dataset.homework18Candidate),item=list[index];if(!item)return;homework18SelectedCandidateIndex=index;box.querySelectorAll('[data-homework18-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework18Candidate)===index));openHomework18CandidateModal(item,index,list.length);if(status)status.textContent='Đang xem kết quả '+(index+1)+' / '+list.length+'.';}));
- if(status)status.textContent='Đã xác minh nghĩa tiếng Việt cho '+list.length+' kết quả. Chạm vào một kết quả để xem chi tiết.';return list[0];
+ homework18Candidates=list;homework18SelectedCandidateIndex=0;let homework18CandidatePage=0;const homework18PageSize=10;box.hidden=false;
+ const renderHomework18Page=()=>{
+  const pageCount=Math.max(1,Math.ceil(list.length/homework18PageSize)),start=homework18CandidatePage*homework18PageSize,end=Math.min(start+homework18PageSize,list.length);
+  const nav=position=>'<div class="homework18-pagination" data-pagination="'+position+'"><button type="button" data-page-prev '+(homework18CandidatePage===0?'disabled':'')+'>‹ Trang trước</button><span>Trang '+(homework18CandidatePage+1)+' / '+pageCount+'</span><button type="button" data-page-next '+(homework18CandidatePage>=pageCount-1?'disabled':'')+'>Trang sau ›</button></div>';
+  box.innerHTML=nav('top')+'<div class="homework18-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
+  box.querySelectorAll('[data-page-prev]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage>0){homework18CandidatePage--;renderHomework18Page();}}));
+  box.querySelectorAll('[data-page-next]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage<pageCount-1){homework18CandidatePage++;renderHomework18Page();}}));
+  box.querySelectorAll('[data-homework18-candidate]').forEach(button=>button.addEventListener('click',()=>{const index=Number(button.dataset.homework18Candidate),item=list[index];if(!item)return;homework18SelectedCandidateIndex=index;box.querySelectorAll('[data-homework18-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework18Candidate)===index));openHomework18CandidateModal(item,index,list.length);if(status)status.textContent='Đang xem kết quả '+(index+1)+' / '+list.length+'.';}));
+ };
+ renderHomework18Page();
+ if(status)status.textContent='Đã xác minh nghĩa tiếng Việt cho '+list.length+' kết quả. Mỗi trang hiển thị tối đa 10 kết quả. Chạm vào một kết quả để xem chi tiết.';return list[0];
 }'''
 source = source[:start] + renderer + source[end:]
 
@@ -105,6 +112,10 @@ new_css = """.homework18-candidates{display:grid!important;grid-template-columns
 .homework18-modal-nav button{border:1px solid #d0d5dd;border-radius:9px;padding:9px 14px;background:#f9fafb;font-weight:750}
 .homework18-modal-nav button:disabled{opacity:.35}
 .homework18-candidate-heading{grid-column:1/-1;font-size:12px;font-weight:800;color:var(--muted,#667085);padding:2px 0}
+.homework18-pagination{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0}
+.homework18-pagination span{font-size:12px;font-weight:750;color:var(--muted,#667085);white-space:nowrap}
+.homework18-pagination button{border:1px solid #d0d5dd;border-radius:8px;padding:7px 10px;background:#fff;color:#344054;font-size:12px;font-weight:750}
+.homework18-pagination button:disabled{opacity:.35;cursor:not-allowed}
 .homework18-candidate{display:flex;align-items:flex-start;gap:8px;min-width:0;text-align:left;padding:9px;border:1px solid var(--line,#d0d5dd);border-radius:9px;background:#fff;color:var(--ink,#182230);cursor:pointer}
 .homework18-candidate.is-selected{border-color:#864B90;background:#faf5ff;box-shadow:0 0 0 1px #864B90}
 .homework18-candidate-number{display:grid;place-items:center;flex:0 0 21px;height:21px;border-radius:6px;background:#f2f4f7;font-size:11px;font-weight:800}
