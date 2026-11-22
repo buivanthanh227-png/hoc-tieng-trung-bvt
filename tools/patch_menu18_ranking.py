@@ -389,7 +389,7 @@ required.extend([
     "Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.",
     "6200-Number(candidateTone)",
     ".slice(0,5)",
-    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0"
+    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0"
 ])
 
 missing = [needle for needle in required if needle not in source]
