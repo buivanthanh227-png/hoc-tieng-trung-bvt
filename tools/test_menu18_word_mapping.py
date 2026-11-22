@@ -17,8 +17,12 @@ if "state.rows.concat(item.row)" in html:
 start=html.index("async function renderHomework18Candidates(candidates){")
 end=html.index("\nfunction looksLikePinyin18(raw,local){",start)
 renderer=html[start:end]
-for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","openHomework18CandidateModal(item,index,list.length)","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh))"):
+for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","openHomework18CandidateModal(item,index,list.length)","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh))"):
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
+
+if(!renderer.includes("homework18PageSize=10")||!renderer.includes("data-page-prev")||!renderer.includes("data-page-next")||!renderer.includes("list.slice(start,end)")) throw new Error("Menu 18 pagination controls or ten-item page size missing");
+if(!renderer.includes("formatHomework18PinyinByInput")) throw new Error("Menu 18 renderer does not preserve original token boundaries");
+
 if "const best=await renderHomework18Candidates(candidates);" not in html:
     raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
 if "found.size);" not in html:
@@ -97,6 +101,12 @@ js+="\nObject.assign(PINYIN18_COMMON_CHARACTERS,PINYIN18_COMMON_CHARACTERS_EXTEN
 js+="\n".join(extract_fn(name) for name in functions)
 js+=r"""
 const assert=require('node:assert/strict');
+const strictSpacingResults=pinyinToChineseCandidates('jintian wo jia you ke ren');
+assert.ok(strictSpacingResults.length>0,'the example sentence should be found using its exact input spacing');
+assert.ok(strictSpacingResults.length<=30,'Menu 18 must return no more than 30 single-position tone alternatives for this six-token input');
+assert.ok(strictSpacingResults.every(item=>!/(?:kèren|kérén|kèrén)/i.test(item.py)),'the separate input tokens ke and ren must never be joined in Pinyin output');
+assert.ok(strictSpacingResults.every(item=>item.py.split(/\s+/).filter(Boolean).length===7),'the six input tokens map to seven syllables while preserving the separate ke and ren boundary');
+assert.ok(strictSpacingResults.some(item=>item.zh==='今天我家有客人'),'the expected complete sentence is retained');
 const results=pinyinToChineseCandidates('ni jin le ma');
 assert.ok(results.length>1,'the full sentence returns more than one tone candidate');
 assert.equal(results[0].zh,'你进了吗','the verified full-sentence interpretation is ranked first');
