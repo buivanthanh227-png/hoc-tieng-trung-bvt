@@ -90,7 +90,7 @@ function renderHomework18Candidates(candidates){
 }'''
 source = source[:start] + renderer + source[end:]
 
-old_css = ".homework18-candidates{display:none!important}"
+old_css = ".homework18-candidates:not([hidden]){display:block!important;margin:7px 0 9px!important}"
 new_css = """.homework18-candidates{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:4px 0 8px!important;padding:0!important}
 .homework18-candidate-heading{grid-column:1/-1;font-size:12px;font-weight:800;color:var(--muted,#667085);padding:2px 0}
 .homework18-candidate{display:flex;align-items:flex-start;gap:8px;min-width:0;text-align:left;padding:9px;border:1px solid var(--line,#d0d5dd);border-radius:9px;background:#fff;color:var(--ink,#182230);cursor:pointer}
