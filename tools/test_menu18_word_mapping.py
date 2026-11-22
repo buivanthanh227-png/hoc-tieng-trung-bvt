@@ -20,8 +20,8 @@ renderer=html[start:end]
 for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","openHomework18CandidateModal(item,index,list.length)","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh))"):
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
 
-if(!renderer.includes("homework18PageSize=10")||!renderer.includes("data-page-prev")||!renderer.includes("data-page-next")||!renderer.includes("list.slice(start,end)")) throw new Error("Menu 18 pagination controls or ten-item page size missing");
-if(!renderer.includes("formatHomework18PinyinByInput")) throw new Error("Menu 18 renderer does not preserve original token boundaries");
+for marker in ("homework18PageSize=10","data-page-prev","data-page-next","list.slice(start,end)","formatHomework18PinyinByInput"):
+    if marker not in renderer: raise SystemExit("Menu 18 pagination or strict-spacing formatter missing: "+marker)
 
 if "const best=await renderHomework18Candidates(candidates);" not in html:
     raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
@@ -118,7 +118,15 @@ const jinForms=results.map(item=>item.py.split(/\s+/).find(token=>pinyin18Key(to
 assert.ok(new Set(jinForms).size>1,'different tone readings at jin are actually explored');
 const marked=pinyinToChineseCandidates('nǐ jìn le ma');
 assert.ok(marked.length>0&&marked.every(item=>pinyin18ToneFromInput(item.py.split(/\s+/).find(token=>pinyin18Key(token)==='ni'))===3&&pinyin18ToneFromInput(item.py.split(/\s+/).find(token=>pinyin18Key(token)==='jin'))===4),'explicit tone marks constrain the whole-sentence search');
-console.log('Actual CVDICT Menu 18 whole-sentence mapping and tone-diversity tests: PASS');
+const base=['jīn','tiān','wǒ','jiā','yǒu','kè','rén'];
+const make=(tokens,priority)=>({zh:'测'.repeat(tokens.length),py:tokens.join(' '),priority});
+const toneVariants=[make(base,100)];
+for(let i=0;i<base.length;i++){const variants=[['jīn','tiān','wǒ','jiā','yōu','kè','rén'],['jín','tián','wó','jiá','yóu','ké','rén'],['jǐn','tiǎn','wǒ','jiǎ','yǒu','kě','rěn'],['jìn','tiàn','wò','jià','yòu','kè','rèn']];for(const variant of variants){const row=base.slice();row[i]=variant[i];toneVariants.push(make(row,90-i));}}
+toneVariants.push(make(['jìn','tiān','wò','jiā','yǒu','kè','rén'],200));
+const bounded=pinyin18SelectToneDiverse(toneVariants,'jintian wo jia you ke ren',1000);
+assert.ok(bounded.length<=1+base.length*4,'only the base sentence and one-position tone variants may be returned');
+assert.ok(bounded.every(row=>row.py.split(/\s+/).filter(Boolean).length===7),'the selector must preserve seven syllable positions');
+console.log('Actual CVDICT Menu 18 whole-sentence mapping, strict-spacing, single-position tones and pagination tests: PASS');
 """
 with tempfile.NamedTemporaryFile("w",suffix=".cjs",encoding="utf-8",delete=False) as f:
     f.write(js); test_path=f.name
