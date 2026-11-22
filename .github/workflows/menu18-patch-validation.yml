@@ -91,5 +91,58 @@ jobs:
               handle.write(js)
               js_path = handle.name
           subprocess.run(['node', '--check', js_path], check=True)
+
+          # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
+          word_start = html.index('const PINYIN18_COMMON_WORDS={')
+          word_end = html.index('};', word_start) + 2
+          tone_start = html.index('const PINYIN18_SINGLE_TONE_WORDS={')
+          tone_end = html.index('let pinyin18IndexSource=', tone_start)
+          key_start = html.index('function pinyin18Key(value){')
+          key_end = html.index('function pinyin18LexiconKey', key_start)
+          test_js = '\\n'.join([
+              "const assert = require('node:assert/strict');",
+              html[word_start:word_end],
+              html[tone_start:tone_end],
+              html[key_start:key_end],
+              """
+              function preferred(raw) {
+                const key = pinyin18Key(raw);
+                const row = Object.entries(PINYIN18_COMMON_WORDS).find(([phrase]) => pinyin18Key(phrase) === key);
+                return row ? row[1][0] : null;
+              }
+              const regression = [
+                ['ma1 ma5 wo3 ai4 ni3', '妈妈我爱你'],
+                ['mā ma wǒ ài nǐ', '妈妈我爱你'],
+                ['wo ai wo ma ma', '我爱我妈妈'],
+                ['wo qi ma', '我骑马'],
+                ['ta ma wo', '他骂我'],
+                ['wo jia you san ge ren', '我家有三个人'],
+                ['wo xiang xue xi zhong wen', '我想学习中文'],
+                ['wo zai zhong guo xue zhong wen', '我在中国学中文'],
+                ['wo zhong yu dao le', '我终于到了']
+              ];
+              for (const [input, expected] of regression) {
+                assert.equal(preferred(input), expected, 'preferred phrase: ' + input);
+              }
+              const maTones = {1:'妈', 2:'麻', 3:'马', 4:'骂', 5:'吗'};
+              for (const [tone, hanzi] of Object.entries(maTones)) {
+                const token = 'ma' + tone;
+                const value = PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(token)][tone];
+                assert.equal(value[0], hanzi, 'tone mapping: ' + token);
+              }
+              assert.equal(pinyin18ToneFromInput('mā'), 1);
+              assert.equal(pinyin18ToneFromInput('má'), 2);
+              assert.equal(pinyin18ToneFromInput('mǎ'), 3);
+              assert.equal(pinyin18ToneFromInput('mà'), 4);
+              assert.equal(pinyin18ToneFromInput('ma5'), 5);
+              assert.equal(pinyin18Key('mā ma wǒ ài nǐ'), pinyin18Key('ma1 ma5 wo3 ai4 ni3'));
+              assert.ok(pinyin18Key(Array(100).fill('wo').join(' ')).length < 600);
+              console.log('Menu 18 phrase/tone regression unit tests: PASS');
+              """
+          ])
+          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
+              handle.write(test_js)
+              test_path = handle.name
+          subprocess.run(['node', test_path], check=True)
           print('Menu 18 patch, tone map, contextual phrase map, idempotence and inline JS syntax: PASS')
           PY
