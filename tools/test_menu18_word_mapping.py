@@ -41,7 +41,7 @@ for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18
     if marker not in html:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
 modal_start=html.index("function openHomework18CandidateModal(item,index,total){")
-modal_end=html.index("\\nasync function renderHomework18Candidates(candidates){",modal_start)
+modal_end=html.index("\nasync function renderHomework18Candidates(candidates){",modal_start)
 modal_source=html[modal_start:modal_end]
 if "copyButton(" in modal_source or "speakButton(" in modal_source:
     raise SystemExit("Menu 18 modal must not depend on undefined copyButton/speakButton helpers")
