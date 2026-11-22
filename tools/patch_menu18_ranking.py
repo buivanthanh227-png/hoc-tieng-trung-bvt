@@ -442,7 +442,7 @@ selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
 }"""
 replace_once(
     "function pinyinToChineseCandidates(raw){",
-    selector_code + "\\nfunction pinyinToChineseCandidates(raw){",
+    selector_code + "\nfunction pinyinToChineseCandidates(raw){",
     "tone-diverse candidate selector with exact input syllable validation"
 )
 
