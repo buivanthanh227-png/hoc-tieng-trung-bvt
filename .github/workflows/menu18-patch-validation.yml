@@ -1,0 +1,148 @@
+name: Menu 18 patch validation
+
+on:
+  push:
+    branches:
+      - fix/menu18-round3-contextual-phrases-20261122
+    paths:
+      - 'index.html'
+      - 'tools/patch_menu18_ranking.py'
+      - '.github/workflows/menu18-patch-validation.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'tools/patch_menu18_ranking.py'
+      - '.github/workflows/menu18-patch-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-menu18-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for inline JavaScript syntax validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Apply Menu 18 overlay twice (idempotence)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/menu18-patch-check
+          cp index.html /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+
+      - name: Verify regression phrases, tone map, and JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          html = Path('/tmp/menu18-patch-check/index.html').read_text(encoding='utf-8')
+          required = [
+              'ma:{1:[\'妈\',\'mā\',\'mẹ\']',
+              'ma ma wo ai ni',
+              'wo ai wo ma ma',
+              'wo qi ma',
+              'ta ma wo',
+              'wo shi xue sheng',
+              'xian zai shi dian',
+              'wo yao yi bei shui',
+              'wo de yi fu hen hao kan',
+              'wo zuo zai yi zi shang',
+              'wo xiang mai yi ge ping guo',
+              'wo men you shi jian',
+              'wo men qu you yong',
+              'wo zai zhong guo xue zhong wen',
+              'wo zhong yu dao le',
+              'zhong yao de shi',
+              'wo jia you san ge ren',
+              'wo xiang xue xi zhong wen',
+              'if(!key||key.length>600)return [];',
+              'function pinyin18ToneFromInput(value)'
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit('Missing Menu 18 regression item(s): ' + ', '.join(missing))
+
+          marker = 'const PINYIN18_SINGLE_TONE_WORDS={'
+          marker_index = html.find(marker)
+          if marker_index < 0:
+              raise SystemExit('Single-syllable tone dictionary missing')
+          script_open = html.rfind('<script', 0, marker_index)
+          if script_open < 0:
+              raise SystemExit('Could not locate inline script opening tag')
+          script_start = html.find('>', script_open) + 1
+          script_end = html.find('</script>', marker_index)
+          if script_start <= 0 or script_end < 0:
+              raise SystemExit('Could not isolate Menu 18 inline script')
+          js = html[script_start:script_end]
+          with tempfile.NamedTemporaryFile('w', suffix='.js', encoding='utf-8', delete=False) as handle:
+              handle.write(js)
+              js_path = handle.name
+          subprocess.run(['node', '--check', js_path], check=True)
+
+          # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
+          word_start = html.index('const PINYIN18_COMMON_WORDS={')
+          word_end = html.index('};', word_start) + 2
+          tone_start = html.index('const PINYIN18_SINGLE_TONE_WORDS={')
+          tone_end = html.index('let pinyin18IndexSource=', tone_start)
+          key_start = html.index('function pinyin18Key(value){')
+          key_end = html.index('function pinyin18LexiconKey', key_start)
+          test_js = '\n'.join([
+              "const assert = require('node:assert/strict');",
+              html[word_start:word_end],
+              html[tone_start:tone_end],
+              html[key_start:key_end],
+              """
+              function preferred(raw) {
+                const key = pinyin18Key(raw);
+                const row = Object.entries(PINYIN18_COMMON_WORDS).find(([phrase]) => pinyin18Key(phrase) === key);
+                return row ? row[1][0] : null;
+              }
+              const regression = [
+                ['ma1 ma5 wo3 ai4 ni3', '妈妈我爱你'],
+                ['mā ma wǒ ài nǐ', '妈妈我爱你'],
+                ['wo ai wo ma ma', '我爱我妈妈'],
+                ['wo qi ma', '我骑马'],
+                ['ta ma wo', '他骂我'],
+                ['wo jia you san ge ren', '我家有三个人'],
+                ['wo xiang xue xi zhong wen', '我想学习中文'],
+                ['wo zai zhong guo xue zhong wen', '我在中国学中文'],
+                ['wo zhong yu dao le', '我终于到了']
+              ];
+              for (const [input, expected] of regression) {
+                assert.equal(preferred(input), expected, 'preferred phrase: ' + input);
+              }
+              const maTones = {1:'妈', 2:'麻', 3:'马', 4:'骂', 5:'吗'};
+              for (const [tone, hanzi] of Object.entries(maTones)) {
+                const token = 'ma' + tone;
+                const value = PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(token)][tone];
+                assert.equal(value[0], hanzi, 'tone mapping: ' + token);
+              }
+              assert.equal(pinyin18ToneFromInput('mā'), 1);
+              assert.equal(pinyin18ToneFromInput('má'), 2);
+              assert.equal(pinyin18ToneFromInput('mǎ'), 3);
+              assert.equal(pinyin18ToneFromInput('mà'), 4);
+              assert.equal(pinyin18ToneFromInput('ma5'), 5);
+              assert.equal(pinyin18Key('mā ma wǒ ài nǐ'), pinyin18Key('ma1 ma5 wo3 ai4 ni3'));
+              assert.ok(pinyin18Key(Array(100).fill('wo').join(' ')).length < 600);
+              console.log('Menu 18 phrase/tone regression unit tests: PASS');
+              """
+          ])
+          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
+              handle.write(test_js)
+              test_path = handle.name
+          subprocess.run(['node', test_path], check=True)
+          print('Menu 18 patch, tone map, contextual phrase map, idempotence and inline JS syntax: PASS')
+          PY

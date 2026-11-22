@@ -52,12 +52,15 @@ jobs:
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
           python3 tools/patch_menu18_ranking.py site/index.html
-          # Đồng bộ riêng số phiên bản ở nội dung trang; không thay đổi tiêu đề hay chức năng.
+          # Keep the visible footer version aligned with manifest.webmanifest.
           if grep -q '42.9.3' site/index.html; then
             sed -i 's/42\.9\.3/42.9.4/g' site/index.html
           fi
-          if grep -q '42.9.3' site/index.html; then
-            echo "::error::Footer version vẫn còn V42.9.3 sau khi cập nhật."
+          if grep -q '42.9.4' site/index.html; then
+            sed -i 's/42\.9\.4/42.9.5/g' site/index.html
+          fi
+          if grep -Eq '42\.9\.[34]' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.9.5."
             exit 1
           fi
 
