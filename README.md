@@ -48,3 +48,10 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - [CVDICT](https://github.com/ph0ngp/CVDICT)
 - [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 - [Tài liệu GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
+
+
+## Menu 18 — sửa khả năng ghép Pinyin dài (22/11/2026)
+- Bổ sung câu mẫu `jintian wo jia you ke ren` → `今天我家有客人`.
+- Bổ sung dự phòng các âm tiết đơn phổ biến khi từ điển chính thiếu mục từ.
+- Cho phép hiển thị kết quả ghép theo từng âm tiết thay vì loại bỏ mọi chuỗi chỉ gồm chữ đơn.
+- Menu 3 và dữ liệu/chức năng của các menu khác không bị chỉnh sửa trong bản vá này.
