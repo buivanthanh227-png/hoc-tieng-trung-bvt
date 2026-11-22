@@ -80,6 +80,10 @@ if html.count(old_tab)!=1: raise SystemExit('Could not uniquely locate Menu 3 na
 html=html.replace(old_tab,old_tab.replace('data-tab="translate"','data-tab="translate3"'),1)
 html=html.replace('DỊCH NHANH VIỆT ⇄ TRUNG (THỬ NGHIỆM)','DỊCH NHANH VIỆT ⇄ TRUNG')
 
+switch_marker="function switchTab(tab){"
+if html.count(switch_marker)!=1: raise SystemExit("switchTab function marker is ambiguous.")
+html=html.replace(switch_marker,"BVT_FUNCTION_COLORS.translate3=BVT_FUNCTION_COLORS.translate;\n"+switch_marker,1)
+
 old="const panelTab=(tab==='translate'||PRACTICE_NAV_MODES.has(tab))?'practice':tab;"
 new="const panelTab=tab==='translate3'?'translate3':((tab==='translate'||PRACTICE_NAV_MODES.has(tab))?'practice':tab);"
 if html.count(old)!=1: raise SystemExit('switchTab panel routing marker is ambiguous.')
