@@ -58,6 +58,7 @@ new_words = """const PINYIN18_COMMON_WORDS={
  'xi huan':['喜欢','xǐ huan','thích'],'jia li':['家里','jiā lǐ','trong nhà'],'hui jia':['回家','huí jiā','về nhà'],'shang ke':['上课','shàng kè','vào học'],'xia ke':['下课','xià kè','tan học'],
  'duo shao qian':['多少钱','duō shao qián','bao nhiêu tiền'],'qing wen':['请问','qǐng wèn','xin hỏi'],'yi dian':['一点','yì diǎn','một chút'],'you yi dian':['有一点','yǒu yì diǎn','có một chút'],
  'san ge ren':['三个人','sān ge rén','ba người'],'zhong wen':['中文','zhōng wén','tiếng Trung'],
+ 'ta hai mei you gongzuo':['他还没有工作','tā hái méi yǒu gōng zuò','Anh ấy vẫn chưa có việc làm.'],
 
  'ma ma':['妈妈','mā ma','mẹ'],'ma ma wo ai ni':['妈妈我爱你','mā ma wǒ ài nǐ','Mẹ ơi, con yêu mẹ.'],'wo ai ni':['我爱你','wǒ ài nǐ','Tôi yêu bạn.'],
  'wo ai wo ma ma':['我爱我妈妈','wǒ ài wǒ mā ma','Tôi yêu mẹ tôi.'],'wo qi ma':['我骑马','wǒ qí mǎ','Tôi cưỡi ngựa.'],'ta ma wo':['他骂我','tā mà wǒ','Anh ấy mắng tôi.'],
@@ -212,6 +213,87 @@ required = [
 missing = [needle for needle in required if needle not in source]
 if missing:
     raise SystemExit("Menu 18 patch verification failed; missing: " + ", ".join(missing))
+
+
+# Compact candidate selector and distinct semantic colors for Menu 18.
+def replace_ui_once(old: str, new: str, label: str) -> None:
+    global source
+    count = source.count(old)
+    if count == 0 and source.count(new) == 1:
+        return
+    if count != 1:
+        raise SystemExit(f"Menu 18 UI patch aborted: expected one {label}; found {count}")
+    source = source.replace(old, new, 1)
+    changes.append(label)
+
+replace_ui_once(
+    ".homework18-candidates{display:none!important}",
+    """.homework18-candidates:not([hidden]){display:block!important;margin:7px 0 9px!important}
+.homework18-candidate-tabs-label{font-size:12px;font-weight:750;color:var(--muted,#667085);margin:0 0 6px}
+.homework18-candidate-tabs-list{display:flex;flex-wrap:wrap;gap:6px}
+.homework18-candidate-tab{border:1px solid #d8c4e3;border-radius:999px;background:#faf7fc;color:#6b3b7b;padding:6px 11px;min-height:30px;font-size:12px;font-weight:750;cursor:pointer}
+.homework18-candidate-tab[aria-pressed="true"]{background:#ba68c8;border-color:#9850a6;color:#172033}
+.homework18-output-value.is-hanzi{color:#7b3fa1!important}
+.homework18-output-value.is-pinyin{color:#2563a6!important;font-weight:650}
+.homework18-output-value.is-meaning{color:#21805b!important}
+@media(max-width:390px){.homework18-candidate-tab{padding:5px 9px;font-size:11px}.homework18-candidates:not([hidden]){margin:5px 0 7px!important}}""",
+    "visible compact candidate selector and color-coded output"
+)
+
+replace_ui_once(
+    "(kind==='hanzi'?'is-hanzi':'')",
+    "'is-'+kind",
+    "semantic output color classes"
+)
+
+old_renderer = """function renderHomework18Candidates(candidates){
+ const box=$('homework18-candidates');box.hidden=true;box.replaceChildren();
+ const best=Array.isArray(candidates)?candidates[0]:null;
+ if(!best)return null;
+ renderHomework18Card(best,'Tự động ghép Pinyin · '+String(best.source||'xét nhiều thanh điệu'));
+ return best;
+}"""
+new_renderer = """let homework18Candidates=[];
+let homework18SelectedIndex=0;
+function renderHomework18Candidates(candidates){
+ homework18SelectedIndex=0;
+ const box=$('homework18-candidates');
+ const seen=new Set();
+ homework18Candidates=(Array.isArray(candidates)?candidates:[]).filter(item=>{
+  const key=String(item.zh||'')+'|'+String(item.py||'');
+  if(!item.zh||seen.has(key))return false;
+  seen.add(key);return true;
+ }).slice(0,8);
+ if(!homework18Candidates.length){box.hidden=true;box.replaceChildren();return null;}
+ box.hidden=false;
+ box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án phù hợp · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
+  homework18Candidates.map((item,index)=>'<button type="button" class="homework18-candidate-tab" data-homework18-result="'+index+'" aria-pressed="'+(index===0?'true':'false')+'">Kết quả '+(index+1)+'</button>').join('')+'</div>';
+ const choose=index=>{
+  const item=homework18Candidates[index];if(!item)return;
+  homework18SelectedIndex=index;
+  box.querySelectorAll('[data-homework18-result]').forEach(button=>{
+   button.setAttribute('aria-pressed',String(Number(button.dataset.homework18Result)===index));
+  });
+  renderHomework18Card(item,'Kết quả '+(index+1)+' · '+String(item.source||'ghép Pinyin'));
+  const status=$('homework18-status');
+  if(status)status.textContent='Đang xem Kết quả '+(index+1)+' / '+homework18Candidates.length+'. Bạn có thể chọn phương án khác để đối chiếu.';
+ };
+ box.querySelectorAll('[data-homework18-result]').forEach(button=>button.addEventListener('click',()=>choose(Number(button.dataset.homework18Result))));
+ choose(0);
+ return homework18Candidates[0];
+}"""
+replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
+
+
+# Do not let a delayed translation response replace a different candidate
+# that the learner selected while the request was in flight.
+token_guard = "if(token!==homework18LookupToken)return;"
+token_guard_count = source.count(token_guard)
+if token_guard_count != 2:
+    raise SystemExit(f"Menu 18 patch aborted: expected two async result guards; found {token_guard_count}")
+source = source.replace(token_guard, "if(token!==homework18LookupToken||homework18SelectedIndex!==0)return;")
+changes.append("preserve learner candidate selection during async translation")
+
 
 if source != original:
     target.write_text(source, encoding="utf-8", newline="\n")
