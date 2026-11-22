@@ -16,7 +16,6 @@ if not target.is_file():
     raise SystemExit(f"Menu 18 patch target not found: {target}")
 
 source = target.read_text(encoding="utf-8")
-print("DEBUG MENU18 input:", target, "gloss marker count:", source.count("const hasMeaningPlaceholder="))
 original = source
 changes = []
 
@@ -526,10 +525,8 @@ else:
     )
 
 
-print("DEBUG MENU18 output gloss marker count:", source.count("const hasMeaningPlaceholder="))
 if source != original:
     target.write_text(source, encoding="utf-8", newline="\n")
-    print("DEBUG MENU18 wrote patch output:", target)
 
 print("Menu 18 ranking patch: verified")
 print("Updated: " + (", ".join(changes) if changes else "already current"))
