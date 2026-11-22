@@ -55,9 +55,10 @@ jobs:
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
-          python3 tools/test_menu18_word_mapping.py site/index.html
-          # Menu 3 is an independent clone of Menu 18; keep the old Menu 3 panel and Menu 18 backup intact.
+          # First remove Pinyin playback and generate the independent Menu 3 clone;
+          # then run Menu 18 assertions against the transformed audio UI.
           python3 tools/patch_menu3_clone.py site/index.html
+          python3 tools/test_menu18_word_mapping.py site/index.html
           python3 tools/test_menu3_clone.py site/index.html
           python3 tools/patch_brand_header.py site/index.html
           python3 tools/test_brand_header.py site/index.html
