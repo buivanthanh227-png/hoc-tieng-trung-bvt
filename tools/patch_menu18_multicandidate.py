@@ -63,20 +63,38 @@ function openHomework18CandidateModal(item,index,total){
  closeHomework18CandidateModal();const zh=String(item.zh||''),py=formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(zh)),vi=String(item.vi||'').trim();
  const modal=document.createElement('div');modal.className='homework18-modal-backdrop';modal.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62)';
  modal.innerHTML='<section class="homework18-modal" role="dialog" aria-modal="true"><div class="homework18-modal-head"><strong>Kết quả '+(index+1)+' / '+total+'</strong><button type="button" class="homework18-modal-close">×</button></div>'+
- '<div class="homework18-modal-line is-hanzi"><b>HÁN TỰ</b><div class="homework18-modal-value">'+escapeHTML(zh)+'</div>'+copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')+'</div>'+
- '<div class="homework18-modal-line is-pinyin"><b>PHIÊN ÂM PINYIN</b><div class="homework18-modal-value">'+escapeHTML(py)+'</div>'+copyButton(py,'Pinyin')+'</div>'+
- '<div class="homework18-modal-line is-meaning"><b>NGHĨA TIẾNG VIỆT</b><div class="homework18-modal-value">'+escapeHTML(vi||'Chưa có nghĩa tiếng Việt')+'</div>'+copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')+'</div>'+
+ '<div class="homework18-modal-line is-hanzi"><b>HÁN TỰ</b><div class="homework18-modal-value">'+escapeHTML(zh)+'</div><div class="homework18-modal-actions"><button type="button" data-homework18-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-homework18-speak="zh">🔊 Phát âm</button></div></div>'+
+ '<div class="homework18-modal-line is-pinyin"><b>PHIÊN ÂM PINYIN</b><div class="homework18-modal-value">'+escapeHTML(py)+'</div><div class="homework18-modal-actions"><button type="button" data-homework18-copy="pinyin">Sao chép Pinyin</button><button type="button" data-homework18-speak="py">🔊 Nghe Pinyin</button></div></div>'+
+ '<div class="homework18-modal-line is-meaning"><b>NGHĨA TIẾNG VIỆT</b><div class="homework18-modal-value">'+escapeHTML(vi||'Chưa có nghĩa tiếng Việt')+'</div><div class="homework18-modal-actions"><button type="button" data-homework18-copy="meaning">Sao chép nghĩa</button><button type="button" data-homework18-speak="vi">🔊 Đọc nghĩa</button></div></div>'+
  '<div class="homework18-modal-nav"><button type="button" data-prev '+(index===0?'disabled':'')+'>‹ Trước</button><button type="button" data-next '+(index>=total-1?'disabled':'')+'>Tiếp theo ›</button></div></section>';
  document.body.appendChild(modal);homework18CandidateModal=modal;modal.querySelector('[role=dialog]').style.cssText='width:min(100%,520px);max-height:min(88dvh,760px);overflow:auto;background:#fff;color:#182230;border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.28)';
+ const values={hanzi:zh,pinyin:py,meaning:vi};
+ const copy=async value=>{
+  try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return true;}}catch(_){}
+  const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';document.body.appendChild(area);area.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}area.remove();return ok;
+ };
+ const playSyllables=async()=>{
+  const syllables=String(item.py||'').trim().split(/\s+/).filter(Boolean);
+  for(const syllable of syllables){
+   const base=pinyin18Key(syllable).replace(/ü|u:/g,'v');
+   const tone=typeof pinyin18ToneFromInput==='function'?pinyin18ToneFromInput(syllable):null;
+   const url='https://cdn.jsdelivr.net/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/cmn-'+base+(tone||5)+'.mp3';
+   try{await new Promise((resolve,reject)=>{const audio=new Audio(url);audio.onended=resolve;audio.onerror=reject;audio.play().catch(reject);});}
+   catch(_){if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(zh);utterance.lang='zh-CN';window.speechSynthesis.speak(utterance);}break;}
+  }
+ };
+ modal.querySelectorAll('[data-homework18-copy]').forEach(button=>button.addEventListener('click',async()=>{const key=button.dataset.homework18Copy,ok=await copy(values[key]||'');button.textContent=ok?'Đã sao chép ✓':'Không sao chép được';}));
+ modal.querySelectorAll('[data-homework18-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework18Speak;if(kind==='zh'||kind==='py'){playSyllables();return;}if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(vi);utterance.lang='vi-VN';window.speechSynthesis.speak(utterance);}}));
  modal.querySelector('.homework18-modal-close').addEventListener('click',closeHomework18CandidateModal);
  modal.addEventListener('click',e=>{if(e.target===modal)closeHomework18CandidateModal();});
  modal.querySelector('[data-prev]').addEventListener('click',()=>{if(index>0)openHomework18CandidateModal(homework18Candidates[index-1],index-1,total);});
  modal.querySelector('[data-next]').addEventListener('click',()=>{if(index<total-1)openHomework18CandidateModal(homework18Candidates[index+1],index+1,total);});
 }
+const homework18QueryInput=$('homework18-query');if(homework18QueryInput&&!homework18QueryInput.dataset.noResultClearBound){homework18QueryInput.dataset.noResultClearBound='1';homework18QueryInput.addEventListener('input',()=>{const status=$('homework18-status'),box=$('homework18-candidates');if(status&&status.textContent.includes('Không tìm thấy kết quả khớp chính xác'))status.textContent='';if(box&&box.textContent.includes('Không tìm thấy kết quả khớp chính xác')){box.replaceChildren();box.hidden=true;}});}
 async function renderHomework18Candidates(candidates){
  const box=$('homework18-candidates');box.replaceChildren();
  const rawInput=String($('homework18-query')?.value||'').trim(),rawCandidates=Array.isArray(candidates)?candidates:[];
- if(!rawCandidates.length){box.hidden=false;box.textContent='Không tìm thấy kết quả khớp chính xác với nội dung và khoảng cách bạn đã nhập: “'+rawInput+'”. Hệ thống không tự thêm, bớt hoặc nối các âm tiết (ví dụ “ke ren” không được đổi thành “keren”). Vui lòng kiểm tra từ điển và khoảng cách giữa các âm tiết rồi nhập lại.';if(status)status.textContent='Không tìm thấy kết quả đúng theo cách tách âm tiết ban đầu.';return null;}
+ if(!rawCandidates.length){box.hidden=true;box.replaceChildren();if(status)status.textContent='Không tìm thấy kết quả khớp chính xác với nội dung và khoảng cách bạn đã nhập: “'+rawInput+'”. Hệ thống không tự thêm, bớt hoặc nối các âm tiết (ví dụ “ke ren” không được đổi thành “keren”). Vui lòng kiểm tra từ điển và khoảng cách giữa các âm tiết rồi nhập lại.';return null;}
  const sourceList=rawCandidates.filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
  if(!sourceList.length){box.hidden=false;box.textContent='Có phương án chữ Hán nhưng chưa xác minh được nghĩa tiếng Việt. Vui lòng thử lại sau.';return null;}
  const requestToken=homework18LookupToken,status=$('homework18-status'),queue=sourceList,resolved=new Array(sourceList.length);let cursor=0,completed=0;
@@ -121,6 +139,7 @@ new_css = """.homework18-candidates{display:grid!important;grid-template-columns
 .homework18-modal-line b{display:block;font-size:11px;letter-spacing:.06em;margin-bottom:5px}
 .homework18-modal-value{font-size:22px;font-weight:800;line-height:1.45;overflow-wrap:anywhere}
 .homework18-modal-line.is-hanzi{color:#7b3fa1}.homework18-modal-line.is-pinyin{color:#2563a6}.homework18-modal-line.is-meaning{color:#21805b}
+.homework18-modal-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.homework18-modal-actions button{border:1px solid #cbd5e1;border-radius:8px;padding:7px 10px;background:#f8fafc;color:#243247;font-size:12px;font-weight:750;cursor:pointer}
 .homework18-modal-nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
 .homework18-modal-nav button{border:1px solid #d0d5dd;border-radius:9px;padding:9px 14px;background:#f9fafb;font-weight:750}
 .homework18-modal-nav button:disabled{opacity:.35}
