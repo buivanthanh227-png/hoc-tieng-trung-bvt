@@ -160,7 +160,19 @@ jobs:
               assert.equal(pinyin18SyllablePaths('wo jia you', new Set(['wo','jia','you'])).length, 1);
               const explicit = pinyin18SyllablePaths('ni jin le ma', new Set(['ni','jin','le','ma','ji','n']));
               assert.equal(explicit.length, 1, 'do not split valid user-separated syllables');
+
               assert.deepEqual(explicit[0], ['ni','jin','le','ma']);
+              pinyin18Syllables = new Set(['ni','jin','le','ma','ji','n','tian','ti','an','wo','jia','you','ke','ren','jing']);
+              const mixedCandidates = [
+                {zh:'今天我家有客人',py:'jīn tiān wǒ jiā yǒu kè rén',priority:100},
+                {zh:'今田我家有客人',py:'jīn tián wǒ jiā yǒu kè rén',priority:90},
+                {zh:'今天我家有京人',py:'jīn tiān wǒ jiā yǒu jīng rén',priority:999}
+              ];
+              const mixed = pinyin18SelectToneDiverse(mixedCandidates,'jintian wo jia you ke ren',16);
+              assert.ok(mixed.some(item=>item.zh==='今天我家有客人'), 'accept a compact first word with following spaced words');
+              assert.ok(mixed.every(item=>item.py.split(' ').map(pinyin18Key).join(' ')==='jin tian wo jia you ke ren'), 'keep the exact syllable sequence after compact-word expansion');
+              assert.ok(mixed.every(item=>!item.py.includes('jīng rén')), 'reject substituted syllables even when they rank higher');
+
               const jinCandidates = [
                 {zh:'你今了吗',py:'nǐ jīn le ma',priority:100},
                 {zh:'你仅了吗',py:'nǐ jǐn le ma',priority:90},
