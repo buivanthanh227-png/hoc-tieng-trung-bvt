@@ -324,7 +324,7 @@ replace_once(
 )
 replace_once(
     """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,8);""",
-    """ return pinyin18SelectToneDiverse([...found.values()],raw,16);""",
+    """ return pinyin18SelectToneDiverse([...found.values()],raw,found.size);""",
     "return syllable-preserving, tone-diverse Pinyin alternatives"
 )
 replace_once(
@@ -629,7 +629,7 @@ function renderHomework18Candidates(candidates){
   if(seen.has(key))return false;
   seen.add(key);return true;
  });
-  homework18Candidates=pinyin18SelectToneDiverse(homework18Candidates,String($('homework18-query')?.value||''),16);
+  homework18Candidates=pinyin18SelectToneDiverse(homework18Candidates,String($('homework18-query')?.value||''),homework18Candidates.length);
  if(!homework18Candidates.length){
   box.hidden=true;box.replaceChildren();
   const status=$('homework18-status');
