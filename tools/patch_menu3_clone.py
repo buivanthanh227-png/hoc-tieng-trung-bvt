@@ -53,6 +53,7 @@ logic=re.sub(r'\bhomework18([A-Za-z0-9_]*)',r'homework3x\1',logic)
 logic=re.sub(r'\b([A-Za-z]+Homework)18([A-Za-z0-9_]*)',r'\g<1>3x\2',logic)
 logic=logic.replace('looksLikePinyin18','looksLikePinyin3x')
 logic=logic.replace("$('homework18-","$('homework3x-")
+logic=logic.replace('data-homework18-','data-homework3x-')
 if 'playPinyinWords' in logic or "$('homework18-" in logic:
     raise SystemExit('Cloned Menu 3 logic still contains Pinyin playback or Menu 18 DOM references.')
 
