@@ -51,11 +51,14 @@ jobs:
           # Trang chính hiện tại
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py tools/patch_menu3_clone.py tools/test_menu3_clone.py
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
           python3 tools/test_menu18_word_mapping.py site/index.html
+          # Menu 3 is an independent clone of Menu 18; keep the old Menu 3 panel and Menu 18 backup intact.
+          python3 tools/patch_menu3_clone.py site/index.html
+          python3 tools/test_menu3_clone.py site/index.html
           python3 tools/patch_brand_header.py site/index.html
           python3 tools/test_brand_header.py site/index.html
           # Menu 1: independent Hanzi, Pinyin/tone, and Vietnamese search fields.
@@ -201,14 +204,29 @@ jobs:
                     exit 1
                   fi
                 done
-                for marker in 'data-homework18-copy="hanzi"' 'data-homework18-copy="pinyin"' 'data-homework18-copy="meaning"' 'data-homework18-speak="zh"' 'data-homework18-speak="py"' 'data-homework18-speak="vi"' 'navigator.clipboard.writeText(value)' "document.execCommand('copy')" 'const playPinyinWords=async()=>{' 'const playHanziSentence=()=>speakMandarinSentence(zh,0.92)' 'audio.playbackRate=1.08' 'homework18QueryInput.addEventListener'; do
+                for marker in 'data-homework18-copy="hanzi"' 'data-homework18-copy="pinyin"' 'data-homework18-copy="meaning"' 'data-homework18-speak="zh"' 'data-homework18-speak="vi"' 'navigator.clipboard.writeText(value)' "document.execCommand('copy')" 'const playHanziSentence=()=>speakMandarinSentence(zh,0.92)' 'homework18QueryInput.addEventListener'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu thao tác copy/audio/status Menu 18: $marker"
                     exit 1
                   fi
                 done
 
-                echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có logic Menu 18 mới."
+                if grep -q 'data-homework18-speak="py"' <<< "$html" || grep -q 'const playPinyinWords=async()=>{' <<< "$html"; then
+                  echo "::error::Production vẫn chứa chức năng phát Pinyin đã được yêu cầu gỡ bỏ."
+                  exit 1
+                fi
+                for marker in 'MENU3_INDEPENDENT_COPY_OF_MENU18_V1' 'id="panel-translate3"' 'data-tab="translate3"' 'id="homework3x-query"' 'async function lookupHomework3x()' 'runLongTranslation3x' 'runFileTranslation3x'; do
+                  if ! grep -Fq "$marker" <<< "$html"; then
+                    echo "::error::Production thiếu Menu 3 độc lập: $marker"
+                    exit 1
+                  fi
+                done
+                if ! grep -q 'left.append(leftText);center.append(title);right.append(rightText);' <<< "$html" || grep -q 'bvt-brand-flag' <<< "$html"; then
+                  echo "::error::Banner vẫn có cờ trùng hoặc thiếu bố cục đã sửa."
+                  exit 1
+                fi
+
+                echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có Menu 3 độc lập, Menu 18 dự phòng và không phát Pinyin."
                 exit 0
               fi
             fi
