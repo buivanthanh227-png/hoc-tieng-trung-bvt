@@ -17,7 +17,7 @@ if "state.rows.concat(item.row)" in html:
 start=html.index("async function renderHomework18Candidates(candidates){")
 end=html.index("\nfunction looksLikePinyin18(raw,local){",start)
 renderer=html[start:end]
-for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","openHomework18CandidateModal(item,index,list.length)","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh))"):
+for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","openHomework18CandidateModal(item,index,current.length)","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh))"):
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
 
 for marker in ("homework18PageSize=10","data-page-prev","data-page-next","list.slice(start,end)","formatHomework18PinyinByInput","homework18ModalClickBound","document.addEventListener('click',event=>","try{openHomework18CandidateModal(item,index,current.length)"):
