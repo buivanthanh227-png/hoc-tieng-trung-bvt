@@ -99,7 +99,7 @@ jobs:
           tone_end = html.index('let pinyin18IndexSource=', tone_start)
           key_start = html.index('function pinyin18Key(value){')
           key_end = html.index('function pinyin18LexiconKey', key_start)
-          test_js = '\\n'.join([
+          test_js = '\n'.join([
               "const assert = require('node:assert/strict');",
               html[word_start:word_end],
               html[tone_start:tone_end],
