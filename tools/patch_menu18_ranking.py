@@ -194,15 +194,8 @@ replace_once(
 replace_once(
     """function pinyin18SyllablePaths(raw,syllables){
  let paths=[[]];
- for(const rawToken of String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean)){
-  const token=pinyin18Key(rawToken);
-  if(!token||token.length>120)return [];
-  // Keep an explicitly separated valid syllable intact; segment only compact chunks.
-  if(syllables.has(token)){
-   paths=paths.map(path=>path.concat([token])).slice(0,24);
-   continue;
-  }
-  const memo=new Map([[token.length,[[]]]]);
+ for(const rawToken of String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean)){
+  const token=pinyin18Key(rawToken),memo=new Map([[token.length,[[]]]]);
   for(let start=token.length-1;start>=0;start--){
    const options=[];
    for(let end=start+1;end<=Math.min(token.length,start+6);end++){
@@ -223,18 +216,21 @@ replace_once(
  return paths;
 }""",
     """function pinyin18SyllablePaths(raw,syllables){
- // Preserve explicit spaces as reliable boundaries, but explore several valid
- // segmentations inside compact input instead of accepting only the shortest path.
+ // Preserve explicit syllable tokens; only compact chunks are segmented.
  let paths=[[]];
- const tokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
+ const tokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean);
  for(const rawToken of tokens){
   const token=pinyin18Key(rawToken);
   if(!token||token.length>120)return [];
+  if(syllables.has(token)){
+   paths=paths.map(path=>path.concat([token])).slice(0,24);
+   continue;
+  }
   const memo=new Map([[token.length,[[]]]]);
   for(let start=token.length-1;start>=0;start--){
    const options=[],seen=new Set();
-   for(let end=start+1;end<=Math.min(token.length,start+6);end++){
-    const syllable=token.slice(start,end),tails=memo.get(end);
+   for(let finish=start+1;finish<=Math.min(token.length,start+6);finish++){
+    const syllable=token.slice(start,finish),tails=memo.get(finish);
     if(!syllables.has(syllable)||!tails)continue;
     for(const tail of tails){
      const option=[syllable].concat(tail),identity=option.join(' ');
@@ -277,7 +273,7 @@ replace_once(
  }
  return paths;
 }""",
-    "keep multiple valid Pinyin syllable segmentations"
+    "keep explicit Pinyin syllables intact and segment compact input"
 )
 
 
