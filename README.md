@@ -50,13 +50,14 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - [Tài liệu GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
 
 
-## Menu 18 — bản vá xếp hạng theo ngữ cảnh (22/11/2026)
+## Menu 18 — xếp hạng ngữ cảnh và từ/cụm từ đã xác minh (22/11/2026)
 
 - `tools/patch_menu18_ranking.py` được gọi trong workflow Pages để vá riêng artifact `site/index.html` trước khi xuất bản; không sửa hoặc thay thế khối dữ liệu từ điển nhúng trong `index.html`.
 - Ưu tiên các từ ghép đã xác minh, bao gồm `客人`, `天气`, `现在`, `三个人` và `中文`.
 - Bổ sung nghĩa tiếng Việt offline cho các mục từ ưu tiên thường gặp như `明天` và `什么`.
 - Tăng trọng số từ ghép đúng ngữ cảnh khi ghép cả câu; giữ nguyên các menu và giao diện Copy/Loa khác.
 - Cache Service Worker được đổi tên để trình duyệt tải lại artifact sau khi deploy.
+- Bản V42.9.5 mở rộng cụm từ thông dụng theo ngữ cảnh, chọn thanh điệu cho âm tiết đơn có số/dấu thanh và nâng giới hạn chuỗi Pinyin.
 
 ## Menu 18 — sửa khả năng ghép Pinyin dài (22/11/2026)
 - Bổ sung câu mẫu `jintian wo jia you ke ren` → `今天我家有客人`.
