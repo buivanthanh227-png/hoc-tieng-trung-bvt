@@ -116,10 +116,14 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
+          # Unique per workflow attempt: retries must not leave duplicate github-pages artifacts.
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Xuất bản website
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Xác minh commit đang chạy trên Production
         shell: bash
