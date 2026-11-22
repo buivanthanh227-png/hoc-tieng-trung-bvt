@@ -37,7 +37,7 @@ if "found.size);" not in html:
     raise SystemExit("Whole-sentence mapper still caps results at 16")
 if "sourceList.slice(0,16)" in renderer:
     raise SystemExit("Menu 18 result verification still truncates the list to 16")
-for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{order:1;color:#7b3fa1!important","homework18-candidate-py{order:0",'role="dialog"','data-homework18-copy="hanzi"','data-homework18-copy="pinyin"','data-homework18-copy="meaning"','data-homework18-speak="zh"','data-homework18-speak="py"','data-homework18-speak="vi"',"navigator.clipboard.writeText(value)","document.execCommand('copy')","const playPinyinWords=async()=>"):
+for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{order:1;color:#7b3fa1!important","homework18-candidate-py{order:0",'role="dialog"','data-homework18-copy="hanzi"','data-homework18-copy="pinyin"','data-homework18-copy="meaning"','data-homework18-speak="zh"','data-homework18-speak="vi"',"navigator.clipboard.writeText(value)","document.execCommand('copy')","const playPinyinWords=async()=>"):
     if marker not in html:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
 modal_start=html.index("function openHomework18CandidateModal(item,index,total){")
@@ -52,10 +52,12 @@ if "homework18QueryInput.addEventListener('input'" not in html:
 if "const token=++homework18LookupToken,raw=$('homework18-query').value,query=raw.trim()" not in html:
     raise SystemExit("Original input is not preserved separately from trimmed query")
 
-if "const playPinyinWords=async()=>" not in modal_source or "const playHanziSentence=()=>speakMandarinSentence(zh,0.92)" not in modal_source or "if(kind==='py'){playPinyinWords();return;}" not in modal_source:
-    raise SystemExit("Menu 18 must read recorded Pinyin syllables grouped into words")
-if "playPinyinSentence" in modal_source or "audio.playbackRate=1.08" not in modal_source or "part.wordEnd?145:28" not in modal_source:
-    raise SystemExit("Menu 18 Pinyin audio must use joined recorded syllables with short gaps")
+if "const playPinyinWords=async()=>" in modal_source or 'data-homework18-speak="py"' in modal_source:
+    raise SystemExit("Menu 18 must not expose Pinyin playback.")
+if "const playHanziSentence=()=>speakMandarinSentence(zh,0.92)" not in modal_source:
+    raise SystemExit("Menu 18 Mandarin speech action is missing.")
+if "if(kind==='py')" in modal_source:
+    raise SystemExit("Menu 18 still routes a Pinyin speech action.")
 if renderer.index('<span class="homework18-candidate-py">') > renderer.index('<span class="homework18-candidate-zh">'):
     raise SystemExit("Menu 18 preview must display Pinyin before Hanzi")
 if ".homework18-candidate-py{order:0" not in html or "font-size:18px!important" not in html:
