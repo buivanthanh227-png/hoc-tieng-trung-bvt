@@ -453,7 +453,7 @@ function formatHomework18PinyinByWord(zh,py){
  if(!chars.length||!tokens.length)return String(py||'');
  const words=Object.entries(PINYIN18_COMMON_WORDS)
   .map(([key,value])=>({zh:String(value[0]||''),py:String(value[1]||'').trim().split(/\s+/).filter(Boolean)}))
-  .filter(word=>word.zh&&word.py.length>1)
+  .filter(word=>[...word.zh].length===2&&word.py.length===2)
   .sort((a,b)=>[...b.zh].length-[...a.zh].length);
  const output=[];let charAt=0,tokenAt=0;
  while(charAt<chars.length&&tokenAt<tokens.length){
