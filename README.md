@@ -1,90 +1,116 @@
-# Học Tiếng Trung · BVT — bản dành cho GitHub Pages và điện thoại
+# Học Tiếng Trung BVT
 
-Bản này giữ giao diện/logic của ứng dụng học tiếng Trung, tối ưu cho trình duyệt máy tính và điện thoại, đồng thời dùng Service Worker để hỗ trợ PWA/offline.
+**Công cụ tự học tiếng Trung dành cho người Việt – từ điển, luyện nghe, đọc, viết và thực hành Pinyin.**
 
-## Trạng thái dữ liệu và quy trình xuất bản hiện hành
+Ứng dụng web/PWA cá nhân, ưu tiên thao tác nhanh trên điện thoại, máy tính bảng và máy tính. Không yêu cầu tạo tài khoản. Nội dung và công cụ được phát triển theo nhu cầu học tập thực tế; đây là công cụ hỗ trợ tự học, không tuyên bố thay thế giáo trình, giáo viên hoặc một chương trình HSK chính thức.
 
-Cập nhật ngày **21/11/2026**:
+- **Ứng dụng trực tiếp:** https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/
+- **Mã nguồn:** https://github.com/buivanthanh227-png/hoc-tieng-trung-bvt
+- **Nền tảng xuất bản:** GitHub Pages + GitHub Actions
+- **Kiểu ứng dụng:** Web app có hỗ trợ Progressive Web App (PWA) và cache ngoại tuyến có giới hạn
+- **Ngôn ngữ giao diện:** Tiếng Việt
 
-- `index.html` hiện đã chứa dữ liệu từ điển nhúng (khối `embedded-cvdict-data`); kích thước tệp trong repository khoảng **13,3 MB**.
-- Workflow `.github/workflows/deploy-pages.yml` hiện sao chép `index.html` đã commit vào thư mục xuất bản, cùng manifest, icon, worker, audio và ứng dụng luyện số. Workflow **không tự tải CVDICT.u8 và không chạy `tools/build_site.py`**.
-- `tools/build_site.py` thuộc quy trình template cũ, yêu cầu placeholder `EMBEDDED_CVDICT_DATA_SLOT`. Placeholder này không còn trong `index.html` hiện tại, nên không được xem là bước build đang hoạt động.
-- Sau khi deploy, workflow kiểm tra `build-info.json` để xác nhận Production đang phục vụ đúng Git commit. Kiểm tra SHA này xác nhận mã nguồn được xuất bản, **không thay thế kiểm tra chất lượng hoặc số lượng mục từ điển**.
+## Giới thiệu
 
-Vì vậy, thay đổi dữ liệu từ điển phải được tích hợp và kiểm tra vào `index.html` trước khi commit. Không nên giả định rằng chạy lại workflow sẽ tự tải bản CVDICT mới nhất.
+Học Tiếng Trung BVT tập hợp nhiều công cụ trong một giao diện để người học có thể tra cứu, nghe phát âm, luyện phản xạ và thực hành với từ vựng/câu tiếng Trung. Trọng tâm là giúp người học nhìn rõ Pinyin có dấu thanh, nghe mẫu âm và tự kiểm tra cách ghép câu từ dữ liệu từ điển hiện có.
 
-Dữ liệu từ điển được ghi công theo nguồn [ph0ngp/CVDICT](https://github.com/ph0ngp/CVDICT), giấy phép **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**. Phần ghi công và giấy phép cần được giữ trong ứng dụng. Bản dịch có thể còn sai sót; vui lòng kiểm tra ngữ cảnh khi học.
+Ứng dụng được xây dựng như một dự án học tập cá nhân có sự hỗ trợ của AI. Các chức năng được mở rộng theo quá trình sử dụng và phản hồi; không nên hiểu thứ tự menu là một lộ trình sư phạm hay cam kết chuẩn đầu ra.
 
-## Cách đưa lên GitHub và lấy link mở trên điện thoại
+## Các nhóm chức năng
 
-1. Tạo một **repository mới, Public** trên GitHub. Ví dụ đặt tên `hoc-tieng-trung-bvt`.
-2. Giải nén gói này và tải **toàn bộ nội dung bên trong** lên thư mục gốc của repository, gồm thư mục `.github/workflows` và `tools` (đừng chỉ tải riêng `index.html`). Dùng nhánh `main`.
-3. Vào **Settings → Pages**. Ở mục **Build and deployment**, đặt **Source = GitHub Actions**.
-4. Vào tab **Actions**, mở workflow “Build and deploy Học Tiếng Trung”. Chờ workflow hoàn thành màu xanh. Workflow tạo `build-info.json` và xác minh SHA trên Production khớp với commit vừa xuất bản.
-5. Mở trang đã xuất bản từ **Settings → Pages → Visit site**. Link thường có dạng `https://TEN-TAI-KHOAN.github.io/TEN-REPOSITORY/`; hãy dùng đúng link GitHub hiển thị, không tự đoán link.
-6. iPhone: mở link bằng **Safari** → **Chia sẻ** → **Thêm vào MH chính**. Android: mở bằng **Chrome** → menu ⋮ → **Cài đặt ứng dụng** hoặc **Thêm vào màn hình chính**.
+Giao diện hiện có 18 menu/chức năng. Một số khu vực chính:
 
-## Kiểm tra dữ liệu đã tích hợp
+- **Tra cứu từ điển Trung–Việt:** tra theo chữ Hán, Pinyin/thanh điệu và nghĩa tiếng Việt; xem các mục từ và thông tin liên quan trong dữ liệu tích hợp.
+- **Dịch và xử lý văn bản:** các công cụ hỗ trợ dịch, nhập nội dung và xử lý văn bản đa ngôn ngữ; một số tác vụ có thể cần Internet.
+- **Luyện tập:** các hoạt động nghe, đọc, viết, ghi nhớ từ vựng và thực hành theo những công cụ được cung cấp trong từng menu.
+- **Bộ thủ và tra cứu chữ:** hỗ trợ tìm hiểu thành phần chữ Hán và thông tin liên quan.
+- **Menu 16 – Luyện nghe phiên âm tiếng Trung:** luyện thanh mẫu, vận mẫu, âm tiết Pinyin và thanh điệu; có các chế độ nghe/luyện tập theo cấu hình của ứng dụng.
+- **Menu 18 – Ánh xạ Pinyin sang câu chữ Hán:** nhập Pinyin, tìm các kết quả từ dữ liệu từ điển và hiển thị các phương án thanh điệu. Kết quả được trình bày theo thứ tự Pinyin, chữ Hán và nghĩa tiếng Việt để dễ so sánh; người học có thể mở chi tiết, sao chép và nghe từng phần.
 
-Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong `build-info.json` với commit SHA trên GitHub. Việc này chỉ xác nhận đúng artifact; số lượng, nội dung và chất lượng từ điển vẫn cần bộ kiểm thử từ điển riêng. Nếu workflow thất bại thì chưa có bản xuất bản mới; vào Actions để xem bước build/deploy bị lỗi.
+Tên, phạm vi và cách hoạt động của từng menu được xác định bởi phiên bản ứng dụng đang triển khai. Không phải mọi chức năng đều hoạt động ngoại tuyến; các dịch vụ ngoài, dịch máy, nhận dạng giọng nói hoặc tải tài nguyên có thể yêu cầu kết nối mạng và quyền truy cập của trình duyệt.
 
-## Lưu ý khi dùng trên điện thoại
+## Cách sử dụng
 
-- Lần mở website đầu tiên cần Internet để tải trang HTML lớn có sẵn dữ liệu từ điển.
-- Khi trình duyệt cài Service Worker và lưu cache thành công, ứng dụng có thể mở lại phần giao diện/từ điển trong chế độ offline. Dung lượng cache lớn nên không thể bảo đảm mọi trình duyệt/thiết bị đều giữ cache vô thời hạn; dữ liệu IndexedDB cũng được lưu riêng trên từng thiết bị.
-- Từ điển và ghép câu dựa trên dữ liệu hiện có. Dịch câu mới qua dịch vụ ngoài, tải thư viện/dữ liệu thứ tự nét, hoặc nhận dạng giọng nói có thể cần Internet/quyền microphone và phụ thuộc hỗ trợ của trình duyệt.
-- Chạy lại workflow (Actions → workflow → Run workflow) sẽ xuất bản các tệp hiện có trong commit; nó không tự tải dữ liệu CVDICT mới. Khi cập nhật từ điển, cần cập nhật payload trong `index.html` và chạy regression test từ điển trước khi xuất bản.
+1. Mở [ứng dụng Học Tiếng Trung BVT](https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/).
+2. Chọn menu phù hợp với nhu cầu tra cứu hoặc luyện tập.
+3. Với Menu 18, nhập Pinyin theo cách phân tách từ mong muốn, thực hiện tìm/ghép kết quả, sau đó xem Pinyin có dấu thanh trước khi chọn phương án.
+4. Dùng nút nghe và sao chép trong kết quả chi tiết. Âm thanh phụ thuộc dữ liệu âm thanh tích hợp, kết nối mạng và khả năng phát âm của trình duyệt/thiết bị.
+5. Có thể thêm ứng dụng vào màn hình chính để mở nhanh như một ứng dụng.
 
-## Cấu trúc quan trọng
+### Cài trên thiết bị
 
-- `index.html`: ứng dụng cùng dữ liệu từ điển nhúng đang được xuất bản.
-- `tools/build_site.py`: helper của kiến trúc template cũ; hiện không được workflow deploy gọi.
-- `.github/workflows/deploy-pages.yml`: đóng gói các tệp đã commit, xuất bản GitHub Pages và xác minh SHA Production.
-- `sw.js`, `manifest.webmanifest`, `icon.svg`: hỗ trợ PWA/offline.
-- `qa-tests/sw.test.cjs`: regression test cho precache và điều hướng offline.
+- **iPhone/iPad:** mở bằng Safari → Chia sẻ → Thêm vào Màn hình chính.
+- **Android:** mở bằng Chrome → menu trình duyệt → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.
+- **Máy tính:** mở bằng trình duyệt hiện đại như Chrome, Edge, Firefox hoặc Safari; có thể cài ứng dụng nếu trình duyệt hỗ trợ.
 
-## Nguồn tham khảo
+## Tương thích thiết bị và quyền riêng tư
 
+Giao diện được thiết kế đáp ứng cho điện thoại, máy tính bảng và máy tính. Tuy nhiên, kích thước màn hình, hệ điều hành, trình duyệt, bộ nhớ và chính sách âm thanh có thể tạo ra khác biệt.
+
+Ứng dụng không yêu cầu đăng nhập để sử dụng các chức năng cốt lõi. Dữ liệu học tập lưu cục bộ (nếu chức năng tương ứng sử dụng bộ nhớ trình duyệt) có thể chỉ tồn tại trên thiết bị/trình duyệt đó. Xóa dữ liệu trang web hoặc trình duyệt có thể làm mất dữ liệu cục bộ. Các chức năng kết nối dịch vụ bên ngoài chịu chính sách riêng của nhà cung cấp dịch vụ đó.
+
+## Dữ liệu từ điển và ghi công
+
+Dữ liệu từ điển tích hợp được ghi công theo dự án [ph0ngp/CVDICT](https://github.com/ph0ngp/CVDICT), phát hành theo giấy phép **Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)**.
+
+- Giấy phép: https://creativecommons.org/licenses/by-sa/4.0/
+- Giữ nguyên ghi công và các điều kiện chia sẻ tương ứng khi phân phối dữ liệu phái sinh.
+- Nghĩa tiếng Việt và thông tin từ điển có thể chưa bao quát mọi ngữ cảnh; hãy đối chiếu ví dụ và cách dùng thực tế khi học.
+
+## Cấu trúc repository
+
+| Đường dẫn | Vai trò |
+|---|---|
+| `index.html` | Ứng dụng chính và dữ liệu từ điển nhúng được xuất bản |
+| `manifest.webmanifest` | Tên, biểu tượng và cấu hình cài đặt PWA |
+| `sw.js` | Service Worker, cache app shell và xử lý tài nguyên âm thanh |
+| `audio/pinyin/` | Tài nguyên âm thanh Pinyin được lưu trong repository (nếu có) |
+| `luyen-so/index.html` | Ứng dụng luyện số tiếng Trung |
+| `tools/` | Các script vá giao diện/logic trên artifact và kiểm thử hồi quy |
+| `.github/workflows/deploy-pages.yml` | Quy trình build, kiểm tra và xuất bản GitHub Pages |
+| `README-QA.md`, `qa-tests/`, `QA-REPORTS/` | Tài liệu và kiểm thử chất lượng |
+
+## Quy trình build và deploy
+
+Mỗi lần cập nhật trên nhánh `main`, GitHub Actions thực hiện các bước chính:
+
+1. Checkout commit nguồn.
+2. Tạo thư mục `site/` và sao chép các tệp được xuất bản.
+3. Chạy các script overlay cần thiết trên bản artifact, bao gồm kiểm thử Menu 18, Menu 1 và phần nhận diện thương hiệu đầu trang.
+4. Chạy kiểm tra cú pháp và regression tests.
+5. Đóng gói và xuất bản GitHub Pages.
+6. Kiểm tra `build-info.json` để xác nhận Production phục vụ đúng commit đã build.
+
+**Lưu ý quan trọng về từ điển:** dữ liệu CVDICT hiện được nhúng trong `index.html`. Workflow deploy không tự tải bản CVDICT mới và không tự thay dữ liệu từ điển. Khi thay đổi dữ liệu, phải cập nhật payload đã nhúng và chạy bộ kiểm thử từ điển trước khi xuất bản. `tools/build_site.py` thuộc quy trình template cũ, không phải bước build đang hoạt động của workflow hiện tại.
+
+### Chạy kiểm thử cục bộ
+
+Yêu cầu Python 3 và Node.js 22 cho các bộ kiểm thử tương ứng. Một số kiểm thử Python chạy trực tiếp trên artifact HTML đã tạo:
+
+```bash
+python3 -m py_compile tools/*.py
+node --test qa-tests/*.test.cjs
+```
+
+Để kiểm thử đúng các overlay đang deploy, chạy workflow GitHub Actions hoặc thực hiện theo đúng thứ tự các lệnh trong `.github/workflows/deploy-pages.yml`. Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế trên Safari iOS, Chrome Android, máy tính bảng và máy tính.
+
+## Phiên bản và thay đổi
+
+Phiên bản hiển thị trong manifest và giao diện được cập nhật theo mỗi đợt phát hành. Xem lịch sử commit và GitHub Actions để biết chính xác nội dung đã triển khai. Phiên bản đang được chuẩn bị trong thay đổi này: **V42.10.9**.
+
+## Báo lỗi và đóng góp
+
+Khi báo lỗi, vui lòng cung cấp:
+- Thiết bị, hệ điều hành và trình duyệt.
+- Menu/chức năng và các bước tái hiện.
+- Nội dung đầu vào mẫu (không gửi dữ liệu riêng tư).
+- Kết quả mong đợi và kết quả thực tế.
+- Ảnh chụp màn hình hoặc thông báo lỗi nếu có.
+
+## Liên kết
+
+- [Mở ứng dụng](https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/)
+- [Repository GitHub](https://github.com/buivanthanh227-png/hoc-tieng-trung-bvt)
 - [CVDICT](https://github.com/ph0ngp/CVDICT)
-- [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
-- [Tài liệu GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site)
-
-
-## Menu 18 — xếp hạng ngữ cảnh và từ/cụm từ đã xác minh (22/11/2026)
-
-- `tools/patch_menu18_ranking.py` được gọi trong workflow Pages để vá riêng artifact `site/index.html` trước khi xuất bản; không sửa hoặc thay thế khối dữ liệu từ điển nhúng trong `index.html`.
-- Ưu tiên các từ ghép đã xác minh, bao gồm `客人`, `天气`, `现在`, `三个人` và `中文`.
-- Bổ sung nghĩa tiếng Việt offline cho các mục từ ưu tiên thường gặp như `明天` và `什么`.
-- Tăng trọng số từ ghép đúng ngữ cảnh khi ghép cả câu; giữ nguyên các menu và giao diện Copy/Loa khác.
-- Cache Service Worker được đổi tên để trình duyệt tải lại artifact sau khi deploy.
-- Bản V42.9.5 mở rộng cụm từ thông dụng theo ngữ cảnh, chọn thanh điệu cho âm tiết đơn có số/dấu thanh và nâng giới hạn chuỗi Pinyin.
-
-## Menu 18 — sửa khả năng ghép Pinyin dài (22/11/2026)
-- Bổ sung câu mẫu `jintian wo jia you ke ren` → `今天我家有客人`.
-- Bổ sung dự phòng các âm tiết đơn phổ biến khi từ điển chính thiếu mục từ.
-- Cho phép hiển thị kết quả ghép theo từng âm tiết thay vì loại bỏ mọi chuỗi chỉ gồm chữ đơn.
-- Menu 3 và dữ liệu/chức năng của các menu khác không bị chỉnh sửa trong bản vá này.
-
-## Menu 18 — chọn nhiều phương án thanh điệu (V42.9.8)
-
-- Menu 18 tiếp tục dùng từ điển và luồng dịch nhanh theo cách tiếp cận của Menu 3; Menu 3 không bị thay đổi.
-- Với Pinyin không dấu, giữ phương án câu khớp chính xác ở vị trí ưu tiên nhưng vẫn tìm thêm các cách ghép hợp lệ từ những thanh điệu có trong từ điển.
-- Hiển thị danh sách phương án để người học chọn; khi chọn một câu ghép từ nhiều mục từ, nghĩa tiếng Việt được dịch theo toàn câu.
-- Giữ nguyên chuỗi người dùng nhập; chuẩn hóa chỉ dùng nội bộ để tra cứu, không ghi đè hoặc tự thêm/bớt khoảng trắng trong ô nhập.
-- Workflow kiểm tra bản vá chạy lặp, cú pháp Python/JavaScript và các kiểm thử hồi quy thanh điệu trước khi xuất bản.
-
-
-## Menu 18 — tìm nhiều phương án thanh điệu cho toàn câu (V42.10.1)
-
-- Menu 18 dùng cùng kiểu kết quả câu hoàn chỉnh như Menu 3; không trả danh sách tra từng âm tiết.
-- Với Pinyin không dấu, hệ thống thử các thanh điệu từ điển cho từng âm tiết, sau đó ghép và xếp hạng các phương án ở cấp toàn câu.
-- Chỉ giữ ứng viên có chuỗi Pinyin khớp đầy đủ với nội dung người dùng nhập; Pinyin có dấu/số thanh được dùng làm ràng buộc, không tự đổi thanh.
-- Người học chọn một câu hoàn chỉnh trong danh sách. Nghĩa tiếng Việt được lấy theo cả câu, không nối nghĩa từng chữ.
-- Thẻ kết quả có nút sao chép chữ Hán, Pinyin, nghĩa và nút loa đọc chữ Hán/nghĩa, theo luồng kết quả của Menu 3.
-- Chuỗi gốc người dùng nhập được giữ nguyên; chuẩn hóa chỉ phục vụ tra cứu.
-- Workflow regression kiểm tra selector nhiều thanh điệu, đầu ra câu hoàn chỉnh, định dạng Pinyin và các thao tác sao chép/loa.
-
-- Bản V42.10.1 sửa lỗi nối mảng hàng từ điển trong bộ ghép câu; mỗi hàng CVDICT được giữ nguyên cấu trúc nên Pinyin của câu không bị hỏng.
-- Ưu tiên câu hoàn chỉnh đã xác minh `ni jin le ma` → `你进了吗` (`nǐ jìn le ma`, “Bạn vào được chưa?”); bộ chọn vẫn thử các thanh điệu khác cho âm tiết.
-- Các ứng viên câu ghép chưa có nghĩa offline được dịch theo toàn câu trước khi đưa vào danh sách; chỉ hiển thị ứng viên có nghĩa tiếng Việt hợp lệ.
-- Tự chọn và hiển thị kết quả đầu tiên ngay sau khi xác minh, khôi phục đầy đủ nút sao chép và loa trên thẻ kết quả.
+- [GitHub Pages](https://docs.github.com/en/pages)
+- [PWA và Service Worker](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
