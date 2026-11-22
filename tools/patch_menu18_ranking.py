@@ -21,13 +21,16 @@ changes = []
 
 def replace_once(old: str, new: str, label: str) -> None:
     global source
+    new_count = source.count(new)
+    if new_count == 1:
+        return  # Already patched; check before the old anchor because replacements can retain that anchor.
+    if new_count > 1:
+        raise SystemExit(f"Menu 18 patch aborted: duplicate replacement for {label}; found {new_count}")
     count = source.count(old)
     if count == 1:
         source = source.replace(old, new, 1)
         changes.append(label)
         return
-    if count == 0 and source.count(new) == 1:
-        return  # Already patched; keep the build idempotent.
     raise SystemExit(f"Menu 18 patch aborted: expected exactly one {label}; found {count}")
 
 # Add a common-character fallback for the third syllable in "san ge ren".
