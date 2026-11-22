@@ -629,7 +629,7 @@ function renderHomework18Candidates(candidates){
   if(seen.has(key))return false;
   seen.add(key);return true;
  });
-  homework18Candidates=pinyin18SelectToneDiverse(homework18Candidates,String($('homework18-query')?.value||''),16);
+  homework18Candidates=pinyin18SelectToneDiverse(homework18Candidates,String($('homework18-query')?.value||''),homework18Candidates.length);
  if(!homework18Candidates.length){
   box.hidden=true;box.replaceChildren();
   const status=$('homework18-status');
