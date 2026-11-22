@@ -58,7 +58,7 @@ new_words = """const PINYIN18_COMMON_WORDS={
  'xi huan':['喜欢','xǐ huan','thích'],'jia li':['家里','jiā lǐ','trong nhà'],'hui jia':['回家','huí jiā','về nhà'],'shang ke':['上课','shàng kè','vào học'],'xia ke':['下课','xià kè','tan học'],
  'duo shao qian':['多少钱','duō shao qián','bao nhiêu tiền'],'qing wen':['请问','qǐng wèn','xin hỏi'],'yi dian':['一点','yì diǎn','một chút'],'you yi dian':['有一点','yǒu yì diǎn','có một chút'],
  'san ge ren':['三个人','sān ge rén','ba người'],'zhong wen':['中文','zhōng wén','tiếng Trung'],
- 'ta hai mei you gongzuo':['他还没有工作','tā hái méi yǒu gōng zuò','Anh ấy vẫn chưa có việc làm.'],
+ 'ta hai mei you gongzuo':['他还没有工作','tā hái méiyǒu gōngzuò','Anh ấy vẫn chưa có việc làm.'],
 
  'ma ma':['妈妈','mā ma','mẹ'],'ma ma wo ai ni':['妈妈我爱你','mā ma wǒ ài nǐ','Mẹ ơi, con yêu mẹ.'],'wo ai ni':['我爱你','wǒ ài nǐ','Tôi yêu bạn.'],
  'wo ai wo ma ma':['我爱我妈妈','wǒ ài wǒ mā ma','Tôi yêu mẹ tôi.'],'wo qi ma':['我骑马','wǒ qí mǎ','Tôi cưỡi ngựa.'],'ta ma wo':['他骂我','tā mà wǒ','Anh ấy mắng tôi.'],
@@ -255,18 +255,38 @@ old_renderer = """function renderHomework18Candidates(candidates){
 }"""
 new_renderer = """let homework18Candidates=[];
 let homework18SelectedIndex=0;
+function homework18ValidVietnameseMeaning(item){
+ const meaning=String(item?.preferredMeaning||item?.vi||'').trim();
+ const hanzi=String(item?.zh||'');
+ if(!hanzi||!meaning)return false;
+ // Dictionary corruption such as "1 u 2c 3", empty glosses and single-letter fragments
+ // must never be presented as Vietnamese sentence translations.
+ if(/\\d/.test(meaning))return false;
+ const letters=(meaning.match(/[A-Za-zÀ-ỹĐđ]/g)||[]).length;
+ const hanCount=(hanzi.match(/[\\u3400-\\u9fff]/g)||[]).length;
+ if(letters<(hanCount>2?3:2))return false;
+ if(!/[aeiouyàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹ]/i.test(meaning))return false;
+ if(/^(?:[a-z]\\s*){1,5}$/i.test(meaning))return false;
+ return true;
+}
 function renderHomework18Candidates(candidates){
  homework18SelectedIndex=0;
  const box=$('homework18-candidates');
  const seen=new Set();
  homework18Candidates=(Array.isArray(candidates)?candidates:[]).filter(item=>{
-  const key=String(item.zh||'')+'|'+String(item.py||'');
-  if(!item.zh||seen.has(key))return false;
+  if(!homework18ValidVietnameseMeaning(item))return false;
+  const key=String(item.zh||'')+'|'+String(item.py||'')+'|'+String(item.preferredMeaning||item.vi||'').trim().toLowerCase();
+  if(seen.has(key))return false;
   seen.add(key);return true;
- }).slice(0,8);
- if(!homework18Candidates.length){box.hidden=true;box.replaceChildren();return null;}
+ }).slice(0,3);
+ if(!homework18Candidates.length){
+  box.hidden=true;box.replaceChildren();
+  const status=$('homework18-status');
+  if(status)status.textContent='Chưa tìm được phương án có nghĩa tiếng Việt đáng tin cậy. Hãy thử thêm dấu cách giữa các từ hoặc nhập Pinyin có dấu thanh.';
+  return null;
+ }
  box.hidden=false;
- box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án phù hợp · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
+ box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án có nghĩa tiếng Việt · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
   homework18Candidates.map((item,index)=>'<button type="button" class="homework18-candidate-tab" data-homework18-result="'+index+'" aria-pressed="'+(index===0?'true':'false')+'">Kết quả '+(index+1)+'</button>').join('')+'</div>';
  const choose=index=>{
   const item=homework18Candidates[index];if(!item)return;
@@ -276,7 +296,7 @@ function renderHomework18Candidates(candidates){
   });
   renderHomework18Card(item,'Kết quả '+(index+1)+' · '+String(item.source||'ghép Pinyin'));
   const status=$('homework18-status');
-  if(status)status.textContent='Đang xem Kết quả '+(index+1)+' / '+homework18Candidates.length+'. Bạn có thể chọn phương án khác để đối chiếu.';
+  if(status)status.textContent='Đang xem Kết quả '+(index+1)+' / '+homework18Candidates.length+'. Chỉ hiển thị phương án có nghĩa tiếng Việt.';
  };
  box.querySelectorAll('[data-homework18-result]').forEach(button=>button.addEventListener('click',()=>choose(Number(button.dataset.homework18Result))));
  choose(0);
