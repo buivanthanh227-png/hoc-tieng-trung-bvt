@@ -183,6 +183,182 @@ replace_once(
     "contextual exact phrase and single-syllable tone selection"
 )
 
+replace_once(
+    """function pinyin18SyllablePaths(raw,syllables){
+ let paths=[[]];
+ for(const rawToken of String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean)){
+  const token=pinyin18Key(rawToken),memo=new Map([[token.length,[[]]]]);
+  for(let start=token.length-1;start>=0;start--){
+   const options=[];
+   for(let end=start+1;end<=Math.min(token.length,start+6);end++){
+    const syllable=token.slice(start,end),tails=memo.get(end);
+    if(!syllables.has(syllable)||!tails)continue;
+    for(const tail of tails){options.push([syllable].concat(tail));if(options.length>=16)break;}
+   }
+   options.sort((a,b)=>a.length-b.length);
+   const shortest=options.length?options[0].length:0;
+   memo.set(start,options.filter(option=>option.length===shortest).slice(0,4));
+  }
+  const splits=memo.get(0)||[];
+  if(!splits.length)return [];
+  const next=[];
+  for(const path of paths)for(const split of splits){next.push(path.concat(split));if(next.length>=8)break;}
+  paths=next.slice(0,8);
+ }
+ return paths;
+}""",
+    """function pinyin18SyllablePaths(raw,syllables){
+ // Preserve explicit spaces as reliable boundaries, but explore several valid
+ // segmentations inside compact input instead of accepting only the shortest path.
+ let paths=[[]];
+ const tokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
+ for(const rawToken of tokens){
+  const token=pinyin18Key(rawToken);
+  if(!token||token.length>120)return [];
+  const memo=new Map([[token.length,[[]]]]);
+  for(let start=token.length-1;start>=0;start--){
+   const options=[],seen=new Set();
+   for(let end=start+1;end<=Math.min(token.length,start+6);end++){
+    const syllable=token.slice(start,end),tails=memo.get(end);
+    if(!syllables.has(syllable)||!tails)continue;
+    for(const tail of tails){
+     const option=[syllable].concat(tail),identity=option.join(' ');
+     if(!seen.has(identity)){seen.add(identity);options.push(option);}
+    }
+   }
+   options.sort((a,b)=>{
+    if(a.length!==b.length)return a.length-b.length;
+    for(let i=0;i<Math.min(a.length,b.length);i++){
+     if(a[i].length!==b[i].length)return b[i].length-a[i].length;
+    }
+    return a.join(' ').localeCompare(b.join(' '));
+   });
+   const groups=new Map();
+   for(const option of options){
+    const group=groups.get(option.length)||[];
+    if(group.length<4)group.push(option);
+    groups.set(option.length,group);
+   }
+   const retained=[];
+   for(const count of [...groups.keys()].sort((a,b)=>a-b)){
+    retained.push(...groups.get(count));
+    if(retained.length>=20)break;
+   }
+   memo.set(start,retained.slice(0,20));
+  }
+  const splits=memo.get(0)||[];
+  if(!splits.length)return [];
+  const next=[],seenPaths=new Set();
+  outer: for(const path of paths){
+   for(const split of splits){
+    const combined=path.concat(split),identity=combined.join('|');
+    if(seenPaths.has(identity))continue;
+    seenPaths.add(identity);
+    next.push(combined);
+    if(next.length>=24)break outer;
+   }
+  }
+  paths=next;
+ }
+ return paths;
+}""",
+    "keep multiple valid Pinyin syllable segmentations"
+)
+
+
+# Improve candidate generation and Vietnamese gloss integrity on the deploy artifact.
+replace_once(
+    """  const rawMeaning=String(candidate.preferredMeaning||candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();
+  const vi=rawMeaning.length>=2&&/[A-Za-zÀ-ỹ\\u3400-\\u9fff]/.test(rawMeaning)?rawMeaning:'';""",
+    """  const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();
+  const hasMeaningPlaceholder=/(?:chưa có nghĩa|chưa tìm được nghĩa|chưa tra được nghĩa|không có nghĩa|không tìm thấy nghĩa|not found|undefined|null)/i.test(rawMeaning);
+  const hasMeaningDigits=/\\d/.test(rawMeaning);
+  const hasMeaningHanzi=/[\\u3400-\\u9fff\\uF900-\\uFAFF]/.test(rawMeaning);
+  const vi=!hasMeaningPlaceholder&&!hasMeaningDigits&&!hasMeaningHanzi&&rawMeaning.length>=2&&/[A-Za-zÀ-ỹĐđ]/.test(rawMeaning)?rawMeaning:'';""",
+    "reject placeholder and corrupted dictionary meanings"
+)
+replace_once(
+    """   vi:vi||'Chưa có nghĩa tiếng Việt trong dữ liệu hiện tại.',
+   note:candidate.note||(!vi&&rows.length?'Chưa có nghĩa tiếng Việt cho toàn cụm trong dữ liệu hiện tại.':''),""",
+    """   vi,
+   note:candidate.note||(!vi&&rows.length?'Nghĩa tiếng Việt đang chờ tra cho toàn câu.':''),""",
+    "remove placeholder output and mark gloss as pending"
+)
+replace_once(
+    """       const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?5:0;
+       const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?22:0;""",
+    """       const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?9:0;
+       const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?80:0;""",
+    "increase common word and common character preference"
+)
+replace_once(
+    """ if(!hasExactPhraseSource){""",
+    """ // Keep the exact verified sentence first, while also exploring alternate readings.
+ const shouldGenerateAlternates=true;
+ if(!hasExactPhraseSource||shouldGenerateAlternates){""",
+    "always generate alternatives alongside exact matches"
+)
+replace_once(
+    """     vi:fullRow?state.rows[0][3]:rowMeanings.join(' · '),
+     note:fullRow?'':'Nghĩa tham khảo ghép từ điển từng mục; sẽ ưu tiên dịch toàn câu.',""",
+    """     vi:fullRow?state.rows[0][3]:'',
+     note:fullRow?'':'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.',""",
+    "do not present word-by-word gloss fragments as whole-sentence translation"
+)
+replace_once(
+    """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,8);""",
+    """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,16);""",
+    "return more ranked Pinyin alternatives for the selector"
+)
+replace_once(
+    """ if(rawTokens.length===1){
+  const tone=pinyin18ToneFromInput(rawTokens[0]);
+  const entry=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])]?.[tone];
+  if(entry)addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
+ }""",
+    """ if(rawTokens.length===1){
+  const tone=pinyin18ToneFromInput(rawTokens[0]);
+  const variants=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])];
+  if(tone&&variants?.[tone]){
+   const entry=variants[tone];
+   addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
+  }else if(variants){
+   for(const [candidateTone,entry] of Object.entries(variants)){
+    addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Một cách đọc theo thanh điệu '+candidateTone},6200-Number(candidateTone));
+   }
+  }
+ }""",
+    "show tone alternatives for unmarked single-syllable inputs"
+)
+replace_once(
+    """ const vi=String(result.vi||'Chưa tìm được nghĩa tiếng Việt cho toàn câu.');""",
+    """ const vi=String(result.vi||'Đang tra nghĩa tiếng Việt…');""",
+    "show pending gloss state in result card"
+)
+replace_once(
+    """  const needsFullSentenceMeaning=Boolean(best.note&&/ghép từ điển|cụm từ/i.test(best.note));
+  if(!needsFullSentenceMeaning){
+   status.textContent='Đã tự động ghép câu bằng cách xét các biến thể thanh điệu phù hợp.';
+   return;
+  }
+  status.textContent='Đã ghép được chữ Hán. Đang tra nghĩa tiếng Việt cho toàn câu…';
+  try{
+   const vi=await machineTranslate(best.zh,'zh-CN','vi');
+   if(token!==homework18LookupToken)return;
+   renderHomework18Card({...best,vi,note:'Nghĩa tiếng Việt được dịch từ toàn câu đã ghép.'},'Pinyin · tự động xét nhiều thanh điệu');
+   status.textContent='Đã ghép Pinyin và tìm được nghĩa tiếng Việt cho toàn câu.';
+  }catch(error){
+   if(token!==homework18LookupToken)return;
+   renderHomework18Card({...best,note:'Dịch vụ dịch nghĩa hiện không khả dụng; bên dưới là nghĩa tham khảo ghép từ điển.'},'Pinyin · tự động xét nhiều thanh điệu');
+   status.textContent='Đã ghép được chữ Hán; đang hiển thị nghĩa tham khảo offline.';
+  }""",
+    """  status.textContent=best.vi
+   ?'Đã ghép Pinyin. Bạn có thể xem các phương án ghép khác nếu cần.'
+   :'Đã ghép được chữ Hán. Đang tra nghĩa tiếng Việt cho phương án đang chọn…';""",
+    "translate the candidate selected by the learner instead of replacing it later"
+)
+
+
 required = [
     "'ke ren':['客人','kè rén','khách']",
     "'tian qi':['天气','tiān qì','thời tiết']",
@@ -210,6 +386,20 @@ required = [
     "'wo zai zhong guo xue zhong wen':['我在中国学中文'",
     "'yi hou ni xiang zuo shen me gong zuo':['以后你想做什么工作'"
 ]
+required.extend([
+    "function pinyin18SyllablePaths(raw,syllables){",
+    "const shouldGenerateAlternates=true;",
+    "if(!hasExactPhraseSource||shouldGenerateAlternates){",
+    "const hasMeaningPlaceholder=",
+    "const hasMeaningDigits=",
+    "const hasMeaningHanzi=",
+    "Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.",
+    "6200-Number(candidateTone)",
+    ".slice(0,5)",
+    "requestToken!==homework18LookupToken||homework18SelectedIndex!==index",
+    "Chưa tra được nghĩa tiếng Việt."
+])
+
 missing = [needle for needle in required if needle not in source]
 if missing:
     raise SystemExit("Menu 18 patch verification failed; missing: " + ", ".join(missing))
@@ -259,16 +449,13 @@ function homework18ValidVietnameseMeaning(item){
  const meaning=String(item?.preferredMeaning||item?.vi||'').trim();
  const hanzi=String(item?.zh||'');
  if(!hanzi)return false;
- // Candidate generation runs before asynchronous Vietnamese gloss lookup. An empty
- // gloss is therefore PENDING, not invalid: keep the Hanzi/Pinyin candidate so the
- // existing async translation pipeline can populate its Vietnamese meaning.
+ // A blank gloss is pending and will be translated after the candidate is selected.
  if(!meaning)return true;
- // Reject corrupted dictionary output such as "1 u 2c 3" and short fragments.
- if(/\\d/.test(meaning))return false;
+ if(/(?:chưa có nghĩa|chưa tìm được nghĩa|chưa tra được nghĩa|không có nghĩa|không tìm thấy nghĩa|not found|undefined|null)/i.test(meaning))return false;
+ if(/\\d/.test(meaning)||/[\\u3400-\\u9fff\\uF900-\\uFAFF]/.test(meaning))return false;
  const letters=(meaning.match(/[A-Za-zÀ-ỹĐđ]/g)||[]).length;
- const hanCount=(hanzi.match(/[\\u3400-\\u9fff]/g)||[]).length;
- if(letters<(hanCount>2?3:2))return false;
- if(!/[aeiouyàáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹ]/i.test(meaning))return false;
+ if(letters<2||letters/meaning.length<0.45)return false;
+ if(!/[A-Za-zÀ-ỹĐđ]/.test(meaning))return false;
  if(/^(?:[a-z]\\s*){1,5}$/i.test(meaning))return false;
  return true;
 }
@@ -281,15 +468,15 @@ function renderHomework18Candidates(candidates){
   const key=String(item.zh||'')+'|'+String(item.py||'')+'|'+String(item.preferredMeaning||item.vi||'').trim().toLowerCase();
   if(seen.has(key))return false;
   seen.add(key);return true;
- }).slice(0,3);
+ }).slice(0,5);
  if(!homework18Candidates.length){
   box.hidden=true;box.replaceChildren();
   const status=$('homework18-status');
-  if(status)status.textContent='Chưa tìm được phương án có nghĩa tiếng Việt đáng tin cậy. Hãy thử thêm dấu cách giữa các từ hoặc nhập Pinyin có dấu thanh.';
+  if(status)status.textContent='Chưa tìm được phương án ghép hợp lệ. Hãy thử thêm dấu cách giữa các từ hoặc nhập Pinyin có dấu thanh.';
   return null;
  }
  box.hidden=false;
- box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án phù hợp · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
+ box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án ghép Pinyin phù hợp · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
   homework18Candidates.map((item,index)=>'<button type="button" class="homework18-candidate-tab" data-homework18-result="'+index+'" aria-pressed="'+(index===0?'true':'false')+'">Kết quả '+(index+1)+'</button>').join('')+'</div>';
  const choose=index=>{
   const item=homework18Candidates[index];if(!item)return;
@@ -297,9 +484,26 @@ function renderHomework18Candidates(candidates){
   box.querySelectorAll('[data-homework18-result]').forEach(button=>{
    button.setAttribute('aria-pressed',String(Number(button.dataset.homework18Result)===index));
   });
-  renderHomework18Card(item,'Kết quả '+(index+1)+' · '+String(item.source||'ghép Pinyin'));
-  const status=$('homework18-status');
-  if(status)status.textContent='Đang xem Kết quả '+(index+1)+' / '+homework18Candidates.length+'. Chỉ hiển thị phương án có nghĩa tiếng Việt.';
+  const label='Kết quả '+(index+1)+' · '+String(item.source||'ghép Pinyin');
+  renderHomework18Card(item,label);
+  const status=$('homework18-status'),requestToken=homework18LookupToken;
+  if(!String(item.vi||'').trim()){
+   if(status)status.textContent='Đang tra nghĩa tiếng Việt cho phương án '+(index+1)+'…';
+   machineTranslate(item.zh,'zh-CN','vi').then(vi=>{
+    if(requestToken!==homework18LookupToken||homework18SelectedIndex!==index)return;
+    const enriched={...item,vi,note:'Nghĩa tiếng Việt được dịch từ toàn câu.'};
+    if(!homework18ValidVietnameseMeaning(enriched))throw new Error('Dịch vụ không trả về nghĩa tiếng Việt hợp lệ.');
+    homework18Candidates[index]=enriched;
+    renderHomework18Card(enriched,label);
+    if(status)status.textContent='Đã tra nghĩa tiếng Việt cho phương án '+(index+1)+'.';
+   }).catch(()=>{
+    if(requestToken!==homework18LookupToken||homework18SelectedIndex!==index)return;
+    renderHomework18Card({...item,vi:'Chưa tra được nghĩa tiếng Việt.'},label);
+    if(status)status.textContent='Đã ghép được chữ Hán; dịch vụ nghĩa tiếng Việt hiện không khả dụng.';
+   });
+  }else if(status){
+   status.textContent='Đang xem Kết quả '+(index+1)+' / '+homework18Candidates.length+'.';
+  }
  };
  box.querySelectorAll('[data-homework18-result]').forEach(button=>button.addEventListener('click',()=>choose(Number(button.dataset.homework18Result))));
  choose(0);
@@ -314,14 +518,14 @@ token_guard = "if(token!==homework18LookupToken)return;"
 token_guard_new = "if(token!==homework18LookupToken||homework18SelectedIndex!==0)return;"
 token_guard_count = source.count(token_guard)
 patched_guard_count = source.count(token_guard_new)
-if token_guard_count == 4:
+if token_guard_count == 2:
     source = source.replace(token_guard, token_guard_new)
-    changes.append("preserve learner candidate selection in all four async translation paths")
-elif token_guard_count == 0 and patched_guard_count == 4:
+    changes.append("preserve candidate selection in remaining translation paths")
+elif token_guard_count == 0 and patched_guard_count == 2:
     pass  # Already patched; keep the overlay idempotent.
 else:
     raise SystemExit(
-        "Menu 18 patch aborted: expected four async result guards "
+        "Menu 18 patch aborted: expected two generic async result guards "
         f"(unpatched={token_guard_count}, patched={patched_guard_count})"
     )
 

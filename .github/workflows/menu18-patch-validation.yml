@@ -72,13 +72,19 @@ jobs:
               'ta hai mei you gongzuo',
               'tā hái méiyǒu gōngzuò',
               'function homework18ValidVietnameseMeaning(item)',
-              '.slice(0,3)',
-              'Chưa tìm được phương án có nghĩa tiếng Việt đáng tin cậy.',
+              '.slice(0,5)',
+              'Chưa tìm được phương án ghép hợp lệ.',
               'homework18-candidate-tab',
               'Kết quả ',
               "'is-'+kind",
               'if(!key||key.length>600)return [];',
-              'function pinyin18ToneFromInput(value)'
+              'function pinyin18ToneFromInput(value)',
+              'const shouldGenerateAlternates=true;',
+              'if(!hasExactPhraseSource||shouldGenerateAlternates){',
+              'const hasMeaningPlaceholder=',
+              '6200-Number(candidateTone)',
+              'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.',
+              'requestToken!==homework18LookupToken||homework18SelectedIndex!==index'
           ]
           missing = [item for item in required if item not in html]
           if missing:
@@ -110,6 +116,8 @@ jobs:
               validator_js,
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Anh ấy vẫn chưa có việc làm.'}), true);",
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'1 u 2c 3'}), false);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Chưa có nghĩa tiếng Việt trong dữ liệu hiện tại.'}), false);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'中文 nghĩa'}), false);",
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:''}), true);",
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作'}), true);",
               "assert.equal(homework18ValidVietnameseMeaning({zh:'有',vi:'có'}), true);",
@@ -119,6 +127,29 @@ jobs:
               handle.write(validator_test)
               validator_path = handle.name
           subprocess.run(['node', validator_path], check=True)
+
+          # Execute the shipped syllable splitter: retain both shortest and alternate boundaries.
+          path_start = html.index('function pinyin18SyllablePaths(raw,syllables){')
+          path_end = html.index('function pinyinToChineseCandidates', path_start)
+          key_start = html.index('function pinyin18Key(value){')
+          key_end = html.index('function pinyin18LexiconKey', key_start)
+          path_test_js = '\n'.join([
+              "const assert = require('node:assert/strict');",
+              html[key_start:key_end],
+              html[path_start:path_end],
+              """
+              const paths = pinyin18SyllablePaths('jintian', new Set(['jin','tian','ti','an']));
+              assert.ok(paths.some(path => path.join(' ') === 'jin tian'), 'keep standard segmentation');
+              assert.ok(paths.some(path => path.join(' ') === 'jin ti an'), 'keep alternate segmentation');
+              assert.equal(pinyin18SyllablePaths('zzzzzz', new Set(['jin','tian','ti','an'])).length, 0);
+              assert.equal(pinyin18SyllablePaths('wo jia you', new Set(['wo','jia','you'])).length, 1);
+              console.log('Menu 18 multi-segmentation regression tests: PASS');
+              """
+          ])
+          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
+              handle.write(path_test_js)
+              path_test = handle.name
+          subprocess.run(['node', path_test], check=True)
 
           # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
           word_start = html.index('const PINYIN18_COMMON_WORDS={')
@@ -154,6 +185,7 @@ jobs:
                 assert.equal(preferred(input), expected, 'preferred phrase: ' + input);
               }
               const maTones = {1:'妈', 2:'麻', 3:'马', 4:'骂', 5:'吗'};
+              assert.equal(Object.keys(PINYIN18_SINGLE_TONE_WORDS[pinyin18Key('ma')]).length, 5, 'unmarked ma exposes all five tone variants');
               for (const [tone, hanzi] of Object.entries(maTones)) {
                 const token = 'ma' + tone;
                 const value = PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(token)][tone];
