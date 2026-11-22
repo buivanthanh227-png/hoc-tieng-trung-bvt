@@ -151,13 +151,13 @@ jobs:
 
           # Execute the shipped syllable splitter: retain both shortest and alternate boundaries.
           path_start = html.index('function pinyin18SyllablePaths(raw,syllables){')
-          path_end = html.index('function pinyinToChineseCandidates', path_start)
+          path_end = html.index('function pinyin18SelectToneDiverse', path_start)
           key_start = html.index('function pinyin18Key(value){')
           key_end = html.index('function pinyin18LexiconKey', key_start)
           tone_start = html.index('function pinyin18ToneFromInput(value)')
           tone_end = html.index('let pinyin18IndexSource=', tone_start)
           selector_start = html.index('function pinyin18SelectToneDiverse(candidates,raw,limit=16){')
-          selector_end = html.index('function pinyinToChineseCandidates', selector_start)
+          selector_end = html.index('function pinyin18ToneSignature', selector_start)
           if selector_start < 0 or selector_end < 0:
               raise SystemExit('Could not isolate Menu 18 tone selector')
           path_test_js = '\n'.join([
