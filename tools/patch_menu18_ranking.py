@@ -508,7 +508,8 @@ function renderHomework18Candidates(candidates){
  box.querySelectorAll('[data-homework18-result]').forEach(button=>button.addEventListener('click',()=>choose(Number(button.dataset.homework18Result))));
  choose(0);
  return homework18Candidates[0];
-}"""replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
+}"""
+replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
 
 
 # Do not let a delayed translation response replace a different candidate
