@@ -16,18 +16,22 @@ if not target.is_file():
 source = target.read_text(encoding="utf-8")
 original = source
 
-old_guard = "if(!hasExactPhraseSource){"
+old_guard = "if(!hasExactPhraseSource||shouldGenerateAlternates){"
 if source.count(old_guard) == 1:
     source = source.replace(old_guard, "{", 1)
 elif source.count(old_guard) != 0:
     raise SystemExit("Menu 18 multicandidate patch: ambiguous sentence-search guard.")
 elif "MENU18_MULTICANDIDATE_SENTENCE_SEARCH" not in source:
     raise SystemExit("Menu 18 multicandidate patch: sentence-search guard not found.")
-source = source.replace(
-    "const hasExactPhraseSource=[...found.values()].some(item=>item.priority>=5000);",
-    "const hasExactPhraseSource=[...found.values()].some(item=>item.priority>=5000); // MENU18_MULTICANDIDATE_SENTENCE_SEARCH: exact phrases rank first; dictionary alternatives are still explored.",
-    1
-)
+marker_line = "const hasExactPhraseSource=[...found.values()].some(item=>item.priority>=5000);"
+if "MENU18_MULTICANDIDATE_SENTENCE_SEARCH" not in source:
+    if source.count(marker_line) != 1:
+        raise SystemExit("Menu 18 multicandidate patch: exact phrase marker is ambiguous.")
+    source = source.replace(
+        marker_line,
+        marker_line + " // MENU18_MULTICANDIDATE_SENTENCE_SEARCH: exact phrases rank first; dictionary alternatives are still explored.",
+        1
+    )
 
 start = source.find("function renderHomework18Candidates(candidates){")
 end = source.find("\nfunction looksLikePinyin18(raw,local){", start)
@@ -42,7 +46,7 @@ function renderHomework18Candidates(candidates){
  homework18SelectedCandidateIndex=0;
  box.hidden=false;
  box.innerHTML='<div class="homework18-candidate-heading">Chọn phương án phù hợp với ý bạn ('+list.length+' kết quả)</div>'+
-  list.map((item,index)=>'<button type="button" class="homework18-candidate'+(index===0?' is-selected':'')+'" data-homework18-candidate="'+index+'" aria-pressed="'+(index===0?'true':'false')+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(pinyinForChinese(item.zh,item.py||''))+'</span></span></button>').join('');
+  list.map((item,index)=>'<button type="button" class="homework18-candidate'+(index===0?' is-selected':'')+'" data-homework18-candidate="'+index+'" aria-pressed="'+(index===0?'true':'false')+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh)))+'</span></span></button>').join('');
  const select=(index)=>{
   if(index<0||index>=list.length)return;
   homework18SelectedCandidateIndex=index;
