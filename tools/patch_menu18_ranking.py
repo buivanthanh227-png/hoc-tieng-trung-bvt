@@ -278,12 +278,12 @@ replace_once(
 if "const hasMeaningPlaceholder=" not in source:
     replace_once(
         """  const rawMeaning=String(candidate.preferredMeaning||candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();
-      const vi=rawMeaning.length>=2&&/[A-Za-zÀ-ỹ\\u3400-\\u9fff]/.test(rawMeaning)?rawMeaning:'';""",
+  const vi=rawMeaning.length>=2&&/[A-Za-zÀ-ỹ\\u3400-\\u9fff]/.test(rawMeaning)?rawMeaning:'';""",
         """  const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();
-      const hasMeaningPlaceholder=/(?:chưa có nghĩa|chưa tìm được nghĩa|chưa tra được nghĩa|không có nghĩa|không tìm thấy nghĩa|not found|undefined|null)/i.test(rawMeaning);
-      const hasMeaningDigits=/\\d/.test(rawMeaning);
-      const hasMeaningHanzi=/[\\u3400-\\u9fff\\uF900-\\uFAFF]/.test(rawMeaning);
-      const vi=!hasMeaningPlaceholder&&!hasMeaningDigits&&!hasMeaningHanzi&&rawMeaning.length>=2&&/[A-Za-zÀ-ỹĐđ]/.test(rawMeaning)?rawMeaning:'';""",
+  const hasMeaningPlaceholder=/(?:chưa có nghĩa|chưa tìm được nghĩa|chưa tra được nghĩa|không có nghĩa|không tìm thấy nghĩa|not found|undefined|null)/i.test(rawMeaning);
+  const hasMeaningDigits=/\\d/.test(rawMeaning);
+  const hasMeaningHanzi=/[\\u3400-\\u9fff\\uF900-\\uFAFF]/.test(rawMeaning);
+  const vi=!hasMeaningPlaceholder&&!hasMeaningDigits&&!hasMeaningHanzi&&rawMeaning.length>=2&&/[A-Za-zÀ-ỹĐđ]/.test(rawMeaning)?rawMeaning:'';""",
         "reject placeholder and corrupted dictionary meanings"
     )
     
