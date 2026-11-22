@@ -172,7 +172,7 @@ jobs:
                   echo "::error::Production vẫn chứa logic tra từng âm tiết độc lập đã bị loại bỏ."
                   exit 1
                 fi
-                for marker in 'state.rows.concat([item.row])' 'if(ranked.length)add(ranked[0]);' 'async function renderHomework18Candidates(candidates)' 'await renderHomework18Candidates(candidates)' 'homework18Candidates.length);' 'homework18-modal-backdrop' 'homework18-candidate-vi' 'await Promise.all('; do
+                for marker in 'state.rows.concat([item.row])' 'if(ranked.length)add(ranked[0]);' 'async function renderHomework18Candidates(candidates)' 'await renderHomework18Candidates(candidates)' 'homework18Candidates.length);' 'found.size);' 'homework18-modal-backdrop' 'homework18-candidate-vi' 'await Promise.all('; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu logic Menu 18: $marker"
                     exit 1
