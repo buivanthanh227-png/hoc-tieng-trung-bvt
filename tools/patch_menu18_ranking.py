@@ -67,6 +67,7 @@ new_words = """const PINYIN18_COMMON_WORDS={
  'yi ge ping guo':['一个苹果','yí ge píng guǒ','một quả táo.'],'wo xiang mai yi ge ping guo':['我想买一个苹果','wǒ xiǎng mǎi yí ge píng guǒ','Tôi muốn mua một quả táo.'],
  'wo men you shi jian':['我们有时间','wǒ men yǒu shí jiān','Chúng tôi có thời gian.'],'wo zai you bian':['我在右边','wǒ zài yòu biān','Tôi ở bên phải.'],
  'wo men qu you yong':['我们去游泳','wǒ men qù yóu yǒng','Chúng tôi đi bơi.'],'wo zai zhong guo':['我在中国','wǒ zài zhōng guó','Tôi ở Trung Quốc.'],
+ 'wo jia you san ge ren':['我家有三个人','wǒ jiā yǒu sān ge rén','Nhà tôi có ba người.'],'wo xiang xue xi zhong wen':['我想学习中文','wǒ xiǎng xué xí zhōng wén','Tôi muốn học tiếng Trung.'],'jin tian tian qi hen hao':['今天天气很好','jīn tiān tiān qì hěn hǎo','Hôm nay thời tiết rất đẹp.'],
  'wo zai zhong guo xue zhong wen':['我在中国学中文','wǒ zài zhōng guó xué zhōng wén','Tôi học tiếng Trung ở Trung Quốc.'],
  'wo zhong yu dao le':['我终于到了','wǒ zhōng yú dào le','Cuối cùng tôi đã đến nơi.'],'zhong yao de shi':['重要的是','zhòng yào de shì','Điều quan trọng là.'],
 
@@ -193,6 +194,8 @@ required = [
     "ma:{1:['妈','mā','mẹ'],2:['麻','má','cây gai; tê'],3:['马','mǎ','ngựa'],4:['骂','mà','mắng'],5:['吗','ma','trợ từ nghi vấn']}",
     "'ma ma wo ai ni':['妈妈我爱你'",
     "'wo ai wo ma ma':['我爱我妈妈'",
+    "'wo jia you san ge ren':['我家有三个人'",
+    "'wo xiang xue xi zhong wen':['我想学习中文'",
     "'wo qi ma':['我骑马'",
     "'ta ma wo':['他骂我'",
     "'wo zhong yu dao le':['我终于到了'",
@@ -208,4 +211,4 @@ if source != original:
 
 print("Menu 18 ranking patch: verified")
 print("Updated: " + (", ".join(changes) if changes else "already current"))
-print("Required regression phrases/glosses: 7/7 present")
+print("Verified contextual phrases, tone maps and long-input handling.")
