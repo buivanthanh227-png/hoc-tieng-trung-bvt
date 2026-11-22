@@ -1,0 +1,39 @@
+name: Assemble Menu 18 repair
+on:
+  push:
+    branches:
+      - fix/menu18-tone-composer-20261122
+    paths:
+      - MENU18-PATCH/READY
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: true
+      - name: Rebuild and validate index.html
+        run: |
+          cat MENU18-PATCH/part-* > index.html
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          source = p.read_text(encoding="utf-8")
+          assert p.stat().st_size > 9_000_000
+          assert "homework18-output-row" in source
+          assert "data-homework18-select" not in source
+          assert "PINYIN18_COMMON_WORDS" in source
+          print("Rebuilt index.html:", p.stat().st_size, "bytes")
+          PY
+          rm -rf MENU18-PATCH
+          rm -f .github/workflows/menu18-stage-apply.yml
+      - name: Commit repaired app
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html MENU18-PATCH .github/workflows/menu18-stage-apply.yml
+          git commit -m "fix(menu18): resolve Pinyin tone variants into one sentence"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
