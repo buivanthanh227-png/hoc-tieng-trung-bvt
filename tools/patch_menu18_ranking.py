@@ -258,9 +258,12 @@ let homework18SelectedIndex=0;
 function homework18ValidVietnameseMeaning(item){
  const meaning=String(item?.preferredMeaning||item?.vi||'').trim();
  const hanzi=String(item?.zh||'');
- if(!hanzi||!meaning)return false;
- // Dictionary corruption such as "1 u 2c 3", empty glosses and single-letter fragments
- // must never be presented as Vietnamese sentence translations.
+ if(!hanzi)return false;
+ // Candidate generation runs before asynchronous Vietnamese gloss lookup. An empty
+ // gloss is therefore PENDING, not invalid: keep the Hanzi/Pinyin candidate so the
+ // existing async translation pipeline can populate its Vietnamese meaning.
+ if(!meaning)return true;
+ // Reject corrupted dictionary output such as "1 u 2c 3" and short fragments.
  if(/\\d/.test(meaning))return false;
  const letters=(meaning.match(/[A-Za-zÀ-ỹĐđ]/g)||[]).length;
  const hanCount=(hanzi.match(/[\\u3400-\\u9fff]/g)||[]).length;
@@ -286,7 +289,7 @@ function renderHomework18Candidates(candidates){
   return null;
  }
  box.hidden=false;
- box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án có nghĩa tiếng Việt · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
+ box.innerHTML='<div class="homework18-candidate-tabs-label">Các phương án phù hợp · chạm để xem</div><div class="homework18-candidate-tabs-list">'+
   homework18Candidates.map((item,index)=>'<button type="button" class="homework18-candidate-tab" data-homework18-result="'+index+'" aria-pressed="'+(index===0?'true':'false')+'">Kết quả '+(index+1)+'</button>').join('')+'</div>';
  const choose=index=>{
   const item=homework18Candidates[index];if(!item)return;
