@@ -445,6 +445,33 @@ function homework18ValidVietnameseMeaning(item){
  if(/^(?:[a-z]\\s*){1,5}$/i.test(meaning))return false;
  return true;
 }
+function pinyin18DisplayKey(value){
+ return String(value||'').toLowerCase().replace(/ü|u:/g,'v').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
+}
+function formatHomework18PinyinByWord(zh,py){
+ const chars=[...String(zh||'')],tokens=String(py||'').trim().split(/\s+/).filter(Boolean);
+ if(!chars.length||!tokens.length)return String(py||'');
+ const words=Object.entries(PINYIN18_COMMON_WORDS)
+  .map(([key,value])=>({zh:String(value[0]||''),py:String(value[1]||'').trim().split(/\s+/).filter(Boolean)}))
+  .filter(word=>[...word.zh].length===2&&word.py.length===2)
+  .sort((a,b)=>[...b.zh].length-[...a.zh].length);
+ const output=[];let charAt=0,tokenAt=0;
+ while(charAt<chars.length&&tokenAt<tokens.length){
+  const match=words.find(word=>
+   chars.slice(charAt,charAt+[...word.zh].length).join('')===word.zh&&
+   word.py.length<=tokens.length-tokenAt&&
+   word.py.every((syllable,index)=>pinyin18DisplayKey(syllable)===pinyin18DisplayKey(tokens[tokenAt+index]))
+  );
+  if(match){
+   output.push(tokens.slice(tokenAt,tokenAt+match.py.length).join(''));
+   charAt+=[...match.zh].length;tokenAt+=match.py.length;
+  }else{
+   output.push(tokens[tokenAt]);charAt++;tokenAt++;
+  }
+ }
+ if(charAt!==chars.length||tokenAt!==tokens.length)return String(py||'');
+ return output.join(' ');
+}
 function renderHomework18Candidates(candidates){
  homework18SelectedIndex=0;
  const box=$('homework18-candidates');
@@ -471,7 +498,7 @@ function renderHomework18Candidates(candidates){
    button.setAttribute('aria-pressed',String(Number(button.dataset.homework18Result)===index));
   });
   const label='Kết quả '+(index+1)+' · '+String(item.source||'ghép Pinyin');
-  renderHomework18Card(item,label);
+  renderHomework18Card({...item,py:formatHomework18PinyinByWord(item.zh,item.py)},label);
   const status=$('homework18-status'),requestToken=homework18LookupToken;
   if(!String(item.vi||'').trim()){
    if(status)status.textContent='Đang tra nghĩa tiếng Việt cho phương án '+(index+1)+'…';
@@ -498,6 +525,8 @@ function renderHomework18Candidates(candidates){
 replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
 
 ui_required = [
+    "function formatHomework18PinyinByWord(zh,py)",
+    "pinyin18DisplayKey(value)",
     "requestToken!==homework18LookupToken||homework18SelectedIndex!==index",
     "Chưa tra được nghĩa tiếng Việt.",
     "homework18Candidates=(Array.isArray(candidates)?candidates:[]).filter"

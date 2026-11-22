@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - fix/menu18-round3-contextual-phrases-20261122
+      - fix/menu18-pinyin-word-format-20261122
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
@@ -72,6 +73,8 @@ jobs:
               'ta hai mei you gongzuo',
               'tā hái méiyǒu gōngzuò',
               'function homework18ValidVietnameseMeaning(item)',
+              'function formatHomework18PinyinByWord(zh,py)',
+              'pinyin18DisplayKey(value)',
               '.slice(0,5)',
               'Chưa tìm được phương án ghép hợp lệ.',
               'homework18-candidate-tab',
@@ -150,6 +153,30 @@ jobs:
               handle.write(path_test_js)
               path_test = handle.name
           subprocess.run(['node', path_test], check=True)
+
+          # Verify word-level Pinyin spacing without changing internal syllable segmentation.
+          formatter_start = html.index('function pinyin18DisplayKey(value){')
+          formatter_end = html.index('function renderHomework18Candidates', formatter_start)
+          word_start = html.index('const PINYIN18_COMMON_WORDS={')
+          word_end = html.index('};', word_start) + 2
+          formatter_test_js = '\n'.join([
+              "const assert = require('node:assert/strict');",
+              html[word_start:word_end],
+              html[formatter_start:formatter_end],
+              """
+              assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān'), 'jīntiān');
+              assert.equal(formatHomework18PinyinByWord('今天我家有客人', 'jīn tiān wǒ jiā yǒu kè rén'), 'jīntiān wǒ jiā yǒu kèrén');
+              assert.equal(formatHomework18PinyinByWord('中国学生', 'zhōng guó xué shēng'), 'zhōngguó xuéshēng');
+              assert.equal(formatHomework18PinyinByWord('我爱你', 'wǒ ài nǐ'), 'wǒ ài nǐ');
+              assert.equal(formatHomework18PinyinByWord('妈妈我爱你', 'mā ma wǒ ài nǐ'), 'māma wǒ ài nǐ');
+              assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān extra'), 'jīn tiān extra');
+              console.log('Menu 18 word-level Pinyin display formatting tests: PASS');
+              """
+          ])
+          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
+              handle.write(formatter_test_js)
+              formatter_test_path = handle.name
+          subprocess.run(['node', formatter_test_path], check=True)
 
           # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
           word_start = html.index('const PINYIN18_COMMON_WORDS={')
