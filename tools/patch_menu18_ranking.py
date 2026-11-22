@@ -138,6 +138,7 @@ replace_once(
 replace_once(
     "let pinyin18IndexSource=null,pinyin18Lexicon=null,pinyin18SeedRows=null,pinyin18Syllables=null;",
     """const PINYIN18_SINGLE_TONE_WORDS={
+ jin:{1:['今','jīn','nay; hiện tại'],3:['仅','jǐn','chỉ; chỉ có'],4:['进','jìn','đi vào; tiến lên']},
  ma:{1:['妈','mā','mẹ'],2:['麻','má','cây gai; tê'],3:['马','mǎ','ngựa'],4:['骂','mà','mắng'],5:['吗','ma','trợ từ nghi vấn']},
  shi:{1:['师','shī','thầy; giáo viên'],2:['十','shí','mười'],3:['史','shǐ','lịch sử'],4:['是','shì','là; đúng']},
  yi:{1:['一','yī','một'],2:['姨','yí','dì; cô'],3:['已','yǐ','đã'],4:['意','yì','ý; ý nghĩa']},
@@ -194,7 +195,14 @@ replace_once(
     """function pinyin18SyllablePaths(raw,syllables){
  let paths=[[]];
  for(const rawToken of String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean)){
-  const token=pinyin18Key(rawToken),memo=new Map([[token.length,[[]]]]);
+  const token=pinyin18Key(rawToken);
+  if(!token||token.length>120)return [];
+  // Keep an explicitly separated valid syllable intact; segment only compact chunks.
+  if(syllables.has(token)){
+   paths=paths.map(path=>path.concat([token])).slice(0,24);
+   continue;
+  }
+  const memo=new Map([[token.length,[[]]]]);
   for(let start=token.length-1;start>=0;start--){
    const options=[];
    for(let end=start+1;end<=Math.min(token.length,start+6);end++){
@@ -314,8 +322,8 @@ replace_once(
 )
 replace_once(
     """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,8);""",
-    """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,16);""",
-    "return more ranked Pinyin alternatives for the selector"
+    """ return pinyin18SelectToneDiverse([...found.values()],raw,16);""",
+    "return syllable-preserving, tone-diverse Pinyin alternatives"
 )
 replace_once(
     """ const vi=String(result.vi||'Chưa tìm được nghĩa tiếng Việt cho toàn câu.');""",
@@ -345,6 +353,98 @@ replace_once(
     "translate the candidate selected by the learner instead of replacing it later"
 )
 
+
+replace_once(
+    """ for(const [py,zh] of Object.entries(PINYIN18_COMMON_CHARACTERS)){
+  if([...String(zh||'')].length!==1||py.length>6)continue;
+  syllables.add(py);
+  if(!index.has(py))index.set(py,[{row:[zh,zh,py,''],rowIndex:rows.length+syllables.size}]);
+ }
+ for(const [py,entry] of Object.entries(PINYIN18_COMMON_WORDS)){""",
+    """ for(const [py,zh] of Object.entries(PINYIN18_COMMON_CHARACTERS)){
+  if([...String(zh||'')].length!==1||py.length>6)continue;
+  syllables.add(py);
+  if(!index.has(py))index.set(py,[{row:[zh,zh,py,''],rowIndex:rows.length+syllables.size}]);
+ }
+ // Seed all curated tone readings into the multi-syllable lexicon too.
+ for(const [base,variants] of Object.entries(PINYIN18_SINGLE_TONE_WORDS)){
+  const key=pinyin18LexiconKey(base);
+  if(!index.has(key))index.set(key,[]);
+  const matches=index.get(key);syllables.add(key);
+  for(const entry of Object.values(variants)){
+   const zh=String(entry[0]||''),pronunciation=String(entry[1]||'');
+   const tone=pinyin18ToneFromInput(pronunciation);
+   if(!matches.some(item=>item.row[0]===zh&&pinyin18ToneFromInput(item.row[2])===tone)){
+    matches.unshift({row:[zh,zh,pronunciation,String(entry[2]||'')],rowIndex:rows.length+syllables.size});
+   }
+  }
+  if(matches.length>48)matches.length=48;
+ }
+ for(const [py,entry] of Object.entries(PINYIN18_COMMON_WORDS)){""",
+    "seed curated tone variants into sentence lexicon"
+)
+
+selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
+ const rawText=String(raw||'').trim();
+ const inputTokens=rawText.split(/[\s,，、;；]+/).filter(Boolean);
+ const inputKeys=inputTokens.map(pinyin18Key);
+ const explicitlySegmented=inputTokens.length>1;
+ let ranked=(Array.isArray(candidates)?candidates:[]).map(item=>{
+  const py=String(item.py||'').trim();
+  if(!py||pinyin18Key(py)!==pinyin18Key(rawText))return null;
+  const tokens=py.split(/\s+/).filter(Boolean);
+  if(explicitlySegmented){
+   if(tokens.length!==inputKeys.length||!tokens.every((token,index)=>pinyin18Key(token)===inputKeys[index]))return null;
+   for(let index=0;index<inputTokens.length;index++){
+    const requestedTone=pinyin18ToneFromInput(inputTokens[index]);
+    if(requestedTone!==null&&pinyin18ToneFromInput(tokens[index])!==requestedTone)return null;
+   }
+  }
+  return {item,tokens,base:tokens.map(pinyin18Key).join(' '),priority:Number(item.priority)||0};
+ }).filter(Boolean);
+ if(!ranked.length)return [];
+ if(!explicitlySegmented){
+  const groups=new Map();
+  for(const row of ranked){
+   if(!groups.has(row.base))groups.set(row.base,[]);
+   groups.get(row.base).push(row);
+  }
+  ranked=[...groups.values()].sort((a,b)=>{
+   if(a.length!==b.length)return b.length-a.length;
+   return Math.max(...b.map(x=>x.priority))-Math.max(...a.map(x=>x.priority));
+  })[0];
+ }
+ ranked.sort((a,b)=>b.priority-a.priority||String(a.item.zh||'').localeCompare(String(b.item.zh||''),'zh-CN'));
+ const selected=[],selectedIds=new Set();
+ const add=row=>{
+  if(!row||selected.length>=limit)return;
+  const id=String(row.item.zh||'')+'|'+String(row.item.py||'');
+  if(selectedIds.has(id))return;
+  selectedIds.add(id);selected.push(row);
+ };
+ const positions=ranked.length?ranked[0].tokens.map((_,index)=>{
+  const toneRows=new Map();
+  for(const row of ranked){
+   const tone=pinyin18ToneFromInput(row.tokens[index])||5;
+   const current=toneRows.get(tone);
+   if(!current||row.priority>current.priority)toneRows.set(tone,row);
+  }
+  return {index,toneRows};
+ }):[];
+ positions
+  .filter(position=>position.toneRows.size>1&&(!explicitlySegmented||pinyin18ToneFromInput(inputTokens[position.index])===null))
+  .sort((a,b)=>b.toneRows.size-a.toneRows.size||a.index-b.index)
+  .forEach(position=>{
+   for(const tone of [...position.toneRows.keys()].sort((a,b)=>a-b))add(position.toneRows.get(tone));
+  });
+ for(const row of ranked)add(row);
+ return selected.map(row=>row.item);
+}"""
+replace_once(
+    "function pinyinToChineseCandidates(raw){",
+    selector_code + "\\nfunction pinyinToChineseCandidates(raw){",
+    "tone-diverse candidate selector with exact input syllable validation"
+)
 
 required = [
     "'ke yi':['可以','kě yǐ','có thể']",
@@ -392,13 +492,12 @@ if missing:
     raise SystemExit("Menu 18 patch verification failed; missing: " + ", ".join(missing))
 
 
-# Apply word-boundary formatting at the final card-rendering boundary.
-# pinyinForChinese() recalculates Pinyin and reintroduces syllable spaces, so
-# formatting only candidate objects before renderHomework18Card() is not enough.
+# Preserve the reading generated from matching dictionary rows. Recomputing
+# Pinyin from Hanzi can change the learner's syllable or choose a default polyphone.
 replace_once(
     " const py=pinyinForChinese(zh,String(result.py||''));",
-    " const py=formatHomework18PinyinByWord(zh,pinyinForChinese(zh,String(result.py||'')));",
-    "final rendered Pinyin word spacing"
+    " const py=formatHomework18PinyinByWord(zh,String(result.py||pinyinForChinese(zh)));",
+    "preserve candidate Pinyin at final render"
 )
 
 
@@ -493,7 +592,8 @@ function renderHomework18Candidates(candidates){
   const key=String(item.zh||'')+'|'+String(item.py||'')+'|'+String(item.preferredMeaning||item.vi||'').trim().toLowerCase();
   if(seen.has(key))return false;
   seen.add(key);return true;
- }).slice(0,5);
+ });
+  homework18Candidates=pinyin18SelectToneDiverse(homework18Candidates,String($('homework18-query')?.value||''),16);
  if(!homework18Candidates.length){
   box.hidden=true;box.replaceChildren();
   const status=$('homework18-status');
