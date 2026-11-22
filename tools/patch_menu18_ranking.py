@@ -150,10 +150,10 @@ function pinyin18ToneFromInput(value){
  const numbered=token.match(/([1-5])$/);
  if(numbered)return Number(numbered[1]);
  const marks=token.normalize('NFD');
- if(marks.includes('\\u0304'))return 1;
- if(marks.includes('\\u0301'))return 2;
- if(marks.includes('\\u030c'))return 3;
- if(marks.includes('\\u0300'))return 4;
+ if(marks.includes(String.fromCharCode(0x304)))return 1;
+ if(marks.includes(String.fromCharCode(0x301)))return 2;
+ if(marks.includes(String.fromCharCode(0x30c)))return 3;
+ if(marks.includes(String.fromCharCode(0x300)))return 4;
  return null;
 }
 let pinyin18IndexSource=null,pinyin18Lexicon=null,pinyin18SeedRows=null,pinyin18Syllables=null;""",
