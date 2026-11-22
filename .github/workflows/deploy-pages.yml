@@ -190,7 +190,7 @@ jobs:
                     exit 1
                   fi
                 done
-                for marker in 'data-homework18-copy="hanzi"' 'data-homework18-copy="pinyin"' 'data-homework18-copy="meaning"' 'data-homework18-speak="zh"' 'data-homework18-speak="py"' 'data-homework18-speak="vi"' 'navigator.clipboard.writeText(value)' "document.execCommand('copy')" 'new Audio(url)' 'homework18QueryInput.addEventListener(\x27input\x27'; do
+                for marker in 'data-homework18-copy="hanzi"' 'data-homework18-copy="pinyin"' 'data-homework18-copy="meaning"' 'data-homework18-speak="zh"' 'data-homework18-speak="py"' 'data-homework18-speak="vi"' 'navigator.clipboard.writeText(value)' "document.execCommand('copy')" 'new Audio(url)' 'homework18QueryInput.addEventListener'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu thao tác copy/audio/status Menu 18: $marker"
                     exit 1
