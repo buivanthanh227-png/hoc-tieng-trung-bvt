@@ -30,6 +30,11 @@ required=[
  'id="panel-practice"',
  'id="panel-translate-experimental"',
  'id="homework18-query"',
+ 'homework3x-output-row',
+ 'homework3x-modal-backdrop',
+ 'homework3x-modal-line',
+ 'homework3x-candidate-tab',
+ 'homework3x-candidate',
 ]
 for marker in required:
  if marker not in html: raise SystemExit("Independent Menu 3 marker missing: "+marker)
