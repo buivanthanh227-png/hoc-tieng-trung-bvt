@@ -1,0 +1,29 @@
+name: Validate Menu 18 modal and Menu 1 result order
+on:
+  push:
+    branches: [fix/menu18-modal-copy-audio-status-menu1-result-order-v42-10-6]
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run Menu 18 and Menu 1 regression suites on deploy artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site
+          cp index.html site/
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py
+          python3 tools/patch_menu18_ranking.py site/index.html
+          python3 tools/patch_menu18_word_mapping.py site/index.html
+          python3 tools/patch_menu18_multicandidate.py site/index.html
+          python3 tools/test_menu18_word_mapping.py site/index.html
+          python3 tools/patch_menu1_dictionary_search.py site/index.html
+          python3 tools/test_menu1_dictionary_search.py site/index.html
+          grep -Fq '42.10.6' manifest.webmanifest
+          grep -Fq 'hoc-trung-app-shell-v42-10-7-menu18-modal-copy-audio-menu1-ranking-20261122' sw.js
