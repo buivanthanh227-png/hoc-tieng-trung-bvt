@@ -22,6 +22,7 @@ on:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
       - 'tools/patch_menu18_word_mapping.py'
+      - 'tools/patch_menu18_multicandidate.py'
       - 'tools/test_menu18_word_mapping.py'
       - 'manifest.webmanifest'
       - 'sw.js'
