@@ -56,11 +56,11 @@ jobs:
               raise SystemExit("Expected current service-worker cache key exactly once")
           sw.write_text(sw_source.replace(old_cache, new_cache), encoding="utf-8", newline="")
 
-          blocks = re.findall(r'<script\\b([^>]*)>([\\s\\S]*?)</script\\s*>', source, re.I)
+          blocks = re.findall(r'<script([^>]*)>(.*?)</script>', source, re.S | re.I)
           checked = 0
           with tempfile.TemporaryDirectory() as tmp:
               for attrs, code in blocks:
-                  if re.search(r'\\bsrc\\s*=', attrs, re.I) or re.search(r'type\\s*=\\s*[\"]text/plain[\"]', attrs, re.I):
+                  if 'src=' in attrs or 'type="text/plain"' in attrs:
                       continue
                   file = Path(tmp) / f"inline-{checked}.js"
                   file.write_text(code, encoding="utf-8")
