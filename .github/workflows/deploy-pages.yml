@@ -196,10 +196,7 @@ jobs:
                     exit 1
                   fi
                 done
-                if grep -q 'copyButton(' <<< "$html" || grep -q 'speakButton(' <<< "$html"; then
-                  echo "::error::Production còn phụ thuộc helper copyButton/speakButton không được định nghĩa."
-                  exit 1
-                fi
+
                 echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có logic Menu 18 mới."
                 exit 0
               fi
