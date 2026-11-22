@@ -68,6 +68,10 @@ jobs:
               'zhong yao de shi',
               'wo jia you san ge ren',
               'wo xiang xue xi zhong wen',
+              'ta hai mei you gongzuo',
+              'homework18-candidate-tab',
+              'Kết quả ',
+              'is-'+kind,
               'if(!key||key.length>600)return [];',
               'function pinyin18ToneFromInput(value)'
           ]
@@ -119,7 +123,8 @@ jobs:
                 ['wo jia you san ge ren', '我家有三个人'],
                 ['wo xiang xue xi zhong wen', '我想学习中文'],
                 ['wo zai zhong guo xue zhong wen', '我在中国学中文'],
-                ['wo zhong yu dao le', '我终于到了']
+                ['wo zhong yu dao le', '我终于到了'],
+                ['ta hai mei you gongzuo', '他还没有工作']
               ];
               for (const [input, expected] of regression) {
                 assert.equal(preferred(input), expected, 'preferred phrase: ' + input);
@@ -137,6 +142,7 @@ jobs:
               assert.equal(pinyin18ToneFromInput('ma5'), 5);
               assert.equal(pinyin18Key('mā ma wǒ ài nǐ'), pinyin18Key('ma1 ma5 wo3 ai4 ni3'));
               assert.ok(pinyin18Key(Array(100).fill('wo').join(' ')).length < 600);
+              assert.equal(preferred('ta hai mei you gongzuo'), '他还没有工作');
               console.log('Menu 18 phrase/tone regression unit tests: PASS');
               """
           ])
