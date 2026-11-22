@@ -50,6 +50,8 @@ jobs:
 
           # Trang chính hiện tại
           cp index.html site/
+          # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
+          python3 tools/patch_menu18_ranking.py site/index.html
           # Đồng bộ riêng số phiên bản ở nội dung trang; không thay đổi tiêu đề hay chức năng.
           if grep -q '42.9.3' site/index.html; then
             sed -i 's/42\.9\.3/42.9.4/g' site/index.html
