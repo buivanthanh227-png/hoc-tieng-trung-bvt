@@ -133,7 +133,7 @@ jobs:
           path_end = html.index('function pinyinToChineseCandidates', path_start)
           key_start = html.index('function pinyin18Key(value){')
           key_end = html.index('function pinyin18LexiconKey', key_start)
-          path_test_js = '\\n'.join([
+          path_test_js = '\n'.join([
               "const assert = require('node:assert/strict');",
               html[key_start:key_end],
               html[path_start:path_end],
@@ -151,7 +151,7 @@ jobs:
               path_test = handle.name
           subprocess.run(['node', path_test], check=True)
 
-                    # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
+          # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
           word_start = html.index('const PINYIN18_COMMON_WORDS={')
           word_end = html.index('};', word_start) + 2
           tone_start = html.index('const PINYIN18_SINGLE_TONE_WORDS={')
