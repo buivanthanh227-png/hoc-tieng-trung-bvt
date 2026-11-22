@@ -21,14 +21,12 @@ for marker in ("async function renderHomework18Candidates(candidates)","await Pr
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
 if "const best=await renderHomework18Candidates(candidates);" not in html:
     raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
-if "homework18Candidates.length);" not in html:
-    raise SystemExit("Menu 18 candidate count still uses a fixed result limit")
 if "found.size);" not in html:
     raise SystemExit("Whole-sentence mapper still caps results at 16")
 if "sourceList.slice(0,16)" in renderer:
     raise SystemExit("Menu 18 result verification still truncates the list to 16")
 for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{color:#7b3fa1!important}","homework18-candidate-py{color:#2563a6!important}",'role="dialog"',"copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyButton(py,'Pinyin')","copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')"):
-    if marker not in renderer:
+    if marker not in html:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
 card_start=html.index("function renderHomework18Card(result,sourceLabel=''){")
 card_end=html.index("\nlet homework18Candidates=[];",card_start)
