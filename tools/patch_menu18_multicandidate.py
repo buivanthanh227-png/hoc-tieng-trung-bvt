@@ -135,7 +135,11 @@ required = [
     "MENU18_MULTICANDIDATE_SENTENCE_SEARCH",
     "let homework18SelectedCandidateIndex=0;",
     "data-homework18-candidate",
-    "Chọn phương án phù hợp với ý bạn",
+    "Chọn câu hoàn chỉnh phù hợp với ý bạn",
+    "async function renderHomework18Candidates(candidates)",
+    "await Promise.all(",
+    "select(0);",
+    "const best=await renderHomework18Candidates(candidates);",
     "machineTranslate(item.zh,'zh-CN','vi')",
     ".homework18-candidates{display:grid!important"
 ]
