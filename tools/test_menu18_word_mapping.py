@@ -52,6 +52,15 @@ if "homework18QueryInput.addEventListener('input'" not in html:
 if "const token=++homework18LookupToken,raw=$('homework18-query').value,query=raw.trim()" not in html:
     raise SystemExit("Original input is not preserved separately from trimmed query")
 
+if (!modal_source.includes("const playPinyinSentence=()=>speakMandarinSentence(py,0.96)") || !modal_source.includes("const playHanziSentence=()=>speakMandarinSentence(zh,0.92)") || !modal_source.includes("if(kind==='py'){playPinyinSentence();return;}")):
+    raise SystemExit("Menu 18 Hanzi and Pinyin buttons must use distinct full-sentence speech paths")
+if "playSyllables" in modal_source:
+    raise SystemExit("Menu 18 Pinyin playback must not sequence isolated syllable MP3 files")
+if html.index('<span class="homework18-candidate-py">') > html.index('<span class="homework18-candidate-zh">'):
+    raise SystemExit("Menu 18 preview must display Pinyin before Hanzi")
+if ".homework18-candidate-py{order:0" not in html or "font-size:18px!important" not in html:
+    raise SystemExit("Menu 18 Pinyin preview must be prominent and blue")
+
 def extract_const(name):
     start=html.index("const "+name+"=")
     pos=html.index("=",start)+1
