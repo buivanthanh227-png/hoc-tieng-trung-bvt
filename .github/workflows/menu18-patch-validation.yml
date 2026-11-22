@@ -104,7 +104,7 @@ jobs:
           validator_start = html.index('function homework18ValidVietnameseMeaning(item){')
           validator_end = html.index('function renderHomework18Candidates', validator_start)
           validator_js = html[validator_start:validator_end]
-          validator_test = '\\n'.join([
+          validator_test = '\n'.join([
               "const assert = require('node:assert/strict');",
               validator_js,
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Anh ấy vẫn chưa có việc làm.'}), true);",
