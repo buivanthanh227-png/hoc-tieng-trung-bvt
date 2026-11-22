@@ -20,6 +20,11 @@ on:
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
+      - 'tools/patch_menu18_word_mapping.py'
+      - 'tools/test_menu18_word_mapping.py'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
 
 permissions:
@@ -44,8 +49,8 @@ jobs:
           mkdir -p /tmp/menu18-patch-check
           cp index.html /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
           python3 tools/test_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
 
