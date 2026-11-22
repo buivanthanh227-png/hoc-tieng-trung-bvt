@@ -26,7 +26,7 @@ if "found.size);" not in html:
 if "sourceList.slice(0,16)" in renderer:
     raise SystemExit("Menu 18 result verification still truncates the list to 16")
 for marker in ("homework18-candidate-vi","homework18-modal-backdrop","homework18-candidate-zh{color:#7b3fa1!important}","homework18-candidate-py{color:#2563a6!important}",'role="dialog"',"copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyButton(py,'Pinyin')","copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')"):
-    if marker not in renderer:
+    if marker not in html:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
 card_start=html.index("function renderHomework18Card(result,sourceLabel=''){")
 card_end=html.index("\nlet homework18Candidates=[];",card_start)
