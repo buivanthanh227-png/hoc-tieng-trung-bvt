@@ -116,6 +116,12 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
+          name: github-pages
+
+      # Give the artifact service time to register the upload before deploy-pages lists it.
+      - name: Chờ GitHub ghi nhận gói website
+        shell: bash
+        run: sleep 10
 
       - name: Xuất bản website
         id: deployment
