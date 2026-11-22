@@ -15,14 +15,13 @@ overlay = r"""
 <style id="bvt-responsive-brand-banner">
 .bvt-brand-banner{width:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.25fr) minmax(0,1fr);align-items:center;gap:clamp(8px,2vw,28px);padding:clamp(8px,1.4vw,18px) clamp(8px,2vw,28px);margin:0 auto;color:#fff;text-align:center;isolation:isolate}
 .bvt-brand-side{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:#fff}
-.bvt-brand-flag{display:block;font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif;font-size:clamp(30px,4.2vw,54px);line-height:1.08;filter:drop-shadow(0 2px 3px rgba(0,0,0,.2))}
 .bvt-brand-slogan{display:block;max-width:100%;color:#fff!important;font-size:clamp(10px,.95vw,15px);font-weight:800;letter-spacing:.035em;line-height:1.28;text-align:center;text-wrap:balance;text-shadow:0 1px 4px rgba(0,0,0,.35)}
 .bvt-brand-title{min-width:0;margin:0!important;padding:0!important;color:#fff!important;font-size:clamp(25px,4.25vw,58px)!important;font-weight:950!important;letter-spacing:.025em!important;line-height:1.08!important;text-align:center!important;text-wrap:balance;text-shadow:0 3px 10px rgba(0,0,0,.34)}
 .topbar{flex-wrap:wrap!important;align-items:center!important}
 .topbar .bvt-brand-banner{flex:1 0 100%;order:-100;position:relative;z-index:2}
 @media(min-width:1100px){.bvt-brand-banner{max-width:1500px}.bvt-brand-title{font-size:clamp(40px,4vw,62px)!important}.bvt-brand-slogan{font-size:clamp(13px,.95vw,16px)}}
-@media(min-width:601px) and (max-width:1099px){.bvt-brand-banner{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:10px;padding:12px 10px}.bvt-brand-title{font-size:clamp(26px,4.4vw,42px)!important}.bvt-brand-flag{font-size:clamp(30px,4.6vw,46px)}.bvt-brand-slogan{font-size:clamp(10px,1.25vw,13px)}}
-@media(max-width:600px){.bvt-brand-banner{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);gap:5px;padding:9px 4px}.bvt-brand-side{gap:4px}.bvt-brand-flag{font-size:clamp(25px,8vw,36px)}.bvt-brand-title{font-size:clamp(19px,5.8vw,29px)!important;letter-spacing:0!important;line-height:1.08!important}.bvt-brand-slogan{font-size:clamp(8px,2.45vw,10px);letter-spacing:0;line-height:1.25}}
+@media(min-width:601px) and (max-width:1099px){.bvt-brand-banner{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:10px;padding:12px 10px}.bvt-brand-title{font-size:clamp(26px,4.4vw,42px)!important}.bvt-brand-slogan{font-size:clamp(10px,1.25vw,13px)}}
+@media(max-width:600px){.bvt-brand-banner{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);gap:5px;padding:9px 4px}.bvt-brand-side{gap:4px}.bvt-brand-title{font-size:clamp(19px,5.8vw,29px)!important;letter-spacing:0!important;line-height:1.08!important}.bvt-brand-slogan{font-size:clamp(8px,2.45vw,10px);letter-spacing:0;line-height:1.25}}
 </style>
 <script id="bvt-responsive-brand-banner-script">
 (function(){
@@ -40,12 +39,10 @@ overlay = r"""
   const left=document.createElement('div');left.className='bvt-brand-side bvt-brand-left';
   const center=document.createElement('div');center.className='bvt-brand-center';
   const right=document.createElement('div');right.className='bvt-brand-side bvt-brand-right';
-  const vn=document.createElement('span');vn.className='bvt-brand-flag';vn.textContent='🇻🇳';vn.setAttribute('role','img');vn.setAttribute('aria-label','Cờ Việt Nam');
-  const cn=document.createElement('span');cn.className='bvt-brand-flag';cn.textContent='🇨🇳';cn.setAttribute('role','img');cn.setAttribute('aria-label','Cờ Trung Quốc');
   const title=document.createElement('h1');title.className='bvt-brand-title';title.textContent='HỌC TIẾNG TRUNG';
   const leftText=document.createElement('div');leftText.className='bvt-brand-slogan';leftText.textContent='HỌC THÊM MỘT NGÔN NGỮ';
   const rightText=document.createElement('div');rightText.className='bvt-brand-slogan';rightText.textContent='SỐNG THÊM MỘT CUỘC ĐỜI';
-  left.append(vn,leftText);center.append(title);right.append(cn,rightText);banner.append(left,center,right);
+  left.append(leftText);center.append(title);right.append(rightText);banner.append(left,center,right);
   header.insertBefore(banner,header.firstChild);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
