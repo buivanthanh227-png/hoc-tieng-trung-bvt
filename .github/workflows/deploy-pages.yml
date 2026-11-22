@@ -116,8 +116,11 @@ jobs:
           if grep -q '42.10.9' site/index.html; then
             sed -i 's/42[.]10[.]9/42.10.10/g' site/index.html
           fi
-          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9)([^0-9]|$)' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.10."
+          if grep -q '42.10.10' site/index.html; then
+            sed -i 's/42[.]10[.]10/42.10.11/g' site/index.html
+          fi
+          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9|10)([^0-9]|$)' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.11."
             exit 1
           fi
 
@@ -227,7 +230,7 @@ jobs:
                     exit 1
                   fi
                 done
-                for marker in 'MENU3_UI_COLOR_AND_LOOKUP_FIX_V1' 'id="menu3-independent-lookup-binding"' "BVT_FUNCTION_COLORS.translate3={main:'#0891b2',alt:'#0e7490'};" "button.addEventListener('click',()=>{lookupHomework3x();});" 'BVT_FLAGS_ABOVE_TWO_SLOGANS_V2' '.topbar .brand-copy>.brand-slogan{grid-column:1/-1;grid-row:2'; do
+                for marker in 'MENU3_UI_COLOR_AND_LOOKUP_FIX_V1' 'id="menu3-independent-lookup-binding"' "BVT_FUNCTION_COLORS.translate3={main:'#0891b2',alt:'#0e7490'};" "button.addEventListener('click',()=>{lookupHomework3x();});" 'BVT_FLAGS_AND_SPLIT_SLOGANS_V3' '.topbar .brand-slogan>span:first-child{grid-column:1!important;grid-row:2!important' '.topbar .brand-slogan>span:last-child{grid-column:3!important;grid-row:2!important' 'id="bvt-dictionary-count-placement"' '#main-tabs .tab[data-tab="dict"] .count-pill' 'homework3x-output-row' 'homework3x-modal-backdrop'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu sửa lỗi Menu 3/banner: $marker"
                     exit 1
@@ -235,11 +238,11 @@ jobs:
                 done
                 flag_count="$(grep -o 'class="brand-flag"' <<< "$html" | wc -l | tr -d ' ')"
                 if [ "$flag_count" != "2" ] || grep -q 'bvt-brand-banner\|bvt-brand-flag' <<< "$html"; then
-                  echo "::error::Banner không giữ đúng hai lá cờ gốc hoặc còn banner/cờ trùng."
+                  echo "::error::Banner không giữ đúng hai lá cờ, số từ điển hoặc còn banner/cờ trùng."
                   exit 1
                 fi
 
-                echo "Production đang phục vụ đúng commit $EXPECTED_SHA; Menu 3 đã đồng bộ màu, nút Dịch câu hoạt động, slogan nằm dưới hai cờ; Menu 18 vẫn là bản dự phòng."
+                echo "Production đang phục vụ đúng commit $EXPECTED_SHA; Menu 3 có CSS kết quả/hộp nổi như Menu 18, banner 3 cột cân đối, số từ nằm cạnh tên từ điển; Menu 18 vẫn là bản dự phòng."
                 exit 0
               fi
             fi
