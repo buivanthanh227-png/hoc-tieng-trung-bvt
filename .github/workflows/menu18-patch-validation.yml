@@ -159,7 +159,7 @@ jobs:
           tone_start = html.index('function pinyin18ToneFromInput(value)')
           tone_end = html.index('let pinyin18IndexSource=', tone_start)
           selector_start = html.index('function pinyin18SelectToneDiverse(candidates,raw,limit=16){')
-          selector_end = html.index('function pinyin18ToneSignature', selector_start)
+          selector_end = html.index('function pinyinToChineseCandidates(raw){', selector_start)
           if selector_start < 0 or selector_end < 0:
               raise SystemExit('Could not isolate Menu 18 tone selector')
           path_test_js = '\n'.join([
