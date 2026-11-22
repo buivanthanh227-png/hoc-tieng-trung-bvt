@@ -51,11 +51,13 @@ jobs:
           # Trang chính hiện tại
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
           python3 tools/test_menu18_word_mapping.py site/index.html
+          python3 tools/patch_brand_header.py site/index.html
+          python3 tools/test_brand_header.py site/index.html
           # Menu 1: independent Hanzi, Pinyin/tone, and Vietnamese search fields.
           python3 tools/patch_menu1_dictionary_search.py site/index.html
           python3 tools/test_menu1_dictionary_search.py site/index.html
@@ -102,8 +104,11 @@ jobs:
           if grep -q '42.10.7' site/index.html; then
             sed -i 's/42[.]10[.]7/42.10.8/g' site/index.html
           fi
-          if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1|42[.]10[.]3|42[.]10[.]4|42[.]10[.]5|42[.]10[.]6|42[.]10[.]7' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.8."
+          if grep -q '42.10.8' site/index.html; then
+            sed -i 's/42[.]10[.]8/42.10.9/g' site/index.html
+          fi
+          if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1|42[.]10[.]3|42[.]10[.]4|42[.]10[.]5|42[.]10[.]6|42[.]10[.]7|42[.]10[.]8' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.9."
             exit 1
           fi
 
@@ -196,7 +201,7 @@ jobs:
                     exit 1
                   fi
                 done
-                for marker in 'data-homework18-copy="hanzi"' 'data-homework18-copy="pinyin"' 'data-homework18-copy="meaning"' 'data-homework18-speak="zh"' 'data-homework18-speak="py"' 'data-homework18-speak="vi"' 'navigator.clipboard.writeText(value)' "document.execCommand('copy')" 'const playPinyinSentence=()=>speakMandarinSentence(py,0.96)' 'const playHanziSentence=()=>speakMandarinSentence(zh,0.92)' 'homework18QueryInput.addEventListener'; do
+                for marker in 'data-homework18-copy="hanzi"' 'data-homework18-copy="pinyin"' 'data-homework18-copy="meaning"' 'data-homework18-speak="zh"' 'data-homework18-speak="py"' 'data-homework18-speak="vi"' 'navigator.clipboard.writeText(value)' "document.execCommand('copy')" 'const playPinyinSentence=()=>speakMandarinSentence(py,0.96)' 'const playHanziSentence=()=>speakMandarinSentence(zh,0.92)' 'const playPinyinWords=async()=>{}' 'homework18QueryInput.addEventListener'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu thao tác copy/audio/status Menu 18: $marker"
                     exit 1

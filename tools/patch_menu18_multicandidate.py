@@ -84,9 +84,39 @@ function openHomework18CandidateModal(item,index,total){
   window.speechSynthesis.speak(utterance);return true;
  };
  const playHanziSentence=()=>speakMandarinSentence(zh,0.92);
- const playPinyinSentence=()=>speakMandarinSentence(py,0.96);
+ // Recorded Pinyin syllable audio grouped by the user's original word boundaries.
+ const playPinyinWords=async()=>{
+  const raw=String($('homework18-query')?.value||'').trim();
+  const tokens=raw.split(/[\s,，、;；]+/).filter(Boolean);
+  const syllables=String(item.py||'').trim().split(/\s+/).filter(Boolean);
+  const known=pinyin18Syllables instanceof Set?pinyin18Syllables:new Set();
+  const groups=[];let cursor=0;
+  for(const token of tokens){
+   const key=pinyin18Key(token);if(!key)continue;
+   if(known.has(key)){if(syllables[cursor])groups.push([syllables[cursor++]]);continue;}
+   let joined='',group=[];
+   while(cursor<syllables.length){
+    const next=syllables[cursor++];group.push(next);joined+=pinyin18Key(next);
+    if(joined===key)break;
+    if(joined.length>key.length+2)break;
+   }
+   if(group.length)groups.push(group);
+  }
+  if(cursor<syllables.length)groups.push(syllables.slice(cursor));
+  const queue=groups.flatMap((group,gi)=>group.map((syllable,si)=>({syllable,wordEnd:si===group.length-1&&gi<groups.length-1})));
+  if(!queue.length)return;
+  if('speechSynthesis' in window)window.speechSynthesis.cancel();
+  for(const part of queue){
+   const base=pinyin18Key(part.syllable).replace(/ü|u:/g,'v');
+   const tone=typeof pinyin18ToneFromInput==='function'?pinyin18ToneFromInput(part.syllable):null;
+   const url='https://cdn.jsdelivr.net/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/cmn-'+base+(tone||5)+'.mp3';
+   try{await new Promise((resolve,reject)=>{const audio=new Audio(url);audio.preload='auto';audio.playbackRate=1.08;audio.onended=resolve;audio.onerror=reject;audio.play().catch(reject);});}
+   catch(_){speakMandarinSentence(zh,0.92);return;}
+   await new Promise(resolve=>setTimeout(resolve,part.wordEnd?145:28));
+  }
+ };
  modal.querySelectorAll('[data-homework18-copy]').forEach(button=>button.addEventListener('click',async()=>{const key=button.dataset.homework18Copy,ok=await copy(values[key]||'');button.textContent=ok?'Đã sao chép ✓':'Không sao chép được';}));
- modal.querySelectorAll('[data-homework18-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework18Speak;if(kind==='zh'){playHanziSentence();return;}if(kind==='py'){playPinyinSentence();return;}if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(vi);utterance.lang='vi-VN';window.speechSynthesis.speak(utterance);}}));
+ modal.querySelectorAll('[data-homework18-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework18Speak;if(kind==='zh'){playHanziSentence();return;}if(kind==='py'){playPinyinWords();return;}if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(vi);utterance.lang='vi-VN';window.speechSynthesis.speak(utterance);}}));
  modal.querySelector('.homework18-modal-close').addEventListener('click',closeHomework18CandidateModal);
  modal.addEventListener('click',e=>{if(e.target===modal)closeHomework18CandidateModal();});
  modal.querySelector('[data-prev]').addEventListener('click',()=>{if(index>0)openHomework18CandidateModal(homework18Candidates[index-1],index-1,total);});
