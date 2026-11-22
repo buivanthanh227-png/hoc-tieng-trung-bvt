@@ -50,7 +50,7 @@ renderer = r'''let homework18SelectedCandidateIndex=0;
 function renderHomework18Candidates(candidates){
  const box=$('homework18-candidates');
  box.replaceChildren();
- const list=Array.isArray(candidates)?candidates:[];
+ const list=(Array.isArray(candidates)?candidates:[]).filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
  if(!list.length){box.hidden=true;return null;}
  homework18SelectedCandidateIndex=0;
  box.hidden=false;
