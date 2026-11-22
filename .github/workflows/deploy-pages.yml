@@ -52,6 +52,7 @@ jobs:
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
           python3 tools/patch_menu18_ranking.py site/index.html
+          python3 tools/patch_menu18_word_mapping.py site/index.html
           # Keep the visible footer version aligned with manifest.webmanifest.
           if grep -q '42.9.3' site/index.html; then
             sed -i 's/42\.9\.3/42.9.4/g' site/index.html
@@ -59,8 +60,11 @@ jobs:
           if grep -q '42.9.4' site/index.html; then
             sed -i 's/42\.9\.4/42.9.5/g' site/index.html
           fi
-          if grep -Eq '42\.9\.[34]' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.9.5."
+          if grep -q '42.9.5' site/index.html; then
+            sed -i 's/42\.9\.5/42.9.6/g' site/index.html
+          fi
+          if grep -Eq '42\.9\.[345]' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.9.6."
             exit 1
           fi
 
@@ -138,7 +142,12 @@ jobs:
           for attempt in $(seq 1 12); do
             if body="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/build-info.json" 2>/dev/null)"; then
               if actual_sha="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("git_sha", ""))' <<< "$body" 2>/dev/null)" && [ "$actual_sha" = "$EXPECTED_SHA" ]; then
-                echo "Production đang phục vụ đúng commit $EXPECTED_SHA."
+                html="$(curl --fail --silent --show-error --location --max-time 20 "$BASE_URL/index.html")"
+                if ! grep -q 'Ánh xạ độc lập theo từng từ' <<< "$html"; then
+                  echo "::error::Production thiếu logic ánh xạ độc lập Menu 18."
+                  exit 1
+                fi
+                echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có logic Menu 18 mới."
                 exit 0
               fi
             fi

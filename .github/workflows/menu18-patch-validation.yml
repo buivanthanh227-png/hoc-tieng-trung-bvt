@@ -9,6 +9,11 @@ on:
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
+      - 'tools/patch_menu18_word_mapping.py'
+      - 'tools/test_menu18_word_mapping.py'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
   pull_request:
     branches: [main]
@@ -39,7 +44,10 @@ jobs:
           mkdir -p /tmp/menu18-patch-check
           cp index.html /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
+          python3 tools/test_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
 
       - name: Verify regression phrases, tone map, and JavaScript syntax
         shell: bash
@@ -74,24 +82,25 @@ jobs:
               'ta hai mei you gongzuo',
               'tā hái méiyǒu gōngzuò',
               'function homework18ValidVietnameseMeaning(item)',
+              'if(item?.wordMapping)',
               'function formatHomework18PinyinByWord(zh,py)',
               "const py=formatHomework18PinyinByWord(zh,String(result.py||pinyinForChinese(zh)));",
               'pinyin18DisplayKey(value)',
-              '.slice(0,5)',
-              'Chưa tìm được phương án ghép hợp lệ.',
-              'homework18-candidate-tab',
-              'renderHomework18Card({...enriched,py:formatHomework18PinyinByWord(enriched.zh,enriched.py)},label);',
-              "renderHomework18Card({...item,py:formatHomework18PinyinByWord(item.zh,item.py),vi:'Chưa tra được nghĩa tiếng Việt.'},label);",
-              'Kết quả ',
-              "'is-'+kind",
-              'if(!key||key.length>600)return [];',
               'function pinyin18ToneFromInput(value)',
-              'const shouldGenerateAlternates=true;',
-              'if(!hasExactPhraseSource||shouldGenerateAlternates){',
-              'const hasMeaningPlaceholder=',
-              '6200-Number(candidateTone)',
-              'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.',
-              'requestToken!==homework18LookupToken||homework18SelectedIndex!==index'
+              'function pinyin18ToneSignature(value)',
+              'function pinyin18InputToneConstraints(rawToken,pronunciation)',
+              'function getPinyin18CompactIndex()',
+              'function pinyinToChineseCandidates(raw){',
+              'function looksLikePinyin18(raw,local){',
+              'results.missingTokens=missingTokens',
+              'wordMapping:true',
+              'Ánh xạ độc lập theo từng từ · không ghép tổ hợp',
+              'if(best.wordMapping){',
+              "raw=$('homework18-query').value,query=raw.trim()",
+              'homework18-candidate-tab',
+              "'is-'+kind",
+              'function pinyin18SyllablePaths(raw,syllables){',
+              'Không tạo tổ hợp giữa các từ.'
           ]
           missing = [item for item in required if item not in html]
           if missing:
