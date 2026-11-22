@@ -47,16 +47,49 @@ end = source.find("\nfunction looksLikePinyin18(raw,local){", start)
 if start < 0 or end < 0:
     raise SystemExit("Menu 18 multicandidate patch: renderer boundaries not found.")
 renderer = r'''let homework18SelectedCandidateIndex=0;
-function renderHomework18Candidates(candidates){
+async function renderHomework18Candidates(candidates){
  const box=$('homework18-candidates');
  box.replaceChildren();
- const list=(Array.isArray(candidates)?candidates:[]).filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
- if(!list.length){box.hidden=true;return null;}
+ const sourceList=(Array.isArray(candidates)?candidates:[]).filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
+ if(!sourceList.length){box.hidden=true;return null;}
+ const requestToken=homework18LookupToken;
+ const status=$('homework18-status');
+ const queue=sourceList.slice(0,16),resolved=new Array(queue.length);
+ let cursor=0,completed=0;
+ box.hidden=false;
+ box.innerHTML='<div class="homework18-candidate-heading">Đang kiểm tra nghĩa của các câu hoàn chỉnh…</div>';
+ if(status)status.textContent='Đang xác minh nghĩa toàn câu: 0 / '+queue.length+'…';
+ const worker=async()=>{
+  while(true){
+   const index=cursor++;
+   if(index>=queue.length)return;
+   const item=queue[index];
+   try{
+    if(String(item.vi||'').trim()&&homework18ValidVietnameseMeaning(item)){
+     resolved[index]=item;
+    }else{
+     const vi=await machineTranslate(item.zh,'zh-CN','vi');
+     const enriched={...item,vi,note:'Nghĩa tiếng Việt được dịch từ toàn câu.'};
+     resolved[index]=homework18ValidVietnameseMeaning(enriched)?enriched:null;
+    }
+   }catch(_){resolved[index]=null;}
+   completed++;
+   if(requestToken===homework18LookupToken&&status)status.textContent='Đang xác minh nghĩa toàn câu: '+completed+' / '+queue.length+'…';
+  }
+ };
+ await Promise.all(Array.from({length:Math.min(4,queue.length)},worker));
+ if(requestToken!==homework18LookupToken)return null;
+ const list=resolved.filter(Boolean);
+ if(!list.length){
+  box.hidden=true;box.replaceChildren();
+  if(status)status.textContent='Không xác minh được câu hoàn chỉnh có nghĩa tiếng Việt. Hãy thử cách nhập khác hoặc kiểm tra dấu thanh.';
+  return null;
+ }
  homework18SelectedCandidateIndex=0;
  box.hidden=false;
- box.innerHTML='<div class="homework18-candidate-heading">Chọn phương án phù hợp với ý bạn ('+list.length+' kết quả)</div>'+
+ box.innerHTML='<div class="homework18-candidate-heading">Chọn câu hoàn chỉnh phù hợp với ý bạn ('+list.length+' kết quả đã kiểm tra nghĩa)</div>'+
   list.map((item,index)=>'<button type="button" class="homework18-candidate'+(index===0?' is-selected':'')+'" data-homework18-candidate="'+index+'" aria-pressed="'+(index===0?'true':'false')+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh)))+'</span></span></button>').join('');
- const select=(index)=>{
+ const select=index=>{
   if(index<0||index>=list.length)return;
   homework18SelectedCandidateIndex=index;
   const token=++homework18LookupToken,item=list[index];
@@ -66,29 +99,22 @@ function renderHomework18Candidates(candidates){
    button.setAttribute('aria-pressed',selected?'true':'false');
   });
   const label='Phương án '+(index+1)+' / '+list.length+' · '+String(item.source||'Từ điển');
-  const needsWholeSentenceMeaning=Boolean(item.note&&/ghép từ điển|cụm từ/i.test(item.note));
-  renderHomework18Card({...item,vi:needsWholeSentenceMeaning?'Đang tra nghĩa tiếng Việt cho toàn câu…':item.vi},label);
-  if(needsWholeSentenceMeaning){
-   const status=$('homework18-status');
-   if(status)status.textContent='Đang dịch nghĩa toàn câu của phương án '+(index+1)+'…';
-   machineTranslate(item.zh,'zh-CN','vi').then(vi=>{
-    if(token!==homework18LookupToken||homework18SelectedCandidateIndex!==index)return;
-    renderHomework18Card({...item,vi,note:'Nghĩa tiếng Việt được dịch từ toàn câu.'},label);
-    if(status)status.textContent='Đã dịch nghĩa toàn câu cho phương án '+(index+1)+'.';
-   }).catch(()=>{
-    if(token!==homework18LookupToken||homework18SelectedCandidateIndex!==index)return;
-    renderHomework18Card({...item,vi:item.vi||'Chưa tra được nghĩa tiếng Việt cho toàn câu.'},label);
-    if(status)status.textContent='Không kết nối được dịch vụ dịch nghĩa; đang giữ nghĩa tham khảo từ điển.';
-   });
-  }else{
-   const status=$('homework18-status');
-   if(status)status.textContent='Đang xem phương án '+(index+1)+' / '+list.length+'.';
-  }
+  renderHomework18Card({...item,py:formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh))},label);
+  if(status)status.textContent='Đã kiểm tra nghĩa toàn câu. Đang xem phương án '+(index+1)+' / '+list.length+'.';
  };
  box.querySelectorAll('[data-homework18-candidate]').forEach(button=>button.addEventListener('click',()=>select(Number(button.dataset.homework18Candidate))));
+ select(0);
  return list[0];
 }'''
 source = source[:start] + renderer + source[end:]
+
+lookup_anchor = "const best=renderHomework18Candidates(candidates);"
+lookup_replacement = "const best=await renderHomework18Candidates(candidates);"
+if source.count(lookup_anchor) == 1:
+    source = source.replace(lookup_anchor, lookup_replacement, 1)
+elif source.count(lookup_replacement) != 1:
+    raise SystemExit("Menu 18 multicandidate patch: lookup await anchor missing or ambiguous.")
+
 
 old_css = ".homework18-candidates:not([hidden]){display:block!important;margin:7px 0 9px!important}"
 new_css = """.homework18-candidates{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:4px 0 8px!important;padding:0!important}
