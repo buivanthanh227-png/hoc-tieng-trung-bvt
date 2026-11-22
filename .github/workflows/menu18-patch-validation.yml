@@ -91,7 +91,6 @@ jobs:
               'function formatHomework18PinyinByWord(zh,py)',
               'function pinyin18DisplayKey(value)',
               'function pinyin18ToneFromInput(value)',
-              'function pinyin18ToneSignature(value)',
               'function pinyinToChineseCandidates(raw){',
               'function renderHomework18Candidates(candidates){',
               "machineTranslate(item.zh,'zh-CN','vi')",
