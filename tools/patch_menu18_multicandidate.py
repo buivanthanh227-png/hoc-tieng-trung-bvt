@@ -148,7 +148,7 @@ required = [
     "Chọn câu phù hợp ·",
     "async function renderHomework18Candidates(candidates)",
     "await Promise.all(",
-    "openHomework18CandidateModal(item,index,list.length)",
+    "openHomework18CandidateModal(item,index,current.length)",
     "const best=await renderHomework18Candidates(candidates);",
     "machineTranslate(item.zh,'zh-CN','vi')",
     ".homework18-candidates{display:grid!important"
