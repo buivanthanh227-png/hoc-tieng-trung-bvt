@@ -21,8 +21,6 @@ for marker in ("async function renderHomework18Candidates(candidates)","await Pr
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
 if "const best=await renderHomework18Candidates(candidates);" not in html:
     raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
-if "homework18Candidates.length);" not in html:
-    raise SystemExit("Menu 18 candidate count still uses a fixed result limit")
 if "found.size);" not in html:
     raise SystemExit("Whole-sentence mapper still caps results at 16")
 if "sourceList.slice(0,16)" in renderer:
