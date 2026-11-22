@@ -1,0 +1,30 @@
+name: Diagnose Menu 1 dictionary search structure
+on:
+  push:
+    branches: [diagnose/menu1-dictionary-search-structure]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print exact dictionary search DOM and handler context
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          terms=['id="dict-search"',"function searchScoreForRow","dict-search","dict-results","dict-result","dictionary"]
+          for term in terms:
+              positions=[]; start=0
+              while True:
+                  i=s.find(term,start)
+                  if i<0: break
+                  positions.append(i); start=i+len(term)
+                  if len(positions)>=8: break
+              print("\\n### TERM",repr(term),"COUNT",s.count(term),"FIRST",positions[:8])
+              for i in positions[:4]:
+                  print("\\n--- OFFSET",i,"---")
+                  print(s[max(0,i-2400):min(len(s),i+5200)])
+          PY
