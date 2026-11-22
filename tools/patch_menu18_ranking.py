@@ -449,6 +449,18 @@ selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
   })[0];
  }
  ranked.sort((a,b)=>b.priority-a.priority||String(a.item.zh||'').localeCompare(String(b.item.zh||''),'zh-CN'));
+ // MENU18_SINGLE_POSITION_TONE_VARIANTS_V1:
+ // Return the best complete sentence plus alternatives changing only one
+ // input syllable/token position at a time. Never emit Cartesian tone mixes.
+ const baseline=ranked[0],baselineTones=baseline.tokens.map(token=>pinyin18ToneFromInput(token)||5);
+ ranked=ranked.filter(row=>{
+  let changed=0;
+  for(let index=0;index<baselineTones.length;index++){
+   const tone=pinyin18ToneFromInput(row.tokens[index])||5;
+   if(tone!==baselineTones[index]&&++changed>1)return false;
+  }
+  return true;
+ });
  const selected=[],selectedIds=new Set();
  const add=row=>{
   if(!row||selected.length>=limit)return;
@@ -473,7 +485,8 @@ selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
   .forEach(position=>{
    for(const tone of [...position.toneRows.keys()].sort((a,b)=>a-b))add(position.toneRows.get(tone));
   });
- for(const row of ranked)add(row);
+ // Deliberately do not append the full ranked set: it contains cross-products
+ // of simultaneous tone changes and was the source of inflated result counts.
  return selected.map(row=>row.item);
 }"""
 replace_once(
