@@ -82,7 +82,7 @@ jobs:
             sed -i 's/42[.]10[.]0/42.10.1/g' site/index.html
           fi
           if grep -q '42.10.1' site/index.html; then
-            sed -i 's/42[.]10[.]1/42.10.2/g' site/index.html
+            sed -i 's/42[.]10[.]1/42.10.3/g' site/index.html
           fi
           if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1' site/index.html; then
             echo "::error::Footer version is not aligned with V42.10.2."
@@ -172,7 +172,7 @@ jobs:
                   echo "::error::Production vẫn chứa logic tra từng âm tiết độc lập đã bị loại bỏ."
                   exit 1
                 fi
-                for marker in 'state.rows.concat([item.row])' 'if(ranked.length)add(ranked[0]);' 'async function renderHomework18Candidates(candidates)' 'await renderHomework18Candidates(candidates)' 'found.size);' 'homework18-modal-backdrop' 'homework18-candidate-vi' 'await Promise.all('; do
+                for marker in 'state.rows.concat([item.row])' 'if(ranked.length)add(ranked[0]);' 'async function renderHomework18Candidates(candidates)' 'await renderHomework18Candidates(candidates)' 'found.size);' 'MENU18_SINGLE_POSITION_TONE_VARIANTS_V1' 'homework18-modal-backdrop' 'homework18PageSize=10' 'data-page-prev' 'data-page-next' 'formatHomework18PinyinByInput' 'Không tìm thấy kết quả khớp chính xác' 'homework18-candidate-vi' 'await Promise.all('; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu logic Menu 18: $marker"
                     exit 1
