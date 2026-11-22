@@ -40,7 +40,7 @@ replace_once(
 # A preferred word may have a valid dictionary row with no Vietnamese gloss.
 # Keep the verified phrase gloss available to both direct lookup and sentence DP.
 words_start = source.find("const PINYIN18_COMMON_WORDS={")
-words_end_marker = "\n};\nlet pinyin18IndexSource"
+words_end_marker = "\n};"
 words_end = source.find(words_end_marker, words_start)
 if words_start < 0 or words_end < 0:
     raise SystemExit("Menu 18 patch aborted: preferred-word dictionary block not found.")
