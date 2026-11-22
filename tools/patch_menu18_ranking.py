@@ -391,6 +391,16 @@ if missing:
     raise SystemExit("Menu 18 patch verification failed; missing: " + ", ".join(missing))
 
 
+# Apply word-boundary formatting at the final card-rendering boundary.
+# pinyinForChinese() recalculates Pinyin and reintroduces syllable spaces, so
+# formatting only candidate objects before renderHomework18Card() is not enough.
+replace_once(
+    " const py=pinyinForChinese(zh,String(result.py||''));",
+    " const py=formatHomework18PinyinByWord(zh,pinyinForChinese(zh,String(result.py||'')));",
+    "final rendered Pinyin word spacing"
+)
+
+
 # Compact candidate selector and distinct semantic colors for Menu 18.
 def replace_ui_once(old: str, new: str, label: str) -> None:
     global source
