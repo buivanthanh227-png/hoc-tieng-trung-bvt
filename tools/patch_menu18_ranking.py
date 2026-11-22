@@ -288,11 +288,15 @@ replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection b
 # Do not let a delayed translation response replace a different candidate
 # that the learner selected while the request was in flight.
 token_guard = "if(token!==homework18LookupToken)return;"
+token_guard_new = "if(token!==homework18LookupToken||homework18SelectedIndex!==0)return;"
 token_guard_count = source.count(token_guard)
-if token_guard_count != 2:
+if token_guard_count == 2:
+    source = source.replace(token_guard, token_guard_new)
+    changes.append("preserve learner candidate selection during async translation")
+elif token_guard_count == 0 and source.count(token_guard_new) == 2:
+    pass  # Already patched; keep the overlay idempotent.
+else:
     raise SystemExit(f"Menu 18 patch aborted: expected two async result guards; found {token_guard_count}")
-source = source.replace(token_guard, "if(token!==homework18LookupToken||homework18SelectedIndex!==0)return;")
-changes.append("preserve learner candidate selection during async translation")
 
 
 if source != original:
