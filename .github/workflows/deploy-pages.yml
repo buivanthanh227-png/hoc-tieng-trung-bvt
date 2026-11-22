@@ -51,11 +51,14 @@ jobs:
           # Trang chính hiện tại
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
           python3 tools/test_menu18_word_mapping.py site/index.html
+          # Menu 1: independent Hanzi, Pinyin/tone, and Vietnamese search fields.
+          python3 tools/patch_menu1_dictionary_search.py site/index.html
+          python3 tools/test_menu1_dictionary_search.py site/index.html
           # Keep the visible footer version aligned with manifest.webmanifest.
           if grep -q '42.9.3' site/index.html; then
             sed -i 's/42[.]9[.]3/42.9.4/g' site/index.html
@@ -87,8 +90,11 @@ jobs:
           if grep -q '42.10.3' site/index.html; then
             sed -i 's/42[.]10[.]3/42.10.4/g' site/index.html
           fi
-          if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1|42[.]10[.]3' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.4."
+          if grep -q '42.10.4' site/index.html; then
+            sed -i 's/42[.]10[.]4/42.10.5/g' site/index.html
+          fi
+          if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1|42[.]10[.]3|42[.]10[.]4' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.5."
             exit 1
           fi
 
@@ -175,7 +181,7 @@ jobs:
                   echo "::error::Production vẫn chứa logic tra từng âm tiết độc lập đã bị loại bỏ."
                   exit 1
                 fi
-                for marker in 'state.rows.concat([item.row])' 'if(ranked.length)add(ranked[0]);' 'async function renderHomework18Candidates(candidates)' 'await renderHomework18Candidates(candidates)' 'found.size);' 'MENU18_SINGLE_POSITION_TONE_VARIANTS_V1' 'homework18-modal-backdrop' 'homework18PageSize=10' 'data-page-prev' 'data-page-next' 'formatHomework18PinyinByInput' 'split(/[\s,，、;；]+/)' 'homework18ModalClickBound' 'Không tìm thấy kết quả khớp chính xác' 'homework18-candidate-vi' 'await Promise.all('; do
+                for marker in 'state.rows.concat([item.row])' 'if(ranked.length)add(ranked[0]);' 'async function renderHomework18Candidates(candidates)' 'await renderHomework18Candidates(candidates)' 'found.size);' 'MENU18_SINGLE_POSITION_TONE_VARIANTS_V1' 'homework18-modal-backdrop' 'homework18PageSize=10' 'data-page-prev' 'data-page-next' 'formatHomework18PinyinByInput' 'split(/[\s,，、;；]+/)' 'homework18ModalClickBound' 'Không tìm thấy kết quả khớp chính xác' 'MENU1_THREE_FIELD_DICTIONARY_SEARCH_V1' 'dict-search-hanzi' 'dict-search-pinyin' 'dict-search-meaning' 'data-dict-tone="5"' 'homework18-candidate-vi' 'await Promise.all('; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu logic Menu 18: $marker"
                     exit 1
