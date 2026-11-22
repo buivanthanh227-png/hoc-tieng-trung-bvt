@@ -73,18 +73,20 @@ function openHomework18CandidateModal(item,index,total){
   try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return true;}}catch(_){}
   const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';document.body.appendChild(area);area.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}area.remove();return ok;
  };
- const playSyllables=async()=>{
-  const syllables=String(item.py||'').trim().split(/\s+/).filter(Boolean);
-  for(const syllable of syllables){
-   const base=pinyin18Key(syllable).replace(/ü|u:/g,'v');
-   const tone=typeof pinyin18ToneFromInput==='function'?pinyin18ToneFromInput(syllable):null;
-   const url='https://cdn.jsdelivr.net/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/cmn-'+base+(tone||5)+'.mp3';
-   try{await new Promise((resolve,reject)=>{const audio=new Audio(url);audio.onended=resolve;audio.onerror=reject;audio.play().catch(reject);});}
-   catch(_){if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(zh);utterance.lang='zh-CN';window.speechSynthesis.speak(utterance);}break;}
-  }
+ const speakMandarinSentence=(text,rate=0.92)=>{
+  if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined')return false;
+  window.speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(String(text||'').trim());
+  utterance.lang='zh-CN';utterance.rate=rate;utterance.pitch=1;
+  const voices=window.speechSynthesis.getVoices?.()||[];
+  const voice=voices.find(v=>/^zh-CN$/i.test(v.lang))||voices.find(v=>/^zh/i.test(v.lang));
+  if(voice)utterance.voice=voice;
+  window.speechSynthesis.speak(utterance);return true;
  };
+ const playHanziSentence=()=>speakMandarinSentence(zh,0.92);
+ const playPinyinSentence=()=>speakMandarinSentence(py,0.96);
  modal.querySelectorAll('[data-homework18-copy]').forEach(button=>button.addEventListener('click',async()=>{const key=button.dataset.homework18Copy,ok=await copy(values[key]||'');button.textContent=ok?'Đã sao chép ✓':'Không sao chép được';}));
- modal.querySelectorAll('[data-homework18-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework18Speak;if(kind==='zh'||kind==='py'){playSyllables();return;}if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(vi);utterance.lang='vi-VN';window.speechSynthesis.speak(utterance);}}));
+ modal.querySelectorAll('[data-homework18-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework18Speak;if(kind==='zh'){playHanziSentence();return;}if(kind==='py'){playPinyinSentence();return;}if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(vi);utterance.lang='vi-VN';window.speechSynthesis.speak(utterance);}}));
  modal.querySelector('.homework18-modal-close').addEventListener('click',closeHomework18CandidateModal);
  modal.addEventListener('click',e=>{if(e.target===modal)closeHomework18CandidateModal();});
  modal.querySelector('[data-prev]').addEventListener('click',()=>{if(index>0)openHomework18CandidateModal(homework18Candidates[index-1],index-1,total);});
@@ -110,7 +112,7 @@ async function renderHomework18Candidates(candidates){
  const renderHomework18Page=()=>{
   const pageCount=Math.max(1,Math.ceil(list.length/homework18PageSize)),start=homework18CandidatePage*homework18PageSize,end=Math.min(start+homework18PageSize,list.length);
   const nav=position=>'<div class="homework18-pagination" data-pagination="'+position+'"><button type="button" data-page-prev '+(homework18CandidatePage===0?'disabled':'')+'>‹ Trang trước</button><span>Trang '+(homework18CandidatePage+1)+' / '+pageCount+'</span><button type="button" data-page-next '+(homework18CandidatePage>=pageCount-1?'disabled':'')+'>Trang sau ›</button></div>';
-  box.innerHTML=nav('top')+'<div class="homework18-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
+  box.innerHTML=nav('top')+'<div class="homework18-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
   box.querySelectorAll('[data-page-prev]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage>0){homework18CandidatePage--;renderHomework18Page();}}));
   box.querySelectorAll('[data-page-next]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage<pageCount-1){homework18CandidatePage++;renderHomework18Page();}}));
   if(!document.documentElement.dataset.homework18ModalClickBound){document.documentElement.dataset.homework18ModalClickBound='1';document.addEventListener('click',event=>{const button=event.target?.closest?.('[data-homework18-candidate]'),current=Array.isArray(homework18Candidates)?homework18Candidates:[],host=$('homework18-candidates');if(!button||!host?.contains(button))return;const index=Number(button.dataset.homework18Candidate),item=current[index];if(!item)return;homework18SelectedCandidateIndex=index;host.querySelectorAll('[data-homework18-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework18Candidate)===index));try{openHomework18CandidateModal(item,index,current.length);const liveStatus=$('homework18-status');if(liveStatus)liveStatus.textContent='Đang xem kết quả '+(index+1)+' / '+current.length+'.';}catch(error){console.error('Menu 18 modal error',error);const liveStatus=$('homework18-status');if(liveStatus)liveStatus.textContent='Không mở được hộp chi tiết: '+(error?.message||String(error));}},true);}
@@ -130,7 +132,7 @@ elif source.count(lookup_replacement) != 1:
 
 old_css = ".homework18-candidates:not([hidden]){display:block!important;margin:7px 0 9px!important}"
 new_css = """.homework18-candidates{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:4px 0 8px!important;padding:0!important}
-.homework18-candidate-zh{color:#7b3fa1!important}.homework18-candidate-py{color:#2563a6!important}.homework18-candidate-vi{font-size:12px;line-height:1.45;color:#21805b!important;font-weight:650;overflow-wrap:anywhere}
+.homework18-candidate-py{order:0;color:#1769c2!important;font-size:18px!important;font-weight:850!important;line-height:1.5!important;letter-spacing:.01em;overflow-wrap:anywhere}.homework18-candidate-zh{order:1;color:#7b3fa1!important;font-size:16px!important;font-weight:750!important;line-height:1.4!important}.homework18-candidate-vi{order:2;font-size:12px;line-height:1.45;color:#21805b!important;font-weight:650;overflow-wrap:anywhere}
 .homework18-modal-backdrop{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62)}
 .homework18-modal{width:min(100%,520px);max-height:min(88dvh,760px);overflow:auto;background:#fff;color:#182230;border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.28)}
 .homework18-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:16px}
@@ -138,7 +140,7 @@ new_css = """.homework18-candidates{display:grid!important;grid-template-columns
 .homework18-modal-line{padding:12px 0;border-bottom:1px solid #eaecf0}
 .homework18-modal-line b{display:block;font-size:11px;letter-spacing:.06em;margin-bottom:5px}
 .homework18-modal-value{font-size:22px;font-weight:800;line-height:1.45;overflow-wrap:anywhere}
-.homework18-modal-line.is-hanzi{color:#7b3fa1}.homework18-modal-line.is-pinyin{color:#2563a6}.homework18-modal-line.is-meaning{color:#21805b}
+.homework18-modal-line.is-hanzi{color:#7b3fa1}.homework18-modal-line.is-pinyin{color:#1769c2}.homework18-modal-line.is-pinyin .homework18-modal-value{font-size:29px;font-weight:900;line-height:1.5}.homework18-modal-line.is-meaning{color:#21805b}
 .homework18-modal-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.homework18-modal-actions button{border:1px solid #cbd5e1;border-radius:8px;padding:7px 10px;background:#f8fafc;color:#243247;font-size:12px;font-weight:750;cursor:pointer}
 .homework18-modal-nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px}
 .homework18-modal-nav button{border:1px solid #d0d5dd;border-radius:9px;padding:9px 14px;background:#f9fafb;font-weight:750}
@@ -154,7 +156,7 @@ new_css = """.homework18-candidates{display:grid!important;grid-template-columns
 .homework18-candidate-content{display:grid;gap:3px;min-width:0}
 .homework18-candidate-zh{font-size:19px;font-weight:850;line-height:1.35;overflow-wrap:anywhere}
 .homework18-candidate-py{font-size:11px;line-height:1.4;color:var(--muted,#667085);overflow-wrap:anywhere}
-@media(max-width:430px){.homework18-candidates{grid-template-columns:1fr}.homework18-candidate{padding:8px}.homework18-candidate-zh{font-size:18px}}"""
+@media(max-width:430px){.homework18-candidates{grid-template-columns:1fr}.homework18-candidate{padding:8px}.homework18-candidate-py{font-size:19px!important}.homework18-candidate-zh{font-size:16px!important}}"""
 if source.count(old_css) == 1:
     source = source.replace(old_css, new_css, 1)
 elif source.count(new_css) != 1:
