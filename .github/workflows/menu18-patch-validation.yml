@@ -75,7 +75,7 @@ jobs:
               'tā hái méiyǒu gōngzuò',
               'function homework18ValidVietnameseMeaning(item)',
               'function formatHomework18PinyinByWord(zh,py)',
-              "const py=formatHomework18PinyinByWord(zh,pinyinForChinese(zh,String(result.py||'')));",
+              "const py=formatHomework18PinyinByWord(zh,String(result.py||pinyinForChinese(zh)));",
               'pinyin18DisplayKey(value)',
               '.slice(0,5)',
               'Chưa tìm được phương án ghép hợp lệ.',
@@ -140,9 +140,12 @@ jobs:
           path_end = html.index('function pinyinToChineseCandidates', path_start)
           key_start = html.index('function pinyin18Key(value){')
           key_end = html.index('function pinyin18LexiconKey', key_start)
+          tone_start = html.index('function pinyin18ToneFromInput(value)')
+          tone_end = html.index('let pinyin18IndexSource=', tone_start)
           path_test_js = '\n'.join([
               "const assert = require('node:assert/strict');",
               html[key_start:key_end],
+              html[tone_start:tone_end],
               html[path_start:path_end],
               """
               const paths = pinyin18SyllablePaths('jintian', new Set(['jin','tian','ti','an']));
@@ -150,7 +153,23 @@ jobs:
               assert.ok(paths.some(path => path.join(' ') === 'jin ti an'), 'keep alternate segmentation');
               assert.equal(pinyin18SyllablePaths('zzzzzz', new Set(['jin','tian','ti','an'])).length, 0);
               assert.equal(pinyin18SyllablePaths('wo jia you', new Set(['wo','jia','you'])).length, 1);
-              console.log('Menu 18 multi-segmentation regression tests: PASS');
+              const explicit = pinyin18SyllablePaths('ni jin le ma', new Set(['ni','jin','le','ma','ji','n']));
+              assert.equal(explicit.length, 1, 'do not split valid user-separated syllables');
+              assert.deepEqual(explicit[0], ['ni','jin','le','ma']);
+              const jinCandidates = [
+                {zh:'你今了吗',py:'nǐ jīn le ma',priority:100},
+                {zh:'你仅了吗',py:'nǐ jǐn le ma',priority:90},
+                {zh:'你进了吗',py:'nǐ jìn le ma',priority:80},
+                {zh:'你惊了吗',py:'nǐ jīng le ma',priority:999}
+              ];
+              const diverse = pinyin18SelectToneDiverse(jinCandidates,'ni jin le ma',16);
+              const jinTones = [...new Set(diverse.map(item=>pinyin18ToneFromInput(item.py.split(/\\s+/)[1])))].sort();
+              assert.deepEqual(jinTones,[1,3,4], 'expose all dictionary-supported tones for jin');
+              assert.ok(diverse.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')), 'never substitute another Pinyin syllable');
+              const fixedTone = pinyin18SelectToneDiverse(jinCandidates,'nǐ jìn le ma',16);
+              assert.ok(fixedTone.length>0);
+              assert.ok(fixedTone.every(item=>pinyin18ToneFromInput(item.py.split(/\\s+/)[0])===3&&pinyin18ToneFromInput(item.py.split(/\\s+/)[1])===4), 'honor tones explicitly entered by learner');
+              console.log('Menu 18 syllable-boundary and tone-diversity tests: PASS');
               """
           ])
           with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
@@ -224,6 +243,7 @@ jobs:
               }
               const maTones = {1:'妈', 2:'麻', 3:'马', 4:'骂', 5:'吗'};
               assert.equal(Object.keys(PINYIN18_SINGLE_TONE_WORDS[pinyin18Key('ma')]).length, 5, 'unmarked ma exposes all five tone variants');
+              assert.deepEqual(Object.keys(PINYIN18_SINGLE_TONE_WORDS.jin).map(Number).sort(),[1,3,4], 'jin has dictionary-supported tones 1, 3 and 4');
               for (const [tone, hanzi] of Object.entries(maTones)) {
                 const token = 'ma' + tone;
                 const value = PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(token)][tone];
