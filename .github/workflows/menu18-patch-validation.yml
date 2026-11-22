@@ -1,19 +1,17 @@
-name: Menu 18 patch validation
+name: Menu 18 independent mapping validation
 
 on:
   push:
     branches:
       - main
-      - fix/menu18-round3-contextual-phrases-20261122
-      - fix/menu18-pinyin-word-format-20261122
+      - fix/menu18-independent-token-mapping-v42-9-9
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
       - 'tools/patch_menu18_word_mapping.py'
       - 'tools/patch_menu18_multicandidate.py'
-      - 'tools/test_menu18_word_mapping.py'
-      - 'manifest.webmanifest'
-      - 'sw.js'
+      - 'tools/patch_menu18_independent_mapping.py'
+      - 'tools/test_menu18_independent_mapping.py'
       - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
   pull_request:
@@ -23,9 +21,8 @@ on:
       - 'tools/patch_menu18_ranking.py'
       - 'tools/patch_menu18_word_mapping.py'
       - 'tools/patch_menu18_multicandidate.py'
-      - 'tools/test_menu18_word_mapping.py'
-      - 'manifest.webmanifest'
-      - 'sw.js'
+      - 'tools/patch_menu18_independent_mapping.py'
+      - 'tools/test_menu18_independent_mapping.py'
       - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
 
@@ -33,283 +30,25 @@ permissions:
   contents: read
 
 jobs:
-  validate-menu18-patch:
+  validate-menu18-independent-mapping:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Setup Node.js for inline JavaScript syntax validation
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Apply Menu 18 overlay twice (idempotence)
+      - name: Apply all Menu 18 overlays and verify idempotence
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/menu18-patch-check
-          cp index.html /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_multicandidate.py /tmp/menu18-patch-check/index.html
-          python3 tools/patch_menu18_multicandidate.py /tmp/menu18-patch-check/index.html
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py
-          python3 tools/test_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
-
-      - name: Verify regression phrases, tone map, and JavaScript syntax
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import subprocess
-          import tempfile
-
-          html = Path('/tmp/menu18-patch-check/index.html').read_text(encoding='utf-8')
-          required = [
-              "'ke yi':['可以','kě yǐ','có thể']",
-              "'ke ren':['客人','kè rén','khách']",
-              "'jin tian wo jia you ke ren':['今天我家有客人','jīn tiān wǒ jiā yǒu kè rén','Hôm nay nhà tôi có khách.']",
-              'ma ma wo ai ni',
-              'wo ai wo ma ma',
-              'wo qi ma',
-              'ta ma wo',
-              'wo shi xue sheng',
-              'xian zai shi dian',
-              'wo yao yi bei shui',
-              'wo de yi fu hen hao kan',
-              'wo zuo zai yi zi shang',
-              'wo xiang mai yi ge ping guo',
-              'wo men you shi jian',
-              'wo men qu you yong',
-              'wo zai zhong guo xue zhong wen',
-              'wo zhong yu dao le',
-              'zhong yao de shi',
-              'wo jia you san ge ren',
-              'wo xiang xue xi zhong wen',
-              'ta hai mei you gongzuo',
-              'tā hái méiyǒu gōngzuò',
-              'function homework18ValidVietnameseMeaning(item)',
-              'function formatHomework18PinyinByWord(zh,py)',
-              'function pinyin18DisplayKey(value)',
-              'function pinyin18ToneFromInput(value)',
-              'function pinyinToChineseCandidates(raw){',
-              'MENU18_MULTICANDIDATE_SENTENCE_SEARCH',
-              'Chọn phương án phù hợp với ý bạn',
-              'data-homework18-candidate',
-              'let homework18SelectedCandidateIndex=0;',
-              'function renderHomework18Candidates(candidates){',
-              "machineTranslate(item.zh,'zh-CN','vi')",
-              'pinyin18SelectToneDiverse(',
-              'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.',
-              "raw=$('homework18-query').value,query=raw.trim()",
-              "'is-'+kind",
-              'function pinyin18SyllablePaths(raw,syllables){'
-          ]
-          missing = [item for item in required if item not in html]
-          if missing:
-              raise SystemExit('Missing Menu 18 regression item(s): ' + ', '.join(missing))
-          retired = [
-              'function getPinyin18CompactIndex()',
-              'wordMapping:true',
-              'Ánh xạ độc lập theo từng từ · không ghép tổ hợp',
-              'if(best.wordMapping){',
-              'if(!hasExactPhraseSource){',
-              '.homework18-candidates{display:none!important}'
-          ]
-          present = [item for item in retired if item in html]
-          if present:
-              raise SystemExit('Retired dictionary-only Menu 18 behavior is present: ' + ', '.join(present))
-
-          marker = 'const PINYIN18_SINGLE_TONE_WORDS={'
-          marker_index = html.find(marker)
-          if marker_index < 0:
-              raise SystemExit('Single-syllable tone dictionary missing')
-          script_open = html.rfind('<script', 0, marker_index)
-          if script_open < 0:
-              raise SystemExit('Could not locate inline script opening tag')
-          script_start = html.find('>', script_open) + 1
-          script_end = html.find('</script>', marker_index)
-          if script_start <= 0 or script_end < 0:
-              raise SystemExit('Could not isolate Menu 18 inline script')
-          js = html[script_start:script_end]
-          with tempfile.NamedTemporaryFile('w', suffix='.js', encoding='utf-8', delete=False) as handle:
-              handle.write(js)
-              js_path = handle.name
-          subprocess.run(['node', '--check', js_path], check=True)
-
-          # Execute the exact shipped Menu 18 candidate validator in an isolated Node process.
-          validator_start = html.index('function homework18ValidVietnameseMeaning(item){')
-          validator_end = html.index('function renderHomework18Candidates', validator_start)
-          validator_js = html[validator_start:validator_end]
-          validator_test = '\n'.join([
-              "const assert = require('node:assert/strict');",
-              validator_js,
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Anh ấy vẫn chưa có việc làm.'}), true);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'1 u 2c 3'}), false);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Chưa có nghĩa tiếng Việt trong dữ liệu hiện tại.'}), false);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'中文 nghĩa'}), false);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:''}), true);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作'}), true);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'有',vi:'có'}), true);",
-              "console.log('Menu 18 Vietnamese candidate quality and pending-lookup tests: PASS');"
-          ])
-          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
-              handle.write(validator_test)
-              validator_path = handle.name
-          subprocess.run(['node', validator_path], check=True)
-
-          # Execute the shipped syllable splitter: retain both shortest and alternate boundaries.
-          path_start = html.index('function pinyin18SyllablePaths(raw,syllables){')
-          path_end = html.index('function pinyin18SelectToneDiverse', path_start)
-          key_start = html.index('function pinyin18Key(value){')
-          key_end = html.index('function pinyin18LexiconKey', key_start)
-          tone_start = html.index('function pinyin18ToneFromInput(value)')
-          tone_end = html.index('let pinyin18IndexSource=', tone_start)
-          selector_start = html.index('function pinyin18SelectToneDiverse(candidates,raw,limit=16){')
-          selector_end = html.index('function pinyinToChineseCandidates(raw){', selector_start)
-          if selector_start < 0 or selector_end < 0:
-              raise SystemExit('Could not isolate Menu 18 tone selector')
-          path_test_js = '\n'.join([
-              "const assert = require('node:assert/strict');",
-              html[key_start:key_end],
-              html[tone_start:tone_end],
-              html[path_start:path_end],
-              html[selector_start:selector_end],
-              """
-              const paths = pinyin18SyllablePaths('jintian', new Set(['jin','tian','ti','an']));
-              assert.ok(paths.some(path => path.join(' ') === 'jin tian'), 'keep standard segmentation');
-              assert.ok(paths.some(path => path.join(' ') === 'jin ti an'), 'keep alternate segmentation');
-              assert.equal(pinyin18SyllablePaths('zzzzzz', new Set(['jin','tian','ti','an'])).length, 0);
-              assert.equal(pinyin18SyllablePaths('wo jia you', new Set(['wo','jia','you'])).length, 1);
-              const explicit = pinyin18SyllablePaths('ni jin le ma', new Set(['ni','jin','le','ma','ji','n']));
-              assert.equal(explicit.length, 1, 'do not split valid user-separated syllables');
-
-              assert.deepEqual(explicit[0], ['ni','jin','le','ma']);
-              pinyin18Syllables = new Set(['ni','jin','le','ma','ji','n','tian','ti','an','wo','jia','you','ke','ren','jing']);
-              const mixedCandidates = [
-                {zh:'今天我家有客人',py:'jīn tiān wǒ jiā yǒu kè rén',priority:100},
-                {zh:'今田我家有客人',py:'jīn tián wǒ jiā yǒu kè rén',priority:90},
-                {zh:'今天我家有京人',py:'jīn tiān wǒ jiā yǒu jīng rén',priority:999}
-              ];
-              const mixed = pinyin18SelectToneDiverse(mixedCandidates,'jintian wo jia you ke ren',16);
-              assert.ok(mixed.some(item=>item.zh==='今天我家有客人'), 'accept a compact first word with following spaced words');
-              assert.ok(mixed.every(item=>item.py.split(' ').map(pinyin18Key).join(' ')==='jin tian wo jia you ke ren'), 'keep the exact syllable sequence after compact-word expansion');
-              assert.ok(mixed.every(item=>!item.py.includes('jīng rén')), 'reject substituted syllables even when they rank higher');
-
-              const jinCandidates = [
-                {zh:'你今了吗',py:'nǐ jīn le ma',priority:100},
-                {zh:'你仅了吗',py:'nǐ jǐn le ma',priority:90},
-                {zh:'你进了吗',py:'nǐ jìn le ma',priority:80},
-                {zh:'你惊了吗',py:'nǐ jīng le ma',priority:999}
-              ];
-              const diverse = pinyin18SelectToneDiverse(jinCandidates,'ni jin le ma',16);
-              const jinTones = [...new Set(diverse.map(item=>pinyin18ToneFromInput(item.py.split(' ')[1])))].sort();
-              assert.deepEqual(jinTones,[1,3,4], 'expose all dictionary-supported tones for jin');
-              assert.ok(diverse.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')), 'never substitute another Pinyin syllable');
-              const fixedTone = pinyin18SelectToneDiverse(jinCandidates,'nǐ jìn le ma',16);
-              assert.ok(fixedTone.length>0);
-              assert.ok(fixedTone.every(item=>pinyin18ToneFromInput(item.py.split(' ')[0])===3&&pinyin18ToneFromInput(item.py.split(' ')[1])===4), 'honor tones explicitly entered by learner');
-              console.log('Menu 18 syllable-boundary and tone-diversity tests: PASS');
-              """
-          ])
-          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
-              handle.write(path_test_js)
-              path_test = handle.name
-          subprocess.run(['node', path_test], check=True)
-
-          # Verify word-level Pinyin spacing without changing internal syllable segmentation.
-          formatter_start = html.index('function pinyin18DisplayKey(value){')
-          formatter_end = html.index('function renderHomework18Candidates', formatter_start)
-          word_start = html.index('const PINYIN18_COMMON_WORDS={')
-          word_end = html.index('};', word_start) + 2
-          formatter_test_js = '\n'.join([
-              "const assert = require('node:assert/strict');",
-              html[word_start:word_end],
-              html[formatter_start:formatter_end],
-              """
-              assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān'), 'jīntiān');
-              assert.equal(formatHomework18PinyinByWord('可以', 'kè yì'), 'kěyǐ', 'use canonical dictionary tones, not incorrect generated tones');
-              assert.equal(formatHomework18PinyinByWord('可以', 'Kè yì'), 'Kěyǐ', 'preserve sentence-initial capitalization');
-              assert.equal(formatHomework18PinyinByWord('可以', 'kě yǐ'), 'kěyǐ');
-
-              assert.equal(formatHomework18PinyinByWord('今天', 'Jīn tiān'), 'Jīntiān');
-              assert.equal(formatHomework18PinyinByWord('今天我家有客人', 'jīn tiān wǒ jiā yǒu kè rén'), 'jīntiān wǒ jiā yǒu kèrén');
-              assert.equal(formatHomework18PinyinByWord('中国学生', 'zhōng guó xué shēng'), 'zhōngguó xuésheng');
-              assert.equal(formatHomework18PinyinByWord('我爱你', 'wǒ ài nǐ'), 'wǒ ài nǐ');
-              assert.equal(formatHomework18PinyinByWord('妈妈我爱你', 'mā ma wǒ ài nǐ'), 'māma wǒ ài nǐ');
-              assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān extra'), 'jīn tiān extra');
-              console.log('Menu 18 word-level Pinyin display formatting tests: PASS');
-              """
-          ])
-          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
-              handle.write(formatter_test_js)
-              formatter_test_path = handle.name
-          subprocess.run(['node', formatter_test_path], check=True)
-
-          # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
-          word_start = html.index('const PINYIN18_COMMON_WORDS={')
-          word_end = html.index('};', word_start) + 2
-          tone_start = html.index('const PINYIN18_SINGLE_TONE_WORDS={')
-          tone_end = html.index('let pinyin18IndexSource=', tone_start)
-          key_start = html.index('function pinyin18Key(value){')
-          key_end = html.index('function pinyin18LexiconKey', key_start)
-          test_js = '\n'.join([
-              "const assert = require('node:assert/strict');",
-              html[word_start:word_end],
-              html[tone_start:tone_end],
-              html[key_start:key_end],
-              """
-              function preferred(raw) {
-                const key = pinyin18Key(raw);
-                const row = Object.entries(PINYIN18_COMMON_WORDS).find(([phrase]) => pinyin18Key(phrase) === key);
-                return row ? row[1][0] : null;
-              }
-              const regression = [
-                ['ma1 ma5 wo3 ai4 ni3', '妈妈我爱你'],
-                ['mā ma wǒ ài nǐ', '妈妈我爱你'],
-                ['keyi', '可以'],
-                ['ke yi', '可以'],
-                ['wo ai wo ma ma', '我爱我妈妈'],
-                ['wo qi ma', '我骑马'],
-                ['ta ma wo', '他骂我'],
-                ['wo jia you san ge ren', '我家有三个人'],
-                ['wo xiang xue xi zhong wen', '我想学习中文'],
-                ['wo zai zhong guo xue zhong wen', '我在中国学中文'],
-                ['wo zhong yu dao le', '我终于到了'],
-                ['ta hai mei you gongzuo', '他还没有工作'],
-                ['jintian wo jia you ke ren', '今天我家有客人']
-              ];
-              for (const [input, expected] of regression) {
-                assert.equal(preferred(input), expected, 'preferred phrase: ' + input);
-              }
-              const maTones = {1:'妈', 2:'麻', 3:'马', 4:'骂', 5:'吗'};
-              assert.equal(Object.keys(PINYIN18_SINGLE_TONE_WORDS[pinyin18Key('ma')]).length, 5, 'unmarked ma exposes all five tone variants');
-              assert.deepEqual(Object.keys(PINYIN18_SINGLE_TONE_WORDS.jin).map(Number).sort(),[1,3,4], 'jin has dictionary-supported tones 1, 3 and 4');
-              for (const [tone, hanzi] of Object.entries(maTones)) {
-                const token = 'ma' + tone;
-                const value = PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(token)][tone];
-                assert.equal(value[0], hanzi, 'tone mapping: ' + token);
-              }
-              assert.equal(pinyin18ToneFromInput('mā'), 1);
-              assert.equal(pinyin18ToneFromInput('má'), 2);
-              assert.equal(pinyin18ToneFromInput('mǎ'), 3);
-              assert.equal(pinyin18ToneFromInput('mà'), 4);
-              assert.equal(pinyin18ToneFromInput('ma5'), 5);
-              assert.equal(pinyin18Key('mā ma wǒ ài nǐ'), pinyin18Key('ma1 ma5 wo3 ai4 ni3'));
-              assert.ok(pinyin18Key(Array(100).fill('wo').join(' ')).length < 600);
-              assert.equal(preferred('ta hai mei you gongzuo'), '他还没有工作');
-              assert.equal(preferred('jintian wo jia you ke ren'), '今天我家有客人', 'exact input sentence maps to one complete sentence');
-              assert.equal(PINYIN18_COMMON_WORDS['ta hai mei you gongzuo'][1], 'tā hái méiyǒu gōngzuò');
-              console.log('Menu 18 phrase/tone regression unit tests: PASS');
-              """
-          ])
-          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
-              handle.write(test_js)
-              test_path = handle.name
-          subprocess.run(['node', test_path], check=True)
-          print('Menu 18 patch, tone map, contextual phrase map, idempotence and inline JS syntax: PASS')
-          PY
+          mkdir -p /tmp/menu18-check
+          cp index.html /tmp/menu18-check/index.html
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/patch_menu18_independent_mapping.py tools/test_menu18_independent_mapping.py
+          python3 tools/patch_menu18_ranking.py /tmp/menu18-check/index.html
+          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-check/index.html
+          python3 tools/patch_menu18_multicandidate.py /tmp/menu18-check/index.html
+          python3 tools/patch_menu18_independent_mapping.py /tmp/menu18-check/index.html
+          python3 tools/patch_menu18_independent_mapping.py /tmp/menu18-check/index.html
+          python3 tools/test_menu18_independent_mapping.py /tmp/menu18-check/index.html
