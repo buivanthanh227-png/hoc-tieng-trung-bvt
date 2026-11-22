@@ -162,12 +162,14 @@ replace_once(
 )
 
 replace_once(
-    "  });\\n };\\n for(const item of MENU18_VERIFIED_SENTENCES){",
+    """  });
+ };
+ for(const item of MENU18_VERIFIED_SENTENCES){""",
     """  });
  };
  const preferredExact=Object.entries(PINYIN18_COMMON_WORDS).find(([phrase])=>pinyin18Key(phrase)===key);
  if(preferredExact){const [zh,py,vi]=preferredExact[1];addCandidate({zh,py,vi,source:'Cụm từ/câu ưu tiên đã xác minh'},7200);}
- const rawTokens=String(raw||'').trim().split(/[\\\\s,，、;；]+/).filter(Boolean);
+ const rawTokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean);
  if(rawTokens.length===1){
   const tone=pinyin18ToneFromInput(rawTokens[0]);
   const entry=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])]?.[tone];
