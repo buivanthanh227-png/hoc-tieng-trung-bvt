@@ -54,7 +54,7 @@ new_words = """const PINYIN18_COMMON_WORDS={
  'lao shi':['老师','lǎo shī','giáo viên'],'gong zuo':['工作','gōng zuò','công việc'],'chi fan':['吃饭','chī fàn','ăn cơm'],'he shui':['喝水','hē shuǐ','uống nước'],'ke yi':['可以','kě yǐ','có thể'],'ke ren':['客人','kè rén','khách'],
  'shen me':['什么','shén me','cái gì'],'zen me':['怎么','zěn me','thế nào'],'xian zai':['现在','xiàn zài','bây giờ'],'zai jian':['再见','zài jiàn','tạm biệt'],'xie xie':['谢谢','xiè xie','cảm ơn'],
  'dui bu qi':['对不起','duì bu qǐ','xin lỗi'],'mei guan xi':['没关系','méi guān xi','không sao'],'bu ke qi':['不客气','bú kè qi','không có gì'],
- 'ni hao':['你好','nǐ hǎo','xin chào'],'ni hao ma':['你好吗','nǐ hǎo ma','bạn khỏe không?'],'bu zhi dao':['不知道','bù zhī dào','không biết'],'wo bu zhi dao':['我不知道','wǒ bù zhī dào','tôi không biết'],
+ 'ni hao':['你好','nǐ hǎo','xin chào'],'ni hao ma':['你好吗','nǐ hǎo ma','bạn khỏe không?'],'ni jin le ma':['你进了吗','nǐ jìn le ma','Bạn vào được chưa?'],'bu zhi dao':['不知道','bù zhī dào','không biết'],'wo bu zhi dao':['我不知道','wǒ bù zhī dào','tôi không biết'],
  'xi huan':['喜欢','xǐ huan','thích'],'jia li':['家里','jiā lǐ','trong nhà'],'hui jia':['回家','huí jiā','về nhà'],'shang ke':['上课','shàng kè','vào học'],'xia ke':['下课','xià kè','tan học'],
  'duo shao qian':['多少钱','duō shao qián','bao nhiêu tiền'],'qing wen':['请问','qǐng wèn','xin hỏi'],'yi dian':['一点','yì diǎn','một chút'],'you yi dian':['有一点','yǒu yì diǎn','có một chút'],
  'san ge ren':['三个人','sān ge rén','ba người'],'zhong wen':['中文','zhōng wén','tiếng Trung'],
@@ -133,6 +133,12 @@ replace_once(
     """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
        const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0;""",
     "contextual sentence scoring"
+)
+
+replace_once(
+    "state.rows.concat(item.row)",
+    "state.rows.concat([item.row])",
+    "preserve nested dictionary rows during sentence composition"
 )
 
 replace_once(
@@ -450,6 +456,8 @@ selector_code = r"""function pinyin18SelectToneDiverse(candidates,raw,limit=16){
   if(selectedIds.has(id))return;
   selectedIds.add(id);selected.push(row);
  };
+ // Keep the highest-ranked complete sentence first (usually the exact verified phrase).
+ if(ranked.length)add(ranked[0]);
  const positions=ranked.length?ranked[0].tokens.map((_,index)=>{
   const toneRows=new Map();
   for(const row of ranked){
