@@ -67,7 +67,10 @@ jobs:
           if grep -q '42.9.6' site/index.html; then
             sed -i 's/42\\.9\\.6/42.9.7/g' site/index.html
           fi
-          if grep -Eq '42.9\\.[3456]' site/index.html; then
+          if grep -q '42.9.7' site/index.html; then
+            sed -i 's/42\\.9\\.7/42.9.8/g' site/index.html
+          fi
+          if grep -Eq '42.9\\.[34567]' site/index.html; then
             echo "::error::Footer version is not aligned with V42.9.7."
             exit 1
           fi
@@ -149,6 +152,10 @@ jobs:
                 html="$(curl --fail --silent --show-error --location --max-time 20 "$BASE_URL/index.html")"
                 if ! grep -q 'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.' <<< "$html"; then
                   echo "::error::Production thiếu logic dịch toàn câu Menu 18."
+                  exit 1
+                fi
+                if ! grep -q 'Chọn phương án phù hợp với ý bạn' <<< "$html" || ! grep -q 'MENU18_MULTICANDIDATE_SENTENCE_SEARCH' <<< "$html"; then
+                  echo "::error::Production thiếu bộ chọn nhiều phương án thanh điệu Menu 18."
                   exit 1
                 fi
                 echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có logic Menu 18 mới."
