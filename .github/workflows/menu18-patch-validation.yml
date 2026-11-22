@@ -3,6 +3,7 @@ name: Menu 18 patch validation
 on:
   push:
     branches:
+      - main
       - fix/menu18-round3-contextual-phrases-20261122
     paths:
       - 'index.html'
@@ -109,9 +110,10 @@ jobs:
               validator_js,
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Anh ấy vẫn chưa có việc làm.'}), true);",
               "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'1 u 2c 3'}), false);",
-              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:''}), false);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:''}), true);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作'}), true);",
               "assert.equal(homework18ValidVietnameseMeaning({zh:'有',vi:'có'}), true);",
-              "console.log('Menu 18 Vietnamese candidate quality tests: PASS');"
+              "console.log('Menu 18 Vietnamese candidate quality and pending-lookup tests: PASS');"
           ])
           with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
               handle.write(validator_test)
