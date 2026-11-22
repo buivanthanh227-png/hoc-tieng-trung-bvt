@@ -102,7 +102,7 @@ jobs:
 
           # Execute the exact shipped Menu 18 candidate validator in an isolated Node process.
           validator_start = html.index('function homework18ValidVietnameseMeaning(item){')
-          validator_end = html.index('\\nfunction renderHomework18Candidates', validator_start)
+          validator_end = html.index('function renderHomework18Candidates', validator_start)
           validator_js = html[validator_start:validator_end]
           validator_test = '\\n'.join([
               "const assert = require('node:assert/strict');",
