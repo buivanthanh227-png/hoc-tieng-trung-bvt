@@ -74,7 +74,7 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - Workflow kiểm tra bản vá chạy lặp, cú pháp Python/JavaScript và các kiểm thử hồi quy thanh điệu trước khi xuất bản.
 
 
-## Menu 18 — tìm nhiều phương án thanh điệu cho toàn câu (V42.10.0)
+## Menu 18 — tìm nhiều phương án thanh điệu cho toàn câu (V42.10.1)
 
 - Menu 18 dùng cùng kiểu kết quả câu hoàn chỉnh như Menu 3; không trả danh sách tra từng âm tiết.
 - Với Pinyin không dấu, hệ thống thử các thanh điệu từ điển cho từng âm tiết, sau đó ghép và xếp hạng các phương án ở cấp toàn câu.
@@ -83,3 +83,8 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - Thẻ kết quả có nút sao chép chữ Hán, Pinyin, nghĩa và nút loa đọc chữ Hán/nghĩa, theo luồng kết quả của Menu 3.
 - Chuỗi gốc người dùng nhập được giữ nguyên; chuẩn hóa chỉ phục vụ tra cứu.
 - Workflow regression kiểm tra selector nhiều thanh điệu, đầu ra câu hoàn chỉnh, định dạng Pinyin và các thao tác sao chép/loa.
+
+- Bản V42.10.1 sửa lỗi nối mảng hàng từ điển trong bộ ghép câu; mỗi hàng CVDICT được giữ nguyên cấu trúc nên Pinyin của câu không bị hỏng.
+- Ưu tiên câu hoàn chỉnh đã xác minh `ni jin le ma` → `你进了吗` (`nǐ jìn le ma`, “Bạn vào được chưa?”); bộ chọn vẫn thử các thanh điệu khác cho âm tiết.
+- Các ứng viên câu ghép chưa có nghĩa offline được dịch theo toàn câu trước khi đưa vào danh sách; chỉ hiển thị ứng viên có nghĩa tiếng Việt hợp lệ.
+- Tự chọn và hiển thị kết quả đầu tiên ngay sau khi xác minh, khôi phục đầy đủ nút sao chép và loa trên thẻ kết quả.
