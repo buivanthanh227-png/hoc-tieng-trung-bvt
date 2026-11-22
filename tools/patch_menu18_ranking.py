@@ -396,8 +396,7 @@ required.extend([
     "Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.",
     "6200-Number(candidateTone)",
     ".slice(0,5)",
-    "requestToken!==homework18LookupToken||homework18SelectedIndex!==index",
-    "Chưa tra được nghĩa tiếng Việt."
+    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0"
 ])
 
 missing = [needle for needle in required if needle not in source]
@@ -510,6 +509,15 @@ function renderHomework18Candidates(candidates){
  return homework18Candidates[0];
 }"""
 replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
+
+ui_required = [
+    "requestToken!==homework18LookupToken||homework18SelectedIndex!==index",
+    "Chưa tra được nghĩa tiếng Việt.",
+    "homework18Candidates).filter"
+]
+missing_ui = [needle for needle in ui_required if needle not in source]
+if missing_ui:
+    raise SystemExit("Menu 18 UI verification failed; missing: " + ", ".join(missing_ui))
 
 
 # Do not let a delayed translation response replace a different candidate
