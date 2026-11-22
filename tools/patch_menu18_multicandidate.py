@@ -61,13 +61,13 @@ let homework18SelectedCandidateIndex=0,homework18CandidateModal=null;
 function closeHomework18CandidateModal(){if(homework18CandidateModal){homework18CandidateModal.remove();homework18CandidateModal=null;}}
 function openHomework18CandidateModal(item,index,total){
  closeHomework18CandidateModal();const zh=String(item.zh||''),py=formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(zh)),vi=String(item.vi||'').trim();
- const modal=document.createElement('div');modal.className='homework18-modal-backdrop';
+ const modal=document.createElement('div');modal.className='homework18-modal-backdrop';modal.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62)';
  modal.innerHTML='<section class="homework18-modal" role="dialog" aria-modal="true"><div class="homework18-modal-head"><strong>Kết quả '+(index+1)+' / '+total+'</strong><button type="button" class="homework18-modal-close">×</button></div>'+
  '<div class="homework18-modal-line is-hanzi"><b>HÁN TỰ</b><div class="homework18-modal-value">'+escapeHTML(zh)+'</div>'+copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')+'</div>'+
  '<div class="homework18-modal-line is-pinyin"><b>PHIÊN ÂM PINYIN</b><div class="homework18-modal-value">'+escapeHTML(py)+'</div>'+copyButton(py,'Pinyin')+'</div>'+
  '<div class="homework18-modal-line is-meaning"><b>NGHĨA TIẾNG VIỆT</b><div class="homework18-modal-value">'+escapeHTML(vi||'Chưa có nghĩa tiếng Việt')+'</div>'+copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')+'</div>'+
  '<div class="homework18-modal-nav"><button type="button" data-prev '+(index===0?'disabled':'')+'>‹ Trước</button><button type="button" data-next '+(index>=total-1?'disabled':'')+'>Tiếp theo ›</button></div></section>';
- document.body.appendChild(modal);homework18CandidateModal=modal;
+ document.body.appendChild(modal);homework18CandidateModal=modal;modal.querySelector('[role=dialog]').style.cssText='width:min(100%,520px);max-height:min(88dvh,760px);overflow:auto;background:#fff;color:#182230;border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.28)';
  modal.querySelector('.homework18-modal-close').addEventListener('click',closeHomework18CandidateModal);
  modal.addEventListener('click',e=>{if(e.target===modal)closeHomework18CandidateModal();});
  modal.querySelector('[data-prev]').addEventListener('click',()=>{if(index>0)openHomework18CandidateModal(homework18Candidates[index-1],index-1,total);});
@@ -95,7 +95,7 @@ async function renderHomework18Candidates(candidates){
   box.innerHTML=nav('top')+'<div class="homework18-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework18-candidate" data-homework18-candidate="'+index+'"><span class="homework18-candidate-number">'+(index+1)+'</span><span class="homework18-candidate-content"><span class="homework18-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework18-candidate-py">'+escapeHTML(formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh)))+'</span><span class="homework18-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
   box.querySelectorAll('[data-page-prev]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage>0){homework18CandidatePage--;renderHomework18Page();}}));
   box.querySelectorAll('[data-page-next]').forEach(button=>button.addEventListener('click',()=>{if(homework18CandidatePage<pageCount-1){homework18CandidatePage++;renderHomework18Page();}}));
-  if(!box.dataset.homework18ModalClickBound){box.dataset.homework18ModalClickBound='1';box.addEventListener('click',event=>{const button=event.target.closest('[data-homework18-candidate]');if(!button||!box.contains(button))return;const index=Number(button.dataset.homework18Candidate),item=list[index];if(!item)return;homework18SelectedCandidateIndex=index;box.querySelectorAll('[data-homework18-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework18Candidate)===index));try{openHomework18CandidateModal(item,index,list.length);if(status)status.textContent='Đang xem kết quả '+(index+1)+' / '+list.length+'.';}catch(error){console.error('Menu 18 modal error',error);if(status)status.textContent='Không mở được hộp chi tiết. Vui lòng chạm lại kết quả.';}});}
+  if(!document.documentElement.dataset.homework18ModalClickBound){document.documentElement.dataset.homework18ModalClickBound='1';document.addEventListener('click',event=>{const button=event.target?.closest?.('[data-homework18-candidate]'),current=Array.isArray(homework18Candidates)?homework18Candidates:[],host=$('homework18-candidates');if(!button||!host?.contains(button))return;const index=Number(button.dataset.homework18Candidate),item=current[index];if(!item)return;homework18SelectedCandidateIndex=index;host.querySelectorAll('[data-homework18-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework18Candidate)===index));try{openHomework18CandidateModal(item,index,current.length);const liveStatus=$('homework18-status');if(liveStatus)liveStatus.textContent='Đang xem kết quả '+(index+1)+' / '+current.length+'.';}catch(error){console.error('Menu 18 modal error',error);const liveStatus=$('homework18-status');if(liveStatus)liveStatus.textContent='Không mở được hộp chi tiết: '+(error?.message||String(error));}},true);}
  };
  renderHomework18Page();
  if(status)status.textContent='Đã xác minh nghĩa tiếng Việt cho '+list.length+' kết quả. Mỗi trang hiển thị tối đa 10 kết quả. Chạm vào một kết quả để xem chi tiết.';return list[0];
@@ -148,7 +148,7 @@ required = [
     "Chọn câu phù hợp ·",
     "async function renderHomework18Candidates(candidates)",
     "await Promise.all(",
-    "openHomework18CandidateModal(item,index,list.length)",
+    "openHomework18CandidateModal(item,index,current.length)",
     "const best=await renderHomework18Candidates(candidates);",
     "machineTranslate(item.zh,'zh-CN','vi')",
     ".homework18-candidates{display:grid!important"
