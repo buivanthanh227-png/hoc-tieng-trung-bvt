@@ -65,9 +65,10 @@ jobs:
 
           html = Path('/tmp/menu18-patch-check/index.html').read_text(encoding='utf-8')
           required = [
-              'ma:{1:[\'妈\',\'mā\',\'mẹ\']',
-              'ma ma wo ai ni',
               "'ke yi':['可以','kě yǐ','có thể']",
+              "'ke ren':['客人','kè rén','khách']",
+              "'jin tian wo jia you ke ren':['今天我家有客人','jīn tiān wǒ jiā yǒu kè rén','Hôm nay nhà tôi có khách.']",
+              'ma ma wo ai ni',
               'wo ai wo ma ma',
               'wo qi ma',
               'ta ma wo',
@@ -87,29 +88,31 @@ jobs:
               'ta hai mei you gongzuo',
               'tā hái méiyǒu gōngzuò',
               'function homework18ValidVietnameseMeaning(item)',
-              'if(item?.wordMapping)',
               'function formatHomework18PinyinByWord(zh,py)',
-              "const py=formatHomework18PinyinByWord(zh,String(result.py||pinyinForChinese(zh)));",
-              'pinyin18DisplayKey(value)',
+              'function pinyin18DisplayKey(value)',
               'function pinyin18ToneFromInput(value)',
               'function pinyin18ToneSignature(value)',
-              'function pinyin18InputToneConstraints(rawToken,pronunciation)',
-              'function getPinyin18CompactIndex()',
               'function pinyinToChineseCandidates(raw){',
-              'function looksLikePinyin18(raw,local){',
-              'results.missingTokens=missingTokens',
-              'wordMapping:true',
-              'Ánh xạ độc lập theo từng từ · không ghép tổ hợp',
-              'if(best.wordMapping){',
+              'function renderHomework18Candidates(candidates){',
+              "machineTranslate(item.zh,'zh-CN','vi')",
+              'pinyin18SelectToneDiverse(',
+              'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.',
               "raw=$('homework18-query').value,query=raw.trim()",
-              'homework18-candidate-tab',
               "'is-'+kind",
-              'function pinyin18SyllablePaths(raw,syllables){',
-              'Không tạo tổ hợp giữa các từ.'
+              'function pinyin18SyllablePaths(raw,syllables){'
           ]
           missing = [item for item in required if item not in html]
           if missing:
               raise SystemExit('Missing Menu 18 regression item(s): ' + ', '.join(missing))
+          retired = [
+              'function getPinyin18CompactIndex()',
+              'wordMapping:true',
+              'Ánh xạ độc lập theo từng từ · không ghép tổ hợp',
+              'if(best.wordMapping){'
+          ]
+          present = [item for item in retired if item in html]
+          if present:
+              raise SystemExit('Retired dictionary-only Menu 18 behavior is present: ' + ', '.join(present))
 
           marker = 'const PINYIN18_SINGLE_TONE_WORDS={'
           marker_index = html.find(marker)
@@ -267,7 +270,8 @@ jobs:
                 ['wo xiang xue xi zhong wen', '我想学习中文'],
                 ['wo zai zhong guo xue zhong wen', '我在中国学中文'],
                 ['wo zhong yu dao le', '我终于到了'],
-                ['ta hai mei you gongzuo', '他还没有工作']
+                ['ta hai mei you gongzuo', '他还没有工作'],
+                ['jintian wo jia you ke ren', '今天我家有客人']
               ];
               for (const [input, expected] of regression) {
                 assert.equal(preferred(input), expected, 'preferred phrase: ' + input);
@@ -288,6 +292,7 @@ jobs:
               assert.equal(pinyin18Key('mā ma wǒ ài nǐ'), pinyin18Key('ma1 ma5 wo3 ai4 ni3'));
               assert.ok(pinyin18Key(Array(100).fill('wo').join(' ')).length < 600);
               assert.equal(preferred('ta hai mei you gongzuo'), '他还没有工作');
+              assert.equal(preferred('jintian wo jia you ke ren'), '今天我家有客人', 'exact input sentence maps to one complete sentence');
               assert.equal(PINYIN18_COMMON_WORDS['ta hai mei you gongzuo'][1], 'tā hái méiyǒu gōngzuò');
               console.log('Menu 18 phrase/tone regression unit tests: PASS');
               """

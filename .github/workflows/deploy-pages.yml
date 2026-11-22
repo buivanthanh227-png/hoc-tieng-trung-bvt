@@ -61,10 +61,13 @@ jobs:
             sed -i 's/42\.9\.4/42.9.5/g' site/index.html
           fi
           if grep -q '42.9.5' site/index.html; then
-            sed -i 's/42\.9\.5/42.9.6/g' site/index.html
+            sed -i 's/42\\.9\\.5/42.9.6/g' site/index.html
           fi
-          if grep -Eq '42\.9\.[345]' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.9.6."
+          if grep -q '42.9.6' site/index.html; then
+            sed -i 's/42\\.9\\.6/42.9.7/g' site/index.html
+          fi
+          if grep -Eq '42.9\\.[3456]' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.9.7."
             exit 1
           fi
 
@@ -143,8 +146,8 @@ jobs:
             if body="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/build-info.json" 2>/dev/null)"; then
               if actual_sha="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("git_sha", ""))' <<< "$body" 2>/dev/null)" && [ "$actual_sha" = "$EXPECTED_SHA" ]; then
                 html="$(curl --fail --silent --show-error --location --max-time 20 "$BASE_URL/index.html")"
-                if ! grep -q 'Ánh xạ độc lập theo từng từ' <<< "$html"; then
-                  echo "::error::Production thiếu logic ánh xạ độc lập Menu 18."
+                if ! grep -q 'Nghĩa tiếng Việt sẽ được tra cho toàn câu sau khi chọn phương án.' <<< "$html"; then
+                  echo "::error::Production thiếu logic dịch toàn câu Menu 18."
                   exit 1
                 fi
                 echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có logic Menu 18 mới."

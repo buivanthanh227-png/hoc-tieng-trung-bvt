@@ -71,7 +71,7 @@ new_words = """const PINYIN18_COMMON_WORDS={
  'yi ge ping guo':['一个苹果','yí ge píng guǒ','một quả táo.'],'wo xiang mai yi ge ping guo':['我想买一个苹果','wǒ xiǎng mǎi yí ge píng guǒ','Tôi muốn mua một quả táo.'],
  'wo men you shi jian':['我们有时间','wǒ men yǒu shí jiān','Chúng tôi có thời gian.'],'wo zai you bian':['我在右边','wǒ zài yòu biān','Tôi ở bên phải.'],
  'wo men qu you yong':['我们去游泳','wǒ men qù yóu yǒng','Chúng tôi đi bơi.'],'wo zai zhong guo':['我在中国','wǒ zài zhōng guó','Tôi ở Trung Quốc.'],
- 'wo jia you san ge ren':['我家有三个人','wǒ jiā yǒu sān ge rén','Nhà tôi có ba người.'],'wo xiang xue xi zhong wen':['我想学习中文','wǒ xiǎng xué xí zhōng wén','Tôi muốn học tiếng Trung.'],'jin tian tian qi hen hao':['今天天气很好','jīn tiān tiān qì hěn hǎo','Hôm nay thời tiết rất đẹp.'],
+ 'jin tian wo jia you ke ren':['今天我家有客人','jīn tiān wǒ jiā yǒu kè rén','Hôm nay nhà tôi có khách.'],'wo jia you san ge ren':['我家有三个人','wǒ jiā yǒu sān ge rén','Nhà tôi có ba người.'],'wo xiang xue xi zhong wen':['我想学习中文','wǒ xiǎng xué xí zhōng wén','Tôi muốn học tiếng Trung.'],'jin tian tian qi hen hao':['今天天气很好','jīn tiān tiān qì hěn hǎo','Hôm nay thời tiết rất đẹp.'],
  'wo zai zhong guo xue zhong wen':['我在中国学中文','wǒ zài zhōng guó xué zhōng wén','Tôi học tiếng Trung ở Trung Quốc.'],
  'wo zhong yu dao le':['我终于到了','wǒ zhōng yú dào le','Cuối cùng tôi đã đến nơi.'],'zhong yao de shi':['重要的是','zhòng yào de shì','Điều quan trọng là.'],
 
