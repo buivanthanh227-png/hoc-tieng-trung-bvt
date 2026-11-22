@@ -145,7 +145,7 @@ required = [
     "MENU18_MULTICANDIDATE_SENTENCE_SEARCH",
     "let homework18SelectedCandidateIndex=0,homework18CandidateModal=null;",
     "data-homework18-candidate",
-    "Chọn câu phù hợp với ý bạn",
+    "Chọn câu phù hợp ·",
     "async function renderHomework18Candidates(candidates)",
     "await Promise.all(",
     "openHomework18CandidateModal(item,index,list.length)",
