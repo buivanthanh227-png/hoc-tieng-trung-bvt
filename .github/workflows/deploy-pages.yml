@@ -51,7 +51,7 @@ jobs:
           # Trang chính hiện tại
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py tools/patch_menu3_clone.py tools/test_menu3_clone.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py tools/patch_menu3_clone.py tools/test_menu3_clone.py tools/patch_menu3_ui_fix.py tools/test_menu3_ui_fix.py
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
@@ -60,6 +60,8 @@ jobs:
           python3 tools/patch_menu3_clone.py site/index.html
           python3 tools/test_menu18_word_mapping.py site/index.html
           python3 tools/test_menu3_clone.py site/index.html
+          python3 tools/patch_menu3_ui_fix.py site/index.html
+          python3 tools/test_menu3_ui_fix.py site/index.html
           python3 tools/patch_brand_header.py site/index.html
           python3 tools/test_brand_header.py site/index.html
           # Menu 1: independent Hanzi, Pinyin/tone, and Vietnamese search fields.
@@ -111,8 +113,11 @@ jobs:
           if grep -q '42.10.8' site/index.html; then
             sed -i 's/42[.]10[.]8/42.10.9/g' site/index.html
           fi
-          if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1|42[.]10[.]3|42[.]10[.]4|42[.]10[.]5|42[.]10[.]6|42[.]10[.]7|42[.]10[.]8' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.9."
+          if grep -q '42.10.9' site/index.html; then
+            sed -i 's/42[.]10[.]9/42.10.10/g' site/index.html
+          fi
+          if grep -Eq '42[.]9[.][3456789]|42[.]10[.]0|42[.]10[.]1|42[.]10[.]3|42[.]10[.]4|42[.]10[.]5|42[.]10[.]6|42[.]10[.]7|42[.]10[.]8|42[.]10[.]9' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.10."
             exit 1
           fi
 
@@ -222,12 +227,19 @@ jobs:
                     exit 1
                   fi
                 done
-                if ! grep -q 'left.append(leftText);center.append(title);right.append(rightText);' <<< "$html" || grep -q 'bvt-brand-flag' <<< "$html"; then
-                  echo "::error::Banner vẫn có cờ trùng hoặc thiếu bố cục đã sửa."
+                for marker in 'MENU3_UI_COLOR_AND_LOOKUP_FIX_V1' 'id="menu3-independent-lookup-binding"' "BVT_FUNCTION_COLORS.translate3={main:'#0891b2',alt:'#0e7490'};" "button.addEventListener('click',()=>{lookupHomework3x();});" 'BVT_FLAGS_ABOVE_TWO_SLOGANS_V2' '.topbar .brand-copy>.brand-slogan{grid-column:1/-1;grid-row:2'; do
+                  if ! grep -Fq "$marker" <<< "$html"; then
+                    echo "::error::Production thiếu sửa lỗi Menu 3/banner: $marker"
+                    exit 1
+                  fi
+                done
+                flag_count="$(grep -o 'class="brand-flag"' <<< "$html" | wc -l | tr -d ' ')"
+                if [ "$flag_count" != "2" ] || grep -q 'bvt-brand-banner\|bvt-brand-flag' <<< "$html"; then
+                  echo "::error::Banner không giữ đúng hai lá cờ gốc hoặc còn banner/cờ trùng."
                   exit 1
                 fi
 
-                echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có Menu 3 độc lập, Menu 18 dự phòng và không phát Pinyin."
+                echo "Production đang phục vụ đúng commit $EXPECTED_SHA; Menu 3 đã đồng bộ màu, nút Dịch câu hoạt động, slogan nằm dưới hai cờ; Menu 18 vẫn là bản dự phòng."
                 exit 0
               fi
             fi
