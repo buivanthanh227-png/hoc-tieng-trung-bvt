@@ -71,7 +71,7 @@ jobs:
               'ta hai mei you gongzuo',
               'homework18-candidate-tab',
               'Kết quả ',
-              'is-'+kind,
+              "'is-'+kind",
               'if(!key||key.length>600)return [];',
               'function pinyin18ToneFromInput(value)'
           ]
