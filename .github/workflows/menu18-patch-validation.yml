@@ -1,17 +1,14 @@
-name: Menu 18 independent mapping validation
+name: Menu 18 whole-sentence tone alternatives validation
 
 on:
   push:
-    branches:
-      - main
-      - fix/menu18-independent-token-mapping-v42-9-9
+    branches: [main, fix/menu18-whole-sentence-tone-alternatives-v42-10-0]
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
       - 'tools/patch_menu18_word_mapping.py'
       - 'tools/patch_menu18_multicandidate.py'
-      - 'tools/patch_menu18_independent_mapping.py'
-      - 'tools/test_menu18_independent_mapping.py'
+      - 'tools/test_menu18_word_mapping.py'
       - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
   pull_request:
@@ -21,8 +18,7 @@ on:
       - 'tools/patch_menu18_ranking.py'
       - 'tools/patch_menu18_word_mapping.py'
       - 'tools/patch_menu18_multicandidate.py'
-      - 'tools/patch_menu18_independent_mapping.py'
-      - 'tools/test_menu18_independent_mapping.py'
+      - 'tools/test_menu18_word_mapping.py'
       - '.github/workflows/deploy-pages.yml'
       - '.github/workflows/menu18-patch-validation.yml'
 
@@ -30,7 +26,7 @@ permissions:
   contents: read
 
 jobs:
-  validate-menu18-independent-mapping:
+  validate-menu18-whole-sentence:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,16 +35,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Apply all Menu 18 overlays and verify idempotence
+      - name: Apply sentence-level overlays and run regressions
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/menu18-check
           cp index.html /tmp/menu18-check/index.html
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/patch_menu18_independent_mapping.py tools/test_menu18_independent_mapping.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py
           python3 tools/patch_menu18_ranking.py /tmp/menu18-check/index.html
           python3 tools/patch_menu18_word_mapping.py /tmp/menu18-check/index.html
           python3 tools/patch_menu18_multicandidate.py /tmp/menu18-check/index.html
-          python3 tools/patch_menu18_independent_mapping.py /tmp/menu18-check/index.html
-          python3 tools/patch_menu18_independent_mapping.py /tmp/menu18-check/index.html
-          python3 tools/test_menu18_independent_mapping.py /tmp/menu18-check/index.html
+          python3 tools/test_menu18_word_mapping.py /tmp/menu18-check/index.html
+          if grep -q 'MENU18_INDEPENDENT_TOKEN_MAPPING_V1' /tmp/menu18-check/index.html; then
+            echo "::error::The retired token-by-token mapper is still present."
+            exit 1
+          fi
