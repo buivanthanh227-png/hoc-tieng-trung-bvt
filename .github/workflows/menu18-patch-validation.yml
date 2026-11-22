@@ -69,6 +69,10 @@ jobs:
               'wo jia you san ge ren',
               'wo xiang xue xi zhong wen',
               'ta hai mei you gongzuo',
+              'tā hái méiyǒu gōngzuò',
+              'function homework18ValidVietnameseMeaning(item)',
+              '.slice(0,3)',
+              'Chưa tìm được phương án có nghĩa tiếng Việt đáng tin cậy.',
               'homework18-candidate-tab',
               'Kết quả ',
               "'is-'+kind",
@@ -95,6 +99,24 @@ jobs:
               handle.write(js)
               js_path = handle.name
           subprocess.run(['node', '--check', js_path], check=True)
+
+          # Execute the exact shipped Menu 18 candidate validator in an isolated Node process.
+          validator_start = html.index('function homework18ValidVietnameseMeaning(item){')
+          validator_end = html.index('function renderHomework18Candidates', validator_start)
+          validator_js = html[validator_start:validator_end]
+          validator_test = '\n'.join([
+              "const assert = require('node:assert/strict');",
+              validator_js,
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'Anh ấy vẫn chưa có việc làm.'}), true);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:'1 u 2c 3'}), false);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'他还没有工作',vi:''}), false);",
+              "assert.equal(homework18ValidVietnameseMeaning({zh:'有',vi:'có'}), true);",
+              "console.log('Menu 18 Vietnamese candidate quality tests: PASS');"
+          ])
+          with tempfile.NamedTemporaryFile('w', suffix='.cjs', encoding='utf-8', delete=False) as handle:
+              handle.write(validator_test)
+              validator_path = handle.name
+          subprocess.run(['node', validator_path], check=True)
 
           # Execute the exact shipped normalizer and dictionaries in an isolated Node process.
           word_start = html.index('const PINYIN18_COMMON_WORDS={')
@@ -143,6 +165,7 @@ jobs:
               assert.equal(pinyin18Key('mā ma wǒ ài nǐ'), pinyin18Key('ma1 ma5 wo3 ai4 ni3'));
               assert.ok(pinyin18Key(Array(100).fill('wo').join(' ')).length < 600);
               assert.equal(preferred('ta hai mei you gongzuo'), '他还没有工作');
+              assert.equal(PINYIN18_COMMON_WORDS['ta hai mei you gongzuo'][1], 'tā hái méiyǒu gōngzuò');
               console.log('Menu 18 phrase/tone regression unit tests: PASS');
               """
           ])
