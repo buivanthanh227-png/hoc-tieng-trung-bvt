@@ -286,7 +286,7 @@ replace_once(
 )
 replace_once(
     """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
-        const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0;""",
+       const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0;""",
     """const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
         const commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0;""",
     "increase common word and common character preference"
