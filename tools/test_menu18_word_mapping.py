@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression checks for whole-sentence, tone-diverse Menu 18 and its result actions."""
+"""Exercise the actual CVDICT-backed whole-sentence Menu 18 mapper."""
 from pathlib import Path
 import json,re,subprocess,sys,tempfile
 if len(sys.argv)!=2: raise SystemExit("Usage: test_menu18_word_mapping.py <site/index.html>")
@@ -10,13 +10,17 @@ dictionary=json.loads(match.group(1))
 if len(dictionary)<100_000: raise SystemExit(f"Unexpectedly small CVDICT dataset: {len(dictionary)} rows")
 for retired in ("MENU18_INDEPENDENT_TOKEN_MAPPING_V1","Các kết quả ánh xạ độc lập","tra từng mục nhập độc lập","function getPinyin18CompactIndex()","wordMapping:true"):
     if retired in html: raise SystemExit("Retired word-by-word Menu 18 behavior remains: "+retired)
-for marker in ("MENU18_MULTICANDIDATE_SENTENCE_SEARCH","function pinyin18SelectToneDiverse(candidates,raw,limit=16){","function pinyinToChineseCandidates(raw){"):
-    if marker not in html: raise SystemExit("Whole-sentence tone-search component missing: "+marker)
+for marker in ("MENU18_MULTICANDIDATE_SENTENCE_SEARCH","function pinyin18SelectToneDiverse(candidates,raw,limit=16){","function pinyinToChineseCandidates(raw){","state.rows.concat([item.row])","if(ranked.length)add(ranked[0]);"):
+    if marker not in html: raise SystemExit("Whole-sentence mapper component missing: "+marker)
+if "state.rows.concat(item.row)" in html:
+    raise SystemExit("Dictionary rows are flattened; sentence Pinyin cannot be preserved.")
 start=html.index("function renderHomework18Candidates(candidates){")
-end=html.index("function looksLikePinyin18(raw,local){",start)
+end=html.index("\nfunction looksLikePinyin18(raw,local){",start)
 renderer=html[start:end]
-for marker in ("renderHomework18Card(","machineTranslate(item.zh,'zh-CN','vi')","formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh))"):
-    if marker not in renderer: raise SystemExit("Whole-sentence result selector missing: "+marker)
+for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","select(0);","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh))"):
+    if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
+if "const best=await renderHomework18Candidates(candidates);" not in html:
+    raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
 card_start=html.index("function renderHomework18Card(result,sourceLabel=''){")
 card_end=html.index("\nlet homework18Candidates=[];",card_start)
 card=html[card_start:card_end]
@@ -24,34 +28,83 @@ for marker in ("copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyB
     if marker not in card: raise SystemExit("Menu 18 copy/speaker action missing: "+marker)
 if "const token=++homework18LookupToken,raw=$('homework18-query').value,query=raw.trim()" not in html:
     raise SystemExit("Original input is not preserved separately from trimmed query")
-def extract(start,end):
-    a=html.index(start);b=html.index(end,a);return html[a:b]
-parts=[
-    extract("const PINYIN18_COMMON_WORDS={","\n};")+"\n};",
-    extract("function pinyin18ToneFromInput(value){","let pinyin18IndexSource="),
-    extract("function pinyin18Key(value){","function pinyin18LexiconKey"),
-    extract("function pinyin18SelectToneDiverse(candidates,raw,limit=16){","function pinyinToChineseCandidates(raw){")
-]
-js=r"""
+
+def extract_const(name):
+    start=html.index("const "+name+"=")
+    pos=html.index("=",start)+1
+    while html[pos].isspace(): pos+=1
+    opening=html[pos]
+    closing="]" if opening=="[" else "}"
+    depth=0; quote=None; escaped=False
+    for i in range(pos,len(html)):
+        ch=html[i]
+        if quote:
+            if escaped: escaped=False
+            elif ch=="\\": escaped=True
+            elif ch==quote: quote=None
+        else:
+            if ch in ("'",'"',"`"): quote=ch
+            elif ch==opening: depth+=1
+            elif ch==closing:
+                depth-=1
+                if depth==0:
+                    end=i+1
+                    while html[end].isspace(): end+=1
+                    if html[end]!=";": raise SystemExit("Could not isolate JS constant "+name)
+                    return html[start:end+1]
+    raise SystemExit("Could not extract JS constant "+name)
+
+def extract_fn(name):
+    start=html.index("function "+name+"(")
+    brace=html.index("{",start); depth=0; quote=None; escaped=False
+    line_comment=False; block_comment=False
+    for i in range(brace,len(html)):
+        ch=html[i]; nxt=html[i+1] if i+1<len(html) else ""
+        if line_comment:
+            if ch=="\n": line_comment=False
+        elif block_comment:
+            if ch=="*" and nxt=="/": block_comment=False
+        elif quote:
+            if escaped: escaped=False
+            elif ch=="\\": escaped=True
+            elif ch==quote: quote=None
+        else:
+            if ch=="/" and nxt=="/": line_comment=True
+            elif ch=="/" and nxt=="*": block_comment=True
+            elif ch in ("'",'"',"`"): quote=ch
+            elif ch=="{": depth+=1
+            elif ch=="}":
+                depth-=1
+                if depth==0:return html[start:i+1]
+    raise SystemExit("Could not extract JS function "+name)
+
+constants=["MENU18_VERIFIED_SENTENCES","PINYIN18_COMMON_CHARACTERS","PINYIN18_COMMON_CHARACTERS_EXTENDED","PINYIN18_COMMON_WORDS","PINYIN18_SINGLE_TONE_WORDS"]
+functions=["pinyin18ToneFromInput","pinyin18Key","pinyin18LexiconKey","getPinyin18Lexicon","pinyin18Traditional","pinyin18SyllablePaths","pinyin18SelectToneDiverse","pinyinToChineseCandidates"]
+js='''const dictionary=JSON.parse('''+json.dumps(match.group(1),ensure_ascii=False)+''');
+let pinyin18IndexSource=null,pinyin18Lexicon=null,pinyin18SeedRows=null,pinyin18Syllables=null;
+const sentenceDeck=[];const OFFLINE_SENTENCE_TRANSLATIONS={};const CURATED_ZH_VI={};
+function buildSeed(){return [];}function pinyinForChinese(){return '';}
+'''
+js+="\n".join(extract_const(name) for name in constants)
+js+="\nObject.assign(PINYIN18_COMMON_CHARACTERS,PINYIN18_COMMON_CHARACTERS_EXTENDED);\n"
+js+="\n".join(extract_fn(name) for name in functions)
+js+=r"""
 const assert=require('node:assert/strict');
-const pinyin18Syllables=new Set(['ni','jin','le','ma']);
-const sentenceCandidates=[
- {zh:'你进了吗',py:'nǐ jìn le ma',priority:100,vi:'Bạn vào chưa?'},
- {zh:'你今了吗',py:'nǐ jīn le ma',priority:90,vi:''},
- {zh:'你仅了吗',py:'nǐ jǐn le ma',priority:80,vi:''},
- {zh:'你尽了吗',py:'nǐ jín le ma',priority:70,vi:''}
-];
-const selected=pinyin18SelectToneDiverse(sentenceCandidates,'ni jin le ma',16);
-assert.ok(selected.length>=2,'tone-diverse whole-sentence alternatives are retained');
-assert.ok(selected.every(item=>[...item.zh].length>1),'every result is a whole Chinese phrase, never an isolated character');
-assert.ok(selected.every(item=>item.py.trim().split(/\s+/).length===4),'each result preserves all four input syllables');
-assert.ok(new Set(selected.map(item=>pinyin18ToneFromInput(item.py.split(/\s+/)[1]))).size>=2,'alternative tone readings at the second syllable are retained');
-const exact=pinyin18SelectToneDiverse([{zh:'你进了吗',py:'nǐ jìn le ma',priority:100}],'nǐ jìn le ma',16);
-assert.equal(exact.length,1,'explicit tone marks constrain the full-sentence search');
-console.log('Menu 18 whole-sentence tone-diversity selector tests: PASS');
+const results=pinyinToChineseCandidates('ni jin le ma');
+assert.ok(results.length>1,'the full sentence returns more than one tone candidate');
+assert.equal(results[0].zh,'你进了吗','the verified full-sentence interpretation is ranked first');
+assert.equal(results[0].py,'nǐ jìn le ma','the selected sentence keeps the correct dictionary Pinyin and tones');
+assert.equal(results[0].vi,'Bạn vào được chưa?','the complete sentence has a Vietnamese meaning');
+assert.ok(results.every(item=>[...item.zh].length>1),'all candidates are complete Chinese phrases, not isolated characters');
+assert.ok(results.every(item=>item.py.trim().split(/s+/).length===4),'every candidate retains all four entered syllables');
+assert.ok(results.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')),'candidate Pinyin matches the entire original input');
+assert.ok(new Set(results.map(item=>pinyin18ToneFromInput(item.py.split(/s+/)[1]))).size>1,'different tone readings at jin are actually explored');
+const marked=pinyinToChineseCandidates('nǐ jìn le ma');
+assert.ok(marked.length>0&&marked.every(item=>pinyin18ToneFromInput(item.py.split(/s+/)[0])===3&&pinyin18ToneFromInput(item.py.split(/s+/)[1])===4),'explicit tone marks constrain the whole-sentence search');
+console.log('Actual CVDICT Menu 18 whole-sentence mapping and tone-diversity tests: PASS');
 """
 with tempfile.NamedTemporaryFile("w",suffix=".cjs",encoding="utf-8",delete=False) as f:
-    f.write("\n".join(parts)+"\n"+js)
-    test_path=f.name
+    f.write(js); test_path=f.name
+subprocess.run(["node","--check",test_path],check=True)
 subprocess.run(["node",test_path],check=True)
-print(f"Verified sentence-level rendering, copy/speaker controls, and tone selector against {len(dictionary):,} embedded CVDICT rows.")
+print(f"Verified actual full-sentence mapping against {len(dictionary):,} embedded CVDICT rows, including copy/speaker UI markers.")
