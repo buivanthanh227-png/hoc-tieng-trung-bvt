@@ -94,7 +94,7 @@ const homework18QueryInput=$('homework18-query');if(homework18QueryInput&&!homew
 async function renderHomework18Candidates(candidates){
  const box=$('homework18-candidates');box.replaceChildren();
  const rawInput=String($('homework18-query')?.value||'').trim(),rawCandidates=Array.isArray(candidates)?candidates:[];
- if(!rawCandidates.length){box.hidden=true;box.replaceChildren();if(status)status.textContent='Không tìm thấy kết quả khớp chính xác với nội dung và khoảng cách bạn đã nhập: “'+rawInput+'”. Hệ thống không tự thêm, bớt hoặc nối các âm tiết (ví dụ “ke ren” không được đổi thành “keren”). Vui lòng kiểm tra từ điển và khoảng cách giữa các âm tiết rồi nhập lại.';return null;}
+ if(!rawCandidates.length){box.hidden=true;box.replaceChildren();const noResultStatus=$('homework18-status');if(noResultStatus)noResultStatus.textContent='Không tìm thấy kết quả khớp chính xác với nội dung và khoảng cách bạn đã nhập: “'+rawInput+'”. Hệ thống không tự thêm, bớt hoặc nối các âm tiết (ví dụ “ke ren” không được đổi thành “keren”). Vui lòng kiểm tra từ điển và khoảng cách giữa các âm tiết rồi nhập lại.';return null;}
  const sourceList=rawCandidates.filter(item=>typeof homework18ValidVietnameseMeaning!=='function'||homework18ValidVietnameseMeaning(item));
  if(!sourceList.length){box.hidden=false;box.textContent='Có phương án chữ Hán nhưng chưa xác minh được nghĩa tiếng Việt. Vui lòng thử lại sau.';return null;}
  const requestToken=homework18LookupToken,status=$('homework18-status'),queue=sourceList,resolved=new Array(sourceList.length);let cursor=0,completed=0;
