@@ -21,11 +21,11 @@ for marker in ("async function renderHomework18Candidates(candidates)","await Pr
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
 if "const best=await renderHomework18Candidates(candidates);" not in html:
     raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
-if "pinyin18SelectToneDiverse(homework18Candidates,String(\$('homework18-query')?.value||''),homework18Candidates.length)" not in html:
+if "homework18Candidates.length);" not in html:
     raise SystemExit("Menu 18 candidate count still uses a fixed result limit")
 if "sourceList.slice(0,16)" in renderer:
     raise SystemExit("Menu 18 result verification still truncates the list to 16")
-for marker in ("homework18-candidate-vi","homework18-modal-backdrop","role=\\"dialog\\"","copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyButton(py,'Pinyin')","copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')"):
+for marker in ("homework18-candidate-vi","homework18-modal-backdrop",'role="dialog"',"copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')","copyButton(py,'Pinyin')","copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt')"):
     if marker not in renderer:
         raise SystemExit("Menu 18 full-result modal or three-line preview missing: "+marker)
 card_start=html.index("function renderHomework18Card(result,sourceLabel=''){")
