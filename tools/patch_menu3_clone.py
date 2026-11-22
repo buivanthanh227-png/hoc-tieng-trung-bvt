@@ -119,7 +119,7 @@ $('file-translate-3x-speak')?.addEventListener('click',()=>speakTranslationOutpu
 insert='\n<script id="menu3-independent-lookup-logic">\n'+logic+'\n</script>\n'+extra+'\n'
 if '</body>' not in html: raise SystemExit('Missing body close.')
 html=html.replace('</body>',insert+'<!-- '+MARK+' -->\n</body>',1)
-if 'homework18' in logic or 'homework3x-query' not in html or 'panel-translate3' not in html:
+if re.search(r"\$\('homework18-",logic) or re.search(r"\bhomework18[A-Za-z0-9_]+",logic) or 'homework3x-query' not in html or 'panel-translate3' not in html:
     raise SystemExit('Independent Menu 3 verification failed.')
 p.write_text(html,encoding='utf-8')
 print('Created independent Menu 3; preserved original Menu 3 panel and Menu 18; Pinyin playback removed.')
