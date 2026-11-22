@@ -1,0 +1,95 @@
+name: Menu 18 patch validation
+
+on:
+  push:
+    branches:
+      - fix/menu18-round3-contextual-phrases-20261122
+    paths:
+      - 'index.html'
+      - 'tools/patch_menu18_ranking.py'
+      - '.github/workflows/menu18-patch-validation.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'tools/patch_menu18_ranking.py'
+      - '.github/workflows/menu18-patch-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-menu18-patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js for inline JavaScript syntax validation
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Apply Menu 18 overlay twice (idempotence)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/menu18-patch-check
+          cp index.html /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
+
+      - name: Verify regression phrases, tone map, and JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import tempfile
+
+          html = Path('/tmp/menu18-patch-check/index.html').read_text(encoding='utf-8')
+          required = [
+              'ma:{1:[\'妈\',\'mā\',\'mẹ\']',
+              'ma ma wo ai ni',
+              'wo ai wo ma ma',
+              'wo qi ma',
+              'ta ma wo',
+              'wo shi xue sheng',
+              'xian zai shi dian',
+              'wo yao yi bei shui',
+              'wo de yi fu hen hao kan',
+              'wo zuo zai yi zi shang',
+              'wo xiang mai yi ge ping guo',
+              'wo men you shi jian',
+              'wo men qu you yong',
+              'wo zai zhong guo xue zhong wen',
+              'wo zhong yu dao le',
+              'zhong yao de shi',
+              'wo jia you san ge ren',
+              'wo xiang xue xi zhong wen',
+              'if(!key||key.length>600)return [];',
+              'function pinyin18ToneFromInput(value)'
+          ]
+          missing = [item for item in required if item not in html]
+          if missing:
+              raise SystemExit('Missing Menu 18 regression item(s): ' + ', '.join(missing))
+
+          marker = 'const PINYIN18_SINGLE_TONE_WORDS={'
+          marker_index = html.find(marker)
+          if marker_index < 0:
+              raise SystemExit('Single-syllable tone dictionary missing')
+          script_open = html.rfind('<script', 0, marker_index)
+          if script_open < 0:
+              raise SystemExit('Could not locate inline script opening tag')
+          script_start = html.find('>', script_open) + 1
+          script_end = html.find('</script>', marker_index)
+          if script_start <= 0 or script_end < 0:
+              raise SystemExit('Could not isolate Menu 18 inline script')
+          js = html[script_start:script_end]
+          with tempfile.NamedTemporaryFile('w', suffix='.js', encoding='utf-8', delete=False) as handle:
+              handle.write(js)
+              js_path = handle.name
+          subprocess.run(['node', '--check', js_path], check=True)
+          print('Menu 18 patch, tone map, contextual phrase map, idempotence and inline JS syntax: PASS')
+          PY
