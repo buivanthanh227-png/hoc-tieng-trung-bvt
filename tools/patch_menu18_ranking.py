@@ -446,7 +446,7 @@ function homework18ValidVietnameseMeaning(item){
  return true;
 }
 function pinyin18DisplayKey(value){
- return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/ü/g,'v').replace(/u:/g,'v');
+ return String(value||'').toLowerCase().replace(/ü|u:/g,'v').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'');
 }
 function formatHomework18PinyinByWord(zh,py){
  const chars=[...String(zh||'')],tokens=String(py||'').trim().split(/\s+/).filter(Boolean);
