@@ -51,7 +51,7 @@ if words_start < 0 or words_end < 0:
 new_words = """const PINYIN18_COMMON_WORDS={
  'jin tian':['今天','jīn tiān','hôm nay'],'ming tian':['明天','míng tiān','ngày mai'],'zuo tian':['昨天','zuó tiān','hôm qua'],'tian qi':['天气','tiān qì','thời tiết'],
  'peng you':['朋友','péng you','bạn bè'],'zhong guo':['中国','zhōng guó','Trung Quốc'],'xue xi':['学习','xué xí','học tập'],'xue xiao':['学校','xué xiào','trường học'],'xue sheng':['学生','xué sheng','học sinh'],
- 'lao shi':['老师','lǎo shī','giáo viên'],'gong zuo':['工作','gōng zuò','công việc'],'chi fan':['吃饭','chī fàn','ăn cơm'],'he shui':['喝水','hē shuǐ','uống nước'],'ke ren':['客人','kè rén','khách'],
+ 'lao shi':['老师','lǎo shī','giáo viên'],'gong zuo':['工作','gōng zuò','công việc'],'chi fan':['吃饭','chī fàn','ăn cơm'],'he shui':['喝水','hē shuǐ','uống nước'],'ke yi':['可以','kě yǐ','có thể'],'ke ren':['客人','kè rén','khách'],
  'shen me':['什么','shén me','cái gì'],'zen me':['怎么','zěn me','thế nào'],'xian zai':['现在','xiàn zài','bây giờ'],'zai jian':['再见','zài jiàn','tạm biệt'],'xie xie':['谢谢','xiè xie','cảm ơn'],
  'dui bu qi':['对不起','duì bu qǐ','xin lỗi'],'mei guan xi':['没关系','méi guān xi','không sao'],'bu ke qi':['不客气','bú kè qi','không có gì'],
  'ni hao':['你好','nǐ hǎo','xin chào'],'ni hao ma':['你好吗','nǐ hǎo ma','bạn khỏe không?'],'bu zhi dao':['不知道','bù zhī dào','không biết'],'wo bu zhi dao':['我不知道','wǒ bù zhī dào','tôi không biết'],
@@ -347,6 +347,7 @@ replace_once(
 
 
 required = [
+    "'ke yi':['可以','kě yǐ','có thể']",
     "'ke ren':['客人','kè rén','khách']",
     "'tian qi':['天气','tiān qì','thời tiết']",
     "'xian zai':['现在','xiàn zài','bây giờ']",
@@ -473,7 +474,8 @@ function formatHomework18PinyinByWord(zh,py){
    word.py.every((syllable,index)=>pinyin18DisplayKey(syllable)===pinyin18DisplayKey(tokens[tokenAt+index]))
   );
   if(match){
-   output.push(tokens.slice(tokenAt,tokenAt+match.py.length).join(''));
+   const compact=match.py.join('');
+   output.push(/^[A-Z]/.test(tokens[tokenAt])?compact.charAt(0).toUpperCase()+compact.slice(1):compact);
    charAt+=[...match.zh].length;tokenAt+=match.py.length;
   }else{
    output.push(tokens[tokenAt]);charAt++;tokenAt++;
