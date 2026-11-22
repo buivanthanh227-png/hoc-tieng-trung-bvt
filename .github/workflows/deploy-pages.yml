@@ -53,6 +53,7 @@ jobs:
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
+          python3 tools/patch_menu18_multicandidate.py site/index.html
           # Keep the visible footer version aligned with manifest.webmanifest.
           if grep -q '42.9.3' site/index.html; then
             sed -i 's/42\.9\.3/42.9.4/g' site/index.html
