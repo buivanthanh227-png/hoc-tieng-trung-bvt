@@ -96,7 +96,7 @@ assert.equal(results[0].zh,'你进了吗','the verified full-sentence interpreta
 assert.equal(results[0].py,'nǐ jìn le ma','the selected sentence keeps the correct dictionary Pinyin and tones');
 assert.equal(results[0].vi,'Bạn vào được chưa?','the complete sentence has a Vietnamese meaning');
 assert.ok(results.every(item=>[...item.zh].length>1),'all candidates are complete Chinese phrases, not isolated characters');
-assert.ok(results.every(item=>item.py.trim().split(/s+/).length===4),'every candidate retains all four entered syllables');
+assert.ok(results.every(item=>item.py.trim().split(/\\s+/).length===4),'every candidate retains all four entered syllables');
 assert.ok(results.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')),'candidate Pinyin matches the entire original input');
 assert.ok(new Set(results.map(item=>pinyin18ToneFromInput(item.py.split(/s+/)[1]))).size>1,'different tone readings at jin are actually explored');
 const marked=pinyinToChineseCandidates('nǐ jìn le ma');
