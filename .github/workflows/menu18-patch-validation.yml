@@ -54,6 +54,7 @@ jobs:
           required = [
               'ma:{1:[\'妈\',\'mā\',\'mẹ\']',
               'ma ma wo ai ni',
+              "'ke yi':['可以','kě yǐ','có thể']",
               'wo ai wo ma ma',
               'wo qi ma',
               'ta ma wo',
@@ -168,6 +169,10 @@ jobs:
               html[formatter_start:formatter_end],
               """
               assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān'), 'jīntiān');
+              assert.equal(formatHomework18PinyinByWord('可以', 'kè yì'), 'kěyǐ', 'use canonical dictionary tones, not incorrect generated tones');
+              assert.equal(formatHomework18PinyinByWord('可以', 'Kè yì'), 'Kěyǐ', 'preserve sentence-initial capitalization');
+              assert.equal(formatHomework18PinyinByWord('可以', 'kě yǐ'), 'kěyǐ');
+
               assert.equal(formatHomework18PinyinByWord('今天', 'Jīn tiān'), 'Jīntiān');
               assert.equal(formatHomework18PinyinByWord('今天我家有客人', 'jīn tiān wǒ jiā yǒu kè rén'), 'jīntiān wǒ jiā yǒu kèrén');
               assert.equal(formatHomework18PinyinByWord('中国学生', 'zhōng guó xué shēng'), 'zhōngguó xuéshēng');
@@ -203,6 +208,8 @@ jobs:
               const regression = [
                 ['ma1 ma5 wo3 ai4 ni3', '妈妈我爱你'],
                 ['mā ma wǒ ài nǐ', '妈妈我爱你'],
+                ['keyi', '可以'],
+                ['ke yi', '可以'],
                 ['wo ai wo ma ma', '我爱我妈妈'],
                 ['wo qi ma', '我骑马'],
                 ['ta ma wo', '他骂我'],
