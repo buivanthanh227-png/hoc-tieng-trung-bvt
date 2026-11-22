@@ -119,12 +119,12 @@ elif source.count(new_css) != 1:
 
 required = [
     "MENU18_MULTICANDIDATE_SENTENCE_SEARCH",
-    "let homework18SelectedCandidateIndex=0;",
+    "let homework18SelectedCandidateIndex=0,homework18CandidateModal=null;",
     "data-homework18-candidate",
-    "Chọn câu hoàn chỉnh phù hợp với ý bạn",
+    "Chọn câu phù hợp với ý bạn",
     "async function renderHomework18Candidates(candidates)",
     "await Promise.all(",
-    "select(0);",
+    "openHomework18CandidateModal(item,index,list.length)",
     "const best=await renderHomework18Candidates(candidates);",
     "machineTranslate(item.zh,'zh-CN','vi')",
     ".homework18-candidates{display:grid!important"
