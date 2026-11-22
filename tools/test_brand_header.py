@@ -1,28 +1,22 @@
 #!/usr/bin/env python3
-"""Static regression checks for the responsive brand header overlay."""
+"""Regression checks for original flags and slogans in a balanced brand header."""
 from pathlib import Path
 import sys
-
-if len(sys.argv) != 2:
-    raise SystemExit("Usage: test_brand_header.py <site/index.html>")
-html = Path(sys.argv[1]).read_text(encoding="utf-8")
-required = [
-    'id="bvt-responsive-brand-banner"',
-    'bvt-brand-banner',
-    "HỌC TIẾNG TRUNG",
-    "HỌC THÊM MỘT NGÔN NGỮ",
-    "SỐNG THÊM MỘT CUỘC ĐỜI",
-    "left.append(leftText);center.append(title);right.append(rightText);",
-    "@media(min-width:601px) and (max-width:1099px)",
-    "@media(max-width:600px)",
-    "color:#fff!important",
+if len(sys.argv)!=2: raise SystemExit('Usage: test_brand_header.py <site/index.html>')
+h=Path(sys.argv[1]).read_text(encoding='utf-8')
+required=[
+ 'id="bvt-responsive-brand-banner"',
+ 'BVT_FLAGS_ABOVE_TWO_SLOGANS_V2',
+ '.topbar .brand{display:grid!important',
+ '.topbar .brand>.brand-flag',
+ '.topbar .brand-copy>h1',
+ '.topbar .brand-copy>.brand-slogan{grid-column:1/-1;grid-row:2',
+ 'HỌC THÊM MỘT NGÔN NGỮ',
+ 'SỐNG THÊM MỘT CUỘC ĐỜI',
 ]
-for marker in required:
-    if marker not in html:
-        raise SystemExit(f"Responsive brand banner marker missing: {marker}")
-script_start=html.index('<script id="bvt-responsive-brand-banner-script">')
-script_end=html.index('</script>', script_start)
-script=html[script_start:script_end]
-if "🇻🇳" in script or "🇨🇳" in script or "bvt-brand-flag" in html:
-    raise SystemExit("Brand overlay still injects duplicate flag elements.")
-print("Responsive brand banner checks passed; original header flags are preserved without duplicate overlay flags.")
+for x in required:
+ if x not in h: raise SystemExit('Brand header marker missing: '+x)
+if h.count('class="brand-flag"')!=2: raise SystemExit('Expected exactly the two original flag elements.')
+if h.count('class="brand-slogan"')!=1: raise SystemExit('Expected exactly one original two-line slogan element.')
+if 'bvt-brand-banner' in h or 'bvt-brand-flag' in h: raise SystemExit('Legacy duplicate banner/flag overlay remains.')
+print('Original two flags retained; two slogans positioned beneath them; no duplicate banner: PASS')
