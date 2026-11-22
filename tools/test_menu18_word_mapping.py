@@ -20,7 +20,7 @@ renderer=html[start:end]
 for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","openHomework18CandidateModal(item,index,list.length)","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByInput(String($('homework18-query')?.value||''),item.py||pinyinForChinese(item.zh))"):
     if marker not in renderer: raise SystemExit("Whole-sentence meaning/result UI missing: "+marker)
 
-for marker in ("homework18PageSize=10","data-page-prev","data-page-next","list.slice(start,end)","formatHomework18PinyinByInput","homework18ModalClickBound","event.target.closest('[data-homework18-candidate]')","try{openHomework18CandidateModal(item,index,list.length)"):
+for marker in ("homework18PageSize=10","data-page-prev","data-page-next","list.slice(start,end)","formatHomework18PinyinByInput","homework18ModalClickBound","document.addEventListener('click',event=>","try{openHomework18CandidateModal(item,index,current.length)"):
     if marker not in html: raise SystemExit("Menu 18 pagination, delegated modal interaction or strict-spacing formatter missing: "+marker)
 formatter_start=html.index("function formatHomework18PinyinByInput(raw,py){")
 formatter_end=html.index("\nlet homework18SelectedCandidateIndex",formatter_start)
