@@ -369,7 +369,7 @@ required = [
     "'zhong wen':['中文','zhōng wén','tiếng Trung']",
     "item.preferredMeaning=meaning",
     "item.preferredWord?500:0",
-    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?50:0",
+    "commonWordBoost=PINYIN18_COMMON_WORDS[syllable]?.[0]===item.row[0]?90:0",
     "const PINYIN18_SINGLE_TONE_WORDS={",
     "function pinyin18ToneFromInput(value)",
     "if(!key||key.length>600)return [];",
