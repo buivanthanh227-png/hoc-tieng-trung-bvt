@@ -74,11 +74,12 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - Workflow kiểm tra bản vá chạy lặp, cú pháp Python/JavaScript và các kiểm thử hồi quy thanh điệu trước khi xuất bản.
 
 
-## Menu 18 — ánh xạ độc lập từng mục Pinyin (V42.9.9)
+## Menu 18 — tìm nhiều phương án thanh điệu cho toàn câu (V42.10.0)
 
-- Giữ nguyên chuỗi người dùng nhập; chỉ tách nội bộ theo các dấu phân cách đã có, không sửa ô nhập.
-- Mỗi mục nhập được tra riêng trong CVDICT. Mỗi thanh điệu có trong từ điển tạo tối đa một kết quả cho mục đó; tổng số kết quả là tổng các lựa chọn của từng mục, không phải tích tổ hợp ghép thành câu.
-- Không ghép các mục nhập thành câu, không thay âm tiết, không tự tạo chữ Hán cho mục không có dữ liệu.
-- Với âm tiết đơn không dấu, hiển thị các thanh 1–4; thanh nhẹ chỉ xuất hiện khi người học nhập rõ thanh 5. Từ nhiều âm tiết vẫn giữ cách đọc thanh nhẹ nếu đó là cách đọc từ điển.
-- Bộ kiểm thử dùng trực tiếp 122.523 dòng CVDICT nhúng, gồm ví dụ `a ba` → 8 lựa chọn (4 + 4), `ni jin le ma`, Pinyin có dấu, từ viết liền `jintian`, và đầu vào không có trong từ điển.
-- Menu 3 và các menu khác không bị sửa.
+- Menu 18 dùng cùng kiểu kết quả câu hoàn chỉnh như Menu 3; không trả danh sách tra từng âm tiết.
+- Với Pinyin không dấu, hệ thống thử các thanh điệu từ điển cho từng âm tiết, sau đó ghép và xếp hạng các phương án ở cấp toàn câu.
+- Chỉ giữ ứng viên có chuỗi Pinyin khớp đầy đủ với nội dung người dùng nhập; Pinyin có dấu/số thanh được dùng làm ràng buộc, không tự đổi thanh.
+- Người học chọn một câu hoàn chỉnh trong danh sách. Nghĩa tiếng Việt được lấy theo cả câu, không nối nghĩa từng chữ.
+- Thẻ kết quả có nút sao chép chữ Hán, Pinyin, nghĩa và nút loa đọc chữ Hán/nghĩa, theo luồng kết quả của Menu 3.
+- Chuỗi gốc người dùng nhập được giữ nguyên; chuẩn hóa chỉ phục vụ tra cứu.
+- Workflow regression kiểm tra selector nhiều thanh điệu, đầu ra câu hoàn chỉnh, định dạng Pinyin và các thao tác sao chép/loa.
