@@ -513,7 +513,7 @@ replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection b
 ui_required = [
     "requestToken!==homework18LookupToken||homework18SelectedIndex!==index",
     "Chưa tra được nghĩa tiếng Việt.",
-    "homework18Candidates).filter"
+    "homework18Candidates=(Array.isArray(candidates)?candidates:[]).filter"
 ]
 missing_ui = [needle for needle in ui_required if needle not in source]
 if missing_ui:
