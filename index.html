@@ -4169,7 +4169,8 @@ function renderHomeworkCard(result,sourceLabel=''){
 }
 const MENU18_VERIFIED_SENTENCES=[
  {zh:'这个太酸了',py:'zhè ge tài suān le',vi:'Cái này chua quá.'},
- {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'}
+ {zh:'我不知道',py:'wǒ bù zhī dào',vi:'Tôi không biết.'},
+ {zh:'今天我家有客人',py:'jīntiān wǒ jiā yǒu kèrén',vi:'Hôm nay nhà tôi có khách.'}
 ];
 const PINYIN18_COMMON_CHARACTERS={wo:'我',ni:'你',nin:'您',ta:'他',ai:'爱',leng:'冷',lei:'累',ma:'吗',hao:'好',bu:'不',dong:'懂',pa:'怕',hen:'很',shi:'是',you:'有',mei:'没',ne:'呢',yao:'要',xiang:'想',chi:'吃',he:'喝',shui:'水',jia:'家',qu:'去',lai:'来',zai:'在',zuo:'做',zhi:'知',dao:'道',shenme:'什么',jin:'今',tian:'天',ke:'客',ren:'人',zhong:'中',guo:'国'};
 let pinyin18IndexSource=null,pinyin18Lexicon=null,pinyin18SeedRows=null,pinyin18Syllables=null;
@@ -4197,6 +4198,12 @@ function getPinyin18Lexicon(){
   }else if(matches.length<18){matches.push(item);}
   if([...String(row[0]||'')].length===1&&!key.includes(' ')&&key.length<=6)syllables.add(key);
  });
+ // Ensure common one-character syllables remain usable even when the main dictionary omits them.
+ for(const [py,zh] of Object.entries(PINYIN18_COMMON_CHARACTERS)){
+  if([...String(zh||'')].length!==1||py.length>6)continue;
+  syllables.add(py);
+  if(!index.has(py))index.set(py,[{row:[zh,zh,py,''],rowIndex:rows.length+syllables.size}]);
+ }
  pinyin18IndexSource=rows;pinyin18Lexicon=index;pinyin18Syllables=syllables;
  return index;
 }
@@ -4294,7 +4301,6 @@ function pinyinToChineseCandidates(raw){
    }
    }
    for(const state of beams[syllables.length]){
-    if(syllables.length>2&&!state.rows.some(row=>[...String(row[0]||'')].length>1))continue;
     const fullRow=state.rows.length===1&&pinyin18Key(state.rows[0][2])===key;
     addCandidate({
      zh:state.zh,py:state.rows.map(row=>row[2]).join(' '),
