@@ -142,11 +142,16 @@ jobs:
           key_end = html.index('function pinyin18LexiconKey', key_start)
           tone_start = html.index('function pinyin18ToneFromInput(value)')
           tone_end = html.index('let pinyin18IndexSource=', tone_start)
+          selector_start = html.index('function pinyin18SelectToneDiverse(candidates,raw,limit=16){')
+          selector_end = html.index('function pinyinToChineseCandidates', selector_start)
+          if selector_start < 0 or selector_end < 0:
+              raise SystemExit('Could not isolate Menu 18 tone selector')
           path_test_js = '\n'.join([
               "const assert = require('node:assert/strict');",
               html[key_start:key_end],
               html[tone_start:tone_end],
               html[path_start:path_end],
+              html[selector_start:selector_end],
               """
               const paths = pinyin18SyllablePaths('jintian', new Set(['jin','tian','ti','an']));
               assert.ok(paths.some(path => path.join(' ') === 'jin tian'), 'keep standard segmentation');
@@ -163,12 +168,12 @@ jobs:
                 {zh:'你惊了吗',py:'nǐ jīng le ma',priority:999}
               ];
               const diverse = pinyin18SelectToneDiverse(jinCandidates,'ni jin le ma',16);
-              const jinTones = [...new Set(diverse.map(item=>pinyin18ToneFromInput(item.py.split(/\\s+/)[1])))].sort();
+              const jinTones = [...new Set(diverse.map(item=>pinyin18ToneFromInput(item.py.split(' ')[1])))].sort();
               assert.deepEqual(jinTones,[1,3,4], 'expose all dictionary-supported tones for jin');
               assert.ok(diverse.every(item=>pinyin18Key(item.py)===pinyin18Key('ni jin le ma')), 'never substitute another Pinyin syllable');
               const fixedTone = pinyin18SelectToneDiverse(jinCandidates,'nǐ jìn le ma',16);
               assert.ok(fixedTone.length>0);
-              assert.ok(fixedTone.every(item=>pinyin18ToneFromInput(item.py.split(/\\s+/)[0])===3&&pinyin18ToneFromInput(item.py.split(/\\s+/)[1])===4), 'honor tones explicitly entered by learner');
+              assert.ok(fixedTone.every(item=>pinyin18ToneFromInput(item.py.split(' ')[0])===3&&pinyin18ToneFromInput(item.py.split(' ')[1])===4), 'honor tones explicitly entered by learner');
               console.log('Menu 18 syllable-boundary and tone-diversity tests: PASS');
               """
           ])
