@@ -74,6 +74,7 @@ jobs:
               'tā hái méiyǒu gōngzuò',
               'function homework18ValidVietnameseMeaning(item)',
               'function formatHomework18PinyinByWord(zh,py)',
+              "const py=formatHomework18PinyinByWord(zh,pinyinForChinese(zh,String(result.py||'')));",
               'pinyin18DisplayKey(value)',
               '.slice(0,5)',
               'Chưa tìm được phương án ghép hợp lệ.',
