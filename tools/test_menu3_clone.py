@@ -18,6 +18,7 @@ required=[
  'function renderHomework3xCard(',
  'async function renderHomework3xCandidates(candidates)',
  'async function lookupHomework3x()',
+ 'BVT_FUNCTION_COLORS.translate3=BVT_FUNCTION_COLORS.translate',
  'data-homework3x-candidate',
  'data-homework3x-speak="zh"',
  'data-homework3x-speak="vi"',
