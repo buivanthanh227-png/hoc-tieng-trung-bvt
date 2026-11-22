@@ -92,7 +92,7 @@ elif source.count(lookup_replacement) != 1:
 
 old_css = ".homework18-candidates:not([hidden]){display:block!important;margin:7px 0 9px!important}"
 new_css = """.homework18-candidates{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:4px 0 8px!important;padding:0!important}
-.homework18-candidate-vi{font-size:12px;line-height:1.45;color:#21805b;font-weight:650;overflow-wrap:anywhere}
+.homework18-candidate-zh{color:#7b3fa1!important}.homework18-candidate-py{color:#2563a6!important}.homework18-candidate-vi{font-size:12px;line-height:1.45;color:#21805b!important;font-weight:650;overflow-wrap:anywhere}
 .homework18-modal-backdrop{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62)}
 .homework18-modal{width:min(100%,520px);max-height:min(88dvh,760px);overflow:auto;background:#fff;color:#182230;border-radius:18px;padding:16px;box-shadow:0 20px 60px rgba(0,0,0,.28)}
 .homework18-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-size:16px}
