@@ -15,7 +15,7 @@ for marker in ("MENU18_MULTICANDIDATE_SENTENCE_SEARCH","function pinyin18SelectT
 start=html.index("function renderHomework18Candidates(candidates){")
 end=html.index("function looksLikePinyin18(raw,local){",start)
 renderer=html[start:end]
-for marker in ("renderHomework18Card(","machineTranslate(item.zh,'zh-CN','vi')","formatHomework18PinyinByWord(item.zh,item.py)"):
+for marker in ("renderHomework18Card(","machineTranslate(item.zh,'zh-CN','vi')","formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh))"):
     if marker not in renderer: raise SystemExit("Whole-sentence result selector missing: "+marker)
 card_start=html.index("function renderHomework18Card(result,sourceLabel=''){")
 card_end=html.index("\nlet homework18Candidates=[];",card_start)
