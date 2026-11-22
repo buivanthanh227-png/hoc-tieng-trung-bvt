@@ -64,3 +64,11 @@ Khi cần xác nhận bản Production, đối chiếu trường `git_sha` trong
 - Bổ sung dự phòng các âm tiết đơn phổ biến khi từ điển chính thiếu mục từ.
 - Cho phép hiển thị kết quả ghép theo từng âm tiết thay vì loại bỏ mọi chuỗi chỉ gồm chữ đơn.
 - Menu 3 và dữ liệu/chức năng của các menu khác không bị chỉnh sửa trong bản vá này.
+
+## Menu 18 — chọn nhiều phương án thanh điệu (V42.9.8)
+
+- Menu 18 tiếp tục dùng từ điển và luồng dịch nhanh theo cách tiếp cận của Menu 3; Menu 3 không bị thay đổi.
+- Với Pinyin không dấu, giữ phương án câu khớp chính xác ở vị trí ưu tiên nhưng vẫn tìm thêm các cách ghép hợp lệ từ những thanh điệu có trong từ điển.
+- Hiển thị danh sách phương án để người học chọn; khi chọn một câu ghép từ nhiều mục từ, nghĩa tiếng Việt được dịch theo toàn câu.
+- Giữ nguyên chuỗi người dùng nhập; chuẩn hóa chỉ dùng nội bộ để tra cứu, không ghi đè hoặc tự thêm/bớt khoảng trắng trong ô nhập.
+- Workflow kiểm tra bản vá chạy lặp, cú pháp Python/JavaScript và các kiểm thử hồi quy thanh điệu trước khi xuất bản.
