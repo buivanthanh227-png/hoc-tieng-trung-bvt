@@ -14,7 +14,7 @@ for marker in ("MENU18_MULTICANDIDATE_SENTENCE_SEARCH","function pinyin18SelectT
     if marker not in html: raise SystemExit("Whole-sentence mapper component missing: "+marker)
 if "state.rows.concat(item.row)" in html:
     raise SystemExit("Dictionary rows are flattened; sentence Pinyin cannot be preserved.")
-start=html.index("function renderHomework18Candidates(candidates){")
+start=html.index("async function renderHomework18Candidates(candidates){")
 end=html.index("\nfunction looksLikePinyin18(raw,local){",start)
 renderer=html[start:end]
 for marker in ("async function renderHomework18Candidates(candidates)","await Promise.all(","select(0);","homework18ValidVietnameseMeaning(enriched)","formatHomework18PinyinByWord(item.zh,item.py||pinyinForChinese(item.zh))"):
