@@ -176,8 +176,15 @@ replace_once(
  const rawTokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean);
  if(rawTokens.length===1){
   const tone=pinyin18ToneFromInput(rawTokens[0]);
-  const entry=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])]?.[tone];
-  if(entry)addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
+  const variants=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])];
+  if(tone&&variants?.[tone]){
+   const entry=variants[tone];
+   addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
+  }else if(variants){
+   for(const [candidateTone,entry] of Object.entries(variants)){
+    addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Một cách đọc theo thanh điệu '+candidateTone},6200-Number(candidateTone));
+   }
+  }
  }
  for(const item of MENU18_VERIFIED_SENTENCES){""",
     "contextual exact phrase and single-syllable tone selection"
@@ -302,26 +309,6 @@ replace_once(
     """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,8);""",
     """ return [...found.values()].sort((a,b)=>b.priority-a.priority||a.zh.localeCompare(b.zh,'zh-CN')).slice(0,16);""",
     "return more ranked Pinyin alternatives for the selector"
-)
-replace_once(
-    """ if(rawTokens.length===1){
-  const tone=pinyin18ToneFromInput(rawTokens[0]);
-  const entry=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])]?.[tone];
-  if(entry)addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
- }""",
-    """ if(rawTokens.length===1){
-  const tone=pinyin18ToneFromInput(rawTokens[0]);
-  const variants=PINYIN18_SINGLE_TONE_WORDS[pinyin18Key(rawTokens[0])];
-  if(tone&&variants?.[tone]){
-   const entry=variants[tone];
-   addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Thanh điệu của âm tiết được xác định'},6800);
-  }else if(variants){
-   for(const [candidateTone,entry] of Object.entries(variants)){
-    addCandidate({zh:entry[0],py:entry[1],vi:entry[2],source:'Một cách đọc theo thanh điệu '+candidateTone},6200-Number(candidateTone));
-   }
-  }
- }""",
-    "show tone alternatives for unmarked single-syllable inputs"
 )
 replace_once(
     """ const vi=String(result.vi||'Chưa tìm được nghĩa tiếng Việt cho toàn câu.');""",
