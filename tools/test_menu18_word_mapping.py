@@ -30,7 +30,6 @@ if "split(/[\\\\s,，、;；]+/)" in formatter or "split(/\\\\s+/)" in formatter
 if "split(/[\\s,，、;；]+/)" not in formatter or "split(/\\s+/)" not in formatter:
     raise SystemExit("Menu 18 formatter must split real whitespace between original input tokens and Pinyin syllables")
 
-    if marker not in renderer: raise SystemExit("Menu 18 pagination or strict-spacing formatter missing: "+marker)
 
 if "const best=await renderHomework18Candidates(candidates);" not in html:
     raise SystemExit("Menu 18 lookup does not await whole-sentence verification")
