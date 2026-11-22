@@ -281,11 +281,6 @@ function renderHomework18Candidates(candidates){
 }"""
 replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
 
-replace_ui_once(
-    "'Pinyin · tự động xét nhiều thanh điệu'",
-    "'Kết quả 1 · Pinyin · tự động xét nhiều thanh điệu'",
-    "first result label after full-sentence translation"
-)
 
 if source != original:
     target.write_text(source, encoding="utf-8", newline="\n")
