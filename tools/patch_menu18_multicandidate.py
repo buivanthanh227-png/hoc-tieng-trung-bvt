@@ -33,6 +33,15 @@ if "MENU18_MULTICANDIDATE_SENTENCE_SEARCH" not in source:
         1
     )
 
+# Keep candidate-internal syllable boundaries explicit for tone validation.
+# The display formatter compacts known lexical words (e.g. jīntiān) afterwards.
+compact_sentence_py = "py:'jīntiān wǒ jiā yǒu kèrén'"
+expanded_sentence_py = "py:'jīn tiān wǒ jiā yǒu kè rén'"
+if source.count(compact_sentence_py) == 1:
+    source = source.replace(compact_sentence_py, expanded_sentence_py, 1)
+elif source.count(expanded_sentence_py) != 1:
+    raise SystemExit("Menu 18 multicandidate patch: verified sentence Pinyin boundary not found uniquely.")
+
 start = source.find("function renderHomework18Candidates(candidates){")
 end = source.find("\nfunction looksLikePinyin18(raw,local){", start)
 if start < 0 or end < 0:
