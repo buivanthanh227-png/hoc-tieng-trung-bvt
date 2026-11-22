@@ -2,7 +2,7 @@ name: Menu 18 whole-sentence tone alternatives validation
 
 on:
   push:
-    branches: [main, fix/menu18-whole-sentence-tone-alternatives-v42-10-0]
+    branches: [main, fix/menu18-whole-sentence-verified-v42-10-1]
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
