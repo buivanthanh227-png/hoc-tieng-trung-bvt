@@ -175,7 +175,7 @@ jobs:
 
               assert.equal(formatHomework18PinyinByWord('今天', 'Jīn tiān'), 'Jīntiān');
               assert.equal(formatHomework18PinyinByWord('今天我家有客人', 'jīn tiān wǒ jiā yǒu kè rén'), 'jīntiān wǒ jiā yǒu kèrén');
-              assert.equal(formatHomework18PinyinByWord('中国学生', 'zhōng guó xué shēng'), 'zhōngguó xuéshēng');
+              assert.equal(formatHomework18PinyinByWord('中国学生', 'zhōng guó xué shēng'), 'zhōngguó xuésheng');
               assert.equal(formatHomework18PinyinByWord('我爱你', 'wǒ ài nǐ'), 'wǒ ài nǐ');
               assert.equal(formatHomework18PinyinByWord('妈妈我爱你', 'mā ma wǒ ài nǐ'), 'māma wǒ ài nǐ');
               assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān extra'), 'jīn tiān extra');
