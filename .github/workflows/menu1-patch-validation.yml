@@ -1,0 +1,27 @@
+name: Menu 1 three-field dictionary search validation
+on:
+  push:
+    branches: [feat/menu1-three-field-dictionary-search-v42-10-5]
+permissions:
+  contents: read
+jobs:
+  validate-menu1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build deploy artifact and run Menu 1 and Menu 18 regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p site
+          cp index.html site/
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py
+          python3 tools/patch_menu18_ranking.py site/index.html
+          python3 tools/patch_menu18_word_mapping.py site/index.html
+          python3 tools/patch_menu18_multicandidate.py site/index.html
+          python3 tools/test_menu18_word_mapping.py site/index.html
+          python3 tools/patch_menu1_dictionary_search.py site/index.html
+          python3 tools/test_menu1_dictionary_search.py site/index.html
