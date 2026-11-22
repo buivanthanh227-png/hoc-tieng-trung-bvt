@@ -51,12 +51,10 @@ jobs:
           # Trang chính hiện tại
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/patch_menu18_independent_mapping.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
-          # Final Menu 18 overlay: each entered token is mapped independently.
-          python3 tools/patch_menu18_independent_mapping.py site/index.html
           # Keep the visible footer version aligned with manifest.webmanifest.
           if grep -q '42.9.3' site/index.html; then
             sed -i 's/42[.]9[.]3/42.9.4/g' site/index.html
@@ -76,8 +74,11 @@ jobs:
           if grep -q '42.9.8' site/index.html; then
             sed -i 's/42[.]9[.]8/42.9.9/g' site/index.html
           fi
-          if grep -Eq '42[.]9[.][345678]' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.9.9."
+          if grep -q '42.9.9' site/index.html; then
+            sed -i 's/42[.]9[.]9/42.10.0/g' site/index.html
+          fi
+          if grep -Eq '42[.]9[.][3456789]' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.0."
             exit 1
           fi
 
@@ -156,12 +157,16 @@ jobs:
             if body="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/build-info.json" 2>/dev/null)"; then
               if actual_sha="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("git_sha", ""))' <<< "$body" 2>/dev/null)" && [ "$actual_sha" = "$EXPECTED_SHA" ]; then
                 html="$(curl --fail --silent --show-error --location --max-time 20 "$BASE_URL/index.html")"
-                if ! grep -q 'MENU18_INDEPENDENT_TOKEN_MAPPING_V1' <<< "$html" || ! grep -q 'Các kết quả ánh xạ độc lập' <<< "$html"; then
-                  echo "::error::Production thiếu logic ánh xạ độc lập từng mục nhập của Menu 18."
+                if ! grep -q 'MENU18_MULTICANDIDATE_SENTENCE_SEARCH' <<< "$html" || ! grep -q 'function pinyin18SelectToneDiverse' <<< "$html"; then
+                  echo "::error::Production thiếu bộ tìm kiếm nhiều phương án thanh điệu cho toàn câu Menu 18."
                   exit 1
                 fi
-                if ! grep -q 'tra từng mục nhập độc lập' <<< "$html"; then
-                  echo "::error::Production còn thiếu hướng dẫn mới của Menu 18."
+                if grep -q 'MENU18_INDEPENDENT_TOKEN_MAPPING_V1' <<< "$html"; then
+                  echo "::error::Production vẫn chứa logic tra từng âm tiết độc lập đã bị loại bỏ."
+                  exit 1
+                fi
+                if ! grep -q "copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán')" <<< "$html" || ! grep -q "copyButton(py,'Pinyin')" <<< "$html"; then
+                  echo "::error::Production thiếu nút sao chép hoặc loa của kết quả Menu 18."
                   exit 1
                 fi
                 echo "Production đang phục vụ đúng commit $EXPECTED_SHA và có logic Menu 18 mới."
