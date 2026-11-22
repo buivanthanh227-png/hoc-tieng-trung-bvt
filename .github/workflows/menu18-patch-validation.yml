@@ -10,6 +10,7 @@ on:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
       - 'tools/patch_menu18_word_mapping.py'
+      - 'tools/patch_menu18_multicandidate.py'
       - 'tools/test_menu18_word_mapping.py'
       - 'manifest.webmanifest'
       - 'sw.js'
@@ -52,6 +53,9 @@ jobs:
           python3 tools/patch_menu18_ranking.py /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
           python3 tools/patch_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_multicandidate.py /tmp/menu18-patch-check/index.html
+          python3 tools/patch_menu18_multicandidate.py /tmp/menu18-patch-check/index.html
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py
           python3 tools/test_menu18_word_mapping.py /tmp/menu18-patch-check/index.html
 
       - name: Verify regression phrases, tone map, and JavaScript syntax
@@ -92,6 +96,10 @@ jobs:
               'function pinyin18DisplayKey(value)',
               'function pinyin18ToneFromInput(value)',
               'function pinyinToChineseCandidates(raw){',
+              'MENU18_MULTICANDIDATE_SENTENCE_SEARCH',
+              'Chọn phương án phù hợp với ý bạn',
+              'data-homework18-candidate',
+              'let homework18SelectedCandidateIndex=0;',
               'function renderHomework18Candidates(candidates){',
               "machineTranslate(item.zh,'zh-CN','vi')",
               'pinyin18SelectToneDiverse(',
@@ -107,7 +115,9 @@ jobs:
               'function getPinyin18CompactIndex()',
               'wordMapping:true',
               'Ánh xạ độc lập theo từng từ · không ghép tổ hợp',
-              'if(best.wordMapping){'
+              'if(best.wordMapping){',
+              'if(!hasExactPhraseSource){',
+              '.homework18-candidates{display:none!important}'
           ]
           present = [item for item in retired if item in html]
           if present:
