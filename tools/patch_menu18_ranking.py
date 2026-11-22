@@ -254,7 +254,9 @@ old_renderer = """function renderHomework18Candidates(candidates){
  return best;
 }"""
 new_renderer = """let homework18Candidates=[];
+let homework18SelectedIndex=0;
 function renderHomework18Candidates(candidates){
+ homework18SelectedIndex=0;
  const box=$('homework18-candidates');
  const seen=new Set();
  homework18Candidates=(Array.isArray(candidates)?candidates:[]).filter(item=>{
@@ -268,6 +270,7 @@ function renderHomework18Candidates(candidates){
   homework18Candidates.map((item,index)=>'<button type="button" class="homework18-candidate-tab" data-homework18-result="'+index+'" aria-pressed="'+(index===0?'true':'false')+'">Kết quả '+(index+1)+'</button>').join('')+'</div>';
  const choose=index=>{
   const item=homework18Candidates[index];if(!item)return;
+  homework18SelectedIndex=index;
   box.querySelectorAll('[data-homework18-result]').forEach(button=>{
    button.setAttribute('aria-pressed',String(Number(button.dataset.homework18Result)===index));
   });
@@ -280,6 +283,16 @@ function renderHomework18Candidates(candidates){
  return homework18Candidates[0];
 }"""
 replace_ui_once(old_renderer,new_renderer,"multi-result selector and selection behavior")
+
+
+# Do not let a delayed translation response replace a different candidate
+# that the learner selected while the request was in flight.
+token_guard = "if(token!==homework18LookupToken)return;"
+token_guard_count = source.count(token_guard)
+if token_guard_count != 2:
+    raise SystemExit(f"Menu 18 patch aborted: expected two async result guards; found {token_guard_count}")
+source = source.replace(token_guard, "if(token!==homework18LookupToken||homework18SelectedIndex!==0)return;")
+changes.append("preserve learner candidate selection during async translation")
 
 
 if source != original:
