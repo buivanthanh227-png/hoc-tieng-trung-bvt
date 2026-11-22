@@ -68,6 +68,10 @@ style=style.replace('#experimental-quick-translate-card','#quick-translate-card3
 style=style.replace('#long-translate-18-','#long-translate-3x-')
 style=style.replace('#translate-file-18-','#translate-file-3x-')
 style=style.replace('#file-translate-18-','#file-translate-3x-')
+# Rename every Menu 18 result/modal class selector to the cloned Menu 3 namespace.
+# The cloned HTML already uses homework3x; keeping these CSS selectors aligned
+# makes result cards and the candidate popup visually identical to Menu 18.
+style=style.replace('homework18','homework3x')
 html=html[:style_end+8]+'\n'+style+html[style_end+8:]
 
 # Preserve the old Menu 3 practice panel; the new Menu 3 gets its own panel.
