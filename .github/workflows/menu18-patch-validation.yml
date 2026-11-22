@@ -78,6 +78,8 @@ jobs:
               '.slice(0,5)',
               'Chưa tìm được phương án ghép hợp lệ.',
               'homework18-candidate-tab',
+              'renderHomework18Card({...enriched,py:formatHomework18PinyinByWord(enriched.zh,enriched.py)},label);',
+              "renderHomework18Card({...item,py:formatHomework18PinyinByWord(item.zh,item.py),vi:'Chưa tra được nghĩa tiếng Việt.'},label);",
               'Kết quả ',
               "'is-'+kind",
               'if(!key||key.length>600)return [];',
@@ -165,6 +167,7 @@ jobs:
               html[formatter_start:formatter_end],
               """
               assert.equal(formatHomework18PinyinByWord('今天', 'jīn tiān'), 'jīntiān');
+              assert.equal(formatHomework18PinyinByWord('今天', 'Jīn tiān'), 'Jīntiān');
               assert.equal(formatHomework18PinyinByWord('今天我家有客人', 'jīn tiān wǒ jiā yǒu kè rén'), 'jīntiān wǒ jiā yǒu kèrén');
               assert.equal(formatHomework18PinyinByWord('中国学生', 'zhōng guó xué shēng'), 'zhōngguó xuéshēng');
               assert.equal(formatHomework18PinyinByWord('我爱你', 'wǒ ài nǐ'), 'wǒ ài nǐ');
