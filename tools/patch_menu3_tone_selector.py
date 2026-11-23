@@ -110,7 +110,7 @@ function pinyin18SelectToneDiverse(candidates, raw, limit=30) {
   .forEach(p=>[...p.tones.keys()].sort((a,b)=>a-b).forEach(tone=>add(p.tones.get(tone))));
  return selected.map(row=>row.item);
 }
-window.pinyin18SelectToneDiverse=pinyin18SelectToneDiverse;
+if(typeof window!=='undefined')window.pinyin18SelectToneDiverse=pinyin18SelectToneDiverse;
 """
 
 def main():
