@@ -1837,10 +1837,10 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 @media(max-width:390px){#combine-choices .combine-suggestion{padding:8px 5px!important;grid-template-columns:32px minmax(0,1fr)!important}#combine-search-results .suggestion-hanzi{min-width:0!important}}
 </style>
 <style id="v42-9-2-qa-fix">
-/* v42.10.17 QA fix · BUG-02: thông báo và gợi ý trong "Tài liệu lưu trữ" (thông báo giới hạn 25 MB, tên tệp dài không dấu cách) luôn tự xuống dòng, không tràn lề trên màn hình hẹp. Chỉ áp dụng cho hai phần tử này và ô chọn tệp. */
+/* v42.10.18 QA fix · BUG-02: thông báo và gợi ý trong "Tài liệu lưu trữ" (thông báo giới hạn 25 MB, tên tệp dài không dấu cách) luôn tự xuống dòng, không tràn lề trên màn hình hẹp. Chỉ áp dụng cho hai phần tử này và ô chọn tệp. */
 #panel-library .library-status,#panel-library .library-field-hint{min-width:0;max-width:100%;overflow-wrap:break-word;overflow-wrap:anywhere;word-break:break-word}
 #panel-library .library-file-field{min-width:0;max-width:100%}
-/* v42.10.17 QA fix · BUG-03: khối hướng dẫn khi kho từ vựng của Luyện tập từ vựng còn trống. Khối này chỉ được tạo khi kho rỗng nên không chiếm diện tích khi đã có từ. */
+/* v42.10.18 QA fix · BUG-03: khối hướng dẫn khi kho từ vựng của Luyện tập từ vựng còn trống. Khối này chỉ được tạo khi kho rỗng nên không chiếm diện tích khi đã có từ. */
 #panel-vocab-training .vocab-training-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px}
 #panel-vocab-training .vocab-training-empty-note{margin:0;font-size:12px;line-height:1.5;color:var(--muted,#667085);overflow-wrap:anywhere}
 #panel-vocab-training .vocab-training-empty .btn{max-width:100%;white-space:normal;line-height:1.3;text-align:center}
@@ -2167,6 +2167,63 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 }
 </style>
 
+<style id="bvt-banner-slogan-edge-alignment-v421018">
+.topbar .brand{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  column-gap:clamp(6px,1.5vw,16px)!important;
+  row-gap:5px!important;
+  width:100%!important;
+  max-width:1100px!important;
+  margin:0 auto!important;
+  box-sizing:border-box!important;
+}
+.topbar .brand>.brand-flag:first-child{
+  grid-column:1!important;
+  grid-row:1!important;
+  justify-self:start!important;
+  align-self:center!important;
+  margin:0!important;
+}
+.topbar .brand>.brand-flag:last-child{
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  align-self:center!important;
+  margin:0!important;
+}
+.topbar .brand>.brand-copy{display:contents!important}
+.topbar .brand-copy>h1{
+  grid-column:2!important;
+  grid-row:1!important;
+  justify-self:center!important;
+  align-self:center!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin:0!important;
+  text-align:center!important;
+}
+.topbar .brand-copy>.brand-slogan{display:contents!important}
+.topbar .brand-slogan>span:first-child{
+  grid-column:1!important;
+  grid-row:2!important;
+  justify-self:stretch!important;
+  width:100%!important;
+  text-align:left!important;
+}
+.topbar .brand-slogan>span:last-child{
+  grid-column:3!important;
+  grid-row:2!important;
+  justify-self:stretch!important;
+  width:100%!important;
+  text-align:right!important;
+}
+@media(max-width:600px){
+  .topbar .brand{column-gap:4px!important;row-gap:4px!important}
+}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -2703,7 +2760,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 
 </main>
 </div><!-- /.app-shell -->
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.10.17</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.10.18</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button id="back-to-top" type="button" aria-label="Về đầu trang" title="Về đầu trang">↑</button>
 <div id="stroke-modal" class="stroke-modal" hidden>
@@ -5370,13 +5427,6 @@ $('homework-query').addEventListener('input',()=>{
   if(q.length>=3){const local=tryLocalTranslation($('homework-query').value);if(local){renderHomeworkCard(local,local.source);$('homework-status').textContent='Đã tìm được câu mẫu offline. Bấm “Dịch câu” để dịch câu mới.';}}
  },160);
 });
-$('homework18-lookup').addEventListener('click',()=>lookupHomework18());
-$('homework18-query').addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();lookupHomework18();}});
-$('homework18-query').addEventListener('input',()=>{
- homework18LookupToken++;$('homework18-results').replaceChildren();renderHomework18Candidates([]);
- $('homework18-status').textContent='';
-});
-
 // Searchable reading practice: the learner chooses the exact word or sentence instead of receiving random content.
 function readFieldScore(value,q){const v=norm(value);if(!v||!q)return 0;if(v===q)return 190;if(v.startsWith(q))return 145;if(v.includes(q))return 110;if(q.length>=4&&q.includes(v)&&v.length>=4)return 65;return 0;}
 function selectReadTarget(target){
@@ -5554,7 +5604,7 @@ function normalizeOnlineOcrText(text){
  t=t.split('\n').map(line=>line.replace(/^\s*\|/,'').replace(/\|\s*$/,'').replace(/\s*\|\s*/g,' ')).join('\n');
  return t.replace(/^\s*[-=|: +]{3,}\s*$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
 }
-// v42.10.17 QA fix (BUG-04): phân biệt "OCR đã quét xong và không có chữ" với "dịch vụ OCR bị lỗi".
+// v42.10.18 QA fix (BUG-04): phân biệt "OCR đã quét xong và không có chữ" với "dịch vụ OCR bị lỗi".
 function makeOcrNoTextError(message){const err=new Error(message||'OCR online không nhận ra chữ trong ảnh.');err.code='OCR_NO_TEXT';return err;}
 function isOcrNoTextError(err){return !!err&&err.code==='OCR_NO_TEXT';}
 function isOcrNoTextResponse(status,data){
@@ -5752,7 +5802,7 @@ async function createOcrWorkerWithFallback(T){
  }
  throw new Error('Không thể khởi tạo bộ nhận diện từ cả hai nguồn. '+(lastError?.message||'')+' Hãy thử đổi mạng Wi-Fi/4G hoặc thử lại sau.');
 }
-let ocrRunToken=0,ocrProgressToken=0; // v42.10.17 QA fix (BUG-04): mỗi lượt quét có mã riêng; đổi danh sách ảnh làm mã cũ hết hiệu lực để kết quả và tiến trình của ảnh cũ không ghi đè.
+let ocrRunToken=0,ocrProgressToken=0; // v42.10.18 QA fix (BUG-04): mỗi lượt quét có mã riêng; đổi danh sách ảnh làm mã cũ hết hiệu lực để kết quả và tiến trình của ảnh cũ không ghi đè.
 function resetOcrOutputForNewSelection(){
  ocrRunToken++;
  $('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];activeOcrCandidate=0;
@@ -6790,7 +6840,7 @@ $('vocab-training-add-combine').addEventListener('click',()=>{
  trainingAddRows(rows,'Từ đã chọn ở Ghép câu');
 });
 $('vocab-training-clear').addEventListener('click',()=>{vocabTrainingBank.clear();renderVocabularyTrainingBank();$('vocab-training-source-status').textContent='Đã xóa danh sách từ của lượt luyện.';});
-// v42.10.17 QA fix (BUG-03): nút trong trạng thái rỗng chuyển sang Menu 1 - Tra cứu từ vựng bằng đúng cơ chế bấm tab sẵn có (tự đóng menu mobile, không đổi kho từ).
+// v42.10.18 QA fix (BUG-03): nút trong trạng thái rỗng chuyển sang Menu 1 - Tra cứu từ vựng bằng đúng cơ chế bấm tab sẵn có (tự đóng menu mobile, không đổi kho từ).
 $('vocab-training-bank').addEventListener('click',e=>{const go=e.target.closest('[data-vocab-go-dict]');if(!go)return;e.preventDefault();document.querySelector('#main-tabs .tab[data-tab="dict"]')?.click();});
 function trainingSeconds(id,fallback,min=0,max=120){const n=Number($(id)?.value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;}
 function trainingCurrentItem(){return vocabTrainingDeck[vocabTrainingIndex]||null;}
@@ -8266,7 +8316,7 @@ renderChart();bindChartScrollbars();renderChoices();
 #panel-hanzi-memory{--hm:#db2777;--hm2:#9d174d;color:#253047;min-width:0}#panel-hanzi-memory .hm-wrap{display:grid;gap:14px}#panel-hanzi-memory .hm-hero{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px;border-radius:18px;border:1px solid #f9a8d4;background:linear-gradient(120deg,#fce7f3,#fff7ed 58%,#f0f9ff)}#panel-hanzi-memory .hm-hero h2{margin:4px 0 6px;color:#831843;font-size:clamp(20px,2.5vw,27px)}#panel-hanzi-memory .hm-hero p{margin:0;color:#6b3650;font-size:13px;line-height:1.55}#panel-hanzi-memory .hm-kicker{font-size:10px;font-weight:900;letter-spacing:.1em;color:#be185d}#panel-hanzi-memory .hm-hero-icon{flex:0 0 76px;width:76px;height:76px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#ec4899,#9333ea);color:white;font-size:24px;font-weight:900;box-shadow:0 8px 20px #be185d33}#panel-hanzi-memory .hm-card{padding:16px;border:1px solid #fbcfe8;border-radius:16px;background:#fff;box-shadow:0 3px 14px #9d174d0b;min-width:0}#panel-hanzi-memory .hm-card h3{margin:0 0 9px;color:#831843;font-size:14px}#panel-hanzi-memory .hm-note{font-size:12px;color:#64748b;margin:0 0 12px;line-height:1.5}#panel-hanzi-memory .hm-source-actions{display:flex;gap:8px;flex-wrap:wrap}#panel-hanzi-memory .hm-source-btn,#panel-hanzi-memory .hm-btn{border:0;border-radius:10px;padding:10px 12px;background:#fce7f3;color:#9d174d;font-weight:850;font-size:11px;cursor:pointer}#panel-hanzi-memory .hm-source-btn:hover{background:#fbcfe8}#panel-hanzi-memory .hm-search-row{display:flex;gap:8px;margin-top:12px}#panel-hanzi-memory .hm-search-row .field{min-width:0;flex:1}#panel-hanzi-memory .hm-btn{background:#be185d;color:#fff}#panel-hanzi-memory .hm-search-results{display:grid;gap:5px;margin-top:8px;max-height:220px;overflow:auto}#panel-hanzi-memory .hm-result{display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px;padding:8px 10px;border:1px solid #fbcfe8;border-radius:9px;background:#fff;color:#334155;cursor:pointer}#panel-hanzi-memory .hm-result b{font-size:17px}#panel-hanzi-memory .hm-result small{color:#64748b}#panel-hanzi-memory .hm-bank-head{display:flex;justify-content:space-between;align-items:center;margin:13px 0 7px;color:#831843;font-size:12px}#panel-hanzi-memory .hm-clear{border:0;background:#f1f5f9;color:#475569;border-radius:9px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}#panel-hanzi-memory .hm-bank-list{display:flex;gap:7px;flex-wrap:wrap;max-height:180px;overflow:auto}#panel-hanzi-memory .hm-chip{display:flex;align-items:center;gap:7px;padding:6px 8px;border:1px solid #fbcfe8;border-radius:10px;background:#fff7fb}#panel-hanzi-memory .hm-chip b{font-size:17px;color:#831843}#panel-hanzi-memory .hm-chip small{font-size:10px;color:#64748b;max-width:150px}#panel-hanzi-memory .hm-chip button{border:0;background:transparent;color:#be185d;font-weight:900;cursor:pointer}#panel-hanzi-memory .hm-empty{color:#94a3b8;font-size:12px;padding:10px}#panel-hanzi-memory .hm-status{font-size:12px;color:#64748b;margin-top:9px;min-height:18px}#panel-hanzi-memory .hm-settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#panel-hanzi-memory .hm-settings label{display:grid;gap:6px;color:#9d174d;font-size:10px;font-weight:850}#panel-hanzi-memory .hm-settings input{width:100%;box-sizing:border-box;border:1px solid #f9a8d4;border-radius:9px;padding:10px;font-size:15px;color:#334155;background:#fff}#panel-hanzi-memory .hm-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}#panel-hanzi-memory .hm-level{display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;cursor:pointer}#panel-hanzi-memory .hm-level input{accent-color:#db2777;margin-top:3px}#panel-hanzi-memory .hm-level span{display:grid;gap:4px}#panel-hanzi-memory .hm-level b{font-size:13px}#panel-hanzi-memory .hm-level small{font-size:10px;line-height:1.4;color:#64748b}#panel-hanzi-memory .easy{background:#f8fafc}#panel-hanzi-memory .hard{background:#fff7ed}#panel-hanzi-memory .expert{background:#faf5ff}#panel-hanzi-memory .hm-start{width:100%;border:0;border-radius:12px;padding:14px;background:linear-gradient(100deg,#ec4899,#9333ea);color:#fff;font-weight:900;letter-spacing:.04em;cursor:pointer;box-shadow:0 6px 16px #be185d33}#panel-hanzi-memory .hm-game{background:linear-gradient(160deg,#fff,#fff7fb)}#panel-hanzi-memory .hm-game-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#9d174d;font-size:12px;font-weight:850}#panel-hanzi-memory .hm-board{min-height:230px;margin:14px 0;padding:18px;border:1px dashed #f9a8d4;border-radius:15px;background:radial-gradient(circle at 20% 20%,#fff1f8,#fff 65%);display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,30px);flex-wrap:wrap;position:relative;overflow:hidden}#panel-hanzi-memory .hm-tile{display:grid;place-items:center;min-width:54px;min-height:62px;padding:5px 8px;border-radius:10px;font-size:clamp(28px,5vw,48px);font-weight:600;line-height:1.2;transition:transform .2s}#panel-hanzi-memory .hm-missing-prompt{text-align:center;font-size:17px;font-weight:950;color:#be185d;margin:8px}#panel-hanzi-memory .hm-answer-area{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}#panel-hanzi-memory .hm-answer-area .hm-mic{grid-column:1/-1;background:#7c3aed}#panel-hanzi-memory .hm-choice-wrap{grid-column:1/-1;margin-top:3px}#panel-hanzi-memory .hm-choice-wrap>small{display:block;margin:0 0 7px;color:#9d174d;font-size:10px;font-weight:900}#panel-hanzi-memory .hm-choice-list{display:flex;gap:7px;flex-wrap:wrap}#panel-hanzi-memory .hm-choice{border:1px solid #f9a8d4;background:#fff7fb;color:#831843;border-radius:10px;padding:9px 14px;font-size:21px;cursor:pointer}#panel-hanzi-memory .hm-choice:hover{background:#fce7f3}#panel-hanzi-memory .hm-next{margin-top:10px}#panel-hanzi-memory .hm-review-table{width:100%;border-collapse:collapse;font-size:12px}#panel-hanzi-memory .hm-review-table th,#panel-hanzi-memory .hm-review-table td{padding:9px 7px;border-bottom:1px solid #fce7f3;text-align:left}#panel-hanzi-memory .hm-review-table th{color:#9d174d;background:#fff7fb}#panel-hanzi-memory .hm-correct{color:#15803d;font-weight:850}#panel-hanzi-memory .hm-wrong{color:#dc2626;font-weight:850}
 @media(max-width:700px){#panel-hanzi-memory .hm-hero{padding:14px}#panel-hanzi-memory .hm-hero-icon{width:58px;height:58px;flex-basis:58px;font-size:19px}#panel-hanzi-memory .hm-card{padding:12px}#panel-hanzi-memory .hm-settings{grid-template-columns:1fr}#panel-hanzi-memory .hm-levels{grid-template-columns:1fr}#panel-hanzi-memory .hm-board{min-height:210px;padding:10px;gap:10px}#panel-hanzi-memory .hm-tile{min-width:42px;min-height:48px}#panel-hanzi-memory .hm-answer-area{grid-template-columns:1fr}#panel-hanzi-memory .hm-answer-area .hm-mic{grid-column:auto}}
 
-/* v42.10.17 – refinements for Menu 17 */
+/* v42.10.18 – refinements for Menu 17 */
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"]{background:#DB2777!important;border-color:#9D174D!important;color:#fff!important}
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"].active{background:#9D174D!important;border-color:#831843!important;color:#fff!important}
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-label,.app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-icon{color:#fff!important}
@@ -8449,9 +8499,9 @@ renderChart();bindChartScrollbars();renderChoices();
  const originalMlRun=bvtMlRunTranslation;
  bvtMlRunTranslation=async function(prefix,sequence){if(prefix==='bvt-mv'&&typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder&&bvtMvRecorder.state==='recording'&&!String($('bvt-mv-text')?.value||'').trim()){const status=$('bvt-mv-status');if(status)status.textContent='Đang ghi âm… bạn có thể đổi ngôn ngữ nguồn; hãy bấm DỪNG VÀ DỊCH khi nói xong.';return;}const result=await originalMlRun(prefix,sequence);if(prefix==='bvt-mv'&&typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder&&bvtMvRecorder.state==='recording'){const status=$('bvt-mv-status');if(status)status.textContent='Đang ghi âm… ngôn ngữ nguồn hiện tại: '+($('bvt-mv-source')?.selectedOptions?.[0]?.textContent||'đã chọn')+'.';}return result;};
  $('bvt-mv-source')?.addEventListener('change',()=>{if(typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder&&bvtMvRecorder.state==='recording')$('bvt-mv-status').textContent='Đang ghi âm… ngôn ngữ nguồn đã đổi. Bấm DỪNG VÀ DỊCH khi nói xong.';});
- // v42.10.17 Momentic regressions.
- // Dictionary data may have loaded before the v42.10.17 wrapper was installed; normalize it immediately.
- try{if(Array.isArray(dictionary)&&dictionary.length){for(const row of dictionary){if((String(row[0]||'')==='鱼'||String(row[1]||'')==='魚')&&!/(^|[；;、,\s])cá([；;、,\s]|$)/i.test(String(row[3]||'')))row[3]='cá; '+String(row[3]||'');}searchIndex=dictionary.map(makeSearchRecord);applyFilter();}}catch(e){console.warn('v42.10.17 dictionary normalization:',e);}
+ // v42.10.18 Momentic regressions.
+ // Dictionary data may have loaded before the v42.10.18 wrapper was installed; normalize it immediately.
+ try{if(Array.isArray(dictionary)&&dictionary.length){for(const row of dictionary){if((String(row[0]||'')==='鱼'||String(row[1]||'')==='魚')&&!/(^|[；;、,\s])cá([；;、,\s]|$)/i.test(String(row[3]||'')))row[3]='cá; '+String(row[3]||'');}searchIndex=dictionary.map(makeSearchRecord);applyFilter();}}catch(e){console.warn('v42.10.18 dictionary normalization:',e);}
  // Never copy instructional placeholders from either multilingual image or voice translation result.
  const placeholderCopyGuard=(event)=>{const btn=event.target.closest('#bvt-mi-copy,#bvt-mv-copy');if(!btn)return;const id=btn.id==='bvt-mi-copy'?'bvt-mi-result':'bvt-mv-result',el=$(id),value=String(el?.textContent||'').trim();if(!value||/^Bản dịch sẽ hiển thị tại đây\.?$/i.test(value)||/^Đang dịch(?:…|\.\.\.)?$/i.test(value)){event.preventDefault();event.stopImmediatePropagation();const st=$(id==='bvt-mi-result'?'bvt-mi-status':'bvt-mv-status');if(st)st.textContent='Chưa có bản dịch thực tế để sao chép.';}};document.addEventListener('click',placeholderCopyGuard,true);
  // A restarted vocabulary round must clear the stale stopped message.
