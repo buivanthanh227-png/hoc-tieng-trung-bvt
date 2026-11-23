@@ -135,7 +135,7 @@
   return output.replace(/^(\s*)([a-zü])/i,(_,space,ch)=>space+ch.toUpperCase());
  }
  const translateFullSentence=async item=>{
-  let vi=cleanMeaning(item.preferredMeaning||(item.sourceRows?.length===1?item.vi:''));
+  let vi=cleanMeaning(item.preferredMeaning||item.vi||'');
   if(validMeaning(vi))return {...item,vi};
   if(typeof window.machineTranslate!=='function')return null;
   try{
@@ -198,11 +198,11 @@
     button.type='button';button.className='homework3x-candidate';button.dataset.homework3xCandidate=String(index);
     const number=document.createElement('span');number.className='homework3x-candidate-number';number.textContent=String(index+1);
     const content=document.createElement('span');content.className='homework3x-candidate-content';
-    const py=document.createElement('span');py.className='homework3x-candidate-py';py.textContent=formatByInputSpacing(query,item.py);
-    const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.textContent=item.zh;
-    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.textContent=item.vi;
+    const py=document.createElement('span');py.className='homework3x-candidate-py';py.style.cssText='display:block!important;color:#1769c2!important;font-size:clamp(21px,5.2vw,27px)!important;font-weight:900!important;line-height:1.35!important;letter-spacing:.01em!important;overflow-wrap:anywhere!important';py.textContent=formatByInputSpacing(query,item.py);
+    const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.style.cssText='display:block!important;color:#7b3fa1!important;font-size:19px!important;font-weight:850!important;line-height:1.4!important;overflow-wrap:anywhere!important';zh.textContent=item.zh;
+    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.style.cssText='display:block!important;color:#16845b!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important';vi.textContent=item.vi;
     content.append(py,zh,vi);button.append(number,content);
-    button.addEventListener('click',()=>{window.homework3xSelectedCandidateIndex=index;if(typeof window.openHomework3xCandidateModal==='function')window.openHomework3xCandidateModal(item,index,source.length);});
+    button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.homework3xSelectedCandidateIndex=index;if(typeof window.openHomework3xCandidateModal==='function'){window.openHomework3xCandidateModal(item,index,source.length);}else if(status){status.textContent='Không tải được hộp thoại chi tiết. Vui lòng tải lại trang.';}});
     grid.appendChild(button);
     source[index]=item;
    });
