@@ -97,6 +97,20 @@ jobs:
           path.write_text(html, encoding="utf-8")
           print(f"Version synchronization PASS: {replacements} version occurrence(s) → V42.10.15")
           PY
+          python3 - <<'PY'
+          import json, pathlib
+          manifest = json.loads(pathlib.Path("manifest.webmanifest").read_text(encoding="utf-8"))
+          version = manifest["name"].rsplit("· ", 1)[-1]
+          readme = pathlib.Path("README.md").read_text(encoding="utf-8")
+          sw = pathlib.Path("sw.js").read_text(encoding="utf-8")
+          if version != "V42.10.15":
+              raise SystemExit(f"Manifest version mismatch: {version}")
+          if f"Phiên bản phát hành hiện tại: **{version}**." not in readme:
+              raise SystemExit("README version does not match manifest")
+          if "app-shell-v42-10-15-" not in sw:
+              raise SystemExit("Service Worker cache version does not match manifest")
+          print("Manifest, README and Service Worker version synchronization: PASS")
+          PY
           # Các tài nguyên PWA cốt lõi phải có mặt; thiếu thì dừng deploy.
           for required in manifest.webmanifest sw.js luyen-so/index.html; do
             if [ ! -f "$required" ]; then
