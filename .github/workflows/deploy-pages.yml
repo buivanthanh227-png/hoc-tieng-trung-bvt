@@ -119,10 +119,12 @@ jobs:
               raise SystemExit("README version does not match manifest")
           if "app-shell-v42-10-22-" not in sw:
               raise SystemExit("Service Worker cache version does not match manifest")
+          if "menu3-pinyin-fix-v42.10.22.1.js" not in sw or "injectMenu3RuntimeFix" not in sw:
+              raise SystemExit("Service Worker chưa nạp bản sửa Pinyin của Menu 3")
           print("Manifest, README and Service Worker version synchronization: PASS")
           PY
           # Các tài nguyên PWA cốt lõi phải có mặt; thiếu thì dừng deploy.
-          for required in manifest.webmanifest sw.js luyen-so/index.html; do
+          for required in manifest.webmanifest sw.js luyen-so/index.html menu3-pinyin-fix-v42.10.22.1.js; do
             if [ ! -f "$required" ]; then
               echo "::error::Thiếu tài nguyên bắt buộc: $required"
               exit 1
@@ -142,6 +144,7 @@ jobs:
           done
 
           cp sw.js site/
+          cp menu3-pinyin-fix-v42.10.22.1.js site/
 
           # Copy optional worker scripts when present so source paths and
           # Service Worker precache paths resolve to published files.
@@ -221,6 +224,17 @@ jobs:
                 flag_count="$(grep -o 'class="brand-flag"' <<< "$html" | wc -l | tr -d ' ')"
                 if [ "$flag_count" != "2" ] || grep -q 'bvt-brand-banner\|bvt-brand-flag' <<< "$html"; then
                   echo "::error::Banner không giữ đúng hai lá cờ, số từ điển hoặc còn banner/cờ trùng."
+                  exit 1
+                fi
+
+                patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.22.1.js")"
+                if ! grep -Fq "dataset.menu3PinyinFix='42.10.22.1'" <<< "$patch_js"; then
+                  echo "::error::Production không phục vụ đúng Menu 3 Pinyin hotfix."
+                  exit 1
+                fi
+                live_sw="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/sw.js")"
+                if ! grep -Fq "menu3-pinyin-fix-v42.10.22.1.js" <<< "$live_sw"; then
+                  echo "::error::Production Service Worker chưa nạp Menu 3 Pinyin hotfix."
                   exit 1
                 fi
 
