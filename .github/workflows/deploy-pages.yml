@@ -108,7 +108,7 @@ jobs:
               raise SystemExit(f"Manifest version mismatch: {version}")
           if f"Phiên bản phát hành hiện tại: **{version}**." not in readme:
               raise SystemExit("README version does not match manifest")
-          if "app-shell-v42-10-15-" not in sw:
+          if "app-shell-v42-10-16-" not in sw:
               raise SystemExit("Service Worker cache version does not match manifest")
           print("Manifest, README and Service Worker version synchronization: PASS")
           PY
