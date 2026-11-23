@@ -26,6 +26,8 @@ required=[
  'bvt-footer-version-row-v2',
  "#dict-status:not([hidden]){display:block!important",
  "function mergeRows(rows){const out=Array.isArray(rows)?rows:[];",
+ "window.dictionary=dictionary;",
+
  "out[write++]=raw",
  "parsed=null;setDictionary(rows,'CVDICT Trung–Việt nhúng sẵn')",
  "init().catch(error=>",
