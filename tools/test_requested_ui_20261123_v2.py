@@ -7,7 +7,11 @@ h=Path(sys.argv[1]).read_text(encoding="utf-8")
 required=[
  "BVT_REQUESTED_UI_20261123_V2",
  'id="bvt-banner-footer-layout-v2"',
- '--bvt-slogan-offset:58px',
+ 'grid-column:1!important;grid-row:2!important',
+ 'grid-column:3!important;grid-row:2!important',
+ 'color:#111!important',
+ 'color:#dc2626!important',
+ 'max-width:100%!important',
  'text-align:left!important',
  'text-align:right!important',
  'id="bvt-footer-meta-move-v2"',
