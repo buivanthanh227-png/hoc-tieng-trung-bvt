@@ -82,9 +82,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.18**.
+Phiên bản phát hành hiện tại: **V42.10.20**.
 
-Bản V42.10.18 sửa lỗi runtime do binding Menu 18 còn sót sau khi panel Menu 18 đã bị xóa; lỗi này chặn chuỗi khởi tạo và khiến từ điển giữ trạng thái 0 mục trên production. Phiên bản này cũng căn đúng cạnh trái slogan Việt Nam với cờ Việt Nam và cạnh phải slogan Trung Quốc với cờ Trung Quốc bằng Grid theo DOM thực tế. Menu 1 nạp 122.523 mục CVDICT nhúng, Menu 3 độc lập khỏi Menu 18; Service Worker đổi cache để loại bỏ bản cũ. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản V42.10.20 sửa nguyên nhân cuối cùng làm CVDICT nhúng rơi vào fallback: loader gán trực tiếp `.textContent` vào `#top-status` sau khi bố cục/footer đã loại bỏ phần tử này khỏi DOM, ném lỗi `Cannot set properties of null`. Phiên bản này thêm helper cập nhật top-status an toàn, giữ bọc khởi tạo từ điển khỏi loadPractice và nâng cache Service Worker. Banner căn đúng cạnh slogan theo cạnh lá cờ bằng Grid. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
