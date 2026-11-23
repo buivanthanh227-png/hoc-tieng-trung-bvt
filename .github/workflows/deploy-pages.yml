@@ -119,7 +119,7 @@ jobs:
               raise SystemExit(f"Manifest version mismatch: {version}")
           if f"Phiên bản phát hành hiện tại: **{version}**." not in readme:
               raise SystemExit("README version does not match manifest")
-          if "app-shell-v42-10-22-" not in sw:
+          if "app-shell-v42-10-23-" not in sw:
               raise SystemExit("Service Worker cache version does not match manifest")
           if "menu3-pinyin-fix-v42.10.23.js" not in sw or "injectMenu3RuntimeFix" not in sw:
               raise SystemExit("Service Worker chưa nạp bản sửa Pinyin của Menu 3")
