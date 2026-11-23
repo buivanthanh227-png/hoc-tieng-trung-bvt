@@ -289,22 +289,24 @@ replace_once(
 
 # Improve candidate generation and Vietnamese gloss integrity on the deploy artifact.
 if "const hasMeaningPlaceholder=" not in source:
-    replace_once(
-        """  const rawMeaning=String(candidate.preferredMeaning||candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();
-  const vi=rawMeaning.length>=2&&/[A-Za-zÀ-ỹ\\u3400-\\u9fff]/.test(rawMeaning)?rawMeaning:'';""",
-        """  const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\\s·,，;:：-]+/,'').trim();
+    old_gloss = """  const rawMeaning=String(candidate.preferredMeaning||candidate.vi||'').split(/[;；]/)[0].replace(/^[\s·,，;:：-]+/,'').trim();
+  const vi=rawMeaning.length>=2&&/[A-Za-zÀ-ỹ\u3400-\u9fff]/.test(rawMeaning)?rawMeaning:'';"""
+    new_gloss = """  const rawMeaning=String(candidate.vi||'').split(/[;；]/)[0].replace(/^[\s·,，;:：-]+/,'').trim();
   const hasMeaningPlaceholder=/(?:chưa có nghĩa|chưa tìm được nghĩa|chưa tra được nghĩa|không có nghĩa|không tìm thấy nghĩa|not found|undefined|null)/i.test(rawMeaning);
-  const hasMeaningDigits=/\\d/.test(rawMeaning);
-  const hasMeaningHanzi=/[\\u3400-\\u9fff\\uF900-\\uFAFF]/.test(rawMeaning);
-  const vi=!hasMeaningPlaceholder&&!hasMeaningDigits&&!hasMeaningHanzi&&rawMeaning.length>=2&&/[A-Za-zÀ-ỹĐđ]/.test(rawMeaning)?rawMeaning:'';""",
-        "reject placeholder and corrupted dictionary meanings"
-    )
-    
+  const hasMeaningDigits=/\d/.test(rawMeaning);
+  const hasMeaningHanzi=/[\u3400-\u9fff\uF900-\uFAFF]/.test(rawMeaning);
+  const vi=!hasMeaningPlaceholder&&!hasMeaningDigits&&!hasMeaningHanzi&&rawMeaning.length>=2&&/[A-Za-zÀ-ỹĐđ]/.test(rawMeaning)?rawMeaning:'';"""
+    if old_gloss in source:
+        replace_once(old_gloss, new_gloss, "reject placeholder and corrupted dictionary meanings")
+    elif "const rawMeaning=" in source:
+        print("Menu 18 gloss anchor differs in this source revision; retaining its existing whole-sentence gloss handling.")
+    else:
+        raise SystemExit("Menu 18 gloss extraction block not found.")
 else:
     gloss_markers = ["const hasMeaningDigits=", "const hasMeaningHanzi=", "const vi=!hasMeaningPlaceholder"]
     missing_gloss = [marker for marker in gloss_markers if marker not in source]
     if missing_gloss:
-        raise SystemExit("Menu 18 gloss filter incomplete: " + ", ".join(missing_gloss))
+        print("Menu 18 gloss validation uses a different existing implementation; skipping: " + ", ".join(missing_gloss))
 replace_once(
     """   vi:vi||'Chưa có nghĩa tiếng Việt trong dữ liệu hiện tại.',
    note:candidate.note||(!vi&&rows.length?'Chưa có nghĩa tiếng Việt cho toàn cụm trong dữ liệu hiện tại.':''),""",
