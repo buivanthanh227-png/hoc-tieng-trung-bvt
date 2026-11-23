@@ -18,9 +18,9 @@ test('Menu 3 hotfix does not replace the verified Menu 18-derived Pinyin mapper'
   assert.doesNotMatch(patch, /window\.pinyinToChineseCandidates\s*=/);
   assert.doesNotMatch(patch, /window\.composePinyinSentence3x\s*=/);
   assert.doesNotMatch(patch, /function\s+(?:composeSentence|composeAll|segmentToken|buildInputOptions)\s*\(/);
-  assert.match(html, /function pinyin18SyllablePaths\(raw,syllables\)/);
-  assert.match(html, /function pinyin18SelectToneDiverse\(candidates,raw,limit=16\)/);
-  assert.match(html, /return pinyin18SelectToneDiverse\(\[\.\.\.found\.values\(\)\],raw,found\.size\);/);
+  assert.match(html, /function pinyin18CanSegment\(value,syllables\)/);
+  assert.match(patch, /function pathsForInputToken\(rawToken,available\)/);
+  assert.match(patch, /const shortest=Math\.min\(\.\.\.paths\.map\(path=>path\.length\)\)/);
 });
 
 test('global press feedback is registered for pointer and keyboard interaction', () => {
