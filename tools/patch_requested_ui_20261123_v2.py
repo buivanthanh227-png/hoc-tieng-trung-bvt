@@ -13,42 +13,44 @@ if MARK in html:
     raise SystemExit(0)
 
 css = """<style id="bvt-banner-footer-layout-v2">
-.topbar .brand{--bvt-slogan-offset:58px;--bvt-slogan-extra:116px}
-.topbar .brand .brand-slogan{
- display:flex!important;flex-direction:column!important;align-items:stretch!important;
- justify-content:space-between!important;gap:3px!important;text-align:initial!important;
- position:relative!important;left:calc(0px - var(--bvt-slogan-offset))!important;
- width:calc(100% + var(--bvt-slogan-extra))!important;max-width:none!important;
- margin:5px 0 0!important;white-space:nowrap!important;overflow:visible!important
-}
-.topbar .brand .brand-slogan>span{
- display:block!important;width:100%!important;white-space:nowrap!important;
- overflow:visible!important;text-overflow:clip!important;word-break:keep-all!important;
- overflow-wrap:normal!important
-}
-.topbar .brand .brand-slogan>span:first-child{text-align:left!important}
-.topbar .brand .brand-slogan>span:last-child{text-align:right!important}
-@media(max-width:700px){.topbar .brand{--bvt-slogan-offset:39px;--bvt-slogan-extra:78px}}
-@media(max-width:370px){.topbar .brand{--bvt-slogan-offset:33px;--bvt-slogan-extra:66px}}
+/* Keep the original three-column grid from brand-header V3. */
+.topbar .brand-copy>.brand-slogan{display:contents!important;position:static!important;width:auto!important;margin:0!important;overflow:visible!important}
+.topbar .brand-slogan>span:first-child{grid-column:1!important;grid-row:2!important;justify-self:stretch!important;text-align:left!important}
+.topbar .brand-slogan>span:last-child{grid-column:3!important;grid-row:2!important;justify-self:stretch!important;text-align:right!important}
+.topbar .brand-slogan>span{display:block!important;width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
+.topbar .brand-copy>h1{grid-column:2!important;grid-row:1!important;justify-self:center!important;text-align:center!important}
 #app-footer-meta .bvt-footer-credit-line-v2{
  display:flex!important;justify-content:center!important;align-items:center!important;
  flex-wrap:wrap!important;gap:4px!important;margin:4px 0 10px!important;
- width:100%!important;text-align:center!important;font-size:12px!important;font-weight:750!important
+ width:100%!important;text-align:center!important;font-size:12px!important;
+ font-weight:750!important;color:#111!important
 }
+#app-footer-meta .bvt-footer-credit-line-v2,
+#app-footer-meta .bvt-footer-credit-line-v2 *{color:#111!important}
 #app-footer-meta .bvt-footer-version-row-v2{
  display:flex!important;align-items:center!important;justify-content:space-between!important;
- flex-wrap:wrap!important;gap:10px!important;width:100%!important;margin:0 0 8px!important
+ flex-wrap:nowrap!important;gap:12px!important;width:100%!important;max-width:100%!important;
+ box-sizing:border-box!important;margin:0 0 8px!important
 }
-#app-footer-meta .bvt-footer-version-row-v2 .bvt-version-node-v2{margin:0!important}
+#app-footer-meta .bvt-footer-version-row-v2 .bvt-version-node-v2{margin:0!important;min-width:0!important}
 #app-footer-meta #bvt-header-clock{
  display:flex!important;flex-direction:column!important;align-items:flex-end!important;
- justify-content:center!important;gap:2px!important;margin-left:auto!important;
- text-align:right!important;font-size:11px!important;line-height:1.35!important;
- white-space:nowrap!important
+ justify-content:center!important;gap:2px!important;margin:0 2px 0 auto!important;
+ padding:2px 2px 2px 6px!important;box-sizing:border-box!important;
+ width:max-content!important;max-width:100%!important;min-width:0!important;
+ text-align:right!important;font-size:11px!important;line-height:1.4!important;
+ white-space:nowrap!important;overflow:visible!important;color:#dc2626!important
 }
-#app-footer-meta #bvt-clock-time{font-weight:800!important;font-variant-numeric:tabular-nums}
-#app-footer-meta #bvt-clock-date{font-size:10px!important}
+#app-footer-meta #bvt-header-clock,
+#app-footer-meta #bvt-header-clock *{color:#dc2626!important}
+#app-footer-meta #bvt-clock-time{font-weight:900!important;font-variant-numeric:tabular-nums}
+#app-footer-meta #bvt-clock-date{font-size:10px!important;font-weight:800!important}
 .topbar .top-meta #bvt-header-clock{display:none!important}
+@media(max-width:520px){
+ #app-footer-meta .bvt-footer-version-row-v2{align-items:center!important;gap:6px!important}
+ #app-footer-meta #bvt-header-clock{font-size:10px!important;margin-right:1px!important;padding-right:2px!important}
+ #app-footer-meta #bvt-clock-date{font-size:9px!important}
+}
 </style>
 """
 if 'id="bvt-banner-footer-layout-v2"' not in html:
