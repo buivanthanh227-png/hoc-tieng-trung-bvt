@@ -158,11 +158,18 @@
   const status=document.getElementById('homework3x-status');
   const query=String(document.getElementById('homework3x-query')?.value||'');
   const seen=new Set();
-  const source=(Array.isArray(candidates)?candidates:[]).filter(item=>{
+  const valid=(Array.isArray(candidates)?candidates:[]).filter(item=>{
    if(!item||!item.zh||!item.py)return false;
    const id=String(item.zh)+'|'+String(item.py);
    if(seen.has(id))return false;seen.add(id);return true;
-  }).filter(item=>matchesPreferredBoundaries(query,item.py)).sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)).slice(0,30);
+  });
+  // Reuse the exact Menu 18 tone-position selector. It validates every
+  // syllable and tone, selects compact-token boundaries, and only varies
+  // one syllable's tone at a time (never a Cartesian product).
+  const source=typeof window.pinyin18SelectToneDiverse==='function'
+   ?window.pinyin18SelectToneDiverse(valid,query,30)
+   :valid.filter(item=>matchesPreferredBoundaries(query,item.py))
+     .sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)).slice(0,30);
   if(!source.length){host.replaceChildren();host.hidden=true;if(status)status.textContent='Chưa tìm được kết quả Pinyin khớp với mục từ/câu hoàn chỉnh trong từ điển.';return null;}
   const token=++renderToken;let page=0;const pageSize=10;
   currentCandidates=source;
@@ -211,6 +218,47 @@
  }
  window.renderHomework3xCandidates=renderCandidates;
 
+ /* Menu 3 candidate detail modal: three values, three copy actions, two speech actions. */
+ const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const copyText=async value=>{
+  const text=String(value||'');if(!text)return false;
+  try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text);return true;}}catch(_){}
+  const area=document.createElement('textarea');area.value=text;area.readOnly=true;
+  area.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:.01;font-size:16px';
+  document.body.appendChild(area);let ok=false;
+  try{area.focus({preventScroll:true});area.select();area.setSelectionRange(0,text.length);ok=document.execCommand('copy');}catch(_){}
+  area.remove();return ok;
+ };
+ const speakText=(value,locale)=>{
+  const text=String(value||'').trim();if(!text)return;
+  if(typeof window.bvtSpeakLocale==='function'){window.bvtSpeakLocale(text,locale);return;}
+  if(typeof window.speakMandarinSentence==='function'&&locale==='zh'){window.speakMandarinSentence(text);return;}
+  if('speechSynthesis'in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang=locale==='zh'?'zh-CN':'vi-VN';window.speechSynthesis.speak(utterance);}
+ };
+ window.openHomework3xCandidateModal=function(item,index,total){
+  if(!item)return;
+  document.getElementById('homework3x-candidate-detail')?.remove();
+  const py=formatByInputSpacing(String(document.getElementById('homework3x-query')?.value||''),item.py);
+  const values={hanzi:String(item.zh||''),pinyin:py,meaning:String(item.vi||'')};
+  const backdrop=document.createElement('div');backdrop.id='homework3x-candidate-detail';
+  backdrop.className='homework3x-modal-backdrop';
+  backdrop.style.cssText='position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62);';
+  backdrop.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="homework3x-detail-title" style="width:min(620px,100%);max-height:88dvh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
+   '<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px"><b id="homework3x-detail-title" style="font-size:18px">KẾT QUẢ '+(Number(index)+1)+' / '+Number(total)+'</b><button type="button" data-detail-close aria-label="Đóng" style="font-size:25px;border:0;background:#eef2f7;border-radius:10px;padding:4px 12px">×</button></header>'+
+   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#7b3fa1">CHỮ HÁN</b><div style="font-size:27px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</div><div><button type="button" data-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-speak="zh">🔊 Phát âm chữ Hán</button></div></div>'+
+   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#2563a6">PHIÊN ÂM PINYIN</b><div style="font-size:22px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.pinyin)+'</div><button type="button" data-copy="pinyin">Sao chép Pinyin</button></div>'+
+   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#21805b">NGHĨA TIẾNG VIỆT</b><div style="font-size:19px;font-weight:700;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</div><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-speak="vi">🔊 Phát âm tiếng Việt</button></div></div>'+
+   '<p data-copy-status role="status" aria-live="polite" style="min-height:20px;color:#15803d;font-weight:700"></p></section>';
+  document.body.appendChild(backdrop);
+  const status=backdrop.querySelector('[data-copy-status]');
+  backdrop.querySelector('[data-detail-close]').addEventListener('click',()=>backdrop.remove());
+  backdrop.addEventListener('click',event=>{if(event.target===backdrop)backdrop.remove();});
+  backdrop.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+   const kind=button.dataset.copy;button.disabled=true;const ok=await copyText(values[kind]);button.disabled=false;
+   if(status)status.textContent=ok?'Đã sao chép thành công.':'Không thể sao chép tự động trên trình duyệt này.';
+  }));
+  backdrop.querySelectorAll('[data-speak]').forEach(button=>button.addEventListener('click',()=>speakText(button.dataset.speak==='zh'?values.hanzi:values.meaning,button.dataset.speak==='zh'?'zh':'vi')));
+ };
  /* Serialize lookup requests; every path, including errors, releases the lock. */
  const lookupButton=document.getElementById('homework3x-lookup');
  const originalLookup=window.lookupHomework3x;
