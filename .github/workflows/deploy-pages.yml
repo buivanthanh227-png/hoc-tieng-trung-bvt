@@ -34,7 +34,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Áp dụng và commit sửa lỗi V42.10.22 vào nguồn main
+      - name: Áp dụng và commit sửa lỗi V42.10.23 vào nguồn main
         shell: bash
         run: |
           set -euo pipefail
@@ -46,7 +46,7 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add index.html
-            git commit -m "Apply V42.10.22 Menu 1 Menu 3 and responsive layout fixes"
+            git commit -m "Apply V42.10.23 Menu 1 Menu 3 and responsive layout fixes"
             git push origin HEAD:main
           fi
 
@@ -91,22 +91,22 @@ jobs:
           import json, pathlib, re
           manifest = json.loads(pathlib.Path("manifest.webmanifest").read_text(encoding="utf-8"))
           target = manifest["name"].rsplit("· ", 1)[-1]
-          if target != "V42.10.22":
+          if target != "V42.10.23":
               raise SystemExit(f"Unexpected release version in manifest: {target}")
           path = pathlib.Path("site/index.html")
           html = path.read_text(encoding="utf-8")
           version_pattern = re.compile(r"(?<![0-9.])42\.(?:9\.[3-9]|10\.[0-9]+)(?![0-9.])")
-          html, replacements = version_pattern.subn("42.10.22", html)
+          html, replacements = version_pattern.subn("42.10.23", html)
           if replacements == 0:
               raise SystemExit("No legacy application version found in built HTML")
           stale_pattern = re.compile(r"(?<![0-9.])42\.(?:9\.[3-9]|10\.(?:[0-9]|1[0-9]))(?![0-9.])")
           remaining = sorted(set(stale_pattern.findall(html)))
           if remaining:
               raise SystemExit(f"Legacy version strings remain: {remaining}")
-          if html.count("42.10.22") < 1:
-              raise SystemExit("Built HTML does not expose V42.10.22")
+          if html.count("42.10.23") < 1:
+              raise SystemExit("Built HTML does not expose V42.10.23")
           path.write_text(html, encoding="utf-8")
-          print(f"Version synchronization PASS: {replacements} version occurrence(s) → V42.10.22")
+          print(f"Version synchronization PASS: {replacements} version occurrence(s) → V42.10.23")
           PY
           python3 - <<'PY'
           import json, pathlib
@@ -114,18 +114,18 @@ jobs:
           version = manifest["name"].rsplit("· ", 1)[-1]
           readme = pathlib.Path("README.md").read_text(encoding="utf-8")
           sw = pathlib.Path("sw.js").read_text(encoding="utf-8")
-          if version != "V42.10.22":
+          if version != "V42.10.23":
               raise SystemExit(f"Manifest version mismatch: {version}")
           if f"Phiên bản phát hành hiện tại: **{version}**." not in readme:
               raise SystemExit("README version does not match manifest")
           if "app-shell-v42-10-22-" not in sw:
               raise SystemExit("Service Worker cache version does not match manifest")
-          if "menu3-pinyin-fix-v42.10.22.1.js" not in sw or "injectMenu3RuntimeFix" not in sw:
+          if "menu3-pinyin-fix-v42.10.23.1.js" not in sw or "injectMenu3RuntimeFix" not in sw:
               raise SystemExit("Service Worker chưa nạp bản sửa Pinyin của Menu 3")
           print("Manifest, README and Service Worker version synchronization: PASS")
           PY
           # Các tài nguyên PWA cốt lõi phải có mặt; thiếu thì dừng deploy.
-          for required in manifest.webmanifest sw.js luyen-so/index.html menu3-pinyin-fix-v42.10.22.1.js; do
+          for required in manifest.webmanifest sw.js luyen-so/index.html menu3-pinyin-fix-v42.10.23.1.js; do
             if [ ! -f "$required" ]; then
               echo "::error::Thiếu tài nguyên bắt buộc: $required"
               exit 1
@@ -145,7 +145,7 @@ jobs:
           done
 
           cp sw.js site/
-          cp menu3-pinyin-fix-v42.10.22.1.js site/
+          cp menu3-pinyin-fix-v42.10.23.1.js site/
 
           # Copy optional worker scripts when present so source paths and
           # Service Worker precache paths resolve to published files.
@@ -228,13 +228,13 @@ jobs:
                   exit 1
                 fi
 
-                patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.22.1.js")"
+                patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.23.1.js")"
                 if ! grep -Fq "dataset.menu3PinyinFix='42.10.23'" <<< "$patch_js"; then
                   echo "::error::Production không phục vụ đúng Menu 3 Pinyin hotfix."
                   exit 1
                 fi
                 live_sw="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/sw.js")"
-                if ! grep -Fq "menu3-pinyin-fix-v42.10.22.1.js" <<< "$live_sw"; then
+                if ! grep -Fq "menu3-pinyin-fix-v42.10.23.1.js" <<< "$live_sw"; then
                   echo "::error::Production Service Worker chưa nạp Menu 3 Pinyin hotfix."
                   exit 1
                 fi
