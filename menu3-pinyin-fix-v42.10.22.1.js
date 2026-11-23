@@ -323,3 +323,90 @@
  document.documentElement.dataset.menu3PinyinFix='42.10.22.1';
  document.documentElement.dataset.menu3ToneCandidates='2';
 })();
+
+
+/* V42.10.23 — bounded, Vietnam-relevant Pinyin results + reliable press feedback */
+(function(){
+ 'use strict';
+ const root=document.documentElement;
+ if(root.dataset.bvtInteractionAndMenu3V421023)return;
+ root.dataset.bvtInteractionAndMenu3V421023='1';
+
+ // Give every real button across all 17 menus immediate tactile visual feedback.
+ const style=document.createElement('style');
+ style.id='bvt-global-button-press-v421023';
+ style.textContent=[
+  'button,.btn,[role="button"],input[type="button"],input[type="submit"]{transition:transform 90ms ease,filter 90ms ease,box-shadow 90ms ease; -webkit-tap-highlight-color:transparent;touch-action:manipulation}',
+  'button:active,.btn:active,[role="button"]:active,input[type="button"]:active,input[type="submit"]:active{transform:translateY(2px) scale(.975)!important;filter:brightness(.91)!important;box-shadow:inset 0 2px 5px rgba(0,0,0,.18)!important}',
+  '@media(prefers-reduced-motion:reduce){button,.btn,[role="button"],input[type="button"],input[type="submit"]{transition:none!important}}'
+ ].join('\n');
+ (document.head||document.documentElement).appendChild(style);
+
+ // Keep the original exact-dictionary path. Bound only the generated composition
+ // candidates and reject weak/fragmentary Vietnamese glosses before rendering.
+ const originalCompose=window.composePinyinSentence3x;
+ const cleanMeaning=value=>String(value||'').replace(/^[\s·•;,:，、-]+/,'').replace(/\s+/g,' ').trim();
+ const usefulMeaning=value=>{
+  const v=cleanMeaning(value),low=v.toLocaleLowerCase('vi');
+  if(v.length<2||v.length>110)return false;
+  if(/^(?:phương ngữ|phương ngữ miền|dạng kết hợp|hóa học|sinh học|động vật học|thực vật học)\b/.test(low))return false;
+  if(/\b(?:phương ngữ miền bắc|phương ngữ miền nam|tên khoa học|danh pháp)\b/.test(low))return false;
+  if(/[;；]{2,}|(?:\b\w+\b\s*){1,2}[（(].{0,3}[）)]/.test(v))return false;
+  return true;
+ };
+ const validCandidate=item=>{
+  if(!item||!item.zh||!item.py||!usefulMeaning(item.vi))return false;
+  const hanzi=[...String(item.zh)].length;
+  // Single-character fragments are accepted only for common grammatical words.
+  if(hanzi===1&&!/^(我|你|他|她|它|们|不|没|是|有|在|去|来|要|想|很|好|吗|呢|吧|和|请|吃|喝|看|听|说|学|爱|大|小|这|那|谁|哪|几|多|少|都|也|再|就|才|给|让|从|到|跟|把|被|对|为|了|着|过|得|地|的)$/.test(item.zh))return false;
+  return true;
+ };
+ if(typeof originalCompose==='function'){
+  window.composePinyinSentence3x=function(raw){
+   const result=originalCompose.apply(this,arguments);
+   if(!result||result.status==='none')return result;
+   if(result.status==='ok')return validCandidate(result)?{...result,vi:cleanMeaning(result.vi)}:{status:'none'};
+   if(result.status==='ambiguous'){
+    const seen=new Set(),options=(Array.isArray(result.options)?result.options:[])
+     .filter(validCandidate)
+     .map(item=>({...item,vi:cleanMeaning(item.vi)}))
+     .filter(item=>{const key=item.zh+'|'+item.py+'|'+item.vi;if(seen.has(key))return false;seen.add(key);return true;})
+     .slice(0,10);
+    if(!options.length)return {status:'none'};
+    return options.length===1?{status:'ok',...options[0]}:{status:'ambiguous',options};
+   }
+   return result;
+  };
+ }
+
+ // Prevent overlapping lookups and always release the UI lock after success/failure.
+ const input=document.getElementById('homework3x-query');
+ const lookup=document.getElementById('homework3x-lookup');
+ if(lookup&&!lookup.dataset.bvtSafeLookupBound){
+  lookup.dataset.bvtSafeLookupBound='1';
+  lookup.addEventListener('click',function(){
+   if(lookup.dataset.bvtLookupRunning==='1')return;
+   lookup.dataset.bvtLookupRunning='1';
+   lookup.disabled=true;
+   const label=lookup.textContent;
+   const release=()=>{
+    lookup.dataset.bvtLookupRunning='0';
+    lookup.disabled=false;
+    if(label&&lookup.textContent==='Đang tra cứu…')lookup.textContent=label;
+   };
+   if(typeof window.lookupHomework3x==='function'){
+    Promise.resolve().then(()=>window.lookupHomework3x()).catch(error=>{
+     const status=document.getElementById('homework3x-status');
+     if(status)status.textContent='Đã xảy ra lỗi khi tra cứu. Bạn có thể thử lại: '+String(error&&error.message||error);
+    }).finally(release);
+   }else release();
+  },true);
+ }
+ if(input&&!input.dataset.bvtSafeEnterBound){
+  input.dataset.bvtSafeEnterBound='1';
+  input.addEventListener('keydown',event=>{
+   if(event.key==='Enter'&&lookup&&lookup.dataset.bvtLookupRunning==='1')event.preventDefault();
+  },true);
+ }
+ root.dataset.bvtInteractionAndMenu3V421023='1';
+})();
