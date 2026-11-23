@@ -82,9 +82,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.22**.
+Phiên bản phát hành hiện tại: **V42.10.23**.
 
-Bản vá Menu 3 cho V42.10.22 giữ nguyên luồng tra cứu Pinyin khớp chính xác và bổ sung bước ghép Pinyin mới dựa trên cách đọc, mục từ có căn cứ và dữ liệu HSK/câu mẫu tích hợp. Những trường hợp nhiều phương án ngang nhau được đưa ra để người học chọn; các chuỗi không đủ căn cứ bị từ chối thay vì tự tạo chữ Hán. Luồng dịch online thử Cloudflare Workers AI sau xác thực Turnstile với hạn chờ 12 giây dành riêng cho Menu 3; nếu chưa có token hoặc Worker lỗi, ứng dụng chuyển nhanh sang MyMemory/Google. Turnstile và kiểm tra token phía Worker vẫn được giữ nguyên; các menu ASR khác tiếp tục dùng thời hạn xác minh mặc định cũ. Service Worker đã đổi cache key để thiết bị lấy `index.html` và `sw.js` mới. Menu 1, banner, hộp thoại kết quả, Copy và phát âm được giữ nguyên.
+Bản vá Menu 3 cho V42.10.23 giữ nguyên luồng tra cứu Pinyin khớp chính xác và bổ sung bước ghép Pinyin mới dựa trên cách đọc, mục từ có căn cứ và dữ liệu HSK/câu mẫu tích hợp. Những trường hợp nhiều phương án ngang nhau được đưa ra để người học chọn; các chuỗi không đủ căn cứ bị từ chối thay vì tự tạo chữ Hán. Luồng dịch online thử Cloudflare Workers AI sau xác thực Turnstile với hạn chờ 12 giây dành riêng cho Menu 3; nếu chưa có token hoặc Worker lỗi, ứng dụng chuyển nhanh sang MyMemory/Google. Turnstile và kiểm tra token phía Worker vẫn được giữ nguyên; các menu ASR khác tiếp tục dùng thời hạn xác minh mặc định cũ. Service Worker đã đổi cache key để thiết bị lấy `index.html` và `sw.js` mới. Menu 1, banner, hộp thoại kết quả, Copy và phát âm được giữ nguyên.
 
 Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
