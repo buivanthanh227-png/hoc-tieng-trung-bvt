@@ -150,7 +150,7 @@ jobs:
           html=pathlib.Path("site/index.html").read_text(encoding="utf-8")
           if version != "V42.10.15":
               raise SystemExit(f"Manifest version mismatch: {version}")
-          if not re.search(r"42\\.10\\.15", html):
+          if not re.search(r"42\.10\.15", html):
               raise SystemExit("Built HTML does not expose V42.10.15")
           print("Manifest, built header/footer version: V42.10.15 — PASS")
           PY
