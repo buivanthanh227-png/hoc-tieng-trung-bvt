@@ -333,14 +333,16 @@
  root.dataset.bvtInteractionAndMenu3V421023='1';
 
  // Give every real button across all 17 menus immediate tactile visual feedback.
- const style=document.createElement('style');
- style.id='bvt-global-button-press-v421023';
- style.textContent=[
-  'button,.btn,[role="button"],input[type="button"],input[type="submit"]{transition:transform 90ms ease,filter 90ms ease,box-shadow 90ms ease; -webkit-tap-highlight-color:transparent;touch-action:manipulation}',
-  'button:active,.btn:active,[role="button"]:active,input[type="button"]:active,input[type="submit"]:active{transform:translateY(2px) scale(.975)!important;filter:brightness(.91)!important;box-shadow:inset 0 2px 5px rgba(0,0,0,.18)!important}',
-  '@media(prefers-reduced-motion:reduce){button,.btn,[role="button"],input[type="button"],input[type="submit"]{transition:none!important}}'
- ].join('\n');
- (document.head||document.documentElement).appendChild(style);
+ if(typeof document.createElement==='function'){
+  const style=document.createElement('style');
+  style.id='bvt-global-button-press-v421023';
+  style.textContent=[
+   'button,.btn,[role="button"],input[type="button"],input[type="submit"]{transition:transform 90ms ease,filter 90ms ease,box-shadow 90ms ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}',
+   'button:active,.btn:active,[role="button"]:active,input[type="button"]:active,input[type="submit"]:active{transform:translateY(2px) scale(.975)!important;filter:brightness(.91)!important;box-shadow:inset 0 2px 5px rgba(0,0,0,.18)!important}',
+   '@media(prefers-reduced-motion:reduce){button,.btn,[role="button"],input[type="button"],input[type="submit"]{transition:none!important}}'
+  ].join('\n');
+  (document.head||document.documentElement).appendChild(style);
+ }
 
  // Keep the original exact-dictionary path. Bound only the generated composition
  // candidates and reject weak/fragmentary Vietnamese glosses before rendering.
