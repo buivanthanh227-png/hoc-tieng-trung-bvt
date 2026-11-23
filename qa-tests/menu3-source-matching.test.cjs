@@ -118,11 +118,11 @@ test('Menu 3 applies Menu 18 tone positions and shortest segmentation to compact
     const selected = context.pinyin18SelectToneDiverse(all, query, 30);
     const match = selected.find(item => item.zh === hanzi);
     assert.ok(match, query + ' must retain its preferred whole word');
-    assert.equal(match.py.trim().split(/\\s+/).length, expectedCount);
+    assert.equal(match.py.trim().split(/\s+/).length, expectedCount);
   }
   const like = context.pinyin18SelectToneDiverse(candidates('xihuan'), 'xihuan', 30)
     .find(item => item.zh === '喜欢');
-  const syllables = like.py.trim().split(/\\s+/);
+  const syllables = like.py.trim().split(/\s+/);
   assert.equal(context.pinyin18ToneFromInput(syllables[0]), 3,
     '喜欢 must carry third tone on xi');
   assert.notEqual(context.pinyin18ToneFromInput(syllables[1]), 3,
