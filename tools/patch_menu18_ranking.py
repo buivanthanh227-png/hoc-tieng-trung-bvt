@@ -33,12 +33,16 @@ def replace_once(old: str, new: str, label: str) -> None:
         return
     raise SystemExit(f"Menu 18 patch aborted: expected exactly one {label}; found {count}")
 
-# Add a common-character fallback for the third syllable in "san ge ren".
-replace_once(
-    "shi:'是',you:'有'",
-    "shi:'是',san:'三',you:'有'",
-    "san → 三 fallback"
-)
+# Add the common-character fallback only when the exact legacy anchor exists.
+# Some source revisions already contain the fallback or use a different table shape.
+if "shi:'是',you:'有'" in source:
+    replace_once(
+        "shi:'是',you:'有'",
+        "shi:'是',san:'三',you:'有'",
+        "san → 三 fallback"
+    )
+elif "shi:'是',san:'三',you:'有'" not in source and "san:'三'" not in source:
+    print("Menu 18 san fallback anchor absent; continuing with tone/phrase ranking patch.")
 
 # A preferred word may have a valid dictionary row with no Vietnamese gloss.
 # Keep the verified phrase gloss available to both direct lookup and sentence DP.
