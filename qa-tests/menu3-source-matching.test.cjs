@@ -111,8 +111,8 @@ test('whole-sentence candidate meanings are not assembled from isolated gloss fr
       assert.equal(item.sourceRows[0][0], item.zh);
       assert.equal(item.sourceRows[0][2], item.py);
     } else {
-      assert.equal(item.source, 'Cụm từ/câu ưu tiên đã xác minh',
-        'composed candidates must be verified whole sentences, not component glosses');
+      assert.equal(item.vi, '',
+        'multi-entry sentence composition must not concatenate isolated Vietnamese glosses');
     }
   }
 });
