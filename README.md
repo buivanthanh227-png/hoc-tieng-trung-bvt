@@ -82,9 +82,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.16**.
+Phiên bản phát hành hiện tại: **V42.10.17**.
 
-Bản V42.10.16 sửa luồng khởi tạo từ điển Menu 1 để giảm cấp phát bộ nhớ khi nạp 122.523 mục CVDICT trên thiết bị di động, giữ bộ từ cơ bản có thể tra cứu nếu dữ liệu lớn gặp lỗi, hiển thị trạng thái nạp/lỗi rõ ràng và chuyển tổng số từ vựng sang cùng hàng với tiêu đề Menu 1 ở khu vực nội dung. Phiên bản được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản V42.10.17 đồng bộ sửa chữa trực tiếp vào mã nguồn thay vì chỉ vá artifact khi deploy: Menu 1 nạp và tra cứu 122.523 mục CVDICT nhúng, Menu 3 độc lập khỏi Menu 18, hộp thoại kết quả dùng cỡ chữ đồng nhất, banner/footer được căn chỉnh theo responsive và Service Worker đổi cache để loại bỏ bản cũ. Phiên bản được quản lý trong manifest, giao diện và workflow. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 

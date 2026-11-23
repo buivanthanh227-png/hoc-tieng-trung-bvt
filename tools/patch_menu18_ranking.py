@@ -588,7 +588,7 @@ old_renderer = """function renderHomework18Candidates(candidates){
  renderHomework18Card(best,'Tự động ghép Pinyin · '+String(best.source||'xét nhiều thanh điệu'));
  return best;
 }"""
-new_renderer = """let homework18Candidates=[];
+new_renderer = r"""let homework18Candidates=[];
 let homework18SelectedIndex=0;
 function homework18ValidVietnameseMeaning(item){
  const meaning=String(item?.preferredMeaning||item?.vi||'').trim();
