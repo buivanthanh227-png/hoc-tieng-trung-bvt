@@ -2248,6 +2248,10 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
  padding:4px!important;border-radius:8px!important;box-sizing:border-box!important
 }
 .topbar .brand>.brand-flag svg{display:block!important;width:100%!important;height:100%!important;max-height:none!important}
+/* Final flag size: larger than V42.10.20, but controlled at every breakpoint. */
+.topbar .brand>.brand-flag{
+ width:clamp(50px,7vw,78px)!important;height:auto!important;aspect-ratio:3/2!important
+}
 .topbar .brand>.brand-copy{display:contents!important}
 .topbar .brand-copy>h1{
  grid-column:2!important;grid-row:1!important;justify-self:center!important;align-self:center!important;
@@ -2312,6 +2316,12 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
  .topbar .brand>.brand-flag{width:clamp(50px,14vw,62px)!important}
  .topbar .brand-copy>h1{font-size:clamp(20px,6vw,28px)!important}
  .topbar .brand-slogan>span{font-size:clamp(9px,2.45vw,11px)!important}
+ #panel-dict .section-title[data-function-number="1"]{
+  width:100%!important;flex-wrap:wrap!important
+ }
+ #panel-dict .section-title[data-function-number="1"] .count-pill{
+  margin-left:auto!important;margin-top:4px!important
+ }
  #app-footer-meta #bvt-header-clock,.bvt-footer-clock-v2{flex-wrap:wrap!important;gap:4px 8px!important}
 }
 @media(max-width:350px){

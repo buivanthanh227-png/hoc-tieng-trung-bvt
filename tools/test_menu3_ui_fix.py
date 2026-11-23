@@ -20,6 +20,7 @@ required=[
  'bvt-v42121-final-layout',
  'repeat(4,minmax(0,1fr))',
  'homework3x-candidate-grid',
+ 'width:clamp(50px,7vw,78px)!important',
  'const homework3xPageSize=12',
  'for(const row of ranked)add(row)',
 ]
