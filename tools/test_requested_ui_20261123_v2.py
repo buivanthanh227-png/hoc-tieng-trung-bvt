@@ -8,6 +8,12 @@ required=[
  "BVT_REQUESTED_UI_20261123_V2",
  'id="bvt-banner-footer-layout-v2"',
  'grid-column:1!important;grid-row:2!important',
+ '.topbar .brand-copy>h1{',
+ 'grid-column:2!important;grid-row:1!important',
+ '.topbar .brand-copy>.brand-slogan{display:contents!important}',
+ 'width:auto!important',
+ 'max-width:48%!important',
+ 'box-sizing:border-box!important',
  'grid-column:3!important;grid-row:2!important',
  'color:#111!important',
  'color:#dc2626!important',
@@ -35,4 +41,6 @@ if len([x for x in rows if isinstance(x,list) and len(x)>=4])<120000:
 if 'BVT_REQUESTED_UI_20261123_V1' not in h:
  raise SystemExit("V1 baseline UI patch unexpectedly missing")
 if h.count('class="brand-flag"')!=2: raise SystemExit("Expected exactly two flag cards")
+if '--bvt-slogan-offset:' in h: raise SystemExit("Legacy offset-based slogan positioning remains")
+if '.topbar .brand .brand-slogan{\n display:flex!important' in h: raise SystemExit("Slogans must be grid children, not a flex container")
 print(f"V2 regression checks PASS: {len(rows):,} embedded dictionary entries.")
