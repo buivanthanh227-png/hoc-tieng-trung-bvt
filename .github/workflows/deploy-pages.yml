@@ -42,7 +42,6 @@ jobs:
           python3 tools/patch_android_chrome_speech.py index.html
           python3 tools/patch_v421023_menu3_runtime.py index.html
           python3 tools/patch_menu3_tone_selector.py index.html
-          python3 tools/patch_menu18_word_mapping.py index.html
           git diff --check
           if ! git diff --quiet -- index.html; then
             git config user.name "github-actions[bot]"
