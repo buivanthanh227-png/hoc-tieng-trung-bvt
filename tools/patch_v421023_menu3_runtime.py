@@ -11,11 +11,22 @@ def main():
     html = target.read_text(encoding="utf-8")
     if "homework3x-query" not in html or "panel-translate3" not in html:
         raise SystemExit("Independent Menu 3 panel is missing; refusing to patch.")
-    if MARKER not in html:
+    if MARKER in html:
+        import re
+        html, count = re.subn(
+            r'<script\\b(?=[^>]*\\bid="bvt-v421023-menu3-runtime")[^>]*></script>',
+            SCRIPT,
+            html,
+            count=1,
+            flags=re.I
+        )
+        if count != 1:
+            raise SystemExit("Could not uniquely update the existing Menu 3 runtime script tag.")
+    else:
         if html.count("</body>") != 1:
             raise SystemExit("Cannot uniquely locate </body> for Menu 3 runtime link.")
-        html = html.replace("</body>", SCRIPT + "\n</body>", 1)
-    target.write_text(html, encoding="utf-8", newline="\n")
+        html = html.replace("</body>", SCRIPT + "\\n</body>", 1)
+    target.write_text(html, encoding="utf-8", newline="\\n")
     print("V42.10.23 Menu 3 runtime linked directly in index.html.")
 
 if __name__ == "__main__":
