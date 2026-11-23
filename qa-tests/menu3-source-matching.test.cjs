@@ -22,6 +22,7 @@ const context = vm.createContext({
   sentenceDeck: [],
   OFFLINE_SENTENCE_TRANSLATIONS: {}
 });
+context.window = context;
 vm.runInContext(html.slice(algorithmStart, algorithmEnd), context, { timeout: 10000 });
 
 function candidates(query) {
