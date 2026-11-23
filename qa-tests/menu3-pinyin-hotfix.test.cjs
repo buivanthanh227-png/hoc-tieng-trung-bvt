@@ -20,7 +20,11 @@ test('Menu 3 uses Menu 18 tone-position selector and restores the complete detai
   assert.doesNotMatch(patch, /function\s+(?:composeSentence|composeAll|segmentToken|buildInputOptions)\s*\(/);
   assert.match(html, /function pinyin18CanSegment\(value,syllables\)/);
   assert.match(patch, /function pathsForInputToken\(rawToken,available\)/);
-  assert.match(patch, /window\.pinyin18SelectToneDiverse\(valid,query,30\)/);\n  assert.match(patch, /window\.openHomework3xCandidateModal=function/);\n  for (const field of ['hanzi','pinyin','meaning']) assert.ok(patch.includes('data-copy=\\"'+field+'\\"'));\n  assert.match(patch, /data-speak=\\"zh\\"/);\n  assert.match(patch, /data-speak=\\"vi\\"/);
+  assert.match(patch, /window\.pinyin18SelectToneDiverse\(valid,query,30\)/);
+  assert.match(patch, /window\.openHomework3xCandidateModal=function/);
+  for (const field of ['hanzi','pinyin','meaning']) assert.ok(patch.includes('data-copy="'+field+'"'));
+  assert.match(patch, /data-speak="zh"/);
+  assert.match(patch, /data-speak="vi"/);
 });
 
 test('global press feedback is registered for pointer and keyboard interaction', () => {
