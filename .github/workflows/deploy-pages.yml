@@ -89,7 +89,8 @@ jobs:
           html, replacements = version_pattern.subn("42.10.15", html)
           if replacements == 0:
               raise SystemExit("No legacy application version found in built HTML")
-          remaining = sorted(set(version_pattern.findall(html)))
+          stale_pattern = re.compile(r"(?<![0-9.])42\\.(?:9\\.[3-9]|10\\.(?:[0-9]|1[0-4]))(?![0-9.])")
+          remaining = sorted(set(stale_pattern.findall(html)))
           if remaining:
               raise SystemExit(f"Legacy version strings remain: {remaining}")
           if html.count("42.10.15") < 1:
