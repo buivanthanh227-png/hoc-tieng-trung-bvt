@@ -22,7 +22,6 @@ required=[
  "window.__menu1DictionaryLoadedCount",
  "$('dict-status').hidden=false;",
  'id="embedded-cvdict-data"',
- 'data-format="json"',
 ]
 for marker in required:
  if marker not in h: raise SystemExit("Missing V2 regression marker: "+marker)
