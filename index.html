@@ -8591,13 +8591,24 @@ function looksLikeVietnamese3x(raw){
 }
 async function machineTranslate3x(text,source,target){
  const value=String(text||'').trim();if(!value)throw new Error('Nội dung dịch đang trống.');
- if(value.length>1800)throw new Error('Câu quá dài cho dịch vụ dịch miễn phí; hãy chia thành đoạn ngắn hơn.');
- const errors=[],targetChinese=String(target).toLowerCase().startsWith('zh');
+ if(value.length>5000)throw new Error('Nội dung vượt giới hạn 5.000 ký tự mỗi lượt.');
+ const sourceCode=String(source||'').toLowerCase().startsWith('zh')?'zh':'vi';
+ const targetCode=String(target||'').toLowerCase().startsWith('zh')?'zh':'vi';
+ const publicSource=sourceCode==='zh'?'zh-CN':'vi',publicTarget=targetCode==='zh'?'zh-CN':'vi';
+ const targetChinese=targetCode==='zh',errors=[];
  const validate=result=>{
   const translated=String(result||'').trim();if(!translated)throw new Error('Dịch vụ không trả về nội dung.');
   if(targetChinese&&!/[\u3400-\u9fff]/.test(translated))throw new Error('Dịch vụ không trả về câu chữ Hán.');
   return translated;
  };
+ const workerAllowedOrigin=typeof location==='undefined'||location.hostname==='buivanthanh227-png.github.io';
+ if(workerAllowedOrigin&&typeof bvtMlTranslate==='function'){
+  try{
+   const result=await bvtMlTranslate(value,sourceCode,targetCode);
+   const translated=validate(result?.text);
+   return {text:translated,provider:result?.model?'Cloudflare Workers AI · '+result.model:'Cloudflare Workers AI'};
+  }catch(error){errors.push('Cloudflare Workers AI: '+(error?.message||String(error)));}
+ }
  const requestJson=async(url,timeoutMs)=>{
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{const response=await fetch(url,{method:'GET',cache:'no-store',headers:{Accept:'application/json'},signal:controller.signal});if(!response.ok)throw new Error('HTTP '+response.status);return await response.json();}
@@ -8606,20 +8617,57 @@ async function machineTranslate3x(text,source,target){
  const byteLength=typeof TextEncoder!=='undefined'?new TextEncoder().encode(value).length:value.length;
  if(byteLength<=480){
   try{
-   const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(value)+'&langpair='+encodeURIComponent(source+'|'+target);
+   const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(value)+'&langpair='+encodeURIComponent(publicSource+'|'+publicTarget);
    const data=await requestJson(url,8500);
    if(data?.responseStatus&&Number(data.responseStatus)!==200)throw new Error(String(data.responseDetails||'MyMemory không chấp nhận yêu cầu.'));
    const result=String(data?.responseData?.translatedText||'').trim().replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
    return {text:validate(result),provider:'MyMemory'};
   }catch(error){errors.push('MyMemory: '+(error?.message||String(error)));}
  }
- try{
-  const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl='+encodeURIComponent(source)+'&tl='+encodeURIComponent(target)+'&dt=t&q='+encodeURIComponent(value);
-  const data=await requestJson(url,11000);
-  const result=Array.isArray(data?.[0])?data[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('').trim():'';
-  return {text:validate(result),provider:'Google Translate'};
- }catch(error){errors.push('Google: '+(error?.message||String(error)));}
+ if(value.length<=1800){
+  try{
+   const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl='+encodeURIComponent(publicSource)+'&tl='+encodeURIComponent(publicTarget)+'&dt=t&q='+encodeURIComponent(value);
+   const data=await requestJson(url,11000);
+   const result=Array.isArray(data?.[0])?data[0].map(part=>Array.isArray(part)?String(part[0]||''):'').join('').trim():'';
+   return {text:validate(result),provider:'Google Translate'};
+  }catch(error){errors.push('Google: '+(error?.message||String(error)));}
+ }else{
+  errors.push('Dịch vụ dự phòng công khai chỉ nhận tối đa 1.800 ký tự; bản dịch nguyên vẹn cần Cloudflare Workers AI.');
+ }
  throw new Error('Không kết nối được dịch vụ dịch. '+errors.join(' · '));
+}
+function splitMenu3TranslationText(value,maxChars=4200){
+ const source=String(value||'').replace(/\r\n?/g,'\n').trim();if(!source)return [];
+ const chunks=[];let start=0;
+ while(start<source.length){
+  if(source.length-start<=maxChars){chunks.push({text:source.slice(start).trim(),separator:''});break;}
+  const limit=Math.min(source.length,start+maxChars),floor=start+Math.floor(maxChars*.55);
+  let end=-1;
+  for(let index=limit-1;index>=floor;index--){if(/[。！？.!?]/.test(source[index])){end=index+1;break;}}
+  if(end<0){for(let index=limit-1;index>=floor;index--){if(/[；;，,、:：]/.test(source[index])){end=index+1;break;}}}
+  if(end<0){for(let index=limit-1;index>=floor;index--){if(/\s/.test(source[index])){end=index;break;}}}
+  if(end<=start)end=limit;
+  let next=end;while(next<source.length&&/\s/.test(source[next]))next++;
+  const rawChunk=source.slice(start,end),text=rawChunk.trim();
+  if(!text){start=next;continue;}
+  const trailing=rawChunk.slice(rawChunk.lastIndexOf(text)+text.length);
+  chunks.push({text,separator:trailing+source.slice(end,next)});start=next;
+ }
+ return chunks;
+}
+async function translateLongText3x(text,target,statusEl,resultEl){
+ setTranslationResultActions(resultEl.id,false);resultEl.dataset.translationLanguage='';
+ const raw=String(text||'').replace(/\r\n?/g,'\n').trim();if(!raw)throw new Error('Bạn chưa nhập hoặc chọn nội dung cần dịch.');
+ const chunks=splitMenu3TranslationText(raw,1500);if(!chunks.length)throw new Error('Không tìm thấy nội dung văn bản.');
+ const source=target==='zh-CN'?'vi':'zh-CN',translated=[];
+ for(let index=0;index<chunks.length;index++){
+  statusEl.textContent='Đang dịch phần '+(index+1)+'/'+chunks.length+'…';
+  const result=await machineTranslate3x(chunks[index].text,source,target);
+  translated.push(String(result.text||'').trim());
+ }
+ resultEl.textContent=translated.map((part,index)=>part+(chunks[index].separator||'')).join('');
+ resultEl.dataset.translationLanguage=target;setTranslationResultActions(resultEl.id,!!resultEl.textContent.trim());
+ statusEl.textContent='Đã dịch xong '+chunks.length+' phần.';
 }
 function looksLikePinyin3x(raw,local){
  if(/[\u3400-\u9fff]/.test(raw)||local&&norm(raw)===norm(local.vi)||looksLikeVietnamese3x(raw))return false;
@@ -8668,7 +8716,7 @@ async function lookupHomework3x(){
 async function runLongTranslation3x(target){
  const status=$('long-translate-3x-status'),out=$('long-translate-3x-result');
  setTranslationResultActions(out.id,false);out.dataset.translationLanguage='';
- try{out.textContent='Đang chuẩn bị dịch…';await translateLongText($('long-translate-3x-input').value,target,status,out);}catch(error){status.textContent='Không dịch được: '+(error.message||error);out.textContent='';setTranslationResultActions(out.id,false);}
+ try{out.textContent='Đang chuẩn bị dịch…';await translateLongText3x($('long-translate-3x-input').value,target,status,out);}catch(error){status.textContent='Không dịch được: '+(error.message||error);out.textContent='';setTranslationResultActions(out.id,false);}
 }
 $('long-translate-3x-to-zh')?.addEventListener('click',()=>runLongTranslation3x('zh-CN'));
 $('long-translate-3x-to-vi')?.addEventListener('click',()=>runLongTranslation3x('vi'));
@@ -8676,7 +8724,7 @@ async function runFileTranslation3x(target){
  const file=$('translate-file-3x-input').files?.[0],status=$('file-translate-3x-status'),out=$('file-translate-3x-result');
  if(!file){status.textContent='Hãy chọn tệp TXT, MD, CSV hoặc DOCX trước.';return;}
  setTranslationResultActions(out.id,false);out.dataset.translationLanguage='';
- try{out.textContent='Đang đọc tệp '+file.name+'…';const content=await readTranslationFile(file);if(!content.trim())throw new Error('Tệp không có văn bản để dịch.');await translateLongText(content,target,status,out);}catch(error){status.textContent='Không xử lý được tệp: '+(error.message||error);out.textContent='';setTranslationResultActions(out.id,false);}
+ try{out.textContent='Đang đọc tệp '+file.name+'…';const content=await readTranslationFile(file);if(!content.trim())throw new Error('Tệp không có văn bản để dịch.');await translateLongText3x(content,target,status,out);}catch(error){status.textContent='Không xử lý được tệp: '+(error.message||error);out.textContent='';setTranslationResultActions(out.id,false);}
 }
 $('file-translate-3x-to-zh')?.addEventListener('click',()=>runFileTranslation3x('zh-CN'));
 $('file-translate-3x-to-vi')?.addEventListener('click',()=>runFileTranslation3x('vi'));
@@ -8928,14 +8976,14 @@ window.__menu1DictionaryLoaded=function(count,sourceName){
  font-weight:850!important
 }
 #panel-dict #dict-advanced-search{
- display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;
  align-items:start!important;gap:10px!important
 }
 #panel-dict #dict-search-field-meaning{grid-column:1!important;grid-row:1!important}
 #panel-dict #dict-search-field-hanzi{grid-column:2!important;grid-row:1!important}
-#panel-dict #dict-search-field-pinyin{grid-column:3!important;grid-row:1!important}
-#panel-dict #dict-tone-picker{grid-column:3!important;grid-row:2!important;min-width:0!important}
-#panel-dict #dict-advanced-search .dict-search-hint{grid-column:1/-1!important;grid-row:3!important}
+#panel-dict #dict-search-field-pinyin{grid-column:1/-1!important;grid-row:2!important}
+#panel-dict #dict-tone-picker{grid-column:1/-1!important;grid-row:3!important;min-width:0!important}
+#panel-dict #dict-advanced-search .dict-search-hint{grid-column:1/-1!important;grid-row:4!important}
 #panel-dict #dict-advanced-search .dict-search-field{min-width:0!important}
 #panel-dict #dict-advanced-search .field{width:100%!important;min-width:0!important}
 @media(min-width:521px) and (max-width:900px){
@@ -8996,8 +9044,8 @@ window.__menu1DictionaryLoaded=function(count,sourceName){
  width:100%!important;max-width:1120px!important;min-width:0!important;margin-inline:auto!important;
  box-sizing:border-box!important
 }
-.topbar .brand>.brand-flag:first-child{grid-column:1!important;grid-row:1!important;justify-self:center!important}
-.topbar .brand>.brand-flag:last-child{grid-column:3!important;grid-row:1!important;justify-self:center!important}
+.topbar .brand>.brand-flag:first-child{grid-column:1!important;grid-row:1!important;justify-self:start!important}
+.topbar .brand>.brand-flag:last-child{grid-column:3!important;grid-row:1!important;justify-self:end!important}
 .topbar .brand-copy{display:contents!important}
 .topbar .brand-copy>h1{
  grid-column:2!important;grid-row:1!important;justify-self:center!important;align-self:center!important;
