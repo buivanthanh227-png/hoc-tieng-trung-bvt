@@ -39,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/patch_v4222_requested_fixes.py index.html
+          python3 tools/patch_android_chrome_speech.py index.html
           git diff --check
           if ! git diff --quiet -- index.html; then
             git config user.name "github-actions[bot]"
@@ -199,7 +200,7 @@ jobs:
                   echo "::error::Production vẫn còn Menu 18."
                   exit 1
                 fi
-                for marker in 'BVT_REQUESTED_UI_20261123_V1' 'id="bvt-menu3-modal-equal-font"' '.homework3x-modal-line.is-pinyin .homework3x-modal-value' 'id="bvt-banner-footer-layout-v1"' 'id="bvt-footer-meta-move-v1"' 'id="bvt-menu1-colored-actions-v1' 'if(!hasQuery){filteredIndices=[];}' 'BVT_REQUESTED_UI_20261123_V2' 'id="bvt-banner-footer-layout-v2"' 'id="bvt-footer-meta-move-v2"' "getElementById('bvt-header-clock')" "window.__menu1DictionaryLoaded=function(count,sourceName)"; do
+                for marker in 'BVT_REQUESTED_UI_20261123_V1' 'id="bvt-menu3-modal-equal-font"' '.homework3x-modal-line.is-pinyin .homework3x-modal-value' 'id="bvt-banner-footer-layout-v1"' 'id="bvt-footer-meta-move-v1"' 'id="bvt-menu1-colored-actions-v1' 'if(!hasQuery){filteredIndices=[];}' 'BVT_REQUESTED_UI_20261123_V2' 'id="bvt-banner-footer-layout-v2"' 'id="bvt-footer-meta-move-v2"' "getElementById('bvt-header-clock')" "window.__menu1DictionaryLoaded=function(count,sourceName)" 'BVT_ANDROID_CHROME_SPEECH_FIX_V1'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu cập nhật giao diện: $marker"
                     exit 1
