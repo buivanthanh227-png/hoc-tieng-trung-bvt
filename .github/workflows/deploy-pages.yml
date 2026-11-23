@@ -229,7 +229,7 @@ jobs:
                 fi
 
                 patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.22.1.js")"
-                if ! grep -Fq "dataset.menu3PinyinFix='42.10.22.1'" <<< "$patch_js"; then
+                if ! grep -Fq "dataset.menu3PinyinFix='42.10.23'" <<< "$patch_js"; then
                   echo "::error::Production không phục vụ đúng Menu 3 Pinyin hotfix."
                   exit 1
                 fi
