@@ -17,6 +17,11 @@ required=[
  'async function lookupHomework3x()',
  '.homework3x-modal-backdrop .homework3x-modal-line .homework3x-modal-value',
  'font-size:22px!important;font-weight:800!important;line-height:1.45!important;',
+ 'bvt-v42121-final-layout',
+ 'repeat(4,minmax(0,1fr))',
+ 'homework3x-candidate-grid',
+ 'const homework3xPageSize=12',
+ 'for(const row of ranked)add(row)',
 ]
 for x in required:
  if x not in h: raise SystemExit('Menu 3 UI fix marker missing: '+x)

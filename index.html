@@ -2227,6 +2227,100 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
   .topbar .brand{column-gap:4px!important;row-gap:4px!important}
 }
 </style>
+<style id="bvt-v42121-final-layout">
+/* Banner: one stable three-column header, no fallback layout. */
+.topbar{min-height:clamp(108px,15vw,138px)!important;padding:clamp(10px,1.8vw,16px)!important;padding-top:calc(clamp(10px,1.8vw,16px) + env(safe-area-inset-top))!important}
+.topbar .toprow{display:flex!important;flex-direction:column!important;align-items:stretch!important;justify-content:center!important;gap:clamp(6px,1.2vw,10px)!important;width:100%!important;max-width:1120px!important}
+.topbar .brand{
+ display:grid!important;
+ grid-template-columns:minmax(64px,1fr) minmax(220px,2.2fr) minmax(64px,1fr)!important;
+ grid-template-rows:auto auto!important;
+ align-items:center!important;
+ justify-items:stretch!important;
+ column-gap:clamp(8px,2vw,20px)!important;
+ row-gap:clamp(7px,1.2vw,12px)!important;
+ width:100%!important;max-width:1120px!important;min-width:0!important;margin:0 auto!important
+}
+.topbar .brand>.brand-flag:first-child{grid-column:1!important;grid-row:1!important;justify-self:start!important}
+.topbar .brand>.brand-flag:last-child{grid-column:3!important;grid-row:1!important;justify-self:end!important}
+.topbar .brand>.brand-flag{
+ width:clamp(58px,7vw,78px)!important;height:auto!important;aspect-ratio:3/2!important;
+ padding:4px!important;border-radius:8px!important;box-sizing:border-box!important
+}
+.topbar .brand>.brand-flag svg{display:block!important;width:100%!important;height:100%!important;max-height:none!important}
+.topbar .brand>.brand-copy{display:contents!important}
+.topbar .brand-copy>h1{
+ grid-column:2!important;grid-row:1!important;justify-self:center!important;align-self:center!important;
+ width:max-content!important;max-width:100%!important;margin:0!important;
+ font-size:clamp(24px,3.8vw,46px)!important;line-height:1.08!important;font-weight:950!important;
+ white-space:nowrap!important;text-align:center!important;color:#fff!important
+}
+.topbar .brand-copy>.brand-slogan{display:contents!important}
+.topbar .brand-slogan>span{font-size:clamp(10px,1.35vw,15px)!important;font-weight:850!important;line-height:1.25!important}
+.topbar .brand-slogan>span:first-child{grid-column:1!important;grid-row:2!important;width:100%!important;text-align:left!important}
+.topbar .brand-slogan>span:last-child{grid-column:3!important;grid-row:2!important;width:100%!important;text-align:right!important}
+.topbar .top-meta{display:none!important}
+
+/* Menu 1 title: keep number, icon and title in one compact visual group. */
+#panel-dict .section-title[data-function-number="1"]{
+ display:flex!important;align-items:center!important;justify-content:flex-start!important;
+ flex-wrap:nowrap!important;gap:6px!important;width:auto!important;min-width:0!important
+}
+#panel-dict .section-title[data-function-number="1"]::before{flex:0 0 auto!important;margin-right:0!important}
+#panel-dict .section-title[data-function-number="1"] .function-title-icon{flex:0 0 auto!important;margin:0!important}
+#panel-dict .section-title[data-function-number="1"] .count-pill{margin-left:10px!important}
+
+/* Menu 3 candidate grid: responsive columns, no result-width cap in CSS. */
+#panel-translate3 .homework3x-candidate-grid,
+.homework3x-candidate-grid{
+ display:grid!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:10px!important
+}
+#panel-translate3 .homework3x-candidate,.homework3x-candidate{min-width:0!important;height:100%!important}
+@media(max-width:1100px){#panel-translate3 .homework3x-candidate-grid,.homework3x-candidate-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:820px){#panel-translate3 .homework3x-candidate-grid,.homework3x-candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:430px){#panel-translate3 .homework3x-candidate-grid,.homework3x-candidate-grid{grid-template-columns:1fr!important}}
+
+/* Footer: exactly one centered credit/version/clock stack. */
+#app-footer-meta{
+ display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;
+ text-align:center!important;width:100%!important;max-width:none!important;margin:18px 0 8px!important;
+ padding:14px 12px!important;box-sizing:border-box!important
+}
+#app-footer-meta .bvt-footer-credit-line-v2,
+#app-footer-meta>div:first-child,
+#app-footer-meta>strong,
+.bvt-footer-credit-v2{display:block!important;width:100%!important;text-align:center!important;margin:0 0 6px!important}
+#app-footer-meta .bvt-footer-version-row-v2,
+#app-footer-meta .bvt-footer-version-row-v1,
+#app-footer-meta>div:nth-child(2){
+ display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+ flex-wrap:wrap!important;width:100%!important;max-width:none!important;text-align:center!important;margin:0 auto!important;padding:0!important
+}
+#app-footer-meta #bvt-header-clock,
+.bvt-footer-clock-v2{
+ display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;max-width:none!important;margin:6px auto 0!important;text-align:center!important
+}
+#app-footer-meta .bvt-clock-icon{
+ width:20px!important;height:20px!important;flex:0 0 20px!important
+}
+@media(max-width:520px){
+ .topbar{min-height:96px!important;padding:8px 10px!important}
+ .topbar .brand{grid-template-columns:minmax(52px,.8fr) minmax(130px,1.8fr) minmax(52px,.8fr)!important;column-gap:4px!important;row-gap:7px!important}
+ .topbar .brand>.brand-flag{width:clamp(50px,14vw,62px)!important}
+ .topbar .brand-copy>h1{font-size:clamp(20px,6vw,28px)!important}
+ .topbar .brand-slogan>span{font-size:clamp(9px,2.45vw,11px)!important}
+ #app-footer-meta #bvt-header-clock,.bvt-footer-clock-v2{flex-wrap:wrap!important;gap:4px 8px!important}
+}
+@media(max-width:350px){
+ .topbar .brand{grid-template-columns:minmax(52px,.8fr) minmax(118px,1.8fr) minmax(52px,.8fr)!important}
+ .topbar .brand>.brand-flag{width:44px!important}
+ .topbar .brand-copy>h1{font-size:18px!important}
+ .topbar .brand-slogan>span{font-size:8.5px!important}
+}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -2237,7 +2331,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
  <div class="brand-flag" role="img" aria-label="Quốc kỳ Trung Quốc">
   <svg viewBox="0 0 60 40" aria-hidden="true" focusable="false"><rect width="60" height="40" fill="#de2910"/><polygon fill="#ffde00" points="12,4 13.8,9.4 19.5,9.4 14.9,12.8 16.7,18.2 12,14.8 7.3,18.2 9.1,12.8 4.5,9.4 10.2,9.4"/><polygon fill="#ffde00" points="24,3.3 25.2,6.3 28.4,6.1 25.9,8.1 26.8,11.1 24,9.3 21.3,11.2 22.1,8.1 19.7,6.2 22.8,6.2"/><polygon fill="#ffde00" points="29.5,9 30.7,12 33.9,11.8 31.4,13.8 32.3,16.8 29.5,15 26.8,16.9 27.6,13.8 25.2,11.9 28.3,11.9"/><polygon fill="#ffde00" points="29.5,17 30.7,20 33.9,19.8 31.4,21.8 32.3,24.8 29.5,23 26.8,24.9 27.6,21.8 25.2,19.9 28.3,19.9"/><polygon fill="#ffde00" points="24,24 25.2,27 28.4,26.8 25.9,28.8 26.8,31.8 24,30 21.3,31.9 22.1,28.8 19.7,26.9 22.8,26.9"/></svg>
  </div>
-</div><div class="top-meta"><div class="bvt-header-clock" id="bvt-header-clock" aria-label="Giờ và ngày hiện tại"><div class="bvt-clock-time-row"><svg class="bvt-clock-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 6.5v5.8l4 2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="bvt-clock-time">--:--:--</span></div><div id="bvt-clock-date" class="bvt-clock-date">ĐANG TẢI NGÀY THÁNG…</div></div><p class="credit-line"><span>CÔNG CỤ ĐƯỢC PHÁT TRIỂN</span><span>TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</span></p></div></div></header>
+</div></div></header>
 <div class="app-shell">
 <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
 <nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
@@ -2763,7 +2857,17 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 
 </main>
 </div><!-- /.app-shell -->
-<footer class="app-footer-meta" id="app-footer-meta"><div><strong>HỌC TIẾNG TRUNG · Phiên bản v42.10.21</strong></div><div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div><div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div></footer>
+<footer class="app-footer-meta" id="app-footer-meta">
+ <div class="bvt-footer-credit-line-v2">CÔNG CỤ ĐƯỢC PHÁT TRIỂN TỪ Ý TƯỞNG CỦA BÙI VĂN THANH</div>
+ <div class="bvt-footer-version-row-v2"><strong>HỌC TIẾNG TRUNG · Phiên bản V42.10.21</strong></div>
+ <div class="bvt-footer-clock-v2" id="bvt-header-clock" aria-label="Giờ và ngày hiện tại">
+  <svg class="bvt-clock-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 6.5v5.8l4 2.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span id="bvt-clock-time">--:--:--</span>
+  <span id="bvt-clock-date" class="bvt-clock-date">ĐANG TẢI NGÀY THÁNG…</span>
+ </div>
+ <div id="local-visit-stats">Đang cập nhật thống kê trên thiết bị…</div>
+ <div>Thống kê này chỉ đếm lượt mở trên thiết bị/trình duyệt hiện tại, không phải số người online toàn hệ thống.</div>
+</footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button id="back-to-top" type="button" aria-label="Về đầu trang" title="Về đầu trang">↑</button>
 <div id="stroke-modal" class="stroke-modal" hidden>
@@ -3068,7 +3172,16 @@ function setDictionary(rows,sourceName){
  ocrLexiconMap=null;
  ocrLexiconLengths=[];
  searchIndex=dictionary.map(makeSearchRecord);
- const countPill=$('count-pill');
+ let countPill=$('count-pill');
+ if(!countPill){
+  const dictTitle=document.querySelector('#panel-dict .section-title[data-function-number="1"]');
+  if(dictTitle){
+   countPill=document.createElement('span');
+   countPill.id='count-pill';
+   countPill.className='count-pill';
+   dictTitle.appendChild(countPill);
+  }
+ }
  if(countPill)countPill.textContent='Tổng số từ vựng: '+dictionary.length.toLocaleString('vi-VN')+' từ';
  const dictResultCount=$('dict-result-count');
  if(dictResultCount)dictResultCount.textContent=dictionary.length.toLocaleString('vi-VN')+' từ vựng';
@@ -4700,7 +4813,7 @@ function pinyin18SyllablePaths(raw,syllables){
  }
  return paths;
 }
-function pinyin18SelectToneDiverse(candidates,raw,limit=16){
+function pinyin18SelectToneDiverse(candidates,raw){
  const rawText=String(raw||'').trim();
  const inputTokens=rawText.split(/[\s,，、;；]+/).filter(Boolean);
  if(!inputTokens.length)return [];
@@ -4722,9 +4835,7 @@ function pinyin18SelectToneDiverse(candidates,raw,limit=16){
     const keys=path.keys.concat(split);
     const tones=path.tones.concat(split.map((_,index)=>index===0?requestedTone:null));
     next.push({keys,tones});
-    if(next.length>=32)break;
    }
-   if(next.length>=32)break;
   }
   expected=next;
  }
@@ -4749,58 +4860,17 @@ function pinyin18SelectToneDiverse(candidates,raw,limit=16){
   return {item,tokens,base,tones:matched.tones,priority:Number(item.priority)||0};
  }).filter(Boolean);
  if(!ranked.length)return [];
- // If a compact input token admits several possible syllable boundaries,
- // choose one dictionary-supported path instead of mixing incompatible splits.
- if(hasCompactToken){
-  const groups=new Map();
-  for(const row of ranked){
-   if(!groups.has(row.base))groups.set(row.base,[]);
-   groups.get(row.base).push(row);
-  }
-  ranked=[...groups.values()].sort((a,b)=>{
-   if(a.length!==b.length)return b.length-a.length;
-   return Math.max(...b.map(x=>x.priority))-Math.max(...a.map(x=>x.priority));
-  })[0];
- }
  ranked.sort((a,b)=>b.priority-a.priority||String(a.item.zh||'').localeCompare(String(b.item.zh||''),'zh-CN'));
- // MENU18_SINGLE_POSITION_TONE_VARIANTS_V1:
- // Return the best complete sentence plus alternatives changing only one
- // input syllable/token position at a time. Never emit Cartesian tone mixes.
- const baseline=ranked[0],baselineTones=baseline.tokens.map(token=>pinyin18ToneFromInput(token)||5);
- ranked=ranked.filter(row=>{
-  let changed=0;
-  for(let index=0;index<baselineTones.length;index++){
-   const tone=pinyin18ToneFromInput(row.tokens[index])||5;
-   if(tone!==baselineTones[index]&&++changed>1)return false;
-  }
-  return true;
- });
  const selected=[],selectedIds=new Set();
  const add=row=>{
-  if(!row||selected.length>=limit)return;
+  if(!row)return;
   const id=String(row.item.zh||'')+'|'+String(row.item.py||'');
   if(selectedIds.has(id))return;
   selectedIds.add(id);selected.push(row);
  };
- // Keep the highest-ranked complete sentence first (usually the exact verified phrase).
- if(ranked.length)add(ranked[0]);
- const positions=ranked.length?ranked[0].tokens.map((_,index)=>{
-  const toneRows=new Map();
-  for(const row of ranked){
-   const tone=pinyin18ToneFromInput(row.tokens[index])||5;
-   const current=toneRows.get(tone);
-   if(!current||row.priority>current.priority)toneRows.set(tone,row);
-  }
-  return {index,toneRows};
- }):[];
- positions
-  .filter(position=>position.toneRows.size>1&&ranked[0].tones[position.index]===null)
-  .sort((a,b)=>b.toneRows.size-a.toneRows.size||a.index-b.index)
-  .forEach(position=>{
-   for(const tone of [...position.toneRows.keys()].sort((a,b)=>a-b))add(position.toneRows.get(tone));
-  });
- // Deliberately do not append the full ranked set: it contains cross-products
- // of simultaneous tone changes and was the source of inflated result counts.
+ // Return every dictionary-supported complete sentence row. Ranking is used
+ // only for order; deduplication removes identical Hán tự/Pinyin entries.
+ for(const row of ranked)add(row);
  return selected.map(row=>row.item);
 }
 function pinyinToChineseCandidates(raw){
@@ -4902,7 +4972,7 @@ const commonCharBoost=PINYIN18_COMMON_CHARACTERS[syllable]===item.row[0]?15:0;
    }
   }
  }
- return pinyin18SelectToneDiverse([...found.values()],raw,found.size);
+ return pinyin18SelectToneDiverse([...found.values()],raw);
 }
 async function machineTranslate(text,source,target){
  if(typeof TextEncoder!=='undefined'&&new TextEncoder().encode(String(text||'')).length>480)throw new Error('Câu quá dài cho dịch vụ miễn phí; hãy rút ngắn câu dưới 480 byte.');
@@ -8635,18 +8705,8 @@ function openHomework3xCandidateModal(item,index,total){
   try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return true;}}catch(_){}
   const area=document.createElement('textarea');area.value=value;area.setAttribute('readonly','');area.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';document.body.appendChild(area);area.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}area.remove();return ok;
  };
- const speakMandarinSentence=(text,rate=0.92)=>{
-  if(!('speechSynthesis' in window)||typeof SpeechSynthesisUtterance==='undefined')return false;
-  window.speechSynthesis.cancel();
-  const utterance=new SpeechSynthesisUtterance(String(text||'').trim());
-  utterance.lang='zh-CN';utterance.rate=rate;utterance.pitch=1;
-  const voices=window.speechSynthesis.getVoices?.()||[];
-  const voice=voices.find(v=>/^zh-CN$/i.test(v.lang))||voices.find(v=>/^zh/i.test(v.lang));
-  if(voice)utterance.voice=voice;
-  window.speechSynthesis.speak(utterance);return true;
- };
- const playHanziSentence=()=>speakMandarinSentence(zh,0.92);
- modal.querySelectorAll('[data-homework3x-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework3xSpeak;if(kind==='zh'){playHanziSentence();return;}if('speechSynthesis' in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(vi);utterance.lang='vi-VN';window.speechSynthesis.speak(utterance);}}));
+ const playHanziSentence=()=>bvtSpeakLocale(zh,'zh');
+ modal.querySelectorAll('[data-homework3x-speak]').forEach(button=>button.addEventListener('click',()=>{const kind=button.dataset.homework3xSpeak;if(kind==='zh'){playHanziSentence();return;}bvtSpeakLocale(vi,'vi');}));
  modal.querySelector('.homework3x-modal-close').addEventListener('click',closeHomework3xCandidateModal);
  modal.addEventListener('click',e=>{if(e.target===modal)closeHomework3xCandidateModal();});
  modal.querySelector('[data-prev]').addEventListener('click',()=>{if(index>0)openHomework3xCandidateModal(homework3xCandidates[index-1],index-1,total);});
@@ -8668,11 +8728,11 @@ async function renderHomework3xCandidates(candidates){
  }catch(_){resolved[index]=null;}completed++;if(requestToken===homework3xLookupToken&&status)status.textContent='Đang xác minh nghĩa toàn câu: '+completed+' / '+queue.length+'…';}};
  await Promise.all(Array.from({length:Math.min(4,queue.length)},worker));if(requestToken!==homework3xLookupToken)return null;
  const list=resolved.filter(Boolean);if(!list.length){box.hidden=true;box.replaceChildren();if(status)status.textContent='Không xác minh được câu hoàn chỉnh có nghĩa tiếng Việt.';return null;}
- homework3xCandidates=list;homework3xSelectedCandidateIndex=0;let homework3xCandidatePage=0;const homework3xPageSize=10;box.hidden=false;
+ homework3xCandidates=list;homework3xSelectedCandidateIndex=0;let homework3xCandidatePage=0;const homework3xPageSize=12;box.hidden=false;
  const renderHomework3xPage=()=>{
   const pageCount=Math.max(1,Math.ceil(list.length/homework3xPageSize)),start=homework3xCandidatePage*homework3xPageSize,end=Math.min(start+homework3xPageSize,list.length);
   const nav=position=>'<div class="homework3x-pagination" data-pagination="'+position+'"><button type="button" data-page-prev '+(homework3xCandidatePage===0?'disabled':'')+'>‹ Trang trước</button><span>Trang '+(homework3xCandidatePage+1)+' / '+pageCount+'</span><button type="button" data-page-next '+(homework3xCandidatePage>=pageCount-1?'disabled':'')+'>Trang sau ›</button></div>';
-  box.innerHTML=nav('top')+'<div class="homework3x-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div>'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework3x-candidate" data-homework3x-candidate="'+index+'"><span class="homework3x-candidate-number">'+(index+1)+'</span><span class="homework3x-candidate-content"><span class="homework3x-candidate-py">'+escapeHTML(formatHomework3xPinyinByInput(String($('homework3x-query')?.value||''),item.py||pinyinForChinese(item.zh)))+'</span><span class="homework3x-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework3x-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+nav('bottom');
+  box.innerHTML=nav('top')+'<div class="homework3x-candidate-heading">Chọn câu phù hợp · '+list.length+' kết quả · Hiển thị '+(start+1)+'–'+end+'</div><div class="homework3x-candidate-grid">'+list.slice(start,end).map((item,offset)=>{const index=start+offset;return '<button type="button" class="homework3x-candidate" data-homework3x-candidate="'+index+'"><span class="homework3x-candidate-number">'+(index+1)+'</span><span class="homework3x-candidate-content"><span class="homework3x-candidate-py">'+escapeHTML(formatHomework3xPinyinByInput(String($('homework3x-query')?.value||''),item.py||pinyinForChinese(item.zh)))+'</span><span class="homework3x-candidate-zh">'+escapeHTML(item.zh)+'</span><span class="homework3x-candidate-vi">'+escapeHTML(item.vi||'')+'</span></span></button>';}).join('')+'</div>'+nav('bottom');
   box.querySelectorAll('[data-page-prev]').forEach(button=>button.addEventListener('click',()=>{if(homework3xCandidatePage>0){homework3xCandidatePage--;renderHomework3xPage();}}));
   box.querySelectorAll('[data-page-next]').forEach(button=>button.addEventListener('click',()=>{if(homework3xCandidatePage<pageCount-1){homework3xCandidatePage++;renderHomework3xPage();}}));
   if(!document.documentElement.dataset.homework3xModalClickBound){document.documentElement.dataset.homework3xModalClickBound='1';document.addEventListener('click',event=>{const button=event.target?.closest?.('[data-homework3x-candidate]'),current=Array.isArray(homework3xCandidates)?homework3xCandidates:[],host=$('homework3x-candidates');if(!button||!host?.contains(button))return;const index=Number(button.dataset.homework3xCandidate),item=current[index];if(!item)return;homework3xSelectedCandidateIndex=index;host.querySelectorAll('[data-homework3x-candidate]').forEach(node=>node.classList.toggle('is-selected',Number(node.dataset.homework3xCandidate)===index));try{openHomework3xCandidateModal(item,index,current.length);const liveStatus=$('homework3x-status');if(liveStatus)liveStatus.textContent='Đang xem kết quả '+(index+1)+' / '+current.length+'.';}catch(error){console.error('Menu 18 modal error',error);const liveStatus=$('homework3x-status');if(liveStatus)liveStatus.textContent='Không mở được hộp chi tiết: '+(error?.message||String(error));}},true);}
@@ -8897,6 +8957,7 @@ window.__menu1DictionaryLoaded=function(count,sourceName){
 (function(){
  function moveMeta(){
   const body=document.body;if(!body||document.getElementById('bvt-footer-meta-v1'))return;
+  if(document.querySelector('#app-footer-meta .bvt-footer-clock-v2'))return;
   const versionLeaf=[...body.querySelectorAll('*')].find(el=>el.children.length===0&&!['SCRIPT','STYLE'].includes(el.tagName)&&/V?42\.\d+\.\d+|phiên bản ứng dụng/i.test(el.textContent||''));
   if(!versionLeaf)return;
   const parent=versionLeaf.parentElement||body;
@@ -8920,6 +8981,7 @@ window.__menu1DictionaryLoaded=function(count,sourceName){
 (function(){
  function moveFooterMeta(){
   const footer=document.getElementById('app-footer-meta');
+  if(footer&&footer.querySelector('.bvt-footer-clock-v2')){footer.dataset.bvtMetaV2='1';return;}
   if(!footer||footer.dataset.bvtMetaV2==='1')return;
   const topMeta=document.querySelector('.topbar .top-meta');
   const credit=topMeta&&topMeta.querySelector('.credit-line');

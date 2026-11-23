@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-10-21-menu3-modal-menu1-20261123';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-10-21-final-layout-menu3-menu1-20261123';
 const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-10';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
@@ -144,7 +144,7 @@ self.addEventListener('fetch', event => {
     event.respondWith((async () => {
       const cacheKey = navigationCacheKey(request.url);
       try {
-        const response = await fetch(request);
+      const response = await fetch(new Request(request, { cache: 'no-store' }));
         if (response.ok) {
           const cache = await caches.open(CACHE_NAME);
           cache.put(cacheKey, response.clone()).catch(() => {});

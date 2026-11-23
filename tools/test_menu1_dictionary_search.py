@@ -6,6 +6,8 @@ import subprocess,sys,tempfile
 if len(sys.argv)!=2:
     raise SystemExit("Usage: test_menu1_dictionary_search.py <site/index.html>")
 html=Path(sys.argv[1]).read_text(encoding="utf-8")
+if 'id="count-pill"' not in html:
+    raise SystemExit("Menu 1 live dictionary count is missing")
 markers=[
  "MENU1_THREE_FIELD_DICTIONARY_SEARCH_V1",
  'id="dict-search-hanzi"',

@@ -84,7 +84,7 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 Phiên bản phát hành hiện tại: **V42.10.21**.
 
-Bản V42.10.21 sửa cỡ chữ Pinyin trong hộp thoại nổi Menu 3: ba thành phần Hán tự, Pinyin và nghĩa tiếng Việt giờ đều dùng 22px thay vì để Pinyin bị ghi đè thành 29px. Phiên bản đồng thời giữ nguyên sửa lỗi CVDICT và căn slogan bằng Grid. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản V42.10.21 đồng nhất banner bằng một lớp bố cục ổn định, tăng tiêu đề/lá cờ/slogan, căn ba dòng footer theo toàn chiều trang và gom tiêu đề Menu 1 thành cụm thống nhất. Menu 3 dùng lưới kết quả responsive, không giới hạn tổ hợp hợp lệ ở 16 kết quả, giữ Pinyin hợp lệ theo từ điển và dùng cùng cơ chế phát âm thiết bị có sẵn cho hộp thoại. Ba thành phần Hán tự, Pinyin và nghĩa Việt trong hộp thoại đều dùng 22px. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
