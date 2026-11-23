@@ -64,8 +64,16 @@ function pinyin18SelectToneDiverse(candidates, raw, limit=30) {
   let priority=Number(item.priority)||Number(item.score)||0;
   const compact=inputTokens.map(pinyin18Key).join('');
   const preferred={jintian:'今天',zuotian:'昨天',xihuan:'喜欢'};
-  if(preferred[compact]===String(item.zh))priority+=1000000;
-  return {item,tokens,priority,tones:match.tones,base};
+  const preferredPinyin={jintian:'jīn tiān',zuotian:'zuó tiān',xihuan:'xǐ huan'};
+  if(preferred[compact]===String(item.zh)){
+   priority+=1000000;
+   const fixed=preferredPinyin[compact];
+   if(fixed){
+    const sourceRows=Array.isArray(item.sourceRows)?item.sourceRows.map(row=>Array.isArray(row)?[row[0],row[1],fixed,row[3]]:row):item.sourceRows;
+    item={...item,py:fixed,sourceRows};
+   }
+  }
+  return {item,tokens:String(item.py||'').trim().split(/\\s+/).filter(Boolean),priority,tones:match.tones,base};
  }).filter(Boolean);
  if(!rows.length)return [];
  let ranked=rows;
