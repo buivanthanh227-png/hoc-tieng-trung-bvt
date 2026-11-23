@@ -29,6 +29,11 @@ jobs:
       - name: Lấy mã nguồn ứng dụng
         uses: actions/checkout@v4
 
+      - name: Cài Node.js cho regression tests
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Ghi nhận mã nguồn được đóng gói
         id: build-meta
         shell: bash
@@ -52,6 +57,7 @@ jobs:
           # Không patch lại ở artifact để tránh workflow ghi đè/gây trùng Menu 3,
           # Menu 18, banner, footer hoặc bộ nạp từ điển.
           cp index.html site/
+          node --test qa-tests/*.test.cjs
           python3 -m py_compile tools/*.py
           python3 tools/test_menu18_word_mapping.py site/index.html
           python3 tools/test_menu3_clone.py site/index.html
@@ -69,22 +75,22 @@ jobs:
           import json, pathlib, re
           manifest = json.loads(pathlib.Path("manifest.webmanifest").read_text(encoding="utf-8"))
           target = manifest["name"].rsplit("· ", 1)[-1]
-          if target != "V42.10.21":
+          if target != "V42.10.22":
               raise SystemExit(f"Unexpected release version in manifest: {target}")
           path = pathlib.Path("site/index.html")
           html = path.read_text(encoding="utf-8")
           version_pattern = re.compile(r"(?<![0-9.])42\.(?:9\.[3-9]|10\.[0-9]+)(?![0-9.])")
-          html, replacements = version_pattern.subn("42.10.21", html)
+          html, replacements = version_pattern.subn("42.10.22", html)
           if replacements == 0:
               raise SystemExit("No legacy application version found in built HTML")
           stale_pattern = re.compile(r"(?<![0-9.])42\.(?:9\.[3-9]|10\.(?:[0-9]|1[0-9]))(?![0-9.])")
           remaining = sorted(set(stale_pattern.findall(html)))
           if remaining:
               raise SystemExit(f"Legacy version strings remain: {remaining}")
-          if html.count("42.10.21") < 1:
-              raise SystemExit("Built HTML does not expose V42.10.21")
+          if html.count("42.10.22") < 1:
+              raise SystemExit("Built HTML does not expose V42.10.22")
           path.write_text(html, encoding="utf-8")
-          print(f"Version synchronization PASS: {replacements} version occurrence(s) → V42.10.21")
+          print(f"Version synchronization PASS: {replacements} version occurrence(s) → V42.10.22")
           PY
           python3 - <<'PY'
           import json, pathlib
@@ -92,11 +98,11 @@ jobs:
           version = manifest["name"].rsplit("· ", 1)[-1]
           readme = pathlib.Path("README.md").read_text(encoding="utf-8")
           sw = pathlib.Path("sw.js").read_text(encoding="utf-8")
-          if version != "V42.10.21":
+          if version != "V42.10.22":
               raise SystemExit(f"Manifest version mismatch: {version}")
           if f"Phiên bản phát hành hiện tại: **{version}**." not in readme:
               raise SystemExit("README version does not match manifest")
-          if "app-shell-v42-10-21-" not in sw:
+          if "app-shell-v42-10-22-" not in sw:
               raise SystemExit("Service Worker cache version does not match manifest")
           print("Manifest, README and Service Worker version synchronization: PASS")
           PY

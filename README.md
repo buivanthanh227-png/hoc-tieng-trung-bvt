@@ -82,9 +82,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.21**.
+Phiên bản phát hành hiện tại: **V42.10.22**.
 
-Bản V42.10.21 đồng nhất banner bằng một lớp bố cục ổn định, tăng tiêu đề/lá cờ/slogan, căn ba dòng footer theo toàn chiều trang và gom tiêu đề Menu 1 thành cụm thống nhất. Menu 3 dùng lưới kết quả responsive, không giới hạn tổ hợp hợp lệ ở 16 kết quả, giữ Pinyin hợp lệ theo từ điển và dùng cùng cơ chế phát âm thiết bị có sẵn cho hộp thoại. Ba thành phần Hán tự, Pinyin và nghĩa Việt trong hộp thoại đều dùng 22px. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản V42.10.22 chỉ gợi ý mục từ/câu mẫu có chữ Hán, Pinyin và nghĩa đi cùng trong dữ liệu nguồn; không ghép các mục từ rời hoặc dùng dịch máy để xác nhận nghĩa. Tra cứu Pinyin dùng chỉ mục theo âm tiết/toàn chuỗi, giữ nguyên cách viết Pinyin nguồn và phân trang 12 kết quả mà không giới hạn tổng số mục khớp. Slogan banner trên điện thoại được tăng cỡ chữ trong khi giữ căn chỉnh dưới hai lá cờ. Các kết quả dịch câu tự do vẫn dùng dịch vụ máy như trước và cần kiểm tra theo ngữ cảnh. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
