@@ -82,7 +82,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.13**. Phiên bản được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Phiên bản phát hành hiện tại: **V42.10.14**.
+
+Bản V42.10.14 tập trung sửa bố cục banner hai lá cờ, màu ghi công và đồng hồ chân trang, đồng thời gia cố cơ chế nạp bộ từ điển CVDICT đầy đủ và trạng thái tìm kiếm. Phiên bản được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
