@@ -87,6 +87,33 @@ test('ambiguous compact segmentation returns source readings with original spaci
   assert.deepEqual(separatedIds, compactIds);
 });
 
+test('compact common words resolve through complete source dictionary readings', () => {
+  const cases = [
+    ['jintian', '今天', 2],
+    ['zuotian', '昨天', 2],
+    ['xihuan', '喜欢', 2]
+  ];
+  for (const [query, expectedHanzi, syllableCount] of cases) {
+    const results = candidates(query);
+    const match = results.find(item => item.zh === expectedHanzi);
+    assert.ok(match, query + ' must retain the complete dictionary word ' + expectedHanzi);
+    assert.equal(match.sourceRows[0][0], expectedHanzi);
+    assert.equal(match.sourceRows[0][2], match.py);
+    assert.equal(match.py.trim().split(/\s+/).length, syllableCount);
+    assert.ok(results.length <= 16, query + ' must not explode into dozens of component combinations');
+  }
+});
+
+test('whole-sentence candidate meanings are not assembled from isolated gloss fragments', () => {
+  const results = candidates('wo bu xihuan ta');
+  for (const item of results) {
+    assert.ok(item.sourceRows?.length === 1 || item.source === 'Cụm từ/câu ưu tiên đã xác minh',
+      'candidate must come from one complete dictionary source or a verified full sentence');
+    assert.equal(item.sourceRows?.[0]?.[0], item.zh);
+    assert.equal(item.sourceRows?.[0]?.[2], item.py);
+  }
+});
+
 test('Pinyin candidates are never machine-translated or assembled from component entries', () => {
   const renderStart = html.indexOf('async function renderHomework3xCandidates(candidates){');
   const renderEnd = html.indexOf('function looksLikeVietnamese3x(raw){', renderStart);
