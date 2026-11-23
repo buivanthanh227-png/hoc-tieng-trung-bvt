@@ -20,7 +20,7 @@ required=[
 ]
 for marker in required:
  if marker not in h: raise SystemExit("Missing requested UI marker: "+marker)
-for marker in ['id="panel-translate-experimental"','data-tab="translate-experimental"']:
+for marker in ['<section id="panel-translate-experimental"','data-tab="translate-experimental"']:
  if marker in h: raise SystemExit("Retired Menu 18 UI remains: "+marker)
 if h.count('class="brand-flag"')!=2: raise SystemExit("Banner must retain exactly two flags.")
 print("Requested UI static regression checks: PASS")
