@@ -17,9 +17,9 @@ Học Tiếng Trung BVT tập hợp các công cụ tra cứu, nghe phát âm, l
 
 Ứng dụng hiện có **17 menu**:
 
-- **Menu 1 – Từ điển tiếng Trung:** ba ô tìm kiếm theo thứ tự nghĩa tiếng Việt, chữ Hán giản thể/phồn thể và Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin. Có thể tìm từng trường riêng hoặc kết hợp; dữ liệu CVDICT được nhúng trong ứng dụng.
+- **Menu 1 – Từ điển tiếng Trung:** ba ô tìm kiếm theo nghĩa tiếng Việt, chữ Hán giản thể/phồn thể và Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin. Có thể tìm từng trường riêng hoặc kết hợp; dữ liệu CVDICT được nhúng trong ứng dụng.
 - **Menu 2 – Nhận diện chữ Hán bằng hình ảnh.**
-- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** dịch câu Việt ⇄ Trung qua dịch vụ trực tuyến có cơ chế dự phòng; với Pinyin, tra các mục từ/câu mẫu khớp chính xác cách đọc trong dữ liệu nguồn, không ghép các từ rời thành câu. Hộp thoại kết quả cho phép sao chép riêng chữ Hán, Pinyin và nghĩa tiếng Việt; có thể nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không phát âm thanh Pinyin.**
+- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** dịch câu Việt ⇄ Trung qua Cloudflare Workers AI có xác thực Turnstile, dự phòng MyMemory/Google khi dịch vụ chính không khả dụng. Với Pinyin, ứng dụng ưu tiên mục từ/câu mẫu khớp chính xác; nếu không có kết quả, thử ghép câu từ các âm tiết và mục từ có căn cứ trong dữ liệu từ điển/HSK. Khi có nhiều cách hiểu hợp lý, ứng dụng hiển thị phương án để người học chọn thay vì tự đoán. Hộp thoại kết quả cho phép sao chép riêng chữ Hán, Pinyin và nghĩa tiếng Việt; có thể nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không phát âm thanh Pinyin.**
 - **Menu 4–15:** các công cụ dịch giọng nói, luyện viết, luyện đọc, ghép câu, học từ vựng, luyện số, bộ thủ, lưu trữ tài liệu và dịch đa ngôn ngữ.
 - **Menu 16 – Luyện nghe phiên âm tiếng Trung:** luyện thanh mẫu, vận mẫu, âm tiết Pinyin và thanh điệu.
 - **Menu 17 – Thử thách nhớ mặt chữ Hán.**
@@ -31,7 +31,7 @@ Các menu được tổ chức theo nhu cầu sử dụng, không phải lộ tr
 1. Mở [ứng dụng Học Tiếng Trung BVT](https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/).
 2. Chọn menu phù hợp. Với Menu 1, tìm lần lượt bằng nghĩa tiếng Việt, chữ Hán hoặc Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin.
 3. Có thể chọn thanh điệu để thu hẹp kết quả Pinyin; kết hợp các trường để lọc chính xác hơn.
-4. Với Menu 3, nhập câu tiếng Việt, chữ Hán hoặc Pinyin; giữ nguyên cách phân tách âm tiết mong muốn.
+4. Với Menu 3, nhập câu tiếng Việt, chữ Hán hoặc Pinyin; giữ nguyên cách phân tách âm tiết mong muốn. Với Pinyin mới, hãy thêm dấu thanh khi cần phân biệt các chữ đồng âm.
 5. Chạm vào phương án kết quả để mở chi tiết, sao chép nội dung hoặc nghe tiếng Trung/nghĩa tiếng Việt.
 
 Thông tin phiên bản, ghi công tác giả và đồng hồ ngày/giờ được bố trí tại chân trang ứng dụng.
@@ -84,7 +84,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 Phiên bản phát hành hiện tại: **V42.10.22**.
 
-Bản V42.10.22 giữ tra cứu Pinyin theo mục từ/câu mẫu có chữ Hán, Pinyin và nghĩa đi cùng trong dữ liệu nguồn; không ghép các mục từ rời thành câu. Menu 1 sắp xếp ô tìm kiếm theo nghĩa Việt → chữ Hán → Pinyin, với năm nút thanh điệu ngay dưới ô Pinyin. Menu 3 dịch câu Việt ⇄ Trung bằng MyMemory và thử dịch vụ dự phòng khi dịch vụ chính không khả dụng; hộp thoại hỗ trợ sao chép riêng cả ba trường Hán tự, Pinyin và nghĩa. Banner căn giữa tiêu đề theo tọa độ thực của hai lá cờ; đồng hồ chân trang được tăng kích thước, căn giữa và giữ màu đỏ. Phiên bản ứng dụng vẫn là V42.10.22. Lớp phát âm dùng chung được gia cố cho Chrome Android: không phụ thuộc danh sách giọng đọc tải sẵn, không ghim đối tượng voice có thể lỗi thời, phát tuần tự nội dung đa ngôn ngữ và thử locale cơ sở khi giọng vùng không khả dụng. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản vá Menu 3 cho V42.10.22 giữ nguyên luồng tra cứu Pinyin khớp chính xác và bổ sung bước ghép Pinyin mới dựa trên cách đọc, mục từ có căn cứ và dữ liệu HSK/câu mẫu tích hợp. Những trường hợp nhiều phương án ngang nhau được đưa ra để người học chọn; các chuỗi không đủ căn cứ bị từ chối thay vì tự tạo chữ Hán. Luồng dịch online thử Cloudflare Workers AI sau xác thực Turnstile với hạn chờ 12 giây dành riêng cho Menu 3; nếu chưa có token hoặc Worker lỗi, ứng dụng chuyển nhanh sang MyMemory/Google. Turnstile và kiểm tra token phía Worker vẫn được giữ nguyên; các menu ASR khác tiếp tục dùng thời hạn xác minh mặc định cũ. Service Worker đã đổi cache key để thiết bị lấy `index.html` và `sw.js` mới. Menu 1, banner, hộp thoại kết quả, Copy và phát âm được giữ nguyên.
+
+Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 

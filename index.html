@@ -1837,10 +1837,10 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
 @media(max-width:390px){#combine-choices .combine-suggestion{padding:8px 5px!important;grid-template-columns:32px minmax(0,1fr)!important}#combine-search-results .suggestion-hanzi{min-width:0!important}}
 </style>
 <style id="v42-9-2-qa-fix">
-/* v42.10.20 QA fix · BUG-02: thông báo và gợi ý trong "Tài liệu lưu trữ" (thông báo giới hạn 25 MB, tên tệp dài không dấu cách) luôn tự xuống dòng, không tràn lề trên màn hình hẹp. Chỉ áp dụng cho hai phần tử này và ô chọn tệp. */
+/* v42.10.22 QA fix · BUG-02: thông báo và gợi ý trong "Tài liệu lưu trữ" (thông báo giới hạn 25 MB, tên tệp dài không dấu cách) luôn tự xuống dòng, không tràn lề trên màn hình hẹp. Chỉ áp dụng cho hai phần tử này và ô chọn tệp. */
 #panel-library .library-status,#panel-library .library-field-hint{min-width:0;max-width:100%;overflow-wrap:break-word;overflow-wrap:anywhere;word-break:break-word}
 #panel-library .library-file-field{min-width:0;max-width:100%}
-/* v42.10.20 QA fix · BUG-03: khối hướng dẫn khi kho từ vựng của Luyện tập từ vựng còn trống. Khối này chỉ được tạo khi kho rỗng nên không chiếm diện tích khi đã có từ. */
+/* v42.10.22 QA fix · BUG-03: khối hướng dẫn khi kho từ vựng của Luyện tập từ vựng còn trống. Khối này chỉ được tạo khi kho rỗng nên không chiếm diện tích khi đã có từ. */
 #panel-vocab-training .vocab-training-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px}
 #panel-vocab-training .vocab-training-empty-note{margin:0;font-size:12px;line-height:1.5;color:var(--muted,#667085);overflow-wrap:anywhere}
 #panel-vocab-training .vocab-training-empty .btn{max-width:100%;white-space:normal;line-height:1.3;text-align:center}
@@ -2249,7 +2249,7 @@ html body .app-shell #main-tabs .tab[data-tab="pinyin-audio"].active > .tab-numb
  padding:4px!important;border-radius:8px!important;box-sizing:border-box!important
 }
 .topbar .brand>.brand-flag svg{display:block!important;width:100%!important;height:100%!important;max-height:none!important}
-/* Final flag size: larger than V42.10.20, but controlled at every breakpoint. */
+/* Final flag size: larger than V42.10.22, but controlled at every breakpoint. */
 .topbar .brand>.brand-flag{
  width:clamp(50px,7vw,78px)!important;height:auto!important;aspect-ratio:3/2!important
 }
@@ -4773,25 +4773,41 @@ function pinyin18CanSegment(value,syllables){
  }
  return reachable[token.length]===1;
 }
+function pinyin18InputInfosMatchSource(item,input){
+ const sourceTokens=String(item.py||'').split(/\s+/).filter(Boolean),sourceMarks=[];let sourceOffset=0;
+ if(!input.length||!sourceTokens.length||input.some(token=>!token.base))return false;
+ for(const rawToken of sourceTokens){
+  const parsed=pinyin18InputToken(rawToken);if(!parsed.base)return false;
+  parsed.tones.forEach(mark=>sourceMarks.push({...mark,offset:mark.offset+sourceOffset}));
+  sourceOffset+=parsed.base.length;
+ }
+ if(input.map(token=>token.base).join('')!==sourceTokens.map(token=>pinyin18Key(token)).join(''))return false;
+ let offset=0;
+ for(const token of input){
+  const end=offset+token.base.length;
+  const tonesInSourceSyllable=sourceMarks.filter(mark=>mark.offset>=offset&&mark.offset<end);
+  const sourceTone=tonesInSourceSyllable.length?tonesInSourceSyllable[0].tone:null;
+  for(const mark of token.tones){
+   // Numbered tone 5 is neutral; many dictionaries omit its explicit marker.
+   if(mark.tone===5?(sourceTone!==null&&sourceTone!==5):sourceTone!==mark.tone)return false;
+  }
+  offset=end;
+ }
+ return true;
+}
 function pinyin18InputMatchesSource(item,inputTokens){
- const input=inputTokens.map(pinyin18InputToken),source=String(item.py||'').split(/\s+/).filter(Boolean).map(token=>({
-  base:pinyin18Key(token),tone:pinyin18ToneFromInput(token)
- }));
+ const input=inputTokens.map(pinyin18InputToken),source=String(item.py||'').split(/\s+/).filter(Boolean).map(token=>({base:pinyin18Key(token),tone:pinyin18ToneFromInput(token)}));
  if(!input.length||source.some(token=>!token.base)||input.some(token=>!token.base))return false;
  const inputMarks=[];let inputOffset=0;
- for(const token of input){
-  token.tones.forEach(mark=>inputMarks.push({...mark,offset:mark.offset+inputOffset}));
-  inputOffset+=token.base.length;
- }
- const compactSource=source.map(token=>token.base).join('');
- if(input.map(token=>token.base).join('')!==compactSource)return false;
+ for(const token of input){token.tones.forEach(mark=>inputMarks.push({...mark,offset:mark.offset+inputOffset}));inputOffset+=token.base.length;}
+ if(input.map(token=>token.base).join('')!==source.map(token=>token.base).join(''))return false;
  let offset=0;const used=new Set();
  for(const token of source){
   const end=offset+token.base.length;
   for(let index=0;index<inputMarks.length;index++){
    const mark=inputMarks[index],belongs=mark.numeric?mark.offset===end:mark.offset>=offset&&mark.offset<end;
    if(!belongs)continue;
-   if(used.has(index)||token.tone!==mark.tone)return false;
+   if(used.has(index)||(mark.tone===5?(token.tone!==null&&token.tone!==5):token.tone!==mark.tone))return false;
    used.add(index);
   }
   offset=end;
@@ -4816,6 +4832,113 @@ function pinyinToChineseCandidates(raw){
   :(index.byCompact.get(inputKey)||[]);
  const uniqueCandidates=[...new Set(candidates)];
  return uniqueCandidates.filter(item=>pinyin18InputMatchesSource(item,rawTokens));
+}
+
+// Menu 3: compose previously unseen Pinyin only from evidenced dictionary/HSK words.
+// It deliberately refuses weak homophone guesses instead of silently inventing Hanzi.
+let pinyin3xComposerSourceIndex=null,pinyin3xComposerIndex=null;
+function pinyin3xSegmentInputToken(rawToken,syllables,maxResults=18){
+ const parsed=pinyin18InputToken(rawToken),base=parsed.base;if(!base||base.length>18)return [];
+ const results=[];
+ const walk=(offset,path)=>{
+  if(results.length>=maxResults)return;
+  if(offset===base.length){results.push(path.slice());return;}
+  for(let end=Math.min(base.length,offset+6);end>offset;end--){
+   const part=base.slice(offset,end);if(!syllables.has(part))continue;
+   const tones=parsed.tones.filter(mark=>mark.numeric?mark.offset===end:mark.offset>=offset&&mark.offset<end).map(mark=>({...mark,offset:mark.offset-offset}));
+   path.push({base:part,tones});walk(end,path);path.pop();
+  }
+ };
+ walk(0,[]);
+ return results;
+}
+function pinyin3xBuildInputOptions(raw,syllables,maxOptions=32){
+ const parts=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);if(!parts.length)return [];
+ let combined=[[]];
+ for(const part of parts){
+  const choices=pinyin3xSegmentInputToken(part,syllables);if(!choices.length)return [];
+  const next=[];
+  for(const prefix of combined)for(const choice of choices){next.push(prefix.concat(choice));if(next.length>=maxOptions)break;}
+  combined=next.slice(0,maxOptions);
+ }
+ const seen=new Set();return combined.filter(option=>{const key=option.map(item=>item.base+':'+item.tones.map(t=>t.offset+'-'+t.tone).join(',')).join('|');if(seen.has(key))return false;seen.add(key);return true;});
+}
+function getPinyin3xComposerIndex(){
+ const sourceIndex=getPinyin18SourceIndex();if(pinyin3xComposerSourceIndex===sourceIndex&&pinyin3xComposerIndex)return pinyin3xComposerIndex;
+ const trustedCharacters=new Set(),seedByKey=new Map();
+ const seedRows=[...(Array.isArray(seed)?seed:[]),...(Array.isArray(extraSeed)?extraSeed:[])];
+ for(const row of seedRows){
+  const zh=String(row?.[0]||'').trim(),py=String(row?.[2]||'').trim();if(!zh||!py)continue;
+  for(const ch of zh)if(/[\u3400-\u9fff\uf900-\ufaff]/.test(ch))trustedCharacters.add(ch);
+  const compact=py.split(/\s+/).map(pinyin18Key).join('');seedByKey.set(zh+'|'+compact,{level:String(row?.[4]||''),py});
+ }
+ const sentenceSources=[...(Array.isArray(sentenceDeck)?sentenceDeck:[]),...(Array.isArray(MENU18_VERIFIED_SENTENCES)?MENU18_VERIFIED_SENTENCES:[]),...Object.values(typeof OFFLINE_SENTENCE_TRANSLATIONS==='object'?OFFLINE_SENTENCE_TRANSLATIONS:{})];
+ for(const row of sentenceSources){
+  const zh=String(Array.isArray(row)?row[0]:(row?.zh||'')).trim();
+  for(const ch of zh)if(/[\u3400-\u9fff\uf900-\ufaff]/.test(ch))trustedCharacters.add(ch);
+ }
+ const byCompact=new Map(),dedupe=new Map();
+ for(const item of sourceIndex.entries){
+  const zh=String(item.zh||'').trim(),py=String(item.py||'').trim();
+  if(!/^[\u3400-\u9fff\uf900-\ufaff]{1,5}$/.test(zh)||!py)continue;
+  const compact=py.split(/\s+/).map(pinyin18Key).join('');if(!compact||compact.length>24)continue;
+  const chars=[...zh],seedData=seedByKey.get(zh+'|'+compact),seedExact=!!seedData;
+  const allCharactersTrusted=chars.every(ch=>trustedCharacters.has(ch));
+  if(!seedExact&&!allCharactersTrusted)continue;
+  const levelBonus=/HSK1/.test(seedData?.level||'')?18:/HSK2/.test(seedData?.level||'')?14:/HSK3/.test(seedData?.level||'')?10:/HSK4/.test(seedData?.level||'')?6:0;
+  // Prefer a verified multi-character lexical item over a coincidental character-by-character split.
+  const score=seedExact?112+levelBonus+(chars.length>1?48+chars.length*4:0):chars.length>1?72+chars.length*7:50;
+  const key=zh+'|'+compact,previous=dedupe.get(key);
+  const entry={...item,zh,py:seedData?.py||py,compact,score,seedExact,chars:chars.length};
+  if(!previous||entry.score>previous.score)dedupe.set(key,entry);
+ }
+ for(const entry of dedupe.values()){
+  if(!byCompact.has(entry.compact))byCompact.set(entry.compact,[]);
+  byCompact.get(entry.compact).push(entry);
+ }
+ for(const entries of byCompact.values())entries.sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh));
+ pinyin3xComposerSourceIndex=sourceIndex;pinyin3xComposerIndex={byCompact,trustedCharacters,entryCount:dedupe.size};return pinyin3xComposerIndex;
+}
+function composePinyinSentence3x(raw){
+ const sourceIndex=getPinyin18SourceIndex(),composer=getPinyin3xComposerIndex();
+ const inputOptions=pinyin3xBuildInputOptions(raw,sourceIndex.syllables);if(!inputOptions.length)return {status:'none'};
+ const allResults=new Map();
+ for(const input of inputOptions){
+  const states=Array.from({length:input.length+1},()=>[]);states[0]=[{score:0,zh:'',entries:[]}];
+  const addState=(position,candidate)=>{
+   const bucket=states[position],prior=bucket.find(item=>item.zh===candidate.zh);
+   if(prior){if(candidate.score>prior.score)Object.assign(prior,candidate);}else bucket.push(candidate);
+   bucket.sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh));if(bucket.length>24)bucket.length=24;
+  };
+  for(let start=0;start<input.length;start++){
+   if(!states[start].length)continue;
+   for(let end=start+1;end<=Math.min(input.length,start+6);end++){
+    const span=input.slice(start,end),compact=span.map(item=>item.base).join('');
+    const entries=composer.byCompact.get(compact)||[];if(!entries.length)continue;
+    for(const entry of entries){
+     if(!pinyin18InputInfosMatchSource(entry,span))continue;
+     for(const path of states[start]){
+      const candidate={score:path.score+entry.score-5,zh:path.zh+entry.zh,entries:path.entries.concat(entry)};
+      addState(end,candidate);
+     }
+    }
+   }
+  }
+  for(const path of states[input.length]){
+   const previous=allResults.get(path.zh);if(!previous||path.score>previous.score)allResults.set(path.zh,path);
+  }
+ }
+ const results=[...allResults.values()].sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh));
+ if(!results.length)return {status:'none'};
+ const bestScore=results[0].score,top=results.filter(item=>bestScore-item.score<=7).slice(0,6);
+ const options=top.map(item=>{
+  let zh=item.zh;
+  if(/[?？]$/.test(String(raw||'').trim())||/[吗呢]$/.test(zh))zh=zh.replace(/[。.!?！？]*$/,'')+'？';
+  const pyRaw=item.entries.map(entry=>String(entry.py||'').trim().toLowerCase()).filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
+  const py=pyRaw?pyRaw.charAt(0).toUpperCase()+pyRaw.slice(1):'';
+  return {zh,py,score:item.score};
+ });
+ return options.length===1?{status:'ok',...options[0]}:{status:'ambiguous',options};
 }
 async function machineTranslate(text,source,target){
  if(typeof TextEncoder!=='undefined'&&new TextEncoder().encode(String(text||'')).length>480)throw new Error('Câu quá dài cho dịch vụ miễn phí; hãy rút ngắn câu dưới 480 byte.');
@@ -4868,32 +4991,47 @@ function loadBvtTurnstile(){
  return bvtTurnstileScriptPromise;
 }
 function settleBvtTurnstile(error,token){
- const pending=bvtTurnstilePending;if(!pending)return;
+ const pending=bvtTurnstilePending;if(!pending)return false;
  bvtTurnstilePending=null;clearTimeout(pending.timer);
- if(error)pending.reject(error);else pending.resolve(String(token||''));
+ if(pending.turnstile&&pending.widgetId!==null){
+  try{if(typeof pending.turnstile.remove==='function')pending.turnstile.remove(pending.widgetId);else if(typeof pending.turnstile.reset==='function')pending.turnstile.reset(pending.widgetId);}catch(_){}
+ }
+ if(pending.widgetHost?.isConnected)pending.widgetHost.remove();
+ if(bvtTurnstileWidgetId===pending.widgetId)bvtTurnstileWidgetId=null;
+ const value=String(token||'');
+ if(error)pending.reject(error);else if(value)pending.resolve(value);else pending.reject(new Error('Cloudflare không cấp mã xác minh hợp lệ.'));
+ return true;
 }
-async function getBvtTurnstileToken(){
+async function getBvtTurnstileToken(options={}){
  if(bvtTurnstilePending)throw new Error('Đang xác minh một lượt nhận diện khác.');
- const turnstile=await loadBvtTurnstile();const host=ensureBvtTurnstileHost();
+ const timeoutMs=Math.max(1000,Number(options.timeoutMs)||120000);
  return await new Promise((resolve,reject)=>{
-  const pending={resolve,reject,timer:setTimeout(()=>settleBvtTurnstile(new Error('Xác minh Cloudflare quá thời gian.')),120000)};
+  const pending={resolve,reject,timer:null,turnstile:null,widgetId:null,widgetHost:null};
   bvtTurnstilePending=pending;
-  const options={
-   sitekey:BVT_ASR_CLOUD_DEFAULT.turnstileSiteKey,
-   action:'bvt_asr',
-   execution:'execute',
-   appearance:'interaction-only',
-   theme:'auto',
-   callback:token=>settleBvtTurnstile(null,token),
-   'error-callback':code=>settleBvtTurnstile(new Error('Xác minh Cloudflare thất bại'+(code?': '+code:''))),
-   'expired-callback':()=>settleBvtTurnstile(new Error('Mã xác minh Cloudflare đã hết hạn.')),
-   'timeout-callback':()=>settleBvtTurnstile(new Error('Xác minh Cloudflare đã hết thời gian.'))
-  };
-  try{
-   if(bvtTurnstileWidgetId===null)bvtTurnstileWidgetId=turnstile.render('#bvt-turnstile-host',options);
-   else turnstile.reset(bvtTurnstileWidgetId);
-   turnstile.execute(bvtTurnstileWidgetId);
-  }catch(error){settleBvtTurnstile(error instanceof Error?error:new Error(String(error)));}
+  pending.timer=setTimeout(()=>settleBvtTurnstile(new Error('Xác minh Cloudflare quá thời gian ('+Math.round(timeoutMs/1000)+' giây). Đã chuyển sang dịch vụ dự phòng.')),timeoutMs);
+  loadBvtTurnstile().then(turnstile=>{
+   if(bvtTurnstilePending!==pending)return;
+   const host=ensureBvtTurnstileHost(),widgetHost=document.createElement('div');
+   widgetHost.id='bvt-turnstile-request-'+Date.now()+'-'+Math.random().toString(36).slice(2,8);
+   pending.turnstile=turnstile;pending.widgetHost=widgetHost;host.replaceChildren(widgetHost);
+   const isActive=()=>bvtTurnstilePending===pending;
+   const widgetOptions={
+    sitekey:BVT_ASR_CLOUD_DEFAULT.turnstileSiteKey,
+    action:'bvt_asr',
+    execution:'execute',
+    appearance:'interaction-only',
+    theme:'auto',
+    callback:token=>{if(isActive())settleBvtTurnstile(null,token);},
+    'error-callback':code=>{if(isActive())settleBvtTurnstile(new Error('Xác minh Cloudflare thất bại'+(code?': '+code:'')));},
+    'expired-callback':()=>{if(isActive())settleBvtTurnstile(new Error('Mã xác minh Cloudflare đã hết hạn.'));},
+    'timeout-callback':()=>{if(isActive())settleBvtTurnstile(new Error('Xác minh Cloudflare đã hết thời gian.'));}
+   };
+   try{
+    pending.widgetId=turnstile.render('#'+widgetHost.id,widgetOptions);bvtTurnstileWidgetId=pending.widgetId;
+    if(!pending.widgetId)throw new Error('Không khởi tạo được widget Turnstile.');
+    turnstile.execute(pending.widgetId);
+   }catch(error){if(isActive())settleBvtTurnstile(error instanceof Error?error:new Error(String(error)));}
+  }).catch(error=>{if(bvtTurnstilePending===pending)settleBvtTurnstile(error instanceof Error?error:new Error(String(error)));});
  });
 }
 async function transcribeBvtCloudAudio(blob,language='auto'){
@@ -5543,7 +5681,7 @@ function normalizeOnlineOcrText(text){
  t=t.split('\n').map(line=>line.replace(/^\s*\|/,'').replace(/\|\s*$/,'').replace(/\s*\|\s*/g,' ')).join('\n');
  return t.replace(/^\s*[-=|: +]{3,}\s*$/gm,'').replace(/\n{3,}/g,'\n\n').trim();
 }
-// v42.10.20 QA fix (BUG-04): phân biệt "OCR đã quét xong và không có chữ" với "dịch vụ OCR bị lỗi".
+// v42.10.22 QA fix (BUG-04): phân biệt "OCR đã quét xong và không có chữ" với "dịch vụ OCR bị lỗi".
 function makeOcrNoTextError(message){const err=new Error(message||'OCR online không nhận ra chữ trong ảnh.');err.code='OCR_NO_TEXT';return err;}
 function isOcrNoTextError(err){return !!err&&err.code==='OCR_NO_TEXT';}
 function isOcrNoTextResponse(status,data){
@@ -5741,7 +5879,7 @@ async function createOcrWorkerWithFallback(T){
  }
  throw new Error('Không thể khởi tạo bộ nhận diện từ cả hai nguồn. '+(lastError?.message||'')+' Hãy thử đổi mạng Wi-Fi/4G hoặc thử lại sau.');
 }
-let ocrRunToken=0,ocrProgressToken=0; // v42.10.20 QA fix (BUG-04): mỗi lượt quét có mã riêng; đổi danh sách ảnh làm mã cũ hết hiệu lực để kết quả và tiến trình của ảnh cũ không ghi đè.
+let ocrRunToken=0,ocrProgressToken=0; // v42.10.22 QA fix (BUG-04): mỗi lượt quét có mã riêng; đổi danh sách ảnh làm mã cũ hết hiệu lực để kết quả và tiến trình của ảnh cũ không ghi đè.
 function resetOcrOutputForNewSelection(){
  ocrRunToken++;
  $('ocr-candidate-box').hidden=true;$('ocr-candidate-buttons').innerHTML='';ocrCandidates=[];activeOcrCandidate=0;
@@ -6779,7 +6917,7 @@ $('vocab-training-add-combine').addEventListener('click',()=>{
  trainingAddRows(rows,'Từ đã chọn ở Ghép câu');
 });
 $('vocab-training-clear').addEventListener('click',()=>{vocabTrainingBank.clear();renderVocabularyTrainingBank();$('vocab-training-source-status').textContent='Đã xóa danh sách từ của lượt luyện.';});
-// v42.10.20 QA fix (BUG-03): nút trong trạng thái rỗng chuyển sang Menu 1 - Tra cứu từ vựng bằng đúng cơ chế bấm tab sẵn có (tự đóng menu mobile, không đổi kho từ).
+// v42.10.22 QA fix (BUG-03): nút trong trạng thái rỗng chuyển sang Menu 1 - Tra cứu từ vựng bằng đúng cơ chế bấm tab sẵn có (tự đóng menu mobile, không đổi kho từ).
 $('vocab-training-bank').addEventListener('click',e=>{const go=e.target.closest('[data-vocab-go-dict]');if(!go)return;e.preventDefault();document.querySelector('#main-tabs .tab[data-tab="dict"]')?.click();});
 function trainingSeconds(id,fallback,min=0,max=120){const n=Number($(id)?.value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;}
 function trainingCurrentItem(){return vocabTrainingDeck[vocabTrainingIndex]||null;}
@@ -7081,6 +7219,8 @@ const BVT_ML_STATE = {
  'bvt-mi':{sequence:0,timer:null},
  'bvt-mv':{sequence:0,timer:null}
 };
+const BVT_TRANSLATE_TIMING=Object.freeze({turnstileTokenTimeoutMs:12000,workerRequestTimeoutMs:45000,turnstileFailureCooldownMs:60000});
+let bvtMenu3WorkerCooldownUntil=0;
 let bvtMlTranslationQueue=Promise.resolve();
 function bvtMlNormalize(value){return String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/đ/g,'d');}
 function bvtMlDetectLanguage(){
@@ -7122,17 +7262,18 @@ function bvtMlSelectedSource(prefix,text){
  return cached&&cachedText===String(text||'').trim()?cached:null;
 }
 function bvtMlLanguageName(code){return BVT_ML_LANGUAGES[code]?.name||'NGÔN NGỮ CHƯA XÁC ĐỊNH';}
-async function bvtMlTranslateNow(text,source,target,isCurrent){
+async function bvtMlTranslateNow(text,source,target,isCurrent,options={}){
  const value=String(text||'').trim();if(!value)throw new Error('Chưa có nội dung để dịch.');
  if(value.length>5000)throw new Error('Nội dung vượt giới hạn 5.000 ký tự mỗi lượt.');
  const requestedSource=source||'auto';
  if(requestedSource!=='auto'&&!BVT_ML_LANGUAGES[requestedSource])throw new Error('Ngôn ngữ nguồn chưa được hỗ trợ.');
  if(!BVT_ML_LANGUAGES[target])throw new Error('Ngôn ngữ đích chưa được hỗ trợ.');
  if(!isCurrent())return {cancelled:true};
- const token=await getBvtTurnstileToken();if(!token)throw new Error('Không xác minh được yêu cầu dịch. Hãy thử lại.');
+ const tokenTimeout=Number(options.turnstileTokenTimeoutMs)||120000;
+ const token=await getBvtTurnstileToken({timeoutMs:tokenTimeout});if(!token)throw new Error('Không xác minh được yêu cầu dịch. Hãy thử lại.');
  if(!isCurrent())return {cancelled:true};
  const form=new FormData();form.append('text',value);form.append('source_lang',requestedSource);form.append('target_lang',target);form.append('cf-turnstile-response',token);
- const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),120000);
+ const controller=new AbortController(),requestTimeout=Number(options.workerRequestTimeoutMs)||120000;const timer=setTimeout(()=>controller.abort(),requestTimeout);
  try{
   const response=await fetch(BVT_ML_TRANSLATE_ENDPOINT,{method:'POST',body:form,signal:controller.signal,cache:'no-store'});
   let data={};try{data=await response.json();}catch(_){}
@@ -7144,12 +7285,12 @@ async function bvtMlTranslateNow(text,source,target,isCurrent){
   const resolvedSource=String(data.source_lang||data.detected_source_lang|| (requestedSource!=='auto'?requestedSource:''));
   if(!BVT_ML_LANGUAGES[resolvedSource])throw new Error('Dịch vụ không trả về ngôn ngữ nguồn hợp lệ. Hãy chọn nguồn thủ công và thử lại.');
   return {text:translated,source:resolvedSource,same:!!data.same_language||resolvedSource===target,model:data.translation_model||'',detector:data.detector_model||'',confidence:Number(data.detection_confidence)||null};
- }catch(error){if(error?.name==='AbortError')throw new Error('Dịch vụ phản hồi quá lâu. Hãy thử lại.');throw error;}
+ }catch(error){if(error?.name==='AbortError')throw new Error('Cloudflare Workers AI phản hồi quá thời gian ('+Math.round(requestTimeout/1000)+' giây).');throw error;}
  finally{clearTimeout(timer);}
 }
-function bvtMlTranslate(text,source,target,isCurrent=()=>true,knownSource=''){
+function bvtMlTranslate(text,source,target,isCurrent=()=>true,knownSource='',options={}){
  const effectiveSource=(source==='auto'&&knownSource&&BVT_ML_LANGUAGES[knownSource])?knownSource:(source||'auto');
- const run=()=>bvtMlTranslateNow(text,effectiveSource,target,isCurrent);
+ const run=()=>bvtMlTranslateNow(text,effectiveSource,target,isCurrent,options);
  const pending=bvtMlTranslationQueue.then(run,run);
  bvtMlTranslationQueue=pending.catch(()=>{});
  return pending;
@@ -8255,7 +8396,7 @@ renderChart();bindChartScrollbars();renderChoices();
 #panel-hanzi-memory{--hm:#db2777;--hm2:#9d174d;color:#253047;min-width:0}#panel-hanzi-memory .hm-wrap{display:grid;gap:14px}#panel-hanzi-memory .hm-hero{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px;border-radius:18px;border:1px solid #f9a8d4;background:linear-gradient(120deg,#fce7f3,#fff7ed 58%,#f0f9ff)}#panel-hanzi-memory .hm-hero h2{margin:4px 0 6px;color:#831843;font-size:clamp(20px,2.5vw,27px)}#panel-hanzi-memory .hm-hero p{margin:0;color:#6b3650;font-size:13px;line-height:1.55}#panel-hanzi-memory .hm-kicker{font-size:10px;font-weight:900;letter-spacing:.1em;color:#be185d}#panel-hanzi-memory .hm-hero-icon{flex:0 0 76px;width:76px;height:76px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(145deg,#ec4899,#9333ea);color:white;font-size:24px;font-weight:900;box-shadow:0 8px 20px #be185d33}#panel-hanzi-memory .hm-card{padding:16px;border:1px solid #fbcfe8;border-radius:16px;background:#fff;box-shadow:0 3px 14px #9d174d0b;min-width:0}#panel-hanzi-memory .hm-card h3{margin:0 0 9px;color:#831843;font-size:14px}#panel-hanzi-memory .hm-note{font-size:12px;color:#64748b;margin:0 0 12px;line-height:1.5}#panel-hanzi-memory .hm-source-actions{display:flex;gap:8px;flex-wrap:wrap}#panel-hanzi-memory .hm-source-btn,#panel-hanzi-memory .hm-btn{border:0;border-radius:10px;padding:10px 12px;background:#fce7f3;color:#9d174d;font-weight:850;font-size:11px;cursor:pointer}#panel-hanzi-memory .hm-source-btn:hover{background:#fbcfe8}#panel-hanzi-memory .hm-search-row{display:flex;gap:8px;margin-top:12px}#panel-hanzi-memory .hm-search-row .field{min-width:0;flex:1}#panel-hanzi-memory .hm-btn{background:#be185d;color:#fff}#panel-hanzi-memory .hm-search-results{display:grid;gap:5px;margin-top:8px;max-height:220px;overflow:auto}#panel-hanzi-memory .hm-result{display:flex;justify-content:space-between;align-items:center;text-align:left;gap:8px;padding:8px 10px;border:1px solid #fbcfe8;border-radius:9px;background:#fff;color:#334155;cursor:pointer}#panel-hanzi-memory .hm-result b{font-size:17px}#panel-hanzi-memory .hm-result small{color:#64748b}#panel-hanzi-memory .hm-bank-head{display:flex;justify-content:space-between;align-items:center;margin:13px 0 7px;color:#831843;font-size:12px}#panel-hanzi-memory .hm-clear{border:0;background:#f1f5f9;color:#475569;border-radius:9px;padding:8px 10px;font-size:10px;font-weight:800;cursor:pointer}#panel-hanzi-memory .hm-bank-list{display:flex;gap:7px;flex-wrap:wrap;max-height:180px;overflow:auto}#panel-hanzi-memory .hm-chip{display:flex;align-items:center;gap:7px;padding:6px 8px;border:1px solid #fbcfe8;border-radius:10px;background:#fff7fb}#panel-hanzi-memory .hm-chip b{font-size:17px;color:#831843}#panel-hanzi-memory .hm-chip small{font-size:10px;color:#64748b;max-width:150px}#panel-hanzi-memory .hm-chip button{border:0;background:transparent;color:#be185d;font-weight:900;cursor:pointer}#panel-hanzi-memory .hm-empty{color:#94a3b8;font-size:12px;padding:10px}#panel-hanzi-memory .hm-status{font-size:12px;color:#64748b;margin-top:9px;min-height:18px}#panel-hanzi-memory .hm-settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}#panel-hanzi-memory .hm-settings label{display:grid;gap:6px;color:#9d174d;font-size:10px;font-weight:850}#panel-hanzi-memory .hm-settings input{width:100%;box-sizing:border-box;border:1px solid #f9a8d4;border-radius:9px;padding:10px;font-size:15px;color:#334155;background:#fff}#panel-hanzi-memory .hm-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}#panel-hanzi-memory .hm-level{display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid #e2e8f0;border-radius:12px;cursor:pointer}#panel-hanzi-memory .hm-level input{accent-color:#db2777;margin-top:3px}#panel-hanzi-memory .hm-level span{display:grid;gap:4px}#panel-hanzi-memory .hm-level b{font-size:13px}#panel-hanzi-memory .hm-level small{font-size:10px;line-height:1.4;color:#64748b}#panel-hanzi-memory .easy{background:#f8fafc}#panel-hanzi-memory .hard{background:#fff7ed}#panel-hanzi-memory .expert{background:#faf5ff}#panel-hanzi-memory .hm-start{width:100%;border:0;border-radius:12px;padding:14px;background:linear-gradient(100deg,#ec4899,#9333ea);color:#fff;font-weight:900;letter-spacing:.04em;cursor:pointer;box-shadow:0 6px 16px #be185d33}#panel-hanzi-memory .hm-game{background:linear-gradient(160deg,#fff,#fff7fb)}#panel-hanzi-memory .hm-game-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#9d174d;font-size:12px;font-weight:850}#panel-hanzi-memory .hm-board{min-height:230px;margin:14px 0;padding:18px;border:1px dashed #f9a8d4;border-radius:15px;background:radial-gradient(circle at 20% 20%,#fff1f8,#fff 65%);display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,30px);flex-wrap:wrap;position:relative;overflow:hidden}#panel-hanzi-memory .hm-tile{display:grid;place-items:center;min-width:54px;min-height:62px;padding:5px 8px;border-radius:10px;font-size:clamp(28px,5vw,48px);font-weight:600;line-height:1.2;transition:transform .2s}#panel-hanzi-memory .hm-missing-prompt{text-align:center;font-size:17px;font-weight:950;color:#be185d;margin:8px}#panel-hanzi-memory .hm-answer-area{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}#panel-hanzi-memory .hm-answer-area .hm-mic{grid-column:1/-1;background:#7c3aed}#panel-hanzi-memory .hm-choice-wrap{grid-column:1/-1;margin-top:3px}#panel-hanzi-memory .hm-choice-wrap>small{display:block;margin:0 0 7px;color:#9d174d;font-size:10px;font-weight:900}#panel-hanzi-memory .hm-choice-list{display:flex;gap:7px;flex-wrap:wrap}#panel-hanzi-memory .hm-choice{border:1px solid #f9a8d4;background:#fff7fb;color:#831843;border-radius:10px;padding:9px 14px;font-size:21px;cursor:pointer}#panel-hanzi-memory .hm-choice:hover{background:#fce7f3}#panel-hanzi-memory .hm-next{margin-top:10px}#panel-hanzi-memory .hm-review-table{width:100%;border-collapse:collapse;font-size:12px}#panel-hanzi-memory .hm-review-table th,#panel-hanzi-memory .hm-review-table td{padding:9px 7px;border-bottom:1px solid #fce7f3;text-align:left}#panel-hanzi-memory .hm-review-table th{color:#9d174d;background:#fff7fb}#panel-hanzi-memory .hm-correct{color:#15803d;font-weight:850}#panel-hanzi-memory .hm-wrong{color:#dc2626;font-weight:850}
 @media(max-width:700px){#panel-hanzi-memory .hm-hero{padding:14px}#panel-hanzi-memory .hm-hero-icon{width:58px;height:58px;flex-basis:58px;font-size:19px}#panel-hanzi-memory .hm-card{padding:12px}#panel-hanzi-memory .hm-settings{grid-template-columns:1fr}#panel-hanzi-memory .hm-levels{grid-template-columns:1fr}#panel-hanzi-memory .hm-board{min-height:210px;padding:10px;gap:10px}#panel-hanzi-memory .hm-tile{min-width:42px;min-height:48px}#panel-hanzi-memory .hm-answer-area{grid-template-columns:1fr}#panel-hanzi-memory .hm-answer-area .hm-mic{grid-column:auto}}
 
-/* v42.10.20 – refinements for Menu 17 */
+/* v42.10.22 – refinements for Menu 17 */
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"]{background:#DB2777!important;border-color:#9D174D!important;color:#fff!important}
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"].active{background:#9D174D!important;border-color:#831843!important;color:#fff!important}
 .app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-label,.app-shell #main-tabs .tab[data-tab="hanzi-memory"] .tab-icon{color:#fff!important}
@@ -8438,9 +8579,9 @@ renderChart();bindChartScrollbars();renderChoices();
  const originalMlRun=bvtMlRunTranslation;
  bvtMlRunTranslation=async function(prefix,sequence){if(prefix==='bvt-mv'&&typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder&&bvtMvRecorder.state==='recording'&&!String($('bvt-mv-text')?.value||'').trim()){const status=$('bvt-mv-status');if(status)status.textContent='Đang ghi âm… bạn có thể đổi ngôn ngữ nguồn; hãy bấm DỪNG VÀ DỊCH khi nói xong.';return;}const result=await originalMlRun(prefix,sequence);if(prefix==='bvt-mv'&&typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder&&bvtMvRecorder.state==='recording'){const status=$('bvt-mv-status');if(status)status.textContent='Đang ghi âm… ngôn ngữ nguồn hiện tại: '+($('bvt-mv-source')?.selectedOptions?.[0]?.textContent||'đã chọn')+'.';}return result;};
  $('bvt-mv-source')?.addEventListener('change',()=>{if(typeof bvtMvRecorder!=='undefined'&&bvtMvRecorder&&bvtMvRecorder.state==='recording')$('bvt-mv-status').textContent='Đang ghi âm… ngôn ngữ nguồn đã đổi. Bấm DỪNG VÀ DỊCH khi nói xong.';});
- // v42.10.20 Momentic regressions.
- // Dictionary data may have loaded before the v42.10.20 wrapper was installed; normalize it immediately.
- try{if(Array.isArray(dictionary)&&dictionary.length){for(const row of dictionary){if((String(row[0]||'')==='鱼'||String(row[1]||'')==='魚')&&!/(^|[；;、,\s])cá([；;、,\s]|$)/i.test(String(row[3]||'')))row[3]='cá; '+String(row[3]||'');}searchIndex=dictionary.map(makeSearchRecord);applyFilter();}}catch(e){console.warn('v42.10.20 dictionary normalization:',e);}
+ // v42.10.22 Momentic regressions.
+ // Dictionary data may have loaded before the v42.10.22 wrapper was installed; normalize it immediately.
+ try{if(Array.isArray(dictionary)&&dictionary.length){for(const row of dictionary){if((String(row[0]||'')==='鱼'||String(row[1]||'')==='魚')&&!/(^|[；;、,\s])cá([；;、,\s]|$)/i.test(String(row[3]||'')))row[3]='cá; '+String(row[3]||'');}searchIndex=dictionary.map(makeSearchRecord);applyFilter();}}catch(e){console.warn('v42.10.22 dictionary normalization:',e);}
  // Never copy instructional placeholders from either multilingual image or voice translation result.
  const placeholderCopyGuard=(event)=>{const btn=event.target.closest('#bvt-mi-copy,#bvt-mv-copy');if(!btn)return;const id=btn.id==='bvt-mi-copy'?'bvt-mi-result':'bvt-mv-result',el=$(id),value=String(el?.textContent||'').trim();if(!value||/^Bản dịch sẽ hiển thị tại đây\.?$/i.test(value)||/^Đang dịch(?:…|\.\.\.)?$/i.test(value)){event.preventDefault();event.stopImmediatePropagation();const st=$(id==='bvt-mi-result'?'bvt-mi-status':'bvt-mv-status');if(st)st.textContent='Chưa có bản dịch thực tế để sao chép.';}};document.addEventListener('click',placeholderCopyGuard,true);
  // A restarted vocabulary round must clear the stale stopped message.
@@ -8589,7 +8730,8 @@ function looksLikeVietnamese3x(raw){
  const common=new Set(['xin','chao','toi','ban','la','nguoi','viet','nam','tieng','trung','hoc','khong','mot','muon','dang','can','rat','nhieu','nhung','va','cua','voi','duoc','hom','nay','mai','qua','cam','on','tai','di','den','cho','em','anh','chi','co','thay','nha','minh','chung','biet','noi','lam','an','uong','gia','dinh','con','thich','yeu','dep','xinh','sao','bao','gio','day','kia']);
  return words.length>=2&&words.filter(word=>common.has(word)).length>=2;
 }
-async function machineTranslate3x(text,source,target){
+async function machineTranslate3x(text,source,target,options={}){
+ const notifyStage=message=>{if(typeof options.onStage==='function'){try{options.onStage(String(message||''));}catch(_){}}};
  const value=String(text||'').trim();if(!value)throw new Error('Nội dung dịch đang trống.');
  if(value.length>5000)throw new Error('Nội dung vượt giới hạn 5.000 ký tự mỗi lượt.');
  const sourceCode=String(source||'').toLowerCase().startsWith('zh')?'zh':'vi';
@@ -8602,12 +8744,24 @@ async function machineTranslate3x(text,source,target){
   return translated;
  };
  const workerAllowedOrigin=typeof location==='undefined'||location.hostname==='buivanthanh227-png.github.io';
- if(workerAllowedOrigin&&typeof bvtMlTranslate==='function'){
+ if(workerAllowedOrigin&&typeof bvtMlTranslate==='function'&&Date.now()>=bvtMenu3WorkerCooldownUntil){
+  notifyStage('Đang xác minh bảo mật để sử dụng Cloudflare Workers AI…');
   try{
-   const result=await bvtMlTranslate(value,sourceCode,targetCode);
-   const translated=validate(result?.text);
+   const result=await bvtMlTranslate(value,sourceCode,targetCode,()=>true,'',BVT_TRANSLATE_TIMING);
+   const translated=validate(result?.text);bvtMenu3WorkerCooldownUntil=0;
    return {text:translated,provider:result?.model?'Cloudflare Workers AI · '+result.model:'Cloudflare Workers AI'};
-  }catch(error){errors.push('Cloudflare Workers AI: '+(error?.message||String(error)));}
+  }catch(error){
+   const message=String(error?.message||error);errors.push('Cloudflare Workers AI: '+message);
+   if(/turnstile|xác minh|token|http 401|\b401\b|không cấp mã/i.test(message)){
+    bvtMenu3WorkerCooldownUntil=Date.now()+BVT_TRANSLATE_TIMING.turnstileFailureCooldownMs;
+    notifyStage('Cloudflare chưa cấp mã xác minh. Đang chuyển sang MyMemory/Google…');
+   }else notifyStage('Cloudflare Workers AI chưa xử lý được. Đang thử dịch vụ dự phòng…');
+  }
+ }else if(workerAllowedOrigin&&Date.now()<bvtMenu3WorkerCooldownUntil){
+  errors.push('Cloudflare Workers AI: tạm bỏ qua lần gọi lại sau lỗi xác minh gần nhất để tránh chờ lặp.');
+  notifyStage('Đang dùng dịch vụ dự phòng để tránh chờ xác minh lặp lại…');
+ }else{
+  notifyStage('Đang kết nối dịch vụ dịch dự phòng…');
  }
  const requestJson=async(url,timeoutMs)=>{
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
@@ -8616,6 +8770,7 @@ async function machineTranslate3x(text,source,target){
  };
  const byteLength=typeof TextEncoder!=='undefined'?new TextEncoder().encode(value).length:value.length;
  if(byteLength<=480){
+  notifyStage('Đang thử dịch vụ MyMemory…');
   try{
    const url='https://api.mymemory.translated.net/get?q='+encodeURIComponent(value)+'&langpair='+encodeURIComponent(publicSource+'|'+publicTarget);
    const data=await requestJson(url,8500);
@@ -8625,6 +8780,7 @@ async function machineTranslate3x(text,source,target){
   }catch(error){errors.push('MyMemory: '+(error?.message||String(error)));}
  }
  if(value.length<=1800){
+  notifyStage(byteLength<=480?'MyMemory không đáp ứng; đang thử Google Translate…':'Nội dung vượt giới hạn MyMemory; đang thử Google Translate…');
   try{
    const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl='+encodeURIComponent(publicSource)+'&tl='+encodeURIComponent(publicTarget)+'&dt=t&q='+encodeURIComponent(value);
    const data=await requestJson(url,11000);
@@ -8662,7 +8818,7 @@ async function translateLongText3x(text,target,statusEl,resultEl){
  const source=target==='zh-CN'?'vi':'zh-CN',translated=[];
  for(let index=0;index<chunks.length;index++){
   statusEl.textContent='Đang dịch phần '+(index+1)+'/'+chunks.length+'…';
-  const result=await machineTranslate3x(chunks[index].text,source,target);
+  const result=await machineTranslate3x(chunks[index].text,source,target,{onStage:message=>{statusEl.textContent='Phần '+(index+1)+'/'+chunks.length+': '+message;}});
   translated.push(String(result.text||'').trim());
  }
  resultEl.textContent=translated.map((part,index)=>part+(chunks[index].separator||'')).join('');
@@ -8676,6 +8832,32 @@ function looksLikePinyin3x(raw,local){
  const syllables=getPinyin18SourceIndex().syllables;
  return tokens.every(token=>pinyin18CanSegment(token,syllables));
 }
+async function acceptPinyinComposition3x(option,lookupToken){
+ const status=$('homework3x-status');if(lookupToken!==homework3xLookupToken)return;
+ status.textContent='Đã chuyển Pinyin thành chữ Hán: '+option.zh+' · Đang dịch nghĩa…';
+ let vi='Đã chuyển Pinyin sang chữ Hán; hiện chưa lấy được nghĩa tiếng Việt.',note='Chuyển Pinyin theo từ điển tích hợp';
+ try{
+  const translation=await machineTranslate3x(option.zh,'zh-CN','vi',{onStage:message=>{if(lookupToken===homework3xLookupToken)status.textContent=message;}});
+  vi=translation.text;note+=' · '+translation.provider;
+ }catch(error){note+=' · Dịch nghĩa online chưa khả dụng: '+String(error?.message||error);}
+ if(lookupToken!==homework3xLookupToken)return;
+ renderHomework3xCard({zh:option.zh,py:option.py,vi,note},'Pinyin mới → chữ Hán');
+ status.textContent=vi.startsWith('Đã chuyển Pinyin')?'Đã chuyển Pinyin sang chữ Hán; chưa dịch được nghĩa tiếng Việt.':'Đã nhận diện Pinyin và hoàn tất dịch nghĩa.';
+}
+function renderPinyinCompositionOptions3x(options,lookupToken){
+ const host=$('homework3x-candidates');if(!host)return;host.replaceChildren();host.hidden=false;
+ const heading=document.createElement('div');heading.className='homework3x-candidate-heading';heading.textContent='Các phương án dựa trên dữ liệu từ điển đã xác nhận';host.appendChild(heading);
+ const grid=document.createElement('div');grid.className='homework3x-candidate-grid';host.appendChild(grid);
+ for(const option of (Array.isArray(options)?options:[])){
+  const button=document.createElement('button');button.type='button';button.className='homework3x-candidate';
+  const content=document.createElement('span');content.className='homework3x-candidate-content';
+  const py=document.createElement('span');py.className='homework3x-candidate-py';py.textContent=option.py;
+  const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.textContent=option.zh;
+  const note=document.createElement('span');note.className='homework3x-candidate-source';note.textContent='Chọn để dịch nghĩa';
+  content.append(py,zh,note);button.appendChild(content);
+  button.addEventListener('click',()=>acceptPinyinComposition3x(option,lookupToken));grid.appendChild(button);
+ }
+}
 let homework3xLookupToken=0;
 async function lookupHomework3x(){
  const token=++homework3xLookupToken,raw=$('homework3x-query').value,query=raw.trim(),box=$('homework3x-results'),status=$('homework3x-status');
@@ -8684,16 +8866,30 @@ async function lookupHomework3x(){
  if(!query){status.textContent='Nhập câu tiếng Việt, chữ Hán hoặc Pinyin để dịch.';box.innerHTML='<div class="empty">Nội dung nhập đang trống.</div>';return;}
  if(looksLikePinyin3x(raw,local)){
   const candidates=pinyinToChineseCandidates(raw);
-  if(!candidates.length){status.textContent='Không tìm thấy mục từ hoặc câu mẫu hoàn chỉnh khớp với Pinyin trong dữ liệu hiện có. Hệ thống không ghép các mục từ riêng lẻ thành câu.';box.innerHTML='<div class="empty">Không tìm thấy mục từ/câu mẫu khớp Pinyin.</div>';return;}
-  const best=await renderHomework3xCandidates(candidates);
-  if(!best){status.textContent='Chưa tìm được cách ghép Pinyin phù hợp.';return;}
-  status.textContent='Đã tìm thấy mục từ/câu mẫu có cách đọc Pinyin khớp đầy đủ trong dữ liệu nguồn.';
+  if(candidates.length){
+   const best=await renderHomework3xCandidates(candidates);
+   if(!best){status.textContent='Chưa tìm được cách ghép Pinyin phù hợp.';return;}
+   status.textContent='Đã tìm thấy mục từ/câu mẫu có cách đọc Pinyin khớp đầy đủ trong dữ liệu nguồn.';
+   return;
+  }
+  const composed=composePinyinSentence3x(raw);
+  if(composed.status==='ok'){
+   await acceptPinyinComposition3x(composed,token);
+   return;
+  }
+  if(composed.status==='ambiguous'){
+   status.textContent='Pinyin có nhiều cách chuyển chữ Hán hợp lý. Hãy chọn phương án hoặc bổ sung dấu thanh để xác định chính xác.';
+   renderPinyinCompositionOptions3x(composed.options,token);
+   return;
+  }
+  status.textContent='Chưa tìm được cách chuyển Pinyin đủ tin cậy trong dữ liệu hiện có. Hãy thêm dấu thanh hoặc kiểm tra lại cách viết và khoảng cách giữa các âm tiết.';
+  box.innerHTML='<div class="empty">Không tìm thấy câu Pinyin khớp dữ liệu và không đủ căn cứ để tự ghép chữ Hán.</div>';
   return;
  } if(local){renderHomework3xCard(local,local.source);status.textContent='Đã tìm thấy kết quả trong dữ liệu offline.';return;}
  status.textContent='Đang dịch…';
  const source=hasChinese?'zh-CN':'vi',target=hasChinese?'vi':'zh-CN';
  try{
-  const translation=await machineTranslate3x(query,source,target);const translated=translation.text;
+  const translation=await machineTranslate3x(query,source,target,{onStage:message=>{if(token===homework3xLookupToken)status.textContent=message;}});const translated=translation.text;
   if(token!==homework3xLookupToken||homework3xSelectedIndex!==0)return;
   if(hasChinese){
    renderHomework3xCard({zh:raw,py:pinyinForChinese(raw),vi:translated,note:'Bản dịch máy online · '+translation.provider},'Trung → Việt');
