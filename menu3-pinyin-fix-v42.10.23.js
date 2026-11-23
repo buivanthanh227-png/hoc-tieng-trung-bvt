@@ -135,7 +135,7 @@
   return output.replace(/^(\s*)([a-zü])/i,(_,space,ch)=>space+ch.toUpperCase());
  }
  const translateFullSentence=async item=>{
-  let vi=cleanMeaning(item.preferredMeaning||item.vi||'');
+  let vi=cleanMeaning(item.preferredMeaning||(item.sourceRows?.length===1?item.vi:''));
   if(validMeaning(vi))return {...item,vi};
   if(typeof window.machineTranslate!=='function')return null;
   try{
