@@ -129,13 +129,31 @@ jobs:
           if grep -q '42.10.11' site/index.html; then
             sed -i 's/42[.]10[.]11/42.10.12/g' site/index.html
           fi
-          if grep -q '42.10.14' site/index.html; then
+          if grep -q '42.10.13' site/index.html; then
             sed -i 's/42[.]10[.]13/42.10.14/g' site/index.html
           fi
-          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9|10|11|12)([^0-9]|$)' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.14."
+          if grep -q '42.10.14' site/index.html; then
+            sed -i 's/42[.]10[.]14/42.10.15/g' site/index.html
+          fi
+          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9|10|11|12|13|14)([^0-9]|$)' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.15."
             exit 1
           fi
+          if ! grep -Fq '42.10.15' site/index.html; then
+            echo "::error::Không tìm thấy phiên bản V42.10.15 trong giao diện."
+            exit 1
+          fi
+          python3 - <<'PY'
+          import json, pathlib, re
+          manifest=json.loads(pathlib.Path("manifest.webmanifest").read_text(encoding="utf-8"))
+          version=manifest["name"].rsplit("· ",1)[-1]
+          html=pathlib.Path("site/index.html").read_text(encoding="utf-8")
+          if version != "V42.10.15":
+              raise SystemExit(f"Manifest version mismatch: {version}")
+          if not re.search(r"42\\.10\\.15", html):
+              raise SystemExit("Built HTML does not expose V42.10.15")
+          print("Manifest, built header/footer version: V42.10.15 — PASS")
+          PY
 
           # Các tài nguyên PWA cốt lõi phải có mặt; thiếu thì dừng deploy.
           for required in manifest.webmanifest sw.js luyen-so/index.html; do
