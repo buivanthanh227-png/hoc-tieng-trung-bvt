@@ -13,9 +13,9 @@ count=re.search(r'<span class="count-pill" id="count-pill">.*?</span>',html,re.S
 if not count: raise SystemExit('Cannot locate dictionary word-count badge.')
 count_html=count.group(0)
 html=html[:count.start()]+html[count.end():]
-label='<span class="tab-label">TỪ ĐIỂN TIẾNG TRUNG</span>'
-if html.count(label)!=1: raise SystemExit('Cannot uniquely locate Dictionary navigation label.')
-html=html.replace(label,label+count_html,1)
+title='<h2 class="section-title" data-function-number="1" style="margin:0">Tra cứu từ vựng</h2>'
+if html.count(title)!=1: raise SystemExit('Cannot uniquely locate Menu 1 heading.')
+html=html.replace(title,title.replace('</h2>',count_html+'</h2>'),1)
 
 style="""<style id="bvt-responsive-brand-banner">
 /* Three-column banner: Vietnam flag | centered title | China flag.
@@ -35,9 +35,8 @@ style="""<style id="bvt-responsive-brand-banner">
 .topbar .brand-copy>#top-status{display:none!important;}
 .topbar .top-meta{display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:center!important;gap:8px 14px!important;width:100%!important;min-width:0!important;}
 .topbar .count-pill{font-size:10px!important;padding:3px 7px!important;white-space:nowrap!important;flex:0 0 auto!important;margin-left:auto!important;}
-#main-tabs .tab[data-tab="dict"] .tab-main{display:flex!important;align-items:center!important;gap:7px!important;width:100%!important;min-width:0!important;}
-#main-tabs .tab[data-tab="dict"] .tab-label{flex:1 1 auto!important;min-width:0!important;}
-#main-tabs .tab[data-tab="dict"] .count-pill{margin-left:auto!important;font-size:10px!important;line-height:1.25!important;padding:3px 6px!important;white-space:nowrap!important;border-radius:999px!important;}
+#panel-dict .section-title{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;flex-wrap:wrap!important;width:100%!important;min-width:0!important;}
+#panel-dict .section-title .count-pill{display:inline-flex!important;align-items:center!important;margin-left:auto!important;flex:0 0 auto!important;font-size:10px!important;line-height:1.25!important;padding:4px 8px!important;white-space:nowrap!important;border-radius:999px!important;}
 @media(max-width:600px){
  .topbar .toprow{gap:5px!important;}
  .topbar .brand{grid-template-columns:minmax(0,1fr) minmax(0,1.65fr) minmax(0,1fr)!important;gap:4px 5px!important;}
@@ -56,6 +55,6 @@ style="""<style id="bvt-responsive-brand-banner">
 """
 if '</head>' not in html: raise SystemExit('Missing head close.')
 html=html.replace('</head>',style+'\n</head>',1)
-html=html.replace('</body>','<script id="bvt-dictionary-count-placement">(function(){const count=document.getElementById("count-pill");const tab=document.querySelector("#main-tabs .tab[data-tab=\\"dict\\"] .tab-main");if(count&&tab&&!tab.contains(count))tab.appendChild(count);})();</script>\n<!-- BVT_FLAGS_AND_SPLIT_SLOGANS_V3 -->\n</body>',1)
+html=html.replace('</body>','<script id="bvt-dictionary-count-placement">(function(){const count=document.getElementById("count-pill");const title=document.querySelector("#panel-dict .section-title[data-function-number=\\"1\\"]");if(count&&title&&!title.contains(count))title.appendChild(count);})();</script>\n<!-- BVT_FLAGS_AND_SPLIT_SLOGANS_V3 -->\n</body>',1)
 p.write_text(html,encoding='utf-8')
 print('Header v3: centered title between flags; split slogans below each flag; white text; count moved beside dictionary label.')
