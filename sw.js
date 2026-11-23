@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-10-22-menu3-pinyin-composition-turnstile-12s';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-10-23-menu3-pinyin-composition-spacing';
 const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-10';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
@@ -11,7 +11,8 @@ const LOCAL_PINYIN_AUDIO_ENABLED = true; // Prefer repository-hosted 24k-abr MP3
 const REQUIRED_APP_FILES = [
   './index.html',
   './luyen-so/index.html',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './menu3-pinyin-fix-v42.10.23.js'
 ];
 const OPTIONAL_APP_FILES = [
   './icon.svg',
@@ -29,6 +30,21 @@ const OPTIONAL_APP_FILES = [
 ];
 const APP_FILES = REQUIRED_APP_FILES.concat(OPTIONAL_APP_FILES);
 const INDEX_URL = new URL('index.html', self.registration.scope).href;
+
+async function injectMenu3RuntimeFix(response) {
+  if (!response || !response.ok) return response;
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('text/html')) return response;
+  const html = await response.text();
+  const patchUrl = new URL('menu3-pinyin-fix-v42.10.23.js', self.registration.scope).href;
+  const scriptTag = '<script src="' + patchUrl + '" defer></script>';
+  const updated = html.includes(patchUrl) ? html : html.replace(/<\/body\s*>/i, scriptTag + '</body>');
+  const headers = new Headers(response.headers);
+  headers.delete('content-length');
+  headers.delete('content-encoding');
+  headers.delete('content-md5');
+  return new Response(updated, { status: response.status, statusText: response.statusText, headers });
+}
 
 function navigationCacheKey(input) {
   const url = new URL(typeof input === 'string' ? input : input.url);
@@ -143,17 +159,19 @@ self.addEventListener('fetch', event => {
   if (request.mode === 'navigate') {
     event.respondWith((async () => {
       const cacheKey = navigationCacheKey(request.url);
+      const deliver = response => cacheKey === INDEX_URL ? injectMenu3RuntimeFix(response) : response;
       try {
-      const response = await fetch(new Request(request, { cache: 'no-store' }));
+        const response = await fetch(new Request(request, { cache: 'no-store' }));
         if (response.ok) {
           const cache = await caches.open(CACHE_NAME);
           cache.put(cacheKey, response.clone()).catch(() => {});
         }
-        return response;
+        return await deliver(response);
       } catch (_) {
         // Serve only the matching document. Never substitute the home page for
         // an unrelated offline URL (for example, the number-practice page).
-        return (await caches.match(cacheKey)) || Response.error();
+        const fallback = (await caches.match(cacheKey)) || Response.error();
+        return await deliver(fallback);
       }
     })());
     return;
