@@ -107,10 +107,13 @@ test('compact common words resolve through complete source dictionary readings',
 test('whole-sentence candidate meanings are not assembled from isolated gloss fragments', () => {
   const results = candidates('wo bu xihuan ta');
   for (const item of results) {
-    assert.ok(item.sourceRows?.length === 1 || item.source === 'Cụm từ/câu ưu tiên đã xác minh',
-      'candidate must come from one complete dictionary source or a verified full sentence');
-    assert.equal(item.sourceRows?.[0]?.[0], item.zh);
-    assert.equal(item.sourceRows?.[0]?.[2], item.py);
+    if (item.sourceRows?.length === 1) {
+      assert.equal(item.sourceRows[0][0], item.zh);
+      assert.equal(item.sourceRows[0][2], item.py);
+    } else {
+      assert.equal(item.source, 'Cụm từ/câu ưu tiên đã xác minh',
+        'composed candidates must be verified whole sentences, not component glosses');
+    }
   }
 });
 
