@@ -82,9 +82,9 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.15**.
+Phiên bản phát hành hiện tại: **V42.10.16**.
 
-Bản V42.10.15 sửa lại lưới banner ba cột để tiêu đề nằm chính giữa hai lá cờ và hai slogan canh theo mép trong của từng lá cờ; giới hạn chiều rộng đồng hồ để không tràn chân trang; đồng bộ phiên bản và bổ sung kiểm tra dữ liệu từ điển CVDICT. Phiên bản được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản V42.10.16 sửa luồng khởi tạo từ điển Menu 1 để giảm cấp phát bộ nhớ khi nạp 122.523 mục CVDICT trên thiết bị di động, giữ bộ từ cơ bản có thể tra cứu nếu dữ liệu lớn gặp lỗi, hiển thị trạng thái nạp/lỗi rõ ràng và chuyển tổng số từ vựng sang cùng hàng với tiêu đề Menu 1 ở khu vực nội dung. Phiên bản được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
