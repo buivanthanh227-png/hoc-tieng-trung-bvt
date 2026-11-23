@@ -12,7 +12,7 @@ required=[
  '.topbar .brand-slogan>span:first-child{grid-column:1!important;grid-row:2!important',
  '.topbar .brand-slogan>span:last-child{grid-column:3!important;grid-row:2!important',
  'color:#fff!important',
- '#main-tabs .tab[data-tab="dict"] .count-pill',
+ '#panel-dict .section-title .count-pill',
  'id="bvt-dictionary-count-placement"',
  'Tổng số từ vựng: đang nạp…',
  'HỌC THÊM MỘT NGÔN NGỮ',
@@ -24,8 +24,11 @@ for x in required:
 if h.count('class="brand-flag"')!=2: raise SystemExit('Expected exactly two original flags.')
 if h.count('class="brand-slogan"')!=1: raise SystemExit('Expected one original slogan container.')
 if h.count('id="count-pill"')!=1: raise SystemExit('Expected exactly one live dictionary word count.')
-if h.index('id="count-pill"') < h.index('<nav id="main-tabs"') or h.index('id="count-pill"') > h.index('</nav>',h.index('<nav id="main-tabs"')):
- raise SystemExit('Word count badge is not placed in the dictionary navigation row.')
+heading_start=h.index('<h2 class="section-title" data-function-number="1" style="margin:0">Tra cứu từ vựng</h2>')
+if not (heading_start < h.index('id="count-pill"') < heading_start+500):
+ raise SystemExit('Word count badge is not beside the Menu 1 panel heading.')
+if h.index('id="count-pill"') < h.index('<nav id="main-tabs"'):
+ raise SystemExit('Word count badge remains in the left navigation/category area.')
 if '\\\\n@media' in h or '\\\\n</head>' in h: raise SystemExit('Literal escaped newline corrupted the responsive CSS.')
 if 'bvt-brand-banner' in h or 'bvt-brand-flag' in h: raise SystemExit('Duplicate/legacy banner overlay remains.')
 print('Centered white title, flags on both sides, left/right slogans below, responsive sizing and dictionary count placement: PASS')
