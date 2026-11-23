@@ -180,6 +180,14 @@ for old, new, label in [
     html = html.replace(old, new, 1)
 
 
+
+# Expose the live dictionary explicitly for the independently injected Menu 1
+# search controller; do not rely on cross-script lexical global resolution.
+dictionary_marker = "function setDictionary(rows,sourceName){dictionary=rows;"
+if html.count(dictionary_marker) != 1:
+    raise SystemExit(f"Expected one setDictionary assignment point; found {html.count(dictionary_marker)}")
+html = html.replace(dictionary_marker, dictionary_marker + "window.dictionary=dictionary;", 1)
+
 set_marker = "applyFilter();renderCombineChoices();"
 if html.count(set_marker) != 1:
     raise SystemExit(f"Expected one setDictionary refresh point; found {html.count(set_marker)}")
