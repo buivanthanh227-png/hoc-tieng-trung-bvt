@@ -151,3 +151,169 @@
  if(intro)intro.textContent='Nhập tiếng Việt, chữ Hán hoặc Pinyin. Pinyin được tra cứu nguyên cụm trước; nếu không có mục từ/câu hoàn chỉnh, hệ thống sẽ phân tích âm tiết và ghép câu từ các mục từ có trong từ điển.';
  document.documentElement.dataset.menu3PinyinFix='42.10.22.1';
 })();
+
+/* MENU3_PRESERVE_MENU18_TONE_CANDIDATES_V2 */
+(function(){
+ 'use strict';
+ if(!document.getElementById('homework3x-query'))return;
+ const $=id=>document.getElementById(id);
+ const toneMap={a:['ā','á','ǎ','à'],e:['ē','é','ě','è'],i:['ī','í','ǐ','ì'],o:['ō','ó','ǒ','ò'],u:['ū','ú','ǔ','ù'],ü:['ǖ','ǘ','ǚ','ǜ']};
+ function tonePinyin(raw,tone){
+  const original=String(raw||'');let value=original.replace(/u:/gi,'ü').replace(/v/gi,'ü');
+  const nfd=value.normalize('NFD'),hasDiaeresis=nfd.includes('\u0308');
+  let base=nfd.replace(/[\u0300-\u036f]/g,'');if(hasDiaeresis)base=base.replace(/u/g,'ü');
+  if(!tone||tone===5||tone<1||tone>4)return base;
+  let at=base.indexOf('a');if(at<0)at=base.indexOf('e');if(at<0&&base.includes('ou'))at=base.indexOf('o');
+  if(at<0)for(let i=base.length-1;i>=0;i--)if('aeiouü'.includes(base[i])){at=i;break;}
+  const mark=toneMap[base[at]]?.[tone-1];if(!mark)return base;
+  let out=base.slice(0,at)+mark+base.slice(at+1);
+  if(/^[A-Z]/.test(original))out=out.charAt(0).toUpperCase()+out.slice(1);
+  return out;
+ }
+ function exactSpacingPinyin(raw,input,entries){
+  const source=String(raw||''),matches=[...source.matchAll(/[^\s,，、;；.!?！？]+/g)];
+  const syllables=[];for(const entry of entries)syllables.push(...String(entry.py||'').trim().split(/\s+/).filter(Boolean));
+  if(!matches.length||syllables.length!==input.length)return '';
+  for(let i=0;i<input.length;i++)if(pinyin18Key(syllables[i])!==input[i].base)return '';
+  const groups=Array.from({length:matches.length},()=>[]);
+  for(let i=0;i<input.length;i++){
+   const explicit=input[i].tones?.[0]?.tone;
+   const tone=explicit===undefined?pinyin18ToneFromInput(syllables[i]):explicit;
+   const group=input[i].group;
+   if(!Number.isInteger(group)||!groups[group])return '';
+   groups[group].push(tonePinyin(syllables[i],tone));
+  }
+  const last=matches[matches.length-1];
+  let output=source.slice(0,matches[0].index)+groups[0].join('');
+  for(let i=1;i<groups.length;i++)output+=source.slice(matches[i-1].index+matches[i-1][0].length,matches[i].index)+groups[i].join('');
+  output+=source.slice(last.index+last[0].length);
+  return output.replace(/^(\s*)([a-zü])/i,(_,space,ch)=>space+ch.toUpperCase());
+ }
+ function composeAll(raw){
+  const sourceIndex=getPinyin18SourceIndex(),composer=getPinyin3xComposerIndex();
+  const options=window.pinyin3xBuildInputOptions?.(raw,sourceIndex.syllables,512)||[];
+  if(!options.length)return {status:'none'};
+  const results=new Map();
+  for(const input of options){
+   const states=Array.from({length:input.length+1},()=>[]);
+   states[0]=[{score:0,zh:'',entries:[]}];
+   const add=(position,candidate)=>{
+    const bucket=states[position],prior=bucket.find(item=>item.zh===candidate.zh);
+    if(prior){if(candidate.score>prior.score)Object.assign(prior,candidate);}else bucket.push(candidate);
+    bucket.sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh));if(bucket.length>96)bucket.length=96;
+   };
+   for(let start=0;start<input.length;start++){
+    if(!states[start].length)continue;
+    for(let end=start+1;end<=Math.min(input.length,start+6);end++){
+     const span=input.slice(start,end),compact=span.map(item=>item.base).join('');
+     for(const entry of composer.byCompact.get(compact)||[]){
+      if(!pinyin18InputInfosMatchSource(entry,span))continue;
+      for(const path of states[start])add(end,{score:path.score+entry.score-3,zh:path.zh+entry.zh,entries:path.entries.concat(entry)});
+     }
+    }
+   }
+   for(const path of states[input.length]){
+    const py=exactSpacingPinyin(raw,input,path.entries);if(!py)continue;
+    const vi=path.entries.map(entry=>String(entry.vi||'').trim()).filter(Boolean).join(' ');
+    const prior=results.get(path.zh);
+    if(!prior||path.score>prior.score)results.set(path.zh,{zh:path.zh,py,vi,score:path.score,entries:path.entries,sourceLabel:'Ghép từ các mục từ điển'});
+   }
+  }
+  const sorted=[...results.values()].sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh));
+  if(!sorted.length)return {status:'none'};
+  const best=sorted[0].score,threshold=Math.max(40,Math.ceil(Math.abs(best)*0.18));
+  const optionsOut=sorted.filter(item=>best-item.score<=threshold).slice(0,100);
+  return {status:'ambiguous',options:optionsOut};
+ }
+ function renderList(candidates){
+  const host=$('homework3x-candidates');if(!host)return null;
+  const list=(Array.isArray(candidates)?candidates:[]).filter(item=>item&&item.zh&&item.py&&item.vi);
+  if(!list.length){host.replaceChildren();host.hidden=true;return null;}
+  list.sort((a,b)=>(b.score||b.priority||0)-(a.score||a.priority||0));
+  homework3xCandidates=list;homework3xSelectedCandidateIndex=0;host.hidden=false;
+  let page=0;const pageSize=10;
+  const render=()=>{
+   const pageCount=Math.max(1,Math.ceil(list.length/pageSize)),start=page*pageSize,items=list.slice(start,start+pageSize);
+   host.replaceChildren();
+   const makeNav=()=>{
+    const nav=document.createElement('div');nav.className='homework3x-pagination';
+    nav.innerHTML='<button type="button" data-page-prev>‹ Trang trước</button><span>Trang '+(page+1)+' / '+pageCount+' · '+list.length+' kết quả</span><button type="button" data-page-next>Trang sau ›</button>';
+    nav.querySelector('[data-page-prev]').disabled=page===0;nav.querySelector('[data-page-next]').disabled=page>=pageCount-1;
+    nav.querySelector('[data-page-prev]').addEventListener('click',()=>{if(page>0){page--;render();}});
+    nav.querySelector('[data-page-next]').addEventListener('click',()=>{if(page<pageCount-1){page++;render();}});
+    return nav;
+   };
+   host.appendChild(makeNav());
+   const grid=document.createElement('div');grid.className='homework3x-candidate-grid';
+   items.forEach((item,offset)=>{
+    const index=start+offset,button=document.createElement('button');button.type='button';button.className='homework3x-candidate';button.dataset.homework3xCandidate=String(index);
+    const content=document.createElement('span');content.className='homework3x-candidate-content';
+    const py=document.createElement('span');py.className='homework3x-candidate-py';py.textContent=item.py;
+    const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.textContent=item.zh;
+    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.textContent=item.vi;
+    content.append(py,zh,vi);button.appendChild(content);grid.appendChild(button);
+   });
+   host.appendChild(grid);host.appendChild(makeNav());
+  };
+  render();
+  const status=$('homework3x-status');if(status)status.textContent='Có '+list.length+' phương án Pinyin–chữ Hán–nghĩa tiếng Việt. Hiển thị 10 kết quả mỗi trang; chọn kết quả để xem chi tiết.';
+  if(!document.documentElement.dataset.menu3CandidateClickV2){
+   document.documentElement.dataset.menu3CandidateClickV2='1';
+   document.addEventListener('click',event=>{
+    const button=event.target?.closest?.('[data-homework3x-candidate]'),box=$('homework3x-candidates');
+    if(!button||!box?.contains(button))return;
+    const index=Number(button.dataset.homework3xCandidate),item=homework3xCandidates[index];if(!item)return;
+    homework3xSelectedCandidateIndex=index;
+    try{openHomework3xCandidateModal(item,index,homework3xCandidates.length);}
+    catch(error){const live=$('homework3x-status');if(live)live.textContent='Không mở được chi tiết kết quả: '+String(error?.message||error);}
+   },true);
+  }
+  return list[0];
+ }
+ function noResultDialog(raw){
+  document.querySelector('.homework3x-spacing-dialog')?.remove();
+  const layer=document.createElement('div');layer.className='homework3x-modal-backdrop homework3x-spacing-dialog';
+  const panel=document.createElement('section');panel.className='homework3x-modal';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
+  const title=document.createElement('h3');title.textContent='Chưa tìm thấy cách ghép Pinyin';
+  const msg=document.createElement('p');msg.textContent='Hệ thống chưa tìm được tổ hợp chữ Hán có nghĩa phù hợp với “'+raw+'”. Vui lòng kiểm tra lại chính tả, dấu thanh hoặc khoảng cách giữa các âm tiết rồi thử lại.';
+  const close=document.createElement('button');close.type='button';close.className='homework3x-modal-close';close.textContent='Đóng';
+  panel.append(title,msg,close);layer.appendChild(panel);document.body.appendChild(layer);
+  close.addEventListener('click',()=>layer.remove());layer.addEventListener('click',event=>{if(event.target===layer)layer.remove();});
+ }
+ const oldDirect=window.pinyinToChineseCandidates;
+ if(typeof oldDirect==='function'){
+  window.pinyinToChineseCandidates=function(raw){
+   const source=oldDirect(raw)||[],sourceIndex=getPinyin18SourceIndex(),parsed=window.pinyin3xBuildInputOptions?.(raw,sourceIndex.syllables,128)||[];
+   return source.map(item=>{
+    for(const input of parsed){const py=exactSpacingPinyin(raw,input,[item]);if(py)return {...item,py};}
+    return item;
+   });
+  };
+ }
+ window.composePinyinSentence3x=composeAll;
+ window.renderPinyinCompositionOptions3x=function(options){renderList(options);};
+ window.renderHomework3xCandidates=async function(candidates){return renderList(candidates);};
+ const oldLookup=window.lookupHomework3x;
+ if(typeof oldLookup==='function'){
+  window.lookupHomework3x=async function(){
+   const raw=String($('homework3x-query')?.value||'');
+   await oldLookup.apply(this,arguments);
+   const status=String($('homework3x-status')?.textContent||''),host=$('homework3x-candidates');
+   if(raw.trim()&&typeof looksLikePinyin3x==='function'&&looksLikePinyin3x(raw,tryLocalTranslation(raw))&&/Chưa tìm được|Không tìm thấy/i.test(status)&&(!host||!host.querySelector('[data-homework3x-candidate]')))noResultDialog(raw);
+  };
+ }
+ const style=document.createElement('style');style.id='menu3-tone-candidate-layout-v2';
+ style.textContent=[
+  '#homework3x-candidates .homework3x-candidate-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}',
+  '#homework3x-candidates .homework3x-candidate{min-width:0!important;padding:9px 7px!important;display:flex!important;align-items:flex-start!important}',
+  '#homework3x-candidates .homework3x-candidate-content{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0!important;width:100%!important}',
+  '#homework3x-candidates .homework3x-candidate-py{order:0!important;font-size:clamp(13px,1.55vw,18px)!important;line-height:1.35!important;font-weight:850!important;overflow-wrap:anywhere!important}',
+  '#homework3x-candidates .homework3x-candidate-zh{order:1!important;font-size:14px!important;line-height:1.35!important;font-weight:750!important;overflow-wrap:anywhere!important}',
+  '#homework3x-candidates .homework3x-candidate-vi{order:2!important;font-size:11px!important;line-height:1.35!important;overflow-wrap:anywhere!important}',
+  '.homework3x-modal-line.is-hanzi .homework3x-modal-value,.homework3x-modal-line.is-pinyin .homework3x-modal-value,.homework3x-modal-line.is-meaning .homework3x-modal-value{font-size:22px!important;font-weight:800!important;line-height:1.45!important}',
+  '@media(max-width:720px){#homework3x-candidates .homework3x-candidate-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}#homework3x-candidates .homework3x-candidate{padding:8px 5px!important}}'
+ ].join('\n');
+ document.head.appendChild(style);
+ document.documentElement.dataset.menu3PinyinFix='42.10.22.1';
+ document.documentElement.dataset.menu3ToneCandidates='2';
+})();
