@@ -74,6 +74,20 @@
  const pinyinKey=value=>typeof window.pinyin18Key==='function'
   ?window.pinyin18Key(value)
   :String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[üÜvV]/g,'u').toLowerCase().replace(/[^a-z]/g,'');
+ function matchesPreferredBoundaries(raw,sourcePinyin){
+  const matches=[...String(raw||'').matchAll(/[^\s,，、;；.!?！？]+/g)];
+  const tokens=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
+  if(!matches.length||!tokens.length||typeof window.getPinyin18SourceIndex!=='function'||typeof window.pinyin18SyllablePaths!=='function')return false;
+  const available=window.getPinyin18SourceIndex()?.syllables;if(!available)return false;
+  const expected=[];
+  for(const match of matches){
+   const paths=window.pinyin18SyllablePaths(match[0],available);
+   const shortest=paths?.[0];
+   if(!shortest?.length)return false;
+   expected.push(...shortest);
+  }
+  return expected.length===tokens.length&&expected.every((key,index)=>pinyinKey(key)===pinyinKey(tokens[index]));
+ }
  function formatByInputSpacing(raw,sourcePinyin){
   const source=String(raw||''),matches=[...source.matchAll(/[^\s,，、;；.!?！？]+/g)];
   const syllables=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
@@ -84,7 +98,8 @@
   const keys=syllables.map(pinyinKey),groups=[];let at=0;
   for(const match of matches){
    const paths=window.pinyin18SyllablePaths(match[0],available);
-   const selected=(paths||[]).find(path=>path.length<=keys.length-at&&path.every((key,i)=>keys[at+i]===key));
+   const selected=paths?.[0];
+   if(!selected||!selected.every((key,i)=>keys[at+i]===key))return String(sourcePinyin||'');
    if(!selected)return String(sourcePinyin||'');
    groups.push(syllables.slice(at,at+selected.length).join(''));at+=selected.length;
   }
@@ -126,7 +141,7 @@
    if(!item||!item.zh||!item.py)return false;
    const id=String(item.zh)+'|'+String(item.py);
    if(seen.has(id))return false;seen.add(id);return true;
-  }).sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)).slice(0,30);
+  }).filter(item=>matchesPreferredBoundaries(query,item.py)).sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)).slice(0,30);
   if(!source.length){host.replaceChildren();host.hidden=true;if(status)status.textContent='Chưa tìm được kết quả Pinyin khớp với mục từ/câu hoàn chỉnh trong từ điển.';return null;}
   const token=++renderToken;let page=0;const pageSize=10;
   currentCandidates=source;
