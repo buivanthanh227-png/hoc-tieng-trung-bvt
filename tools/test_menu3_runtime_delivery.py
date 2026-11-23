@@ -22,10 +22,16 @@ for label, ok in checks.items():
     print(("PASS" if ok else "FAIL") + ": " + label)
 if not all(checks.values()):
     raise SystemExit(1)
-# Reject the exact bug: a regex matching a literal backslash-s instead of whitespace.
+# Reject the exact bug in both the patch source and the generated production HTML.
 selector = Path("tools/patch_menu3_tone_selector.py").read_text(encoding="utf-8")
-if r"split(/\\s+/)" in selector:
-    raise SystemExit("FAIL: selector still uses an escaped literal backslash-s regex")
-if r"split(/\s+/)" not in selector:
-    raise SystemExit("FAIL: selector whitespace tokenization expression is missing")
-print("PASS: selector splits Pinyin syllables on actual whitespace")
+if r"split(/\\s+/).filter(Boolean)" in selector:
+    raise SystemExit("FAIL: patch source still uses a literal backslash-s regex")
+if r"split(/\s+/).filter(Boolean)" not in selector:
+    raise SystemExit("FAIL: patch source whitespace tokenization expression is missing")
+if "MENU3_MENU18_TONE_POSITION_SELECTOR_V1" not in html:
+    raise SystemExit("FAIL: generated HTML is missing the Menu 3 tone selector")
+if r"split(/\\s+/).filter(Boolean)" in html:
+    raise SystemExit("FAIL: generated HTML still uses a literal backslash-s regex")
+if r"split(/\s+/).filter(Boolean)" not in html:
+    raise SystemExit("FAIL: generated HTML does not contain the corrected whitespace regex")
+print("PASS: patch source and generated HTML split Pinyin syllables on actual whitespace")
