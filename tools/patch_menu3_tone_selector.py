@@ -73,7 +73,7 @@ function pinyin18SelectToneDiverse(candidates, raw, limit=30) {
     item={...item,py:fixed,sourceRows};
    }
   }
-  return {item,tokens:String(item.py||'').trim().split(/\\s+/).filter(Boolean),priority,tones:match.tones,base};
+  return {item,tokens:String(item.py||'').trim().split(/\s+/).filter(Boolean),priority,tones:match.tones,base};
  }).filter(Boolean);
  if(!rows.length)return [];
  let ranked=rows;
