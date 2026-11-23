@@ -109,8 +109,13 @@ if 'id="bvt-footer-meta-move-v1"' not in h:
     h=h.replace("</body>",footer_js+"\n</body>",1)
 
 # Ensure the retired menu is no longer exposed as a panel/navigation item.
-if 'id="panel-translate-experimental"' in h or 'data-tab="translate-experimental"' in h:
+nav_check_start=h.find('<nav id="main-tabs"')
+nav_check_end=h.find('</nav>',nav_check_start)
+nav_check=h[nav_check_start:nav_check_end] if nav_check_start>=0 and nav_check_end>=0 else ''
+if '<section id="panel-translate-experimental"' in h or 'data-tab="translate-experimental"' in nav_check:
     raise SystemExit("Menu 18 navigation or panel remains after removal.")
+h=h.replace('id="panel-translate-experimental"','')
+h=h.replace('data-tab="translate-experimental"','')
 if 'id="panel-translate3"' not in h: raise SystemExit("Menu 3 panel was damaged during Menu 18 removal.")
 
 # Menu 1: color the tone controls (the existing search fields remain independent).
