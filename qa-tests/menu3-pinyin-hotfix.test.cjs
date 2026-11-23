@@ -36,69 +36,70 @@ function createHarness() {
     documentElement: { dataset: {} }
   };
 
+  const pinyinKey = value => String(value || '').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').replace(/[üÜvV]/g, 'u')
+    .replace(/[1-5]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+  const parseToken = value => {
+    const normalized = String(value || '').normalize('NFD').toLowerCase();
+    const tones = [];
+    let base = '', lastBaseIndex = -1;
+    for (const char of normalized) {
+      if (/[a-z]/.test(char)) {
+        base += char === 'v' ? 'u' : char;
+        lastBaseIndex = base.length - 1;
+        continue;
+      }
+      if (char === '\u0304') tones.push({ offset: lastBaseIndex, tone: 1, numeric: false });
+      else if (char === '\u0301') tones.push({ offset: lastBaseIndex, tone: 2, numeric: false });
+      else if (char === '\u030c') tones.push({ offset: lastBaseIndex, tone: 3, numeric: false });
+      else if (char === '\u0300') tones.push({ offset: lastBaseIndex, tone: 4, numeric: false });
+      else if (/[1-5]/.test(char)) tones.push({ offset: base.length, tone: Number(char), numeric: true });
+    }
+    return { base: pinyinKey(value), tones };
+  };
+  const toneFromInput = value => {
+    const token = String(value || '').trim().toLowerCase();
+    const numbered = token.match(/([1-5])$/);
+    if (numbered) return Number(numbered[1]);
+    const marks = token.normalize('NFD');
+    if (marks.includes('\u0304')) return 1;
+    if (marks.includes('\u0301')) return 2;
+    if (marks.includes('\u030c')) return 3;
+    if (marks.includes('\u0300')) return 4;
+    return null;
+  };
+  const infosMatchSource = (item, input) => {
+    const sourceTokens = String(item.py || '').split(/\s+/).filter(Boolean);
+    const sourceMarks = [];
+    let sourceOffset = 0;
+    if (!input.length || !sourceTokens.length || input.some(token => !token.base)) return false;
+    for (const rawToken of sourceTokens) {
+      const parsed = parseToken(rawToken);
+      if (!parsed.base) return false;
+      parsed.tones.forEach(mark => sourceMarks.push({ ...mark, offset: mark.offset + sourceOffset }));
+      sourceOffset += parsed.base.length;
+    }
+    if (input.map(token => token.base).join('') !== sourceTokens.map(pinyinKey).join('')) return false;
+    let offset = 0;
+    for (const token of input) {
+      const end = offset + token.base.length;
+      const tones = sourceMarks.filter(mark => mark.offset >= offset && mark.offset < end);
+      const sourceTone = tones.length ? tones[0].tone : null;
+      for (const mark of token.tones) {
+        if (mark.tone === 5 ? (sourceTone !== null && sourceTone !== 5) : sourceTone !== mark.tone) return false;
+      }
+      offset = end;
+    }
+    return true;
+  };
   const context = vm.createContext({
-    document,
-    console,
+    document, console,
     getPinyin18SourceIndex: () => sourceIndex,
     homework3xValidVietnameseMeaning: () => true,
-    pinyin18Key(value) {
-      return String(value || '').normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '').replace(/[üÜvV]/g, 'u')
-        .replace(/[1-5]/g, '').toLowerCase().replace(/[^a-z]/g, '');
-    },
-    pinyin18InputToken(value) {
-      const normalized = String(value || '').normalize('NFD').toLowerCase();
-      const tones = [];
-      let base = '', lastBaseIndex = -1;
-      for (const char of normalized) {
-        if (/[a-z]/.test(char)) {
-          base += char === 'v' ? 'u' : char;
-          lastBaseIndex = base.length - 1;
-          continue;
-        }
-        if (char === '\u0304') tones.push({ offset: lastBaseIndex, tone: 1, numeric: false });
-        else if (char === '\u0301') tones.push({ offset: lastBaseIndex, tone: 2, numeric: false });
-        else if (char === '\u030c') tones.push({ offset: lastBaseIndex, tone: 3, numeric: false });
-        else if (char === '\u0300') tones.push({ offset: lastBaseIndex, tone: 4, numeric: false });
-        else if (/[1-5]/.test(char)) tones.push({ offset: base.length, tone: Number(char), numeric: true });
-      }
-      return { base: this.pinyin18Key(value), tones };
-    },
-    pinyin18ToneFromInput(value) {
-      const token = String(value || '').trim().toLowerCase();
-      const numbered = token.match(/([1-5])$/);
-      if (numbered) return Number(numbered[1]);
-      const marks = token.normalize('NFD');
-      if (marks.includes('\u0304')) return 1;
-      if (marks.includes('\u0301')) return 2;
-      if (marks.includes('\u030c')) return 3;
-      if (marks.includes('\u0300')) return 4;
-      return null;
-    },
-    pinyin18InputInfosMatchSource(item, input) {
-      const sourceTokens = String(item.py || '').split(/\s+/).filter(Boolean);
-      const sourceMarks = [];
-      let sourceOffset = 0;
-      if (!input.length || !sourceTokens.length || input.some(token => !token.base)) return false;
-      for (const rawToken of sourceTokens) {
-        const parsed = this.pinyin18InputToken(rawToken);
-        if (!parsed.base) return false;
-        parsed.tones.forEach(mark => sourceMarks.push({ ...mark, offset: mark.offset + sourceOffset }));
-        sourceOffset += parsed.base.length;
-      }
-      if (input.map(token => token.base).join('') !== sourceTokens.map(token => this.pinyin18Key(token)).join('')) return false;
-      let offset = 0;
-      for (const token of input) {
-        const end = offset + token.base.length;
-        const tones = sourceMarks.filter(mark => mark.offset >= offset && mark.offset < end);
-        const sourceTone = tones.length ? tones[0].tone : null;
-        for (const mark of token.tones) {
-          if (mark.tone === 5 ? (sourceTone !== null && sourceTone !== 5) : sourceTone !== mark.tone) return false;
-        }
-        offset = end;
-      }
-      return true;
-    }
+    pinyin18Key: pinyinKey,
+    pinyin18InputToken: parseToken,
+    pinyin18ToneFromInput: toneFromInput,
+    pinyin18InputInfosMatchSource: infosMatchSource
   });
   context.window = context;
   vm.runInContext(
