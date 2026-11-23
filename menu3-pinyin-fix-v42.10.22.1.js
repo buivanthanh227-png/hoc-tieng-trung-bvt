@@ -74,32 +74,53 @@
  const pinyinKey=value=>typeof window.pinyin18Key==='function'
   ?window.pinyin18Key(value)
   :String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[üÜvV]/g,'u').toLowerCase().replace(/[^a-z]/g,'');
+ function pathsForInputToken(rawToken,available){
+  const key=pinyinKey(rawToken),memo=new Array(key.length+1);
+  if(!key)return [];
+  memo[key.length]=[[]];
+  for(let start=key.length-1;start>=0;start--){
+   const options=[];
+   for(let finish=start+1;finish<=Math.min(key.length,start+6);finish++){
+    const syllable=key.slice(start,finish),tails=memo[finish];
+    if(!available.has(syllable)||!tails)continue;
+    for(const tail of tails){options.push([syllable].concat(tail));if(options.length>=24)break;}
+    if(options.length>=24)break;
+   }
+   memo[start]=options;
+  }
+  const paths=memo[0]||[];
+  // A valid standalone syllable remains ambiguous (e.g. xian). For a
+  // non-syllable compact token, prefer only the minimum-syllable path.
+  if(available.has(key))return paths;
+  if(!paths.length)return [];
+  const shortest=Math.min(...paths.map(path=>path.length));
+  return paths.filter(path=>path.length===shortest);
+ }
  function matchesPreferredBoundaries(raw,sourcePinyin){
   const matches=[...String(raw||'').matchAll(/[^\s,，、;；.!?！？]+/g)];
   const tokens=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
-  if(!matches.length||!tokens.length||typeof window.getPinyin18SourceIndex!=='function'||typeof window.pinyin18SyllablePaths!=='function')return false;
+  if(!matches.length||!tokens.length||typeof window.getPinyin18SourceIndex!=='function')return false;
   const available=window.getPinyin18SourceIndex()?.syllables;if(!available)return false;
-  const expected=[];
+  const actual=tokens.map(pinyinKey);let offset=0;
   for(const match of matches){
-   const paths=window.pinyin18SyllablePaths(match[0],available);
-   const shortest=paths?.[0];
-   if(!shortest?.length)return false;
-   expected.push(...shortest);
+   const paths=pathsForInputToken(match[0],available);
+   const selected=paths.find(path=>path.length<=actual.length-offset&&path.every((key,index)=>actual[offset+index]===key));
+   if(!selected)return false;
+   offset+=selected.length;
   }
-  return expected.length===tokens.length&&expected.every((key,index)=>pinyinKey(key)===pinyinKey(tokens[index]));
+  return offset===actual.length;
  }
  function formatByInputSpacing(raw,sourcePinyin){
   const source=String(raw||''),matches=[...source.matchAll(/[^\s,，、;；.!?！？]+/g)];
   const syllables=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
   if(!matches.length||!syllables.length)return String(sourcePinyin||'');
-  if(typeof window.getPinyin18SourceIndex!=='function'||typeof window.pinyin18SyllablePaths!=='function')return String(sourcePinyin||'');
-  const index=window.getPinyin18SourceIndex(),available=index?.syllables;
+  if(typeof window.getPinyin18SourceIndex!=='function')return String(sourcePinyin||'');
+  const available=window.getPinyin18SourceIndex()?.syllables;
   if(!available)return String(sourcePinyin||'');
   const keys=syllables.map(pinyinKey),groups=[];let at=0;
   for(const match of matches){
-   const paths=window.pinyin18SyllablePaths(match[0],available);
-   const selected=paths?.[0];
-   if(!selected||!selected.every((key,i)=>keys[at+i]===key))return String(sourcePinyin||'');
+   const paths=pathsForInputToken(match[0],available);
+   const selected=paths.find(path=>path.length<=keys.length-at&&path.every((key,index)=>keys[at+index]===key));
    if(!selected)return String(sourcePinyin||'');
    groups.push(syllables.slice(at,at+selected.length).join(''));at+=selected.length;
   }
