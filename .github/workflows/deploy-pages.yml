@@ -74,87 +74,29 @@ jobs:
           python3 tools/test_requested_ui_20261123_v2.py site/index.html
           # Verify the dictionary starts empty rather than rendering the first ten entries.
           grep -Fq 'if(!hasQuery){filteredIndices=[];}' site/index.html
-          # Keep the visible footer version aligned with manifest.webmanifest.
-          if grep -q '42.9.3' site/index.html; then
-            sed -i 's/42[.]9[.]3/42.9.4/g' site/index.html
-          fi
-          if grep -q '42.9.4' site/index.html; then
-            sed -i 's/42[.]9[.]4/42.9.5/g' site/index.html
-          fi
-          if grep -q '42.9.5' site/index.html; then
-            sed -i 's/42[.]9[.]5/42.9.6/g' site/index.html
-          fi
-          if grep -q '42.9.6' site/index.html; then
-            sed -i 's/42[.]9[.]6/42.9.7/g' site/index.html
-          fi
-          if grep -q '42.9.7' site/index.html; then
-            sed -i 's/42[.]9[.]7/42.9.8/g' site/index.html
-          fi
-          if grep -q '42.9.8' site/index.html; then
-            sed -i 's/42[.]9[.]8/42.9.9/g' site/index.html
-          fi
-          if grep -q '42.9.9' site/index.html; then
-            sed -i 's/42[.]9[.]9/42.10.0/g' site/index.html
-          fi
-          if grep -q '42.10.0' site/index.html; then
-            sed -i 's/42[.]10[.]0/42.10.1/g' site/index.html
-          fi
-          if grep -q '42.10.1' site/index.html; then
-            sed -i 's/42[.]10[.]1/42.10.3/g' site/index.html
-          fi
-          if grep -q '42.10.3' site/index.html; then
-            sed -i 's/42[.]10[.]3/42.10.4/g' site/index.html
-          fi
-          if grep -q '42.10.4' site/index.html; then
-            sed -i 's/42[.]10[.]4/42.10.5/g' site/index.html
-          fi
-          if grep -q '42.10.5' site/index.html; then
-            sed -i 's/42[.]10[.]5/42.10.6/g' site/index.html
-          fi
-          if grep -q '42.10.6' site/index.html; then
-            sed -i 's/42[.]10[.]6/42.10.7/g' site/index.html
-          fi
-          if grep -q '42.10.7' site/index.html; then
-            sed -i 's/42[.]10[.]7/42.10.8/g' site/index.html
-          fi
-          if grep -q '42.10.8' site/index.html; then
-            sed -i 's/42[.]10[.]8/42.10.9/g' site/index.html
-          fi
-          if grep -q '42.10.9' site/index.html; then
-            sed -i 's/42[.]10[.]9/42.10.10/g' site/index.html
-          fi
-          if grep -q '42.10.10' site/index.html; then
-            sed -i 's/42[.]10[.]10/42.10.11/g' site/index.html
-          fi
-          if grep -q '42.10.11' site/index.html; then
-            sed -i 's/42[.]10[.]11/42.10.12/g' site/index.html
-          fi
-          if grep -q '42.10.13' site/index.html; then
-            sed -i 's/42[.]10[.]13/42.10.14/g' site/index.html
-          fi
-          if grep -q '42.10.14' site/index.html; then
-            sed -i 's/42[.]10[.]14/42.10.15/g' site/index.html
-          fi
-          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9|10|11|12|13|14)([^0-9]|$)' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.15."
-            exit 1
-          fi
-          if ! grep -Fq '42.10.15' site/index.html; then
-            echo "::error::Không tìm thấy phiên bản V42.10.15 trong giao diện."
-            exit 1
-          fi
+          # Synchronize every visible legacy app version in one anchored pass.
+          # The previous chained grep/sed logic matched prefixes such as 42.10.1
+          # inside 42.10.13, corrupting the version and aborting deployment.
           python3 - <<'PY'
           import json, pathlib, re
-          manifest=json.loads(pathlib.Path("manifest.webmanifest").read_text(encoding="utf-8"))
-          version=manifest["name"].rsplit("· ",1)[-1]
-          html=pathlib.Path("site/index.html").read_text(encoding="utf-8")
-          if version != "V42.10.15":
-              raise SystemExit(f"Manifest version mismatch: {version}")
-          if not re.search(r"42\.10\.15", html):
+          manifest = json.loads(pathlib.Path("manifest.webmanifest").read_text(encoding="utf-8"))
+          target = manifest["name"].rsplit("· ", 1)[-1]
+          if target != "V42.10.15":
+              raise SystemExit(f"Unexpected release version in manifest: {target}")
+          path = pathlib.Path("site/index.html")
+          html = path.read_text(encoding="utf-8")
+          version_pattern = re.compile(r"(?<![0-9.])42\.(?:9\.[3-9]|10\.[0-9]+)(?![0-9.])")
+          html, replacements = version_pattern.subn("42.10.15", html)
+          if replacements == 0:
+              raise SystemExit("No legacy application version found in built HTML")
+          remaining = sorted(set(version_pattern.findall(html)))
+          if remaining:
+              raise SystemExit(f"Legacy version strings remain: {remaining}")
+          if html.count("42.10.15") < 1:
               raise SystemExit("Built HTML does not expose V42.10.15")
-          print("Manifest, built header/footer version: V42.10.15 — PASS")
+          path.write_text(html, encoding="utf-8")
+          print(f"Version synchronization PASS: {replacements} version occurrence(s) → V42.10.15")
           PY
-
           # Các tài nguyên PWA cốt lõi phải có mặt; thiếu thì dừng deploy.
           for required in manifest.webmanifest sw.js luyen-so/index.html; do
             if [ ! -f "$required" ]; then
