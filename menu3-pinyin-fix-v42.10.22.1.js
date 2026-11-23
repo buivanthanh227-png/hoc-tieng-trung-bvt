@@ -379,34 +379,26 @@
   };
  }
 
- // Prevent overlapping lookups and always release the UI lock after success/failure.
- const input=document.getElementById('homework3x-query');
- const lookup=document.getElementById('homework3x-lookup');
- if(lookup&&!lookup.dataset.bvtSafeLookupBound){
-  lookup.dataset.bvtSafeLookupBound='1';
-  lookup.addEventListener('click',function(){
-   if(lookup.dataset.bvtLookupRunning==='1')return;
-   lookup.dataset.bvtLookupRunning='1';
-   lookup.disabled=true;
-   const label=lookup.textContent;
-   const release=()=>{
-    lookup.dataset.bvtLookupRunning='0';
-    lookup.disabled=false;
-    if(label&&lookup.textContent==='Đang tra cứu…')lookup.textContent=label;
-   };
-   if(typeof window.lookupHomework3x==='function'){
-    Promise.resolve().then(()=>window.lookupHomework3x()).catch(error=>{
-     const status=document.getElementById('homework3x-status');
-     if(status)status.textContent='Đã xảy ra lỗi khi tra cứu. Bạn có thể thử lại: '+String(error&&error.message||error);
-    }).finally(release);
-   }else release();
-  },true);
- }
- if(input&&!input.dataset.bvtSafeEnterBound){
-  input.dataset.bvtSafeEnterBound='1';
-  input.addEventListener('keydown',event=>{
-   if(event.key==='Enter'&&lookup&&lookup.dataset.bvtLookupRunning==='1')event.preventDefault();
-  },true);
+ // Serialize Menu 3 lookups; release the lock even if a network/API call rejects.
+ const lookupButton=document.getElementById('homework3x-lookup');
+ const originalLookup=window.lookupHomework3x;
+ if(typeof originalLookup==='function'&&!originalLookup.__bvtSerialized){
+  const serialized=async function(){
+   if(serialized.running)return;
+   serialized.running=true;
+   if(lookupButton)lookupButton.disabled=true;
+   try{return await originalLookup.apply(this,arguments);}
+   catch(error){
+    const status=document.getElementById('homework3x-status');
+    if(status)status.textContent='Đã xảy ra lỗi khi tra cứu. Bạn có thể thử lại: '+String(error&&error.message||error);
+    return null;
+   }finally{
+    serialized.running=false;
+    if(lookupButton)lookupButton.disabled=false;
+   }
+  };
+  serialized.__bvtSerialized=true;
+  window.lookupHomework3x=serialized;
  }
  root.dataset.bvtInteractionAndMenu3V421023='1';
 })();
