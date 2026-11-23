@@ -31,6 +31,8 @@ required=[
  "out[write++]=raw",
  "parsed=null;setDictionary(rows,'CVDICT Trung–Việt nhúng sẵn')",
  "init().catch(error=>",
+ "setDictionary(buildSeed(),'Bộ từ cơ bản dự phòng')",
+
  "window.__menu1DictionaryLoaded(dictionary.length,'bộ từ cơ bản dự phòng')",
  "window.__menu1DictionaryLoaded=function(count,sourceName)",
  "window.__menu1DictionaryLoadedCount",
