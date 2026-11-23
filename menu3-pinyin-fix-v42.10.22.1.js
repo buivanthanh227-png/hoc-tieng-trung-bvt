@@ -247,16 +247,19 @@
    const grid=document.createElement('div');grid.className='homework3x-candidate-grid';
    items.forEach((item,offset)=>{
     const index=start+offset,button=document.createElement('button');button.type='button';button.className='homework3x-candidate';button.dataset.homework3xCandidate=String(index);
+    const number=document.createElement('span');number.className='homework3x-candidate-number';number.textContent=String(index+1);
     const content=document.createElement('span');content.className='homework3x-candidate-content';
     const py=document.createElement('span');py.className='homework3x-candidate-py';py.textContent=item.py;
     const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.textContent=item.zh;
     const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.textContent=item.vi;
-    content.append(py,zh,vi);button.appendChild(content);grid.appendChild(button);
+    content.append(py,zh,vi);button.append(number,content);
+    button.addEventListener('click',()=>{homework3xSelectedCandidateIndex=index;openHomework3xCandidateModal(item,index,list.length);});
+    grid.appendChild(button);
    });
    host.appendChild(grid);host.appendChild(makeNav());
   };
   render();
-  const status=$('homework3x-status');if(status)status.textContent='Có '+list.length+' phương án Pinyin–chữ Hán–nghĩa tiếng Việt. Hiển thị 10 kết quả mỗi trang; chọn kết quả để xem chi tiết.';
+  const status=$('homework3x-status');if(status)status.textContent='Có '+list.length+' phương án Pinyin–chữ Hán–nghĩa tiếng Việt. Hiển thị 10 kết quả mỗi trang; chạm vào thẻ có số thứ tự để mở hộp thoại chi tiết.';
   if(!document.documentElement.dataset.menu3CandidateClickV2){
    document.documentElement.dataset.menu3CandidateClickV2='1';
    document.addEventListener('click',event=>{
@@ -264,7 +267,7 @@
     if(!button||!box?.contains(button))return;
     const index=Number(button.dataset.homework3xCandidate),item=homework3xCandidates[index];if(!item)return;
     homework3xSelectedCandidateIndex=index;
-    try{openHomework3xCandidateModal(item,index,homework3xCandidates.length);}
+    try{return;}
     catch(error){const live=$('homework3x-status');if(live)live.textContent='Không mở được chi tiết kết quả: '+String(error?.message||error);}
    },true);
   }
@@ -306,9 +309,10 @@
  const style=document.createElement('style');style.id='menu3-tone-candidate-layout-v2';
  style.textContent=[
   '#homework3x-candidates .homework3x-candidate-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}',
-  '#homework3x-candidates .homework3x-candidate{min-width:0!important;padding:9px 7px!important;display:flex!important;align-items:flex-start!important}',
+  '#homework3x-candidates .homework3x-candidate{min-width:0!important;padding:9px 7px!important;display:grid!important;grid-template-columns:auto minmax(0,1fr)!important;align-items:start!important;gap:6px!important}',
+  '#homework3x-candidates .homework3x-candidate-number{display:grid!important;place-items:center!important;min-width:23px!important;height:23px!important;border-radius:7px!important;background:#f0f2f5!important;color:#1f2937!important;font-size:12px!important;font-weight:850!important}',
   '#homework3x-candidates .homework3x-candidate-content{display:flex!important;flex-direction:column!important;gap:3px!important;min-width:0!important;width:100%!important}',
-  '#homework3x-candidates .homework3x-candidate-py{order:0!important;font-size:clamp(13px,1.55vw,18px)!important;line-height:1.35!important;font-weight:850!important;overflow-wrap:anywhere!important}',
+  '#homework3x-candidates .homework3x-candidate-py{order:0!important;font-size:clamp(15px,1.65vw,20px)!important;line-height:1.35!important;font-weight:900!important;overflow-wrap:anywhere!important}',
   '#homework3x-candidates .homework3x-candidate-zh{order:1!important;font-size:14px!important;line-height:1.35!important;font-weight:750!important;overflow-wrap:anywhere!important}',
   '#homework3x-candidates .homework3x-candidate-vi{order:2!important;font-size:11px!important;line-height:1.35!important;overflow-wrap:anywhere!important}',
   '.homework3x-modal-line.is-hanzi .homework3x-modal-value,.homework3x-modal-line.is-pinyin .homework3x-modal-value,.homework3x-modal-line.is-meaning .homework3x-modal-value{font-size:22px!important;font-weight:800!important;line-height:1.45!important}',
