@@ -72,7 +72,9 @@ banner_css="""<style id="bvt-banner-footer-layout-v1">
 @media(max-width:350px){.topbar .brand-copy>h1{font-size:15px!important}.topbar .brand-slogan>span{font-size:6px!important}}
 #bvt-footer-meta-v1{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;width:100%!important;margin:12px auto 4px!important;padding:8px 12px!important;box-sizing:border-box!important}
 #bvt-footer-meta-v1 .bvt-footer-credit-v1{display:block!important;text-align:center!important;width:100%!important;font-size:12px!important;font-weight:700!important}
-#bvt-footer-meta-v1 .bvt-footer-version-row-v1{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:12px!important;width:100%!important}\n#bvt-footer-meta-v1 .bvt-footer-version-row-v1>*{margin:0!important}\n#bvt-footer-meta-v1 .bvt-footer-status-v1{display:block!important;text-align:right!important;margin-left:0!important;font-size:11px!important;white-space:nowrap!important}
+#bvt-footer-meta-v1 .bvt-footer-version-row-v1{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:12px!important;width:100%!important}
+#bvt-footer-meta-v1 .bvt-footer-version-row-v1>*{margin:0!important}
+#bvt-footer-meta-v1 .bvt-footer-status-v1{display:block!important;text-align:right!important;margin-left:0!important;font-size:11px!important;white-space:nowrap!important}
 .topbar #top-status{display:none!important}
 </style>
 """
@@ -85,15 +87,19 @@ footer_js=r"""<script id="bvt-footer-meta-move-v1">
 (function(){
  function moveMeta(){
   const body=document.body;if(!body||document.getElementById('bvt-footer-meta-v1'))return;
-  const versionLeaf=[...body.querySelectorAll('*')].find(el=>el.children.length===0&&/V?42\.\d+\.\d+|phiên bản ứng dụng/i.test(el.textContent||''));
+  const versionLeaf=[...body.querySelectorAll('*')].find(el=>el.children.length===0&&!['SCRIPT','STYLE'].includes(el.tagName)&&/V?42\.\d+\.\d+|phiên bản ứng dụng/i.test(el.textContent||''));
   if(!versionLeaf)return;
   const parent=versionLeaf.parentElement||body;
   const box=document.createElement('div');box.id='bvt-footer-meta-v1';
   const credit=[...body.querySelectorAll('*')].find(el=>el.children.length===0&&/Bùi Văn Thành|Bui Van Thanh|©\s*2026|thiết kế và phát triển/i.test(el.textContent||''));
   if(credit){credit.classList.add('bvt-footer-credit-v1');box.appendChild(credit);}
   const status=document.getElementById('top-status');
-  if(status){status.classList.add('bvt-footer-status-v1');status.style.display='block';box.appendChild(status);}
+  const row=document.createElement('div');row.className='bvt-footer-version-row-v1';
+  if(status){status.classList.add('bvt-footer-status-v1');status.style.display='block';}
   parent.insertBefore(box,versionLeaf);
+  row.appendChild(versionLeaf);
+  if(status)row.appendChild(status);
+  box.appendChild(row);
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',moveMeta,{once:true});else moveMeta();
 })();
