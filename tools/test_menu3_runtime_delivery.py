@@ -24,10 +24,8 @@ if not all(checks.values()):
     raise SystemExit(1)
 # Reject the exact bug in both the patch source and the generated production HTML.
 selector = Path("tools/patch_menu3_tone_selector.py").read_text(encoding="utf-8")
-if r"split(/\\s+/).filter(Boolean)" in selector:
-    raise SystemExit("FAIL: patch source still uses a literal backslash-s regex")
-if r"split(/\s+/).filter(Boolean)" not in selector:
-    raise SystemExit("FAIL: patch source whitespace tokenization expression is missing")
+if r"split(/\s+/).filter(Boolean)" not in selector or 'bad = r"split(/\\\\s+/).filter(Boolean)"' not in selector:
+    raise SystemExit("FAIL: patch source does not contain both the old-pattern repair and corrected regex")
 if "MENU3_MENU18_TONE_POSITION_SELECTOR_V1" not in html:
     raise SystemExit("FAIL: generated HTML is missing the Menu 3 tone selector")
 if r"split(/\\s+/).filter(Boolean)" in html:
