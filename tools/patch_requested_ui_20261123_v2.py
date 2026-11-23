@@ -109,6 +109,11 @@ if html.count(set_marker) != 1:
 html = html.replace(set_marker,
     "applyFilter();if(typeof window.__menu1DictionaryLoaded==='function')window.__menu1DictionaryLoaded(dictionary.length,sourceName);renderCombineChoices();",1)
 
+cache_marker = "if(Array.isArray(cached)&&cached.length>1000){"
+if html.count(cache_marker) != 1:
+    raise SystemExit(f"Expected one cached dictionary threshold; found {html.count(cache_marker)}")
+html = html.replace(cache_marker, "if(Array.isArray(cached)&&cached.length>=(hasEmbedded?120000:1000)){", 1)
+
 error_marker = "$('dict-status').className='source-status error';$('dict-status').textContent='⚠️ Không nạp được dữ liệu từ điển nhúng:"
 if html.count(error_marker) != 1:
     raise SystemExit(f"Expected one embedded dictionary error handler; found {html.count(error_marker)}")
