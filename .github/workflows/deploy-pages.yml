@@ -147,6 +147,8 @@ jobs:
 
           cp sw.js site/
           cp menu3-pinyin-fix-v42.10.23.js site/
+          node --check menu3-pinyin-fix-v42.10.23.js
+          python3 tools/test_menu3_runtime_delivery.py site/index.html menu3-pinyin-fix-v42.10.23.js
 
           # Copy optional worker scripts when present so source paths and
           # Service Worker precache paths resolve to published files.
@@ -230,6 +232,12 @@ jobs:
                 fi
 
                 patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.23.js")"
+                for marker in 'font-size:clamp(21px,5.2vw,27px)!important' 'item.preferredMeaning||item.vi||'\'' '\'' 'window.openHomework3xCandidateModal(item,index,source.length)' 'data-copy="hanzi"' 'data-copy="pinyin"' 'data-copy="meaning"' 'data-speak="zh"' 'data-speak="vi"'; do
+                  if ! grep -Fq "$marker" <<< "$patch_js"; then
+                    echo "::error::Production thiếu hiển thị kết quả đầy đủ hoặc hộp thoại Menu 3: $marker"
+                    exit 1
+                  fi
+                done
                 if ! grep -Fq "dataset.menu3PinyinFix='42.10.23'" <<< "$patch_js"; then
                   echo "::error::Production không phục vụ đúng Menu 3 Pinyin hotfix."
                   exit 1
