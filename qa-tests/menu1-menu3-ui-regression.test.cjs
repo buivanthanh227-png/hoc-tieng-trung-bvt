@@ -41,7 +41,7 @@ test('Menu 3 distinguishes Vietnamese from Pinyin and has fallback translation',
  assert.ok(html.includes('async function machineTranslate3x(text,source,target,options={})'));
  assert.ok(html.includes('api.mymemory.translated.net'));
  assert.ok(html.includes('translate.googleapis.com/translate_a/single'));
- assert.ok(html.includes('const translation=await machineTranslate3x(query,source,target)'));
+ assert.ok(html.includes('const translation=await machineTranslate3x(query,source,target,{onStage:'));
 });
 
 test('Menu 1 wide desktop layout keeps Pinyin and tones on full-width rows',()=>{
