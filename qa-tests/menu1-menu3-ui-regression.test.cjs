@@ -38,7 +38,7 @@ test('Menu 3 modal copy buttons are bound for all three values',()=>{
 
 test('Menu 3 distinguishes Vietnamese from Pinyin and has fallback translation',()=>{
  assert.ok(html.includes('function looksLikeVietnamese3x(raw)'));
- assert.ok(html.includes('async function machineTranslate3x(text,source,target)'));
+ assert.ok(html.includes('async function machineTranslate3x(text,source,target,options={})'));
  assert.ok(html.includes('api.mymemory.translated.net'));
  assert.ok(html.includes('translate.googleapis.com/translate_a/single'));
  assert.ok(html.includes('const translation=await machineTranslate3x(query,source,target)'));
@@ -69,7 +69,7 @@ test('Banner slogans share the actual flag edge anchors',()=>{
 });
 
 test('Menu 3 uses the existing server route and preserves long-text boundaries',()=>{
- assert.ok(html.includes("const result=await bvtMlTranslate(value,sourceCode,targetCode)"));
+ assert.ok(html.includes("const result=await bvtMlTranslate(value,sourceCode,targetCode,()=>true,'',BVT_TRANSLATE_TIMING)"));
  assert.ok(html.includes("if(value.length>5000)throw new Error"));
  assert.ok(html.includes('function splitMenu3TranslationText(value,maxChars=4200)'));
  assert.ok(html.includes('async function translateLongText3x(text,target,statusEl,resultEl)'));
