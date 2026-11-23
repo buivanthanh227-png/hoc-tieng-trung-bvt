@@ -223,7 +223,7 @@
   if(!sorted.length)return {status:'none'};
   const best=sorted[0].score,threshold=Math.max(40,Math.ceil(Math.abs(best)*0.18));
   const optionsOut=sorted.filter(item=>best-item.score<=threshold).slice(0,100);
-  return {status:'ambiguous',options:optionsOut};
+  return optionsOut.length===1?{status:'ok',...optionsOut[0]}:{status:'ambiguous',options:optionsOut};
  }
  function renderList(candidates){
   const host=$('homework3x-candidates');if(!host)return null;
@@ -302,6 +302,7 @@
    if(raw.trim()&&typeof looksLikePinyin3x==='function'&&looksLikePinyin3x(raw,tryLocalTranslation(raw))&&/Chưa tìm được|Không tìm thấy/i.test(status)&&(!host||!host.querySelector('[data-homework3x-candidate]')))noResultDialog(raw);
   };
  }
+ if(typeof document.createElement==='function'){
  const style=document.createElement('style');style.id='menu3-tone-candidate-layout-v2';
  style.textContent=[
   '#homework3x-candidates .homework3x-candidate-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}',
@@ -314,6 +315,7 @@
   '@media(max-width:720px){#homework3x-candidates .homework3x-candidate-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}#homework3x-candidates .homework3x-candidate{padding:8px 5px!important}}'
  ].join('\n');
  document.head.appendChild(style);
+ }
  document.documentElement.dataset.menu3PinyinFix='42.10.22.1';
  document.documentElement.dataset.menu3ToneCandidates='2';
 })();
