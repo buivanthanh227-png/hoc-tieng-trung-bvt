@@ -51,7 +51,7 @@ jobs:
           # Trang chính hiện tại
           cp index.html site/
           # Patch only Menu 18 on the deploy artifact; keep the large embedded dictionary source intact.
-          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py tools/patch_menu3_clone.py tools/test_menu3_clone.py tools/patch_menu3_ui_fix.py tools/test_menu3_ui_fix.py tools/patch_requested_ui_20261123.py tools/test_requested_ui_20261123.py
+          python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu1_dictionary_search.py tools/test_menu1_dictionary_search.py tools/patch_brand_header.py tools/test_brand_header.py tools/patch_menu3_clone.py tools/test_menu3_clone.py tools/patch_menu3_ui_fix.py tools/test_menu3_ui_fix.py tools/patch_requested_ui_20261123.py tools/test_requested_ui_20261123.py tools/patch_requested_ui_20261123_v2.py tools/test_requested_ui_20261123_v2.py
           python3 tools/patch_menu18_ranking.py site/index.html
           python3 tools/patch_menu18_word_mapping.py site/index.html
           python3 tools/patch_menu18_multicandidate.py site/index.html
@@ -70,6 +70,8 @@ jobs:
           # Hide all initial dictionary entries until at least one search field has input.
           python3 tools/patch_requested_ui_20261123.py site/index.html
           python3 tools/test_requested_ui_20261123.py site/index.html
+          python3 tools/patch_requested_ui_20261123_v2.py site/index.html
+          python3 tools/test_requested_ui_20261123_v2.py site/index.html
           # Verify the dictionary starts empty rather than rendering the first ten entries.
           grep -Fq 'if(!hasQuery){filteredIndices=[];}' site/index.html
           # Keep the visible footer version aligned with manifest.webmanifest.
@@ -127,8 +129,11 @@ jobs:
           if grep -q '42.10.11' site/index.html; then
             sed -i 's/42[.]10[.]11/42.10.12/g' site/index.html
           fi
-          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9|10|11)([^0-9]|$)' site/index.html; then
-            echo "::error::Footer version is not aligned with V42.10.11."
+          if grep -q '42.10.12' site/index.html; then
+            sed -i 's/42[.]10[.]12/42.10.13/g' site/index.html
+          fi
+          if grep -Eq '(^|[^0-9])42[.]9[.][3456789]([^0-9]|$)|(^|[^0-9])42[.]10[.](0|1|3|4|5|6|7|8|9|10|11|12)([^0-9]|$)' site/index.html; then
+            echo "::error::Footer version is not aligned with V42.10.13."
             exit 1
           fi
 
@@ -211,7 +216,7 @@ jobs:
                   echo "::error::Production vẫn còn Menu 18."
                   exit 1
                 fi
-                for marker in 'BVT_REQUESTED_UI_20261123_V1' 'id="bvt-menu3-modal-equal-font"' '.homework3x-modal-line.is-pinyin .homework3x-modal-value' 'id="bvt-banner-footer-layout-v1"' 'id="bvt-footer-meta-move-v1"' 'id="bvt-menu1-colored-actions-v1' 'if(!hasQuery){filteredIndices=[];}'; do
+                for marker in 'BVT_REQUESTED_UI_20261123_V1' 'id="bvt-menu3-modal-equal-font"' '.homework3x-modal-line.is-pinyin .homework3x-modal-value' 'id="bvt-banner-footer-layout-v1"' 'id="bvt-footer-meta-move-v1"' 'id="bvt-menu1-colored-actions-v1' 'if(!hasQuery){filteredIndices=[];}' 'BVT_REQUESTED_UI_20261123_V2' 'id="bvt-banner-footer-layout-v2"' 'id="bvt-footer-meta-move-v2"' "getElementById('bvt-header-clock')" "window.__menu1DictionaryLoaded=function(count,sourceName)"; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu cập nhật giao diện: $marker"
                     exit 1
@@ -235,7 +240,7 @@ jobs:
                   exit 1
                 fi
 
-                echo "Production đang phục vụ đúng commit $EXPECTED_SHA; Menu 3 đã đồng bộ cỡ chữ hộp thoại, Menu 18 đã gỡ, banner/chân trang và Menu 1 đã cập nhật."
+                echo "Production đang phục vụ đúng commit $EXPECTED_SHA; banner căn theo hai lá cờ, đồng hồ và ghi công ở chân trang, từ điển nhúng đã kiểm tra 120.000+ mục, Menu 3/1 và 17 menu đã xác minh."
                 exit 0
               fi
             fi
