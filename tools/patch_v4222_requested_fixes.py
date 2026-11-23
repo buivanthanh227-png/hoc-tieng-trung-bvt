@@ -18,6 +18,122 @@ def insert_once(source: str, anchor: str, value: str, label: str) -> str:
         raise SystemExit(f"{label}: insertion anchor is missing or duplicated")
     return source.replace(anchor, value + "\n" + anchor, 1)
 
+MENU_STYLES = r"""<style id="bvt-v4222-user-layout-fixes">
+#panel-dict .section-title #count-pill,
+#panel-dict .section-title .count-pill{
+ background:transparent!important;background-color:transparent!important;
+ border:0!important;box-shadow:none!important;border-radius:0!important;
+ color:#15803d!important;padding:0 4px!important;margin-left:8px!important;
+ font-weight:850!important
+}
+#panel-dict #dict-advanced-search{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ align-items:start!important;gap:10px!important
+}
+#panel-dict #dict-search-field-meaning{grid-column:1!important;grid-row:1!important}
+#panel-dict #dict-search-field-hanzi{grid-column:2!important;grid-row:1!important}
+#panel-dict #dict-search-field-pinyin{grid-column:3!important;grid-row:1!important}
+#panel-dict #dict-tone-picker{grid-column:3!important;grid-row:2!important;min-width:0!important}
+#panel-dict #dict-advanced-search .dict-search-hint{grid-column:1/-1!important;grid-row:3!important}
+#panel-dict #dict-advanced-search .dict-search-field{min-width:0!important}
+#panel-dict #dict-advanced-search .field{width:100%!important;min-width:0!important}
+@media(min-width:521px) and (max-width:900px){
+ #panel-dict #dict-advanced-search{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #panel-dict #dict-search-field-meaning{grid-column:1!important;grid-row:1!important}
+ #panel-dict #dict-search-field-hanzi{grid-column:2!important;grid-row:1!important}
+ #panel-dict #dict-search-field-pinyin{grid-column:1/-1!important;grid-row:2!important}
+ #panel-dict #dict-tone-picker{grid-column:1/-1!important;grid-row:3!important}
+ #panel-dict #dict-advanced-search .dict-search-hint{grid-column:1/-1!important;grid-row:4!important}
+}
+@media(max-width:520px){
+ #panel-dict #dict-advanced-search{grid-template-columns:minmax(0,1fr)!important;gap:9px!important}
+ #panel-dict #dict-search-field-meaning,
+ #panel-dict #dict-search-field-hanzi,
+ #panel-dict #dict-search-field-pinyin,
+ #panel-dict #dict-tone-picker,
+ #panel-dict #dict-advanced-search .dict-search-hint{grid-column:1!important;grid-row:auto!important}
+ #panel-dict #dict-tone-picker{margin-top:-2px!important}
+}
+#app-footer-meta #bvt-header-clock,
+#app-footer-meta .bvt-footer-clock-v2{
+ display:flex!important;flex-direction:column!important;align-items:center!important;
+ justify-content:center!important;gap:7px!important;width:100%!important;max-width:100%!important;
+ min-width:0!important;margin:14px auto 6px!important;padding:4px 10px!important;
+ box-sizing:border-box!important;text-align:center!important;white-space:normal!important;color:#dc2626!important
+}
+#app-footer-meta .bvt-footer-clock-main{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ flex-wrap:wrap!important;gap:8px!important;width:100%!important;color:#dc2626!important
+}
+#app-footer-meta .bvt-footer-clock-main .bvt-clock-icon{
+ display:block!important;width:36px!important;height:36px!important;flex:0 0 36px!important;color:#dc2626!important
+}
+#app-footer-meta #bvt-clock-time{
+ display:inline-block!important;font-size:clamp(27px,2.4vw,34px)!important;
+ line-height:1.2!important;font-weight:950!important;letter-spacing:.045em!important;
+ font-variant-numeric:tabular-nums!important;color:#dc2626!important
+}
+#app-footer-meta #bvt-clock-date{
+ display:block!important;width:100%!important;text-align:center!important;
+ font-size:clamp(20px,2vw,27px)!important;line-height:1.35!important;
+ font-weight:850!important;letter-spacing:0!important;color:#dc2626!important;overflow-wrap:anywhere!important
+}
+#app-footer-meta #bvt-header-clock *,
+#app-footer-meta .bvt-footer-clock-v2 *{color:#dc2626!important}
+@media(max-width:520px){
+ #app-footer-meta #bvt-clock-time{font-size:27px!important}
+ #app-footer-meta #bvt-clock-date{font-size:20px!important}
+ #app-footer-meta .bvt-footer-clock-main .bvt-clock-icon{width:34px!important;height:34px!important;flex-basis:34px!important}
+}
+.homework3x-copy-status{min-height:20px;margin-top:8px;color:#15803d;font-size:12px;font-weight:750;line-height:1.4}
+.homework3x-modal-actions button:disabled{opacity:.55;cursor:wait}
+</style>"""
+
+BANNER_STYLES = r"""<style id="bvt-v4222-banner-true-center">
+.topbar .brand{
+ display:grid!important;grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr)!important;
+ grid-template-rows:auto auto!important;align-items:center!important;justify-items:stretch!important;
+ width:100%!important;max-width:1120px!important;min-width:0!important;margin-inline:auto!important;
+ box-sizing:border-box!important
+}
+.topbar .brand>.brand-flag:first-child{grid-column:1!important;grid-row:1!important;justify-self:center!important}
+.topbar .brand>.brand-flag:last-child{grid-column:3!important;grid-row:1!important;justify-self:center!important}
+.topbar .brand-copy{display:contents!important}
+.topbar .brand-copy>h1{
+ grid-column:2!important;grid-row:1!important;justify-self:center!important;align-self:center!important;
+ width:max-content!important;max-width:100%!important;margin:0!important;text-align:center!important;
+ transform:translateX(var(--bvt-banner-title-shift,0px))!important
+}
+.topbar .brand-copy>.brand-slogan{display:contents!important}
+.topbar .brand-slogan>span:first-child{grid-column:1!important;grid-row:2!important;justify-self:stretch!important;width:100%!important;text-align:left!important}
+.topbar .brand-slogan>span:last-child{grid-column:3!important;grid-row:2!important;justify-self:stretch!important;width:100%!important;text-align:right!important}
+@media(max-width:600px){
+ .topbar .brand{grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr)!important;column-gap:4px!important;row-gap:5px!important}
+ .topbar .brand-copy>h1{max-width:100%!important}
+}
+</style>"""
+
+BANNER_SCRIPT = r"""<script id="bvt-v4222-banner-center-runtime">
+(function(){
+ const brand=document.querySelector('.topbar .brand');
+ const left=brand?.querySelector('.brand-flag:first-child'),right=brand?.querySelector('.brand-flag:last-child');
+ const title=brand?.querySelector('.brand-copy>h1');if(!brand||!left||!right||!title)return;
+ let frame=0;
+ function align(){
+  frame=0;title.style.setProperty('--bvt-banner-title-shift','0px');
+  const a=left.getBoundingClientRect(),b=right.getBoundingClientRect(),t=title.getBoundingClientRect();
+  if(!a.width||!b.width||!t.width)return;
+  const target=((a.left+a.right)/2+(b.left+b.right)/2)/2,delta=target-(t.left+t.right)/2;
+  title.style.setProperty('--bvt-banner-title-shift',Math.abs(delta)<0.25?'0px':delta.toFixed(2)+'px');
+ }
+ function schedule(){if(frame)cancelAnimationFrame(frame);frame=requestAnimationFrame(align);}
+ schedule();window.addEventListener('resize',schedule,{passive:true});
+ if('ResizeObserver'in window){const observer=new ResizeObserver(schedule);[brand,left,right,title].forEach(node=>observer.observe(node));}
+ if(document.fonts?.ready)document.fonts.ready.then(schedule).catch(()=>{});
+ window.addEventListener('load',schedule,{once:true});
+})();
+</script>"""
+
 def main() -> None:
     target = Path(sys.argv[1] if len(sys.argv) > 1 else "index.html")
     html = target.read_text(encoding="utf-8")
@@ -26,6 +142,20 @@ def main() -> None:
         return
     if '<title>HỌC TIẾNG TRUNG · V42.10.22</title>' not in html:
         raise SystemExit("Source version is not V42.10.22; refusing to patch.")
+
+    # Recovery path: a previous run may have applied the HTML/JS substitutions
+    # but stopped before the final CSS insertion. Complete only the missing
+    # presentation layer; do not replay the earlier exact-string replacements.
+    if ('id="dict-search-field-meaning"' in html and
+        'async function machineTranslate3x(text,source,target)' in html and
+        "modal.querySelectorAll('[data-homework3x-copy]')" in html):
+        html = insert_once(html, "</body>", MENU_STYLES, "Menu 1 / footer styles")
+        html = insert_once(html, "</body>", BANNER_STYLES, "Banner geometry styles")
+        if 'id="bvt-v4222-banner-center-runtime"' not in html:
+            html = replace_once(html, "</body>", BANNER_SCRIPT + "\\n</body>", "Banner centering runtime")
+        target.write_text(html, encoding="utf-8")
+        print(f"Completed partial V42.10.22 patch in {target}: CSS and banner alignment.")
+        return
 
     old_search = """<div class="dict-advanced-search" id="dict-advanced-search">
    <label class="dict-search-field"><span>1. Tìm bằng chữ Hán</span><input id="dict-search-hanzi" class="field" type="search" autocomplete="off" placeholder="Nhập chữ Hán giản thể hoặc phồn thể"></label>
@@ -203,6 +333,11 @@ function looksLikePinyin3x(raw,local){
 </script>"""
     if 'id="bvt-v4222-banner-center-runtime"' not in html:
         html = replace_once(html, "</body>", banner_script+"\n</body>", "Banner centering script")
+
+    html = insert_once(html, "</body>", MENU_STYLES, "Menu 1 / footer styles")
+    html = insert_once(html, "</body>", BANNER_STYLES, "Banner geometry styles")
+    if 'id="bvt-v4222-banner-center-runtime"' not in html:
+        html = replace_once(html, "</body>", BANNER_SCRIPT + "\\n</body>", "Banner centering runtime")
 
     target.write_text(html, encoding="utf-8")
     print(f"Patched {target}: Menu 1, Menu 3, banner centering, footer clock; {len(html)} characters.")
