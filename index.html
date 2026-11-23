@@ -3460,6 +3460,7 @@ document.querySelector('.tabs').addEventListener('click',e=>{
    The browser/system chooses the installed voice for the requested language; no forced voice picker,
    no saved device voice override, and no Cloudflare TTS dependency. */
 let warnedNoNaturalMaleVoice = false;
+// BVT_ANDROID_CHROME_SPEECH_FIX_V1
 function bvtNativeVoices(){
  try{return ('speechSynthesis' in window)?(window.speechSynthesis.getVoices()||[]):[];}catch(_){return [];}
 }
@@ -3478,9 +3479,80 @@ function bvtFindVietnameseVoice(voices){
  return accepted.find(v=>/microsoft\s+an\b|\ban\s*[-(]/i.test(v.name||''))||accepted.find(v=>v.default)||accepted[0]||null;
 }
 function bvtCancelCloudSpeech(){
- // Kept as a compatibility name for existing learning flows; speech remains device-native.
+ // Compatibility name retained for existing learning flows.
  speechPlaybackToken++;speechPlaybackActive=false;
- try{if(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending))speechSynthesis.cancel();}catch(_){}
+ try{const synth=window.speechSynthesis;if(synth&&(synth.speaking||synth.pending))synth.cancel();}catch(_){}
+}
+function bvtSpeechBaseLocale(locale){
+ const value=String(locale||'').trim();
+ const index=value.indexOf('-');
+ return index>0?value.slice(0,index):value;
+}
+function bvtSpeakQueue(parts,button=null,onFinished=null){
+ const queue=(Array.isArray(parts)?parts:[]).map(part=>({
+  text:String(part?.text||'').trim(),
+  lang:String(part?.lang||'vi-VN').trim()||'vi-VN',
+  rate:Number(part?.rate)||.9
+ })).filter(part=>part.text);
+ if(!queue.length){if(typeof onFinished==='function')onFinished();return null;}
+ if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){
+  if(typeof onFinished==='function')onFinished();return null;
+ }
+ const synth=window.speechSynthesis;
+ const token=++speechPlaybackToken;
+ try{
+  // Cancel only an active queue. Do not require voices to have loaded before speaking.
+  if(synth.speaking||synth.pending)synth.cancel();
+  if(typeof synth.resume==='function')synth.resume();
+ }catch(_){}
+ let index=0,firstUtterance=null,finished=false;
+ const finish=()=>{
+  if(finished||token!==speechPlaybackToken)return;
+  finished=true;speechPlaybackActive=false;reflexLastSpeechEndedAt=Date.now();
+  if(typeof onFinished==='function'){try{onFinished();}catch(error){console.warn('Speech completion callback:',error);}}
+ };
+ const playCurrent=()=>{
+  if(token!==speechPlaybackToken)return;
+  if(index>=queue.length){finish();return;}
+  const part=queue[index];
+  let fallbackUsed=false;
+  const launch=(locale)=>{
+   if(token!==speechPlaybackToken)return;
+   let utterance;
+   try{
+    utterance=new SpeechSynthesisUtterance(part.text);
+    utterance.lang=locale;utterance.rate=part.rate;utterance.pitch=1;
+    // Do not pin utterance.voice. Android Chrome can expose stale/remote voice objects.
+    if(!firstUtterance)firstUtterance=utterance;
+    utterance.onstart=()=>{if(token===speechPlaybackToken)speechPlaybackActive=true;};
+    utterance.onend=()=>{
+     if(token!==speechPlaybackToken)return;
+     index++;playCurrent();
+    };
+    utterance.onerror=(event)=>{
+     if(token!==speechPlaybackToken)return;
+     const error=String(event?.error||'').toLowerCase();
+     const fallback=bvtSpeechBaseLocale(locale);
+     if(!fallbackUsed&&fallback&&fallback!==locale&&(error==='voice-unavailable'||error==='language-unavailable')){
+      fallbackUsed=true;launch(fallback);return;
+     }
+     index++;playCurrent();
+    };
+    speechPlaybackActive=true;
+    if(typeof synth.resume==='function')try{synth.resume();}catch(_){}
+    synth.speak(utterance);
+   }catch(error){
+    const fallback=bvtSpeechBaseLocale(locale);
+    if(!fallbackUsed&&fallback&&fallback!==locale){fallbackUsed=true;launch(fallback);return;}
+    console.warn('Speech synthesis could not start:',error);
+    index++;playCurrent();
+   }
+  };
+  launch(part.lang);
+ };
+ markSpeechButton(button,'Phát âm bằng bộ đọc văn bản của thiết bị.');
+ playCurrent();
+ return firstUtterance;
 }
 function bvtSpeakLocale(text,language='vi',button=null,onFinished=null){
  const value=String(text||'').trim();
@@ -3489,8 +3561,6 @@ function bvtSpeakLocale(text,language='vi',button=null,onFinished=null){
 }
 function markSpeechButton(button,title){
  if(!button)return;
- // Dictionary buttons contain a separate icon and a visible text label.
- // Update only the icon so "Nghe phát âm" is never replaced by the speaker glyph.
  const icon=button.querySelector?.('.dict-action-icon');
  if(icon)icon.textContent='🔊';else button.textContent='🔊';
  button.title=title;
@@ -3498,73 +3568,30 @@ function markSpeechButton(button,title){
 function speak(text,button=null,onFinished=null){
  const value=String(text||'').trim();
  if(!value){if(typeof onFinished==='function')onFinished();return null;}
- if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){
-  if(typeof onFinished==='function')onFinished();return null;
- }
- try{
-  const synth=window.speechSynthesis;
-  const voices=bvtNativeVoices();
-  const voice=bvtFindChineseVoice(voices);
-  // If no Chinese voice is listed yet, still request zh-CN from the system engine.
-  // Android/Chrome may expose voice data asynchronously or resolve the language internally.
-  if(synth.speaking||synth.pending){speechPlaybackToken++;try{synth.cancel();}catch(_){}speechPlaybackActive=false;}
-  const token=++speechPlaybackToken;
-  const utterance=new SpeechSynthesisUtterance(value);
-  utterance.lang='zh-CN';utterance.rate=.82;utterance.pitch=1;
-  if(voice)utterance.voice=voice;
-  let finished=false;
-  const complete=()=>{if(finished)return;finished=true;if(token!==speechPlaybackToken)return;speechPlaybackActive=false;reflexLastSpeechEndedAt=Date.now();if(typeof onFinished==='function')onFinished();};
-  utterance.onstart=()=>{if(token===speechPlaybackToken)speechPlaybackActive=true;};
-  utterance.onend=complete;utterance.onerror=complete;
-  markSpeechButton(button,'Phát âm tiếng Trung phổ thông bằng giọng có sẵn trên thiết bị.');
-  speechPlaybackActive=true;synth.speak(utterance);return utterance;
- }catch(_){speechPlaybackActive=false;if(typeof onFinished==='function')onFinished();return null;}
+ return bvtSpeakQueue([{text:value,lang:'zh-CN',rate:.82}],button,onFinished);
 }
 function speakAuto(text,button=null,onFinished=null){
  const value=String(text||'').trim();
- if(!value){if(typeof onFinished==='function')onFinished();return;}
- if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){
-  if(typeof onFinished==='function')onFinished();return;
- }
+ if(!value){if(typeof onFinished==='function')onFinished();return null;}
  const hasHan=/[\u3400-\u9fff\uf900-\ufaff]/u.test(value);
- if(hasHan&&!/^[\u3400-\u9fff\uf900-\ufaff\s，。！？!?、,.：:；;“”"'’‘]+$/u.test(value)){
-  // Mixed content: keep the original Android-friendly queue of language-tagged utterances.
-  try{
-   const synth=window.speechSynthesis;if(synth.speaking||synth.pending)synth.cancel();
-   const token=++speechPlaybackToken;
-   const parts=value.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/gu)||[value];
-   const queue=parts.filter(part=>part.trim()).map(part=>{
-    const isChinese=/[\u3400-\u9fff\uf900-\ufaff]/u.test(part);
-    const utterance=new SpeechSynthesisUtterance(part);
-    utterance.lang=isChinese?'zh-CN':'vi-VN';utterance.rate=.88;
-    const voices=bvtNativeVoices();const voice=isChinese?bvtFindChineseVoice(voices):bvtFindVietnameseVoice(voices);
-    if(voice)utterance.voice=voice;
-    return utterance;
-   });
-   if(!queue.length){if(typeof onFinished==='function')onFinished();return;}
-   let remaining=queue.length,finished=false;
-   const completeOne=()=>{if(token!==speechPlaybackToken||finished)return;remaining--;if(remaining<=0){finished=true;speechPlaybackActive=false;reflexLastSpeechEndedAt=Date.now();if(typeof onFinished==='function')onFinished();}};
-   queue.forEach(u=>{u.onstart=()=>{if(token===speechPlaybackToken)speechPlaybackActive=true;};u.onend=completeOne;u.onerror=completeOne;});
-   markSpeechButton(button,'Đọc lần lượt nội dung theo ngôn ngữ.');
-   speechPlaybackActive=true;queue.forEach(u=>synth.speak(u));return queue;
-  }catch(_){speechPlaybackActive=false;if(typeof onFinished==='function')onFinished();return;}
- }
- if(hasHan){speak(value,button,onFinished);return;}
- try{
-  const synth=window.speechSynthesis;if(synth.speaking||synth.pending)synth.cancel();
-  const token=++speechPlaybackToken;const utterance=new SpeechSynthesisUtterance(value);
-  utterance.lang='vi-VN';utterance.rate=.9;utterance.pitch=1;
-  const voice=bvtFindVietnameseVoice(bvtNativeVoices());if(voice)utterance.voice=voice;
-  let finished=false;const complete=()=>{if(finished)return;finished=true;if(token!==speechPlaybackToken)return;speechPlaybackActive=false;reflexLastSpeechEndedAt=Date.now();if(typeof onFinished==='function')onFinished();};
-  utterance.onstart=()=>{if(token===speechPlaybackToken)speechPlaybackActive=true;};utterance.onend=complete;utterance.onerror=complete;
-  markSpeechButton(button,'Phát âm tiếng Việt bằng giọng có sẵn trên thiết bị.');
-  speechPlaybackActive=true;synth.speak(utterance);return utterance;
- }catch(_){speechPlaybackActive=false;if(typeof onFinished==='function')onFinished();return;}
+ const isOnlyHan=hasHan&&/^[\u3400-\u9fff\uf900-\ufaff\s，。！？!?、,.：:；;“”"'’‘]+$/u.test(value);
+ if(!hasHan)return bvtSpeakQueue([{text:value,lang:'vi-VN',rate:.9}],button,onFinished);
+ if(isOnlyHan)return speak(value,button,onFinished);
+ const parts=value.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/gu)||[value];
+ const queue=parts.filter(part=>part.trim()).map(part=>({
+  text:part,
+  lang:/[\u3400-\u9fff\uf900-\ufaff]/u.test(part)?'zh-CN':'vi-VN',
+  rate:.88
+ }));
+ return bvtSpeakQueue(queue,button,onFinished);
 }
 if('speechSynthesis'in window){
  try{speechSynthesis.getVoices();}catch(_){}
- speechSynthesis.onvoiceschanged=()=>{try{speechSynthesis.getVoices();}catch(_){};};
+ const refreshBvtVoices=()=>{try{speechSynthesis.getVoices();}catch(_){}};
+ if(typeof speechSynthesis.addEventListener==='function')speechSynthesis.addEventListener('voiceschanged',refreshBvtVoices);
+ else speechSynthesis.onvoiceschanged=refreshBvtVoices;
 }
+
 document.addEventListener('click',e=>{const rw=e.target.closest('[data-radical-word]');if(rw){const i=Number(rw.dataset.radicalWord),row=dictionary[i],panel=document.querySelector(`[data-radical-panel="${i}"]`);if(!row||!panel)return;if(!panel.hidden){panel.hidden=true;return;}renderWordRadicals(row[0],panel);return;}const ro=e.target.closest('[data-open-radical]');if(ro){const number=Number(ro.dataset.openRadical);const fromStrokeModal=!!ro.closest('#stroke-modal')&&!$('stroke-modal')?.hidden;const returnContext=fromStrokeModal&&activeStrokeRow?{row:activeStrokeRow,char:activeStrokeChar}:null;if(!$('stroke-modal')?.hidden){$('stroke-modal').hidden=true;document.body.style.overflow='';}document.querySelector('.tab[data-tab="radicals"]')?.click();setTimeout(()=>{window.setRadicalReturnContext?.(returnContext);window.selectRadical?.(number);},80);return;}const relatedOpen=e.target.closest('[data-related-open]');if(relatedOpen){const row=dictionary[Number(relatedOpen.dataset.relatedOpen)];if(row){$('dict-search').value=row[0];applyFilter();window.scrollTo({top:0,behavior:'smooth'});}return;}const relatedBtn=e.target.closest('[data-related]');if(relatedBtn){const i=Number(relatedBtn.dataset.related),panel=document.querySelector(`[data-related-panel="${i}"]`);if(!panel)return;if(!panel.hidden){panel.hidden=true;return;}const matches=relatedWordIndices(i);if(!matches.length){panel.innerHTML='<div class="related-empty">Chưa tìm thấy từ liên quan trong bộ từ điển hiện có.</div>';}else{panel.innerHTML='<div class="related-heading">Các từ vựng liên quan (bấm vào từ để tra cứu):</div><div class="related-list">'+matches.map(j=>{const r=dictionary[j];return `<button type="button" class="related-item" data-related-open="${j}"><strong>${escapeHTML(r[0])}${r[0]!==r[1]?` <span style="font-size:10px;color:#98a2b3">${escapeHTML(r[1])}</span>`:''}</strong><small class="related-pinyin">${escapeHTML(r[2])}</small><small class="related-meaning">${escapeHTML(r[3])}</small></button>`;}).join('')+'</div>';}panel.hidden=false;return;}const speakBtn=e.target.closest('[data-speak]');if(speakBtn){speakAuto(speakBtn.dataset.speak,speakBtn);return;}const addBtn=e.target.closest('[data-add]');if(addBtn){addToCombine(Number(addBtn.dataset.add));switchTab('combine');return;}const writeBtn=e.target.closest('[data-write]');if(writeBtn){const row=dictionary[Number(writeBtn.dataset.write)];if(row){openStrokeModal(row);}return;}const addCombine=e.target.closest('[data-combine-add]');if(addCombine){const row=dictionary[Number(addCombine.dataset.combineAdd)];if(row)addCombineRow(row);}});
 function openStrokeModal(row,preferredChar=''){activeStrokeRow=row;const chars=[...String(row[0]||'')].filter(ch=>/[\u3400-\u9fff]/.test(ch));activeStrokeChar=(preferredChar&&chars.includes(preferredChar)?preferredChar:chars[0])||String(row[0]||'')[0]||'汉';$('stroke-word-title').textContent=row[0]||'Luyện viết chữ Hán';$('stroke-word-detail').textContent=(row[2]?row[2]+' · ':'')+(row[3]||'');$('stroke-char-picker').innerHTML='';chars.forEach(ch=>{const b=document.createElement('button');b.type='button';b.className='stroke-char-button'+(ch===activeStrokeChar?' active':'');b.textContent=ch;b.addEventListener('click',()=>loadStrokeCharacter(ch));$('stroke-char-picker').appendChild(b);});$('stroke-modal').hidden=false;document.body.style.overflow='hidden';loadStrokeCharacter(activeStrokeChar);}
 function closeStrokeModal(){if(!$('stroke-modal').hidden){$('stroke-modal').hidden=true;document.body.style.overflow='';try{strokeQuizWriter?.cancelQuiz?.();strokeModelWriter?.pauseAnimation?.();}catch(e){}strokeQuizWriter=null;strokeModelWriter=null;}}
@@ -7297,18 +7324,12 @@ function bvtMlTranslate(text,source,target,isCurrent=()=>true,knownSource='',opt
 }
 function bvtMlSpeak(text,language){
  const value=String(text||'').trim();if(!value)return;
- if(!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined'){alert('Thiết bị chưa hỗ trợ đọc văn bản.');return;}
- try{
-  const lang=language||bvtMlDetectLanguage(value);if(!lang||!BVT_ML_LANGUAGES[lang]){alert('Hãy chọn ngôn ngữ nguồn để phát âm chính xác.');return;}
-  const utterance=new SpeechSynthesisUtterance(value);utterance.lang=BVT_ML_LANGUAGES[lang].locale;utterance.rate=.92;
-  const voices=typeof bvtNativeVoices==='function'?bvtNativeVoices():[];
-  let voice=null;
-  if(lang==='zh'&&typeof bvtFindChineseVoice==='function')voice=bvtFindChineseVoice(voices);
-  else if(lang==='vi'&&typeof bvtFindVietnameseVoice==='function')voice=bvtFindVietnameseVoice(voices);
-  else voice=voices.find(v=>String(v.lang||'').toLowerCase().startsWith(lang+'-'))||voices.find(v=>String(v.lang||'').toLowerCase()===lang)||null;
-  if(voice)utterance.voice=voice;
-  window.speechSynthesis.cancel();window.speechSynthesis.speak(utterance);
- }catch(error){console.warn('Multilingual speech output:',error);}
+ const lang=language||bvtMlDetectLanguage(value);
+ if(!lang||!BVT_ML_LANGUAGES[lang]){alert('Hãy chọn ngôn ngữ nguồn để phát âm chính xác.');return;}
+ const locale=BVT_ML_LANGUAGES[lang].locale||lang;
+ if(lang==='zh'){speak(value,null,null);return;}
+ if(lang==='vi'){speakAuto(value,null,null);return;}
+ bvtSpeakQueue([{text:value,lang:locale,rate:.92}],null,null);
 }
 async function bvtMlCopy(elementId){
  const element=$(elementId);const value=String(element&&('value'in element)?element.value:element?.textContent||'').trim();if(!value)return;
