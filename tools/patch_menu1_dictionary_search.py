@@ -140,7 +140,7 @@ js = r'''<script id="menu1-three-field-dictionary-search">
   const hasQuery=!!(hanzi.trim()||pinyin.trim()||meaning.trim());
   const rows=Array.isArray(window.dictionary)?window.dictionary:dictionary;
   const found=[];
-  if(!hasQuery){filteredIndices=Array.from({length:rows.length},(_,i)=>i);}
+  if(!hasQuery){filteredIndices=[];}
   else{
    for(let i=0;i<rows.length;i++){
     const score=matchRow(rows[i],hanzi,pinyin,meaning,pinyin.trim()?state.tone:null);
