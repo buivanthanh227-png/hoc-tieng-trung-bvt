@@ -13,6 +13,11 @@ if MARK in html:
     raise SystemExit(0)
 
 css = """<style id="bvt-banner-footer-layout-v2">
+/* Surface dictionary loading/error feedback instead of silently leaving the count at “loading”. */
+#dict-status:not([hidden]){display:block!important;margin:8px 0!important;padding:9px 11px!important;border-radius:10px!important;font-size:12px!important;line-height:1.45!important;overflow-wrap:anywhere!important}
+#dict-status.error:not([hidden]){color:#991b1b!important;background:#fef2f2!important;border:1px solid #fecaca!important}
+#dict-status.ok:not([hidden]){color:#166534!important;background:#f0fdf4!important;border:1px solid #bbf7d0!important}
+
 /* One grid owns the header geometry: flags | centered title | flags;
    slogans are independent grid children under their matching flags. */
 .topbar .brand{
@@ -155,6 +160,25 @@ if 'id="bvt-footer-meta-move-v2"' not in html:
     if html.count("</body>") != 1:
         raise SystemExit("Expected one </body> for V2 footer script insertion")
     html = html.replace("</body>", footer_js + "\n</body>", 1)
+
+
+# Menu 1: mutate the parsed dataset in place. Avoid allocating a second 122k-row
+# array while retaining the parsed JSON, which can exceed mobile Safari memory.
+old_merge = "function mergeRows(rows){const out=buildSeed();const seen=new Set(out.map(r=>r[0]+'|'+r[1]+'|'+keyPinyin(r[2])));for(const raw of rows){if(!Array.isArray(raw)||raw.length<4)continue;const row=[String(raw[0]||''),String(raw[1]||raw[0]||''),String(raw[2]||''),String(raw[3]||''),String(raw[4]||hskFromSeed(raw[0])||'')];if(!row[0]||!row[3])continue;const k=row[0]+'|'+row[1]+'|'+keyPinyin(row[2]);if(seen.has(k))continue;seen.add(k);out.push(row);}return out;}"
+new_merge = "function mergeRows(rows){const out=Array.isArray(rows)?rows:[];const seen=new Set();let write=0;for(let read=0;read<out.length;read++){const raw=out[read];if(!Array.isArray(raw)||raw.length<4||!raw[0]||!raw[3])continue;raw[0]=String(raw[0]);raw[1]=String(raw[1]||raw[0]);raw[2]=String(raw[2]||'');raw[3]=String(raw[3]);raw[4]=String(raw[4]||hskFromSeed(raw[0])||'');const key=raw[0]+'|'+raw[1]+'|'+keyPinyin(raw[2]);if(seen.has(key))continue;seen.add(key);out[write++]=raw;}out.length=write;for(const raw of buildSeed()){const key=raw[0]+'|'+raw[1]+'|'+keyPinyin(raw[2]);if(!seen.has(key)){seen.add(key);out.push(raw);}}return out;}"
+if html.count(old_merge) != 1:
+    raise SystemExit(f"Expected one original mergeRows function; found {html.count(old_merge)}")
+html = html.replace(old_merge, new_merge, 1)
+for old, new, label in [
+    ("$('dict-status').textContent=hasEmbedded?", "$('dict-status').hidden=false;$('dict-status').textContent=hasEmbedded?", "show initial dictionary status"),
+    ("const rows=mergeRows(parsed);setDictionary(rows,'CVDICT Trung–Việt nhúng sẵn');", "const rows=mergeRows(parsed);parsed=null;setDictionary(rows,'CVDICT Trung–Việt nhúng sẵn');", "release parsed JSON reference"),
+    ("catch(e){$('dict-status').hidden=false;$('dict-status').className='source-status error';", "catch(e){if(typeof window.__menu1DictionaryLoaded==='function')window.__menu1DictionaryLoaded(dictionary.length,'bộ từ cơ bản dự phòng');$('dict-status').hidden=false;$('dict-status').className='source-status error';", "keep basic search available on embedded load failure"),
+    ("init();", "init().catch(error=>{const status=$('dict-status');if(typeof window.__menu1DictionaryLoaded==='function')window.__menu1DictionaryLoaded(dictionary.length,'bộ từ cơ bản dự phòng');status.hidden=false;status.className='source-status error';status.textContent='⚠️ Lỗi khởi tạo từ điển: '+(error&&error.message?error.message:String(error))+'. Đang dùng bộ từ cơ bản dự phòng.';});", "surface unexpected initialization errors")
+]:
+    if html.count(old) != 1:
+        raise SystemExit(f"Expected one insertion point to {label}; found {html.count(old)}")
+    html = html.replace(old, new, 1)
+
 
 set_marker = "applyFilter();renderCombineChoices();"
 if html.count(set_marker) != 1:
