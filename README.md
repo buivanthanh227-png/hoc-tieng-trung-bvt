@@ -17,9 +17,9 @@ Học Tiếng Trung BVT tập hợp các công cụ tra cứu, nghe phát âm, l
 
 Ứng dụng hiện có **17 menu**:
 
-- **Menu 1 – Từ điển tiếng Trung:** tra cứu theo ba trường độc lập hoặc kết hợp: chữ Hán giản thể/phồn thể, Pinyin (có thể lọc một trong năm thanh điệu) và nghĩa tiếng Việt. Danh sách kết quả chỉ xuất hiện sau khi người học nhập nội dung tìm kiếm; dữ liệu CVDICT được nhúng trong ứng dụng.
+- **Menu 1 – Từ điển tiếng Trung:** ba ô tìm kiếm theo thứ tự nghĩa tiếng Việt, chữ Hán giản thể/phồn thể và Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin. Có thể tìm từng trường riêng hoặc kết hợp; dữ liệu CVDICT được nhúng trong ứng dụng.
 - **Menu 2 – Nhận diện chữ Hán bằng hình ảnh.**
-- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** giữ nguyên chuỗi và khoảng cách người dùng nhập; với Pinyin, tìm các phương án chữ Hán dựa trên dữ liệu từ điển và các thanh điệu phù hợp. Kết quả gồm Pinyin có dấu, chữ Hán và nghĩa tiếng Việt. Có thể mở chi tiết, sao chép và nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không phát âm thanh Pinyin.**
+- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** dịch câu Việt ⇄ Trung qua dịch vụ trực tuyến có cơ chế dự phòng; với Pinyin, tra các mục từ/câu mẫu khớp chính xác cách đọc trong dữ liệu nguồn, không ghép các từ rời thành câu. Hộp thoại kết quả cho phép sao chép riêng chữ Hán, Pinyin và nghĩa tiếng Việt; có thể nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không phát âm thanh Pinyin.**
 - **Menu 4–15:** các công cụ dịch giọng nói, luyện viết, luyện đọc, ghép câu, học từ vựng, luyện số, bộ thủ, lưu trữ tài liệu và dịch đa ngôn ngữ.
 - **Menu 16 – Luyện nghe phiên âm tiếng Trung:** luyện thanh mẫu, vận mẫu, âm tiết Pinyin và thanh điệu.
 - **Menu 17 – Thử thách nhớ mặt chữ Hán.**
@@ -29,7 +29,7 @@ Các menu được tổ chức theo nhu cầu sử dụng, không phải lộ tr
 ## Cách sử dụng
 
 1. Mở [ứng dụng Học Tiếng Trung BVT](https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/).
-2. Chọn menu phù hợp. Với Menu 1, nhập chữ Hán, Pinyin hoặc nghĩa tiếng Việt vào ô tìm kiếm tương ứng.
+2. Chọn menu phù hợp. Với Menu 1, tìm lần lượt bằng nghĩa tiếng Việt, chữ Hán hoặc Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin.
 3. Có thể chọn thanh điệu để thu hẹp kết quả Pinyin; kết hợp các trường để lọc chính xác hơn.
 4. Với Menu 3, nhập câu tiếng Việt, chữ Hán hoặc Pinyin; giữ nguyên cách phân tách âm tiết mong muốn.
 5. Chạm vào phương án kết quả để mở chi tiết, sao chép nội dung hoặc nghe tiếng Trung/nghĩa tiếng Việt.
@@ -84,7 +84,7 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 Phiên bản phát hành hiện tại: **V42.10.22**.
 
-Bản V42.10.22 chỉ gợi ý mục từ/câu mẫu có chữ Hán, Pinyin và nghĩa đi cùng trong dữ liệu nguồn; không ghép các mục từ rời hoặc dùng dịch máy để xác nhận nghĩa. Tra cứu Pinyin dùng chỉ mục theo âm tiết/toàn chuỗi, giữ nguyên cách viết Pinyin nguồn và phân trang 12 kết quả mà không giới hạn tổng số mục khớp. Slogan banner trên điện thoại được tăng cỡ chữ trong khi giữ căn chỉnh dưới hai lá cờ. Các kết quả dịch câu tự do vẫn dùng dịch vụ máy như trước và cần kiểm tra theo ngữ cảnh. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Bản V42.10.22 giữ tra cứu Pinyin theo mục từ/câu mẫu có chữ Hán, Pinyin và nghĩa đi cùng trong dữ liệu nguồn; không ghép các mục từ rời thành câu. Menu 1 sắp xếp ô tìm kiếm theo nghĩa Việt → chữ Hán → Pinyin, với năm nút thanh điệu ngay dưới ô Pinyin. Menu 3 dịch câu Việt ⇄ Trung bằng MyMemory và thử dịch vụ dự phòng khi dịch vụ chính không khả dụng; hộp thoại hỗ trợ sao chép riêng cả ba trường Hán tự, Pinyin và nghĩa. Banner căn giữa tiêu đề theo tọa độ thực của hai lá cờ; đồng hồ chân trang được tăng kích thước, căn giữa và giữ màu đỏ. Phiên bản ứng dụng vẫn là V42.10.22. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
