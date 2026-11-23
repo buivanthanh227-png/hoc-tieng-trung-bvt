@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-10-23-menu3-pinyin-composition-spacing';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-10-22-menu3-pinyin-composition-turnstile-12s-spacing-fix1';
 const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-10';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
@@ -12,7 +12,7 @@ const REQUIRED_APP_FILES = [
   './index.html',
   './luyen-so/index.html',
   './manifest.webmanifest',
-  './menu3-pinyin-fix-v42.10.23.js'
+  './menu3-pinyin-fix-v42.10.22.1.js'
 ];
 const OPTIONAL_APP_FILES = [
   './icon.svg',
@@ -36,7 +36,7 @@ async function injectMenu3RuntimeFix(response) {
   const contentType = response.headers.get('content-type') || '';
   if (!contentType.includes('text/html')) return response;
   const html = await response.text();
-  const patchUrl = new URL('menu3-pinyin-fix-v42.10.23.js', self.registration.scope).href;
+  const patchUrl = new URL('menu3-pinyin-fix-v42.10.22.1.js', self.registration.scope).href;
   const scriptTag = '<script src="' + patchUrl + '" defer></script>';
   const updated = html.includes(patchUrl) ? html : html.replace(/<\/body\s*>/i, scriptTag + '</body>');
   const headers = new Headers(response.headers);
