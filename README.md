@@ -15,25 +15,26 @@ Học Tiếng Trung BVT tập hợp các công cụ tra cứu, nghe phát âm, l
 
 ## Các nhóm chức năng
 
-Ứng dụng hiện có 18 mục trong danh mục:
+Ứng dụng hiện có **17 menu**:
 
-- **Menu 1 – Từ điển tiếng Trung:** tra cứu chữ Hán, Pinyin/thanh điệu và nghĩa tiếng Việt.
+- **Menu 1 – Từ điển tiếng Trung:** tra cứu theo ba trường độc lập hoặc kết hợp: chữ Hán giản thể/phồn thể, Pinyin (có thể lọc một trong năm thanh điệu) và nghĩa tiếng Việt. Danh sách kết quả chỉ xuất hiện sau khi người học nhập nội dung tìm kiếm; dữ liệu CVDICT được nhúng trong ứng dụng.
 - **Menu 2 – Nhận diện chữ Hán bằng hình ảnh.**
-- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** nhập nội dung theo đúng chuỗi và khoảng cách người dùng cung cấp; khi đầu vào là Pinyin, hệ thống tìm các phương án câu chữ Hán dựa trên dữ liệu từ điển và các thanh điệu phù hợp. Kết quả gồm Pinyin có dấu, chữ Hán và nghĩa tiếng Việt. Có thể mở chi tiết, sao chép và nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không có chức năng phát âm thanh Pinyin.**
+- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** giữ nguyên chuỗi và khoảng cách người dùng nhập; với Pinyin, tìm các phương án chữ Hán dựa trên dữ liệu từ điển và các thanh điệu phù hợp. Kết quả gồm Pinyin có dấu, chữ Hán và nghĩa tiếng Việt. Có thể mở chi tiết, sao chép và nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không phát âm thanh Pinyin.**
 - **Menu 4–15:** các công cụ dịch giọng nói, luyện viết, luyện đọc, ghép câu, học từ vựng, luyện số, bộ thủ, lưu trữ tài liệu và dịch đa ngôn ngữ.
 - **Menu 16 – Luyện nghe phiên âm tiếng Trung:** luyện thanh mẫu, vận mẫu, âm tiết Pinyin và thanh điệu.
 - **Menu 17 – Thử thách nhớ mặt chữ Hán.**
-- **Menu 18 – Bản dự phòng của công cụ Menu 3:** được giữ tạm thời để đối chiếu và kiểm tra trong giai đoạn chuyển đổi. Menu 3 và Menu 18 dùng vùng giao diện, mã định danh và trạng thái riêng. Sau khi Menu 3 được xác nhận ổn định, Menu 18 mới được xem xét gỡ bỏ.
 
-Menu 3 và Menu 18 có thể hiển thị Pinyin để người học đọc/đối chiếu. Phần nghe chỉ phát tiếng Trung và nghĩa tiếng Việt; không phát Pinyin. Không phải mọi chức năng đều hoạt động ngoại tuyến; dịch máy và một số dịch vụ ngoài cần kết nối Internet.
+Các menu được tổ chức theo nhu cầu sử dụng, không phải lộ trình sư phạm hoặc chương trình HSK chính thức. Menu 3 có thể hiển thị Pinyin để người học đọc/đối chiếu; phần nghe chỉ phát tiếng Trung và nghĩa tiếng Việt. Dịch máy và một số dịch vụ ngoài cần kết nối Internet.
 
 ## Cách sử dụng
 
 1. Mở [ứng dụng Học Tiếng Trung BVT](https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/).
-2. Chọn Menu 3 để nhập câu tiếng Việt, chữ Hán hoặc Pinyin.
-3. Với Pinyin, giữ nguyên cách phân tách âm tiết mong muốn; xem các phương án chữ Hán, Pinyin có dấu và nghĩa tiếng Việt.
-4. Chạm vào một phương án để mở chi tiết, sao chép nội dung hoặc nghe tiếng Trung/nghĩa tiếng Việt.
-5. Menu 18 hiện được giữ làm bản dự phòng để so sánh trong thời gian kiểm thử.
+2. Chọn menu phù hợp. Với Menu 1, nhập chữ Hán, Pinyin hoặc nghĩa tiếng Việt vào ô tìm kiếm tương ứng.
+3. Có thể chọn thanh điệu để thu hẹp kết quả Pinyin; kết hợp các trường để lọc chính xác hơn.
+4. Với Menu 3, nhập câu tiếng Việt, chữ Hán hoặc Pinyin; giữ nguyên cách phân tách âm tiết mong muốn.
+5. Chạm vào phương án kết quả để mở chi tiết, sao chép nội dung hoặc nghe tiếng Trung/nghĩa tiếng Việt.
+
+Thông tin phiên bản, ghi công tác giả và đồng hồ ngày/giờ được bố trí tại chân trang ứng dụng.
 
 ### Cài trên thiết bị
 
@@ -81,7 +82,7 @@ Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế tr�
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Phiên bản phát hành hiện tại: **V42.10.13**. Phiên bản được quản lý trong manifest và giao diện. Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
 
 ## Liên kết
 
