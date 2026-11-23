@@ -24,8 +24,9 @@ for x in required:
 if h.count('class="brand-flag"')!=2: raise SystemExit('Expected exactly two original flags.')
 if h.count('class="brand-slogan"')!=1: raise SystemExit('Expected one original slogan container.')
 if h.count('id="count-pill"')!=1: raise SystemExit('Expected exactly one live dictionary word count.')
-heading_start=h.index('<h2 class="section-title" data-function-number="1" style="margin:0">Tra cứu từ vựng</h2>')
-if not (heading_start < h.index('id="count-pill"') < heading_start+500):
+heading_start=h.index('<h2 class="section-title" data-function-number="1" style="margin:0">Tra cứu từ vựng')
+heading_end=h.index('</h2>',heading_start)
+if not (heading_start < h.index('id="count-pill"') < heading_end):
  raise SystemExit('Word count badge is not beside the Menu 1 panel heading.')
 if h.index('id="count-pill"') < h.index('<nav id="main-tabs"'):
  raise SystemExit('Word count badge remains in the left navigation/category area.')
