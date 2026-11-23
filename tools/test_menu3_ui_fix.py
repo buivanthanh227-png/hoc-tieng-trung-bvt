@@ -15,6 +15,8 @@ required=[
  "button.dataset.menu3LookupBound='1'",
  "input.dataset.menu3EnterBound='1'",
  'async function lookupHomework3x()',
+ '.homework3x-modal-backdrop .homework3x-modal-line .homework3x-modal-value',
+ 'font-size:22px!important;font-weight:800!important;line-height:1.45!important;',
 ]
 for x in required:
  if x not in h: raise SystemExit('Menu 3 UI fix marker missing: '+x)
