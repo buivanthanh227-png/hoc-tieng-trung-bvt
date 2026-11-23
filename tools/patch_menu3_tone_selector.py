@@ -125,7 +125,18 @@ def main():
     target=Path(sys.argv[1] if len(sys.argv)>1 else "index.html")
     html=target.read_text(encoding="utf-8")
     if MARKER in html:
-        print("Menu 3 Menu 18 tone-position selector already installed.")
+        bad = r"split(/\\s+/).filter(Boolean)"
+        good = r"split(/\s+/).filter(Boolean)"
+        if bad in html:
+            if html.count(bad) != 1:
+                raise SystemExit("Menu 3 selector has an ambiguous escaped whitespace regex.")
+            html = html.replace(bad, good, 1)
+            target.write_text(html, encoding="utf-8", newline="\n")
+            print("Repaired existing Menu 3 selector whitespace tokenization.")
+        elif good in html:
+            print("Menu 3 Menu 18 tone-position selector already installed and corrected.")
+        else:
+            raise SystemExit("Existing Menu 3 selector marker found, but its tokenization expression is unknown.")
         return
     if "function pinyin18ToneFromInput(value){" not in html or "function pinyin18Key(value){" not in html:
         raise SystemExit("Menu 18 Pinyin tone/key helpers are missing; refusing to install an incompatible selector.")
