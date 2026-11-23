@@ -1,0 +1,7 @@
+# Default ownership
+* @buivanthanh227-png
+
+# CI, repository policy, and automation require owner review.
+/.github/ @buivanthanh227-png
+/qa-tests/ @buivanthanh227-png
+/sw.js @buivanthanh227-png
