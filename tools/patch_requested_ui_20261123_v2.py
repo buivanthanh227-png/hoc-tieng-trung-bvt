@@ -82,10 +82,15 @@ footer_js = r"""<script id="bvt-footer-meta-move-v2">
    credit.classList.add('bvt-footer-credit-line-v2');
    footer.insertBefore(credit,footer.firstChild);
   }
-  footer.insertBefore(row,version);
+  const insertionPoint=credit?credit.nextSibling:footer.firstChild;
+  footer.insertBefore(row,insertionPoint);
   row.appendChild(version);
   if(clock)row.appendChild(clock);
-  if(oldBox)oldBox.remove();
+  if(oldBox){
+   const oldParent=oldBox.parentElement;
+   oldBox.remove();
+   if(oldParent&&oldParent!==footer&&!oldParent.children.length&&!oldParent.textContent.trim())oldParent.remove();
+  }
   footer.dataset.bvtMetaV2='1';
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',moveFooterMeta,{once:true});
