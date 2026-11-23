@@ -13,33 +13,76 @@ if MARK in html:
     raise SystemExit(0)
 
 css = """<style id="bvt-banner-footer-layout-v2">
-/* Keep the original three-column grid from brand-header V3. */
-.topbar .brand-copy>.brand-slogan{display:contents!important;position:static!important;width:auto!important;margin:0!important;overflow:visible!important}
-.topbar .brand-slogan>span:first-child{grid-column:1!important;grid-row:2!important;justify-self:stretch!important;text-align:left!important}
-.topbar .brand-slogan>span:last-child{grid-column:3!important;grid-row:2!important;justify-self:stretch!important;text-align:right!important}
-.topbar .brand-slogan>span{display:block!important;width:100%!important;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important}
-.topbar .brand-copy>h1{grid-column:2!important;grid-row:1!important;justify-self:center!important;text-align:center!important}
+/* One grid owns the header geometry: flags | centered title | flags;
+   slogans are independent grid children under their matching flags. */
+.topbar .brand{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr)!important;
+ grid-template-rows:auto auto!important;
+ align-items:center!important;justify-items:stretch!important;
+ column-gap:clamp(4px,1.2vw,12px)!important;row-gap:5px!important;
+ width:100%!important;max-width:1100px!important;min-width:0!important;
+ margin:0 auto!important;box-sizing:border-box!important
+}
+.topbar .brand>.brand-flag:first-child{
+ grid-column:1!important;grid-row:1!important;justify-self:center!important;
+ align-self:center!important;width:clamp(34px,5vw,62px)!important;
+ height:auto!important;aspect-ratio:3/2!important;box-sizing:border-box!important
+}
+.topbar .brand>.brand-flag:last-child{
+ grid-column:3!important;grid-row:1!important;justify-self:center!important;
+ align-self:center!important;width:clamp(34px,5vw,62px)!important;
+ height:auto!important;aspect-ratio:3/2!important;box-sizing:border-box!important
+}
+.topbar .brand>.brand-flag svg{display:block!important;width:100%!important;height:100%!important}
+.topbar .brand>.brand-copy{display:contents!important}
+.topbar .brand-copy>h1{
+ grid-column:2!important;grid-row:1!important;justify-self:center!important;
+ align-self:center!important;width:max-content!important;max-width:100%!important;
+ min-width:0!important;margin:0!important;padding:0!important;
+ color:#fff!important;text-align:center!important;white-space:nowrap!important;
+ font-size:clamp(13px,3.6vw,34px)!important;line-height:1.08!important;
+ letter-spacing:0!important;font-weight:900!important;overflow:visible!important
+}
+.topbar .brand-copy>.brand-slogan{display:contents!important}
+.topbar .brand-slogan>span:first-child{
+ grid-column:1!important;grid-row:2!important;justify-self:stretch!important;
+ align-self:start!important;width:100%!important;text-align:left!important
+}
+.topbar .brand-slogan>span:last-child{
+ grid-column:3!important;grid-row:2!important;justify-self:stretch!important;
+ align-self:start!important;width:100%!important;text-align:right!important
+}
+.topbar .brand-slogan>span{
+ display:block!important;min-width:0!important;margin:0!important;padding:0!important;
+ color:#fff!important;font-size:clamp(7px,1.8vw,11px)!important;
+ font-weight:850!important;line-height:1.22!important;letter-spacing:0!important;
+ white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important
+}
 #app-footer-meta .bvt-footer-credit-line-v2{
  display:flex!important;justify-content:center!important;align-items:center!important;
  flex-wrap:wrap!important;gap:4px!important;margin:4px 0 10px!important;
- width:100%!important;text-align:center!important;font-size:12px!important;
- font-weight:750!important;color:#111!important
+ width:100%!important;box-sizing:border-box!important;text-align:center!important;
+ font-size:12px!important;font-weight:750!important;color:#111!important
 }
 #app-footer-meta .bvt-footer-credit-line-v2,
 #app-footer-meta .bvt-footer-credit-line-v2 *{color:#111!important}
 #app-footer-meta .bvt-footer-version-row-v2{
  display:flex!important;align-items:center!important;justify-content:space-between!important;
- flex-wrap:nowrap!important;gap:12px!important;width:100%!important;max-width:100%!important;
- box-sizing:border-box!important;margin:0 0 8px!important
+ flex-wrap:nowrap!important;gap:8px!important;width:100%!important;max-width:100%!important;
+ min-width:0!important;box-sizing:border-box!important;padding:0 8px 0 0!important;
+ overflow:visible!important;margin:0 0 8px!important
 }
-#app-footer-meta .bvt-footer-version-row-v2 .bvt-version-node-v2{margin:0!important;min-width:0!important}
+#app-footer-meta .bvt-footer-version-row-v2 .bvt-version-node-v2{
+ margin:0!important;min-width:0!important;max-width:52%!important;overflow-wrap:anywhere!important
+}
 #app-footer-meta #bvt-header-clock{
- display:flex!important;flex-direction:column!important;align-items:flex-end!important;
- justify-content:center!important;gap:2px!important;margin:0 2px 0 auto!important;
- padding:2px 2px 2px 6px!important;box-sizing:border-box!important;
- width:max-content!important;max-width:100%!important;min-width:0!important;
- text-align:right!important;font-size:11px!important;line-height:1.4!important;
- white-space:nowrap!important;overflow:visible!important;color:#dc2626!important
+ display:flex!important;flex:0 1 auto!important;flex-direction:column!important;
+ align-items:flex-end!important;justify-content:center!important;gap:2px!important;
+ margin:0 0 0 auto!important;padding:2px 8px 2px 4px!important;
+ box-sizing:border-box!important;width:auto!important;max-width:48%!important;min-width:0!important;
+ text-align:right!important;font-size:11px!important;line-height:1.35!important;
+ white-space:normal!important;overflow:visible!important;color:#dc2626!important
 }
 #app-footer-meta #bvt-header-clock,
 #app-footer-meta #bvt-header-clock *{color:#dc2626!important}
@@ -47,9 +90,17 @@ css = """<style id="bvt-banner-footer-layout-v2">
 #app-footer-meta #bvt-clock-date{font-size:10px!important;font-weight:800!important}
 .topbar .top-meta #bvt-header-clock{display:none!important}
 @media(max-width:520px){
- #app-footer-meta .bvt-footer-version-row-v2{align-items:center!important;gap:6px!important}
- #app-footer-meta #bvt-header-clock{font-size:10px!important;margin-right:1px!important;padding-right:2px!important}
- #app-footer-meta #bvt-clock-date{font-size:9px!important}
+ .topbar .brand{column-gap:4px!important;row-gap:4px!important}
+ .topbar .brand-copy>h1{font-size:clamp(12px,3.8vw,18px)!important}
+ .topbar .brand-slogan>span{font-size:clamp(6.5px,1.85vw,8.5px)!important;line-height:1.18!important}
+ #app-footer-meta .bvt-footer-version-row-v2{gap:4px!important;padding-right:5px!important}
+ #app-footer-meta .bvt-footer-version-row-v2 .bvt-version-node-v2{max-width:50%!important}
+ #app-footer-meta #bvt-header-clock{max-width:48%!important;font-size:9px!important;padding-right:6px!important}
+ #app-footer-meta #bvt-clock-date{font-size:8px!important}
+}
+@media(max-width:350px){
+ .topbar .brand-copy>h1{font-size:11px!important}
+ .topbar .brand-slogan>span{font-size:6.2px!important}
 }
 </style>
 """
@@ -146,8 +197,6 @@ tag_end = html.find(">", data_start)
 data_end = html.find("</script>", tag_end)
 if tag_end < 0 or data_end < 0:
     raise SystemExit("Embedded CVDICT data block is malformed")
-if 'data-format="json"' not in html[data_start:tag_end]:
-    raise SystemExit("Embedded CVDICT data format is not JSON")
 try:
     rows = json.loads(html[tag_end+1:data_end])
 except Exception as exc:
