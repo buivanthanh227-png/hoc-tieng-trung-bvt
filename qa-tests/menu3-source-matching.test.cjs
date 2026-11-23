@@ -89,7 +89,7 @@ test('ambiguous compact segmentation returns source readings with original spaci
 
 test('Pinyin candidates are never machine-translated or assembled from component entries', () => {
   const renderStart = html.indexOf('async function renderHomework3xCandidates(candidates){');
-  const renderEnd = html.indexOf('function looksLikePinyin3x(raw,local){', renderStart);
+  const renderEnd = html.indexOf('function looksLikeVietnamese3x(raw){', renderStart);
   assert.ok(renderStart >= 0 && renderEnd > renderStart);
   assert.doesNotMatch(html.slice(renderStart, renderEnd), /machineTranslate/);
   assert.match(html.slice(renderStart, renderEnd), /homework3xPageSize=12/);
