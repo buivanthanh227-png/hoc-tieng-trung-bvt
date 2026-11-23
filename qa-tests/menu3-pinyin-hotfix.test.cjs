@@ -5,22 +5,22 @@ const path = require('node:path');
 const vm = require('node:vm');
 const test = require('node:test');
 
-const patchPath = path.join(__dirname, '..', 'menu3-pinyin-fix-v42.10.22.1.js');
+const patchPath = path.join(__dirname, '..', 'menu3-pinyin-fix-v42.10.23.js');
 const patch = fs.readFileSync(patchPath, 'utf8');
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 
 test('Menu 3 runtime is loaded directly by the application HTML', () => {
   assert.match(html, /id="bvt-v421023-menu3-runtime"/);
-  assert.match(html, /menu3-pinyin-fix-v42\.10\.22\.1\.js\?v=42\.10\.23/);
+  assert.match(html, /menu3-pinyin-fix-v42\.10\.23\.js\?v=42\.10\.23/);
 });
 
-test('Menu 3 hotfix does not replace the verified Menu 18-derived Pinyin mapper', () => {
+test('Menu 3 uses Menu 18 tone-position selector and restores the complete detail modal', () => {
   assert.doesNotMatch(patch, /window\.pinyinToChineseCandidates\s*=/);
   assert.doesNotMatch(patch, /window\.composePinyinSentence3x\s*=/);
   assert.doesNotMatch(patch, /function\s+(?:composeSentence|composeAll|segmentToken|buildInputOptions)\s*\(/);
   assert.match(html, /function pinyin18CanSegment\(value,syllables\)/);
   assert.match(patch, /function pathsForInputToken\(rawToken,available\)/);
-  assert.match(patch, /const shortest=Math\.min\(\.\.\.paths\.map\(path=>path\.length\)\)/);
+  assert.match(patch, /window\.pinyin18SelectToneDiverse\(valid,query,30\)/);\n  assert.match(patch, /window\.openHomework3xCandidateModal=function/);\n  for (const field of ['hanzi','pinyin','meaning']) assert.ok(patch.includes('data-copy=\\"'+field+'\\"'));\n  assert.match(patch, /data-speak=\\"zh\\"/);\n  assert.match(patch, /data-speak=\\"vi\\"/);
 });
 
 test('global press feedback is registered for pointer and keyboard interaction', () => {
