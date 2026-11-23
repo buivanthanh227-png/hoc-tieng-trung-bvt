@@ -1,4 +1,4 @@
-name: Menu 18 whole-sentence tone alternatives validation
+name: Menu 3 independent mapping validation
 
 on:
   push:
@@ -38,7 +38,7 @@ permissions:
   contents: read
 
 jobs:
-  validate-menu18-whole-sentence:
+  validate-menu3-independent-mapping:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -47,24 +47,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Apply sentence-level overlays and run regressions
+      - name: Validate source Menu 3 and retired Menu 18 state
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/menu18-check
-          cp index.html /tmp/menu18-check/index.html
           python3 -m py_compile tools/patch_menu18_ranking.py tools/patch_menu18_word_mapping.py tools/patch_menu18_multicandidate.py tools/test_menu18_word_mapping.py tools/patch_menu3_clone.py tools/test_menu3_clone.py tools/patch_menu3_ui_fix.py tools/test_menu3_ui_fix.py tools/patch_brand_header.py tools/test_brand_header.py
-          python3 tools/patch_menu18_ranking.py /tmp/menu18-check/index.html
-          python3 tools/patch_menu18_word_mapping.py /tmp/menu18-check/index.html
-          python3 tools/patch_menu18_multicandidate.py /tmp/menu18-check/index.html
-          python3 tools/patch_menu3_clone.py /tmp/menu18-check/index.html
-          python3 tools/test_menu18_word_mapping.py /tmp/menu18-check/index.html
-          python3 tools/test_menu3_clone.py /tmp/menu18-check/index.html
-          python3 tools/patch_menu3_ui_fix.py /tmp/menu18-check/index.html
-          python3 tools/test_menu3_ui_fix.py /tmp/menu18-check/index.html
-          python3 tools/patch_brand_header.py /tmp/menu18-check/index.html
-          python3 tools/test_brand_header.py /tmp/menu18-check/index.html
-          if grep -q 'MENU18_INDEPENDENT_TOKEN_MAPPING_V1' /tmp/menu18-check/index.html; then
-            echo "::error::The retired token-by-token mapper is still present."
+          python3 tools/test_menu18_word_mapping.py index.html
+          python3 tools/test_menu3_clone.py index.html
+          python3 tools/test_menu3_ui_fix.py index.html
+          python3 tools/test_brand_header.py index.html
+          if grep -q 'data-tab="translate-experimental"\|id="panel-translate-experimental"' index.html; then
+            echo "::error::The retired Menu 18 remains in source."
             exit 1
           fi
