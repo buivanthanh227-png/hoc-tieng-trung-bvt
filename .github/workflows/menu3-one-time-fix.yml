@@ -1,0 +1,121 @@
+name: One-time Menu 3 and button feedback patch
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/menu3-one-time-fix.yml"
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch Menu 3 and shared button feedback
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          def once(old, new, label):
+              global s
+              count = s.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected 1 match, found {count}")
+              s = s.replace(old, new, 1)
+
+          once(
+              "  const sourceList=rawCandidates.filter(item=>typeof homework3xValidVietnameseMeaning!=='function'||homework3xValidVietnameseMeaning(item));\n  if(!sourceList.length)",
+              """  const sourceList=rawCandidates.filter(item=>{
+               if(typeof homework3xValidVietnameseMeaning==='function'&&!homework3xValidVietnameseMeaning(item))return false;
+               // Long Pinyin sequences are accepted only from curated sentence sources.
+               const syllableCount=String(item?.py||'').trim().split(/\\s+/).filter(Boolean).length;
+               if(syllableCount>=4&&!String(item?.source||'').includes('Câu mẫu tích hợp sẵn'))return false;
+               const meaning=String(item?.vi||'').trim();
+               if(meaning.length>90||/[()（）\\[\\]【】]/.test(meaning)||/(?:phương ngữ|dạng kết hợp|Eristalis|taxonomy|taxonomic|danh pháp khoa học)/i.test(meaning))return false;
+               if(/\\b(?:mời bạn|xin bạn)\\s+và\\s+/i.test(meaning))return false;
+               return true;
+              });
+              if(!sourceList.length)""",
+              "Vietnamese meaning/source gate"
+          )
+          once(
+              "  const status=$('homework3x-status'),list=sourceList.slice().sort((a,b)=>(b.priority||0)-(a.priority||0)||(a.rowIndex||0)-(b.rowIndex||0));\n  homework3xCandidates=list;homework3xSelectedCandidateIndex=0;let homework3xCandidatePage=0;const homework3xPageSize=12;box.hidden=false;",
+              """  const status=$('homework3x-status'),list=sourceList.slice().sort((a,b)=>{
+               const aCurated=String(a.source||'').includes('Câu mẫu tích hợp sẵn')?1:0,bCurated=String(b.source||'').includes('Câu mẫu tích hợp sẵn')?1:0;
+               return bCurated-aCurated||(b.priority||0)-(a.priority||0)||(a.rowIndex||0)-(b.rowIndex||0);
+              }).slice(0,10);
+              homework3xCandidates=list;homework3xSelectedCandidateIndex=0;let homework3xCandidatePage=0;const homework3xPageSize=10;box.hidden=false;""",
+              "candidate cap"
+          )
+          once(
+              "   const composed=composePinyinSentence3x(raw);\n   if(composed.status==='ok'){",
+              """   // Continuous Pinyin is looked up as a whole; never split jintian into jin/ti/an.
+               if(!/[\\s,，、;；]/.test(raw.trim())){
+                status.textContent='Không có mục từ/câu mẫu khớp toàn bộ Pinyin này. Hệ thống không tự tách một chuỗi Pinyin liền thành nhiều âm tiết để đoán chữ Hán.';
+                box.hidden=false;box.innerHTML='<div class="empty">Không tìm thấy kết quả đủ tin cậy. Hãy nhập Pinyin có khoảng cách giữa các âm tiết hoặc bổ sung dấu thanh.</div>';
+                return;
+               }
+               const composed=composePinyinSentence3x(raw);
+               if(composed.status==='ok'){""",
+              "disable speculative splitting"
+          )
+          once("async function lookupHomework3x(){", "async function lookupHomework3xCore(){", "lookup core rename")
+          s = s.replace("||homework3xSelectedIndex!==0", "")
+          wrapper = """let homework3xLookupBusy=false;
+          async function lookupHomework3x(){
+           const button=$('homework3x-lookup'),status=$('homework3x-status'),box=$('homework3x-candidates');
+           if(homework3xLookupBusy)return;
+           homework3xLookupBusy=true;
+           if(button){button.disabled=true;button.setAttribute('aria-busy','true');}
+           try{await lookupHomework3xCore();}
+           catch(error){
+            console.error('Menu 3 lookup error',error);
+            if(status)status.textContent='Không thể hoàn tất lượt dịch này: '+(error?.message||String(error))+'. Bạn có thể thử lại.';
+            if(box){box.hidden=false;box.innerHTML='<div class="empty">Đã xảy ra lỗi trong lượt tra cứu. Hãy thử lại với Pinyin có dấu thanh hoặc khoảng cách rõ ràng.</div>';}
+           }
+           finally{
+            homework3xLookupBusy=false;
+            if(button){button.disabled=false;button.removeAttribute('aria-busy');}
+           }
+          }
+
+          """
+          marker = "</script>\n\n<script id=\"menu3-independent-translation-handlers\">"
+          if s.count(marker) != 1:
+              raise SystemExit("Menu 3 handler insertion marker missing or duplicated")
+          s = s.replace(marker, wrapper + marker, 1)
+          css = """<style id="bvt-global-button-press-feedback">
+          /* Tactile pressed feedback for controls across all 17 menus. */
+          button:not(:disabled),[role="button"],input[type="button"]:not(:disabled),input[type="submit"]:not(:disabled){
+           -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+           transition:transform .11s ease,box-shadow .11s ease,filter .11s ease;
+          }
+          button:not(:disabled):active,[role="button"]:active,input[type="button"]:not(:disabled):active,input[type="submit"]:not(:disabled):active{
+           transform:translateY(2px) scale(.985)!important;filter:brightness(.94);
+           box-shadow:inset 0 2px 4px rgba(15,23,42,.18)!important;
+          }
+          button:focus-visible,[role="button"]:focus-visible,input[type="button"]:focus-visible,input[type="submit"]:focus-visible{
+           outline:3px solid rgba(59,130,246,.35);outline-offset:2px;
+          }
+          button[aria-busy="true"]{cursor:progress;}
+          </style>
+          """
+          if 'bvt-global-button-press-feedback' in s:
+              raise SystemExit("Global press feedback already exists; aborting duplicate patch")
+          if s.count("</body>") != 1:
+              raise SystemExit("Expected one body close tag")
+          s = s.replace("</body>", css + "\n</body>", 1)
+          p.write_text(s, encoding="utf-8")
+          if "homework3xPageSize=10" not in s or ".slice(0,10)" not in s or "homework3xLookupBusy=false" not in s:
+              raise SystemExit("Post-patch validation failed")
+          print(f"Patched index.html ({len(s)} chars)")
+          PY
+      - name: Commit and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git rm .github/workflows/menu3-one-time-fix.yml
+          git commit -m "Fix Menu 3 Pinyin lookup and global button feedback"
+          git push
