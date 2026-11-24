@@ -35,7 +35,7 @@ checks = {
     "meaning quality gate rejects dictionary metadata, not full sentence meanings":
         "validMeaning(translated)" in js and "phương ngữ miền bắc" in js,
     "touching a result opens the detail modal":
-        "window.openHomework3xCandidateModal(item,index,source.length)" in js,
+        "window.openHomework3xCandidateModal(selected,index,source.length)" in js,
     "detail modal provides three copy controls and two speech controls":
         all(x in js for x in ['data-copy="hanzi"', 'data-copy="pinyin"', 'data-copy="meaning"', 'data-speak="zh"', 'data-speak="vi"']),
     "old instruction to tap merely to translate is absent":

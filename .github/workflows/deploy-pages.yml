@@ -238,7 +238,7 @@ jobs:
                 fi
 
                 patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.23.js")"
-                for marker in 'font-size:clamp(21px,5.2vw,27px)!important' 'window.renderHomework3xCandidatesV421023=renderCandidates' 'const token=++renderToken;let page=0;const pageSize=10' 'window.machineTranslate3x(String(item.zh),'\''zh-CN'\'','\''vi'\'')' 'window.openHomework3xCandidateModal(item,index,source.length)' 'data-copy="hanzi"' 'data-copy="pinyin"' 'data-copy="meaning"' 'data-speak="zh"' 'data-speak="vi"'; do
+                for marker in 'font-size:clamp(21px,5.2vw,27px)!important' 'window.renderHomework3xCandidatesV421023=renderCandidates' 'const token=++renderToken;let page=0;const pageSize=10' 'window.machineTranslate3x(String(item.zh),'\''zh-CN'\'','\''vi'\'')' 'window.openHomework3xCandidateModal(selected,index,source.length)' 'data-copy="hanzi"' 'data-copy="pinyin"' 'data-copy="meaning"' 'data-speak="zh"' 'data-speak="vi"'; do
                   if ! grep -Fq "$marker" <<< "$patch_js"; then
                     echo "::error::Production thiếu hiển thị kết quả đầy đủ hoặc hộp thoại Menu 3: $marker"
                     exit 1
