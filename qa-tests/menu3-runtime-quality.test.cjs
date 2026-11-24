@@ -121,7 +121,7 @@ test('modal speech bypasses shared auto speech and reads only the selected field
   assert.match(runtime,/Bypass shared auto-speech helpers/);
   assert.match(runtime,/utterance\.text=text/);
   assert.match(runtime,/synth\.cancel\(\)/);
-  assert.match(runtime,/language==='zh'\?'zh-CN':'vi-VN'/);
+  assert.match(runtime,/const language=locale==='zh'\?'zh-CN':'vi-VN'/);
   assert.doesNotMatch(runtime,/window\.bvtSpeakLocale\(text,locale\)/);
   assert.doesNotMatch(runtime,/window\.speakMandarinSentence\(text\)/);
 });
