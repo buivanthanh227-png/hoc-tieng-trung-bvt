@@ -16,8 +16,11 @@
   '#homework3x-candidates .homework3x-candidate{display:flex!important;align-items:flex-start!important;gap:10px!important;width:100%!important;min-width:0!important;min-height:150px!important;padding:12px!important;border:1.5px solid #dfe5ec!important;border-radius:15px!important;background:#fff!important;text-align:left!important;white-space:normal!important;box-shadow:0 1px 2px rgba(15,23,42,.04)!important}',
   '#homework3x-candidates .homework3x-candidate-content{display:flex!important;flex:1!important;flex-direction:column!important;gap:7px!important;min-width:0!important}',
   '#homework3x-candidates .homework3x-pagination{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin:12px 0!important;flex-wrap:nowrap!important}',
+  '#homework3x-candidates .homework3x-pagination.single-page{display:none!important}',
   '#homework3x-candidates .homework3x-pagination button{padding:9px 12px!important;border:1px solid #cbd5e1!important;border-radius:10px!important;background:#fff!important;font-weight:750!important;color:#344256!important}',
   '#homework3x-candidates .homework3x-pagination button:disabled{opacity:.4!important}',
+  '.homework3x-modal-backdrop button{transition:transform 110ms ease,filter 110ms ease!important}',
+  '.homework3x-modal-backdrop button:active{transform:translateY(2px) scale(.965)!important;filter:brightness(.86)!important}',
   '@media(max-width:600px){#homework3x-candidates .homework3x-candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}#homework3x-candidates .homework3x-candidate{min-height:140px!important;padding:9px!important}#homework3x-candidates .homework3x-candidate-number{flex:0 0 25px!important;width:25px!important;height:25px!important;font-size:13px!important}}',
   '@media(max-width:360px){#homework3x-candidates .homework3x-candidate-grid{grid-template-columns:1fr!important}}',
   '@media(prefers-reduced-motion:reduce){button,input[type=button],input[type=submit],[role=button],[role=tab],.btn,.tab,.menu-button,.tool-button{transition:none!important}}'
@@ -251,8 +254,8 @@
    const start=page*pageSize,rawItems=source.slice(start,start+pageSize);
    host.replaceChildren();
    const nav=()=>{
-    const node=document.createElement('div');node.className='homework3x-pagination';
-    node.innerHTML='<button type="button" data-page-prev>‹ Trang trước</button><span>Trang '+(page+1)+' / '+pageCount+' · '+source.length+' kết quả</span><button type="button" data-page-next>Trang sau ›</button>';
+    const node=document.createElement('div');node.className='homework3x-pagination'+(pageCount<=1?' single-page':'');
+    node.innerHTML='<button type="button" data-page-prev>‹ Trang trước</button><span>Trang '+(page+1)+' / '+pageCount+'</span><button type="button" data-page-next>Trang sau ›</button>';
     node.querySelector('[data-page-prev]').disabled=page===0;
     node.querySelector('[data-page-next]').disabled=page>=pageCount-1;
     node.querySelector('[data-page-prev]').addEventListener('click',()=>{if(page>0){page--;renderPage();}});
@@ -270,8 +273,7 @@
     const py=document.createElement('span');py.className='homework3x-candidate-py';py.style.cssText='display:block!important;color:#1769c2!important;font-size:clamp(21px,5.2vw,27px)!important;font-weight:900!important;line-height:1.35!important;letter-spacing:.01em!important;overflow-wrap:anywhere!important';py.textContent=formatByInputSpacing(query,item.py);
     const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.style.cssText='display:block!important;color:#7b3fa1!important;font-size:19px!important;font-weight:850!important;line-height:1.4!important;overflow-wrap:anywhere!important';zh.textContent=item.zh;
     const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.style.cssText='display:block!important;color:#16845b!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important';
-    const composed=Array.isArray(item.sourceRows)&&item.sourceRows.length>1;
-    const initialMeaning=composed?'':cleanMeaning(item.preferredMeaning||item.vi||'');
+    const initialMeaning=cleanMeaning(item.preferredMeaning||item.vi||'');
     vi.textContent=validMeaning(initialMeaning)?initialMeaning:'Đang xác minh nghĩa tiếng Việt…';
     content.append(py,zh,vi);button.append(number,content);
     button.addEventListener('click',event=>{
@@ -327,23 +329,32 @@
   if('speechSynthesis'in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang=locale==='zh'?'zh-CN':'vi-VN';window.speechSynthesis.speak(utterance);}
  };
  window.openHomework3xCandidateModal=function(item,index,total){
-  if(!item)return;
-  document.getElementById('homework3x-candidate-detail')?.remove();
-  const py=formatByInputSpacing(String(document.getElementById('homework3x-query')?.value||''),item.py);
-  const values={hanzi:String(item.zh||''),pinyin:py,meaning:String(item.vi||'')};
-  const backdrop=document.createElement('div');backdrop.id='homework3x-candidate-detail';
+  const existing=document.querySelector('.homework3x-modal-backdrop');
+  if(existing)existing.remove();
+  const values={
+   hanzi:String(item?.zh||'').trim(),
+   pinyin:String(item?.py||'').trim(),
+   meaning:cleanMeaning(item?.preferredMeaning||item?.vi||'')
+  };
+  if(!values.hanzi||!values.pinyin)return;
+  const backdrop=document.createElement('div');
   backdrop.className='homework3x-modal-backdrop';
-  backdrop.style.cssText='position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(15,23,42,.62);';
+  backdrop.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,12,17,.62);overscroll-behavior:contain';
   backdrop.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="homework3x-detail-title" style="width:min(620px,100%);max-height:88dvh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
-   '<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px"><b id="homework3x-detail-title" style="font-size:18px">KẾT QUẢ '+(Number(index)+1)+' / '+Number(total)+'</b><button type="button" data-detail-close aria-label="Đóng" style="font-size:25px;border:0;background:#eef2f7;border-radius:10px;padding:4px 12px">×</button></header>'+
-   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#7b3fa1">CHỮ HÁN</b><div style="font-size:27px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</div><div><button type="button" data-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-speak="zh">🔊 Phát âm chữ Hán</button></div></div>'+
-   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#2563a6">PHIÊN ÂM PINYIN</b><div style="font-size:22px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.pinyin)+'</div><button type="button" data-copy="pinyin">Sao chép Pinyin</button></div>'+
-   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#21805b">NGHĨA TIẾNG VIỆT</b><div style="font-size:19px;font-weight:700;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</div><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-speak="vi">🔊 Phát âm tiếng Việt</button></div></div>'+
+   '<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px"><h3 id="homework3x-detail-title" style="margin:0;font-size:18px">Kết quả '+(Number(index)+1)+' / '+Number(total||0)+'</h3><button type="button" data-detail-close style="min-width:40px;min-height:40px;border-radius:10px;font-weight:800">✕</button></header>'+
+   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#7b3fa1">HÁN TỰ</b><div style="font-size:27px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</div><div><button type="button" data-copy="hanzi">Sao chép Hán tự</button><button type="button" data-speak="zh">🔊 Phát âm Hán tự</button></div></div>'+
+   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#2563a6">PHIÊN ÂM</b><div style="font-size:22px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.pinyin)+'</div><button type="button" data-copy="pinyin">Sao chép Pinyin</button></div>'+
+   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#21805b">NGHĨA TIẾNG VIỆT</b><div style="font-size:19px;font-weight:700;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</div><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-speak="vi">🔊 Phát âm nghĩa</button></div></div>'+
    '<p data-copy-status role="status" aria-live="polite" style="min-height:20px;color:#15803d;font-weight:700"></p></section>';
+  const prevOverflow=document.body.style.overflow;
+  document.body.style.overflow='hidden';
   document.body.appendChild(backdrop);
   const status=backdrop.querySelector('[data-copy-status]');
-  backdrop.querySelector('[data-detail-close]').addEventListener('click',()=>backdrop.remove());
-  backdrop.addEventListener('click',event=>{if(event.target===backdrop)backdrop.remove();});
+  const close=()=>{backdrop.remove();document.body.style.overflow=prevOverflow;document.removeEventListener('keydown',onKey);};
+  const onKey=e=>{if(e.key==='Escape')close();};
+  document.addEventListener('keydown',onKey);
+  backdrop.querySelector('[data-detail-close]').addEventListener('click',close);
+  backdrop.addEventListener('click',event=>{if(event.target===backdrop)close();});
   backdrop.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
    const kind=button.dataset.copy;button.disabled=true;const ok=await copyText(values[kind]);button.disabled=false;
    if(status)status.textContent=ok?'Đã sao chép thành công.':'Không thể sao chép tự động trên trình duyệt này.';
