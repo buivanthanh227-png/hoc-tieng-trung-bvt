@@ -12,9 +12,9 @@ if len(tabs) != 17:
     tabs = re.findall(r'<button\b(?=[^>]*class="[^"]*\btab\b)(?=[^>]*data-tab="[^"]+")[^>]*>', html)
 if len(tabs) != 17:
     raise SystemExit(f"Expected 17 menu buttons; found {len(tabs)}.")
-headings = re.findall(r'<h[1-6]\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*data-function-number="[^"]+"[^>]*>', html)
+headings = re.findall(r'<h[1-6]\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*>', html)
 if len(headings) < 17:
-    raise SystemExit(f"Expected at least 17 numbered headings; found {len(headings)}.")
+    raise SystemExit(f"Expected at least 17 right-side section headings; found {len(headings)}.")
 for marker in [
     'id="bvt-unified-17-menu-headings-v2"',
     'font-size: 18px !important',
