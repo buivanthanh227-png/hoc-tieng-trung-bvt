@@ -74,13 +74,11 @@ test('multi-row composed glosses are never trusted; whole Hanzi sentence transla
   assert.match(runtime,/window\.machineTranslate3x\(String\(item\.zh\),'zh-CN','vi'\)/);
 });
 
-test('cards are inserted before asynchronous Vietnamese meaning lookup completes',()=>{
-  const start=runtime.indexOf('const renderPage=async()=>{');
-  const end=runtime.indexOf('await renderPage();return source[0]||null;',start);
-  const block=runtime.slice(start,end);
-  assert.ok(start>=0&&end>start);
-  assert.ok(block.indexOf('host.appendChild(grid)')<block.indexOf('await mapLimit(rawItems,3,translateFullSentence)'));
-  assert.match(block,/Đang xác minh nghĩa tiếng Việt/);
+test('Vietnamese meanings are resolved before any result card is rendered',()=>{
+  assert.match(runtime,/Đang hoàn thiện nghĩa tiếng Việt cho các kết quả/);
+  assert.match(runtime,/const resolved=await mapLimit\(source,3,translateFullSentence\)/);
+  assert.match(runtime,/const complete=resolved.filter\(item=>item&&item\.zh&&item\.py&&validMeaning\(item\.vi\)\)/);
+  assert.ok(!runtime.includes("Đang xác minh nghĩa tiếng Việt…"));
 });
 
 test('runtime has real whitespace regexes, not literal backslash-s matching',()=>{
