@@ -2347,6 +2347,70 @@ html body .topbar .brand>.brand-flag:last-child{
  max-width:none!important;max-height:none!important
 }
 </style>
+
+<style id="bvt-desktop-split-menus">
+/* Computer only: menu 1-9 on the left, menu 10-17 on the right.
+   Phones and tablets keep the existing single menu. */
+.menu-col{display:contents}
+@media (min-width:1180px) and (hover:hover) and (pointer:fine){
+ html body .app-shell{
+  display:grid!important;
+  grid-template-columns:248px minmax(0,1fr) 248px!important;
+  grid-template-areas:"nav content side"!important;
+  max-width:1560px!important;
+  align-items:start!important;
+ }
+ html body .app-shell #main-tabs{
+  grid-column:1 / -1!important;
+  grid-row:1!important;
+  position:sticky!important;
+  top:calc(96px + env(safe-area-inset-top))!important;
+  display:grid!important;
+  grid-template-columns:248px minmax(0,1fr) 248px!important;
+  align-content:start!important;
+  align-items:start!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  gap:0!important;
+  padding:8px 0 0!important;
+  margin:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+  z-index:4!important;
+ }
+ html body .app-shell #main-tabs .menu-col{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:6px!important;
+  width:248px!important;
+  min-width:0!important;
+  pointer-events:auto!important;
+ }
+ html body .app-shell #main-tabs .menu-col-left{grid-column:1!important;grid-row:1!important}
+ html body .app-shell #main-tabs .menu-col-right{grid-column:3!important;grid-row:1!important}
+ html body .app-shell #main-tabs .tab{
+  pointer-events:auto!important;
+  width:calc(100% - 12px)!important;
+  margin:0 6px!important;
+  height:auto!important;
+  min-height:50px!important;
+  max-height:none!important;
+ }
+ html body .app-shell>main{
+  grid-column:2!important;
+  grid-row:1!important;
+  position:relative!important;
+  z-index:1!important;
+ }
+}
+</style>
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
@@ -2361,6 +2425,7 @@ html body .topbar .brand>.brand-flag:last-child{
 <div class="app-shell">
 <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-tabs">☰ DANH MỤC CHỨC NĂNG</button>
 <nav id="main-tabs" class="tabs" aria-label="Các chức năng chính">
+<div class="menu-col menu-col-left">
 <button class="tab active" data-tab="dict" type="button"><span class="tab-number" aria-hidden="true">1</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">📚</span><span class="tab-label">TỪ ĐIỂN TIẾNG TRUNG</span></span></button>
 <button class="tab" data-tab="ocr" type="button"><span class="tab-number" aria-hidden="true">2</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🖼️</span><span class="tab-label">NHẬN DIỆN CHỮ HÁN BẰNG HÌNH ẢNH</span></span></button>
 <button class="tab" data-tab="translate3" type="button"><span class="tab-number" aria-hidden="true">3</span><span class="tab-main"><span class="tab-icon translate-icon" aria-hidden="true">文 ⇄ A</span><span class="tab-label">DỊCH NHANH VIỆT ⇄ TRUNG</span></span></button>
@@ -2370,6 +2435,8 @@ html body .topbar .brand>.brand-flag:last-child{
 <button class="tab" data-tab="write" type="button"><span class="tab-number" aria-hidden="true">7</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">✍️</span><span class="tab-label">LUYỆN VIẾT HÁN TỰ</span></span></button>
 <button class="tab" data-tab="read" type="button"><span class="tab-number" aria-hidden="true">8</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🔊</span><span class="tab-label">LUYỆN ĐỌC CHỮ HÁN</span></span></button>
 <button class="tab" data-tab="combine" type="button"><span class="tab-number" aria-hidden="true">9</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🧩</span><span class="tab-label">GHÉP CÂU LUYỆN PHẢN XẠ TIẾNG TRUNG</span></span></button>
+</div>
+<div class="menu-col menu-col-right">
 <button class="tab" data-tab="vocab-training" type="button"><span class="tab-number" aria-hidden="true">10</span><span class="tab-main"><span class="tab-icon vocab-wordmark" aria-hidden="true">词</span><span class="tab-label">LUYỆN TẬP TỪ VỰNG TIẾNG TRUNG</span></span></button>
 <button class="tab" data-tab="number" type="button"><span class="tab-number" aria-hidden="true">11</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">🔢</span><span class="tab-label">LUYỆN SỐ TIẾNG TRUNG</span></span></button>
 <button class="tab" data-tab="radicals" type="button"><span class="tab-number" aria-hidden="true">12</span><span class="tab-main"><span class="tab-icon" aria-hidden="true">部</span><span class="tab-label">DANH SÁCH BỘ THỦ TIẾNG TRUNG</span></span></button>
@@ -2379,6 +2446,7 @@ html body .topbar .brand>.brand-flag:last-child{
 <button class="tab" data-tab="pinyin-audio" type="button"><span class="tab-number" aria-hidden="true">16</span><span class="tab-main"><span class="tab-icon pinyin-brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3.5 13v-1a8.5 8.5 0 0 1 17 0v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><rect x="2.5" y="12" width="4.5" height="7.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="17" y="12" width="4.5" height="7.5" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19 19.5c-.7 1.3-2 2-4 2h-1" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><b>Pinyin</b></span><span class="tab-label">LUYỆN NGHE PHIÊN ÂM TIẾNG TRUNG</span></span></button>
 <button class="tab" data-tab="hanzi-memory" type="button"><span class="tab-number" aria-hidden="true">17</span><span class="tab-main"><span class="tab-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="25" height="25" focusable="false"><path d="M5 4.5h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 9h3m-3 4h3m4-4h3m-3 4h3M8 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m16.5 2.5 1.2 1.2 2.3-2.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span class="tab-label">THỬ THÁCH NHỚ MẶT CHỮ HÁN</span></span></button>
 
+</div>
 </nav>
 <noscript><div class="source-status error">Trình duyệt hiện không chạy JavaScript nên các chức năng tra cứu chưa thể hoạt động. Hãy mở ứng dụng trên Safari/Chrome qua địa chỉ HTTPS, không dùng trình xem trước tệp của iPhone.</div></noscript>
 <main>
