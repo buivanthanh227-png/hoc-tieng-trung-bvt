@@ -30,8 +30,8 @@ test('Menu 3 uses Menu 18 tone-position selector and restores the complete detai
   assert.match(patch, /results\.length>=300/);
   assert.match(patch, /window\.openHomework3xCandidateModal=function/);
   for (const field of ['hanzi','pinyin','meaning']) assert.ok(patch.includes('data-copy="'+field+'"'));
-  assert.match(patch, /data-speak="zh"/);
-  assert.match(patch, /data-speak="vi"/);
+  assert.match(patch, /data-menu3-speak="zh"/);
+  assert.match(patch, /data-menu3-speak="vi"/);
 });
 
 test('global press feedback is registered for pointer and keyboard interaction', () => {

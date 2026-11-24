@@ -353,7 +353,7 @@
  const speakText=(value,locale)=>{
   // Read only the selected field. Bypass shared auto-speech helpers because
   // they may append queued chunks or detect extra languages from page text.
-  const text=String(value??'').normalize('NFC').replace(/[\\u200B-\\u200D\\uFEFF]/g,'').trim();
+  const text=String(value??'').normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g,'').trim();
   if(!text||!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined')return;
   const synth=window.speechSynthesis;
   synth.cancel();
@@ -391,9 +391,9 @@
   backdrop.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,12,17,.62);overscroll-behavior:contain';
   backdrop.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="homework3x-detail-title" style="width:min(620px,100%);max-height:88dvh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
    '<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px"><h3 id="homework3x-detail-title" style="margin:0;font-size:18px">Kết quả '+(Number(index)+1)+' / '+Number(total||0)+'</h3><button type="button" data-detail-close style="min-width:40px;min-height:40px;border-radius:10px;font-weight:800">✕</button></header>'+
-   '<div class="homework3x-modal-line homework3x-modal-line-hanzi" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#7b3fa1!important">CHỮ HÁN</b><span class="homework3x-modal-value homework3x-modal-value-hanzi" style="display:block!important;color:#7b3fa1!important;-webkit-text-fill-color:#7b3fa1!important;font-size:29px!important;font-weight:850!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</span><div><button type="button" data-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-speak="zh">🔊 Phát âm chữ Hán</button></div></div>'+
+   '<div class="homework3x-modal-line homework3x-modal-line-hanzi" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#7b3fa1!important">CHỮ HÁN</b><span class="homework3x-modal-value homework3x-modal-value-hanzi" style="display:block!important;color:#7b3fa1!important;-webkit-text-fill-color:#7b3fa1!important;font-size:29px!important;font-weight:850!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</span><div><button type="button" data-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-menu3-speak="zh">🔊 Phát âm chữ Hán</button></div></div>'+
    '<div class="homework3x-modal-line homework3x-modal-line-pinyin" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#2563a6!important">PHIÊN ÂM PINYIN</b><span class="homework3x-modal-value homework3x-modal-value-pinyin" style="display:block!important;color:#2563a6!important;-webkit-text-fill-color:#2563a6!important;font-size:24px!important;font-weight:850!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.pinyin)+'</span><button type="button" data-copy="pinyin">Sao chép Pinyin</button></div>'+
-   '<div class="homework3x-modal-line homework3x-modal-line-meaning" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#21805b!important">NGHĨA TIẾNG VIỆT</b><span class="homework3x-modal-value homework3x-modal-value-meaning" style="display:block!important;color:#21805b!important;-webkit-text-fill-color:#21805b!important;font-size:20px!important;font-weight:800!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</span><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-speak="vi">🔊 Phát âm tiếng Việt</button></div></div>'+
+   '<div class="homework3x-modal-line homework3x-modal-line-meaning" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#21805b!important">NGHĨA TIẾNG VIỆT</b><span class="homework3x-modal-value homework3x-modal-value-meaning" style="display:block!important;color:#21805b!important;-webkit-text-fill-color:#21805b!important;font-size:20px!important;font-weight:800!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</span><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-menu3-speak="vi">🔊 Phát âm tiếng Việt</button></div></div>'+
    '<p data-copy-status role="status" aria-live="polite" style="min-height:20px;color:#15803d;font-weight:700"></p></section>';
   const prevOverflow=document.body.style.overflow;
   document.body.style.overflow='hidden';
@@ -408,7 +408,7 @@
    const kind=button.dataset.copy;button.disabled=true;const ok=await copyText(values[kind]);button.disabled=false;
    if(status)status.textContent=ok?'Đã sao chép thành công.':'Không thể sao chép tự động trên trình duyệt này.';
   }));
-  backdrop.querySelectorAll('[data-speak]').forEach(button=>button.addEventListener('click',()=>speakText(button.dataset.speak==='zh'?values.hanzi:values.meaning,button.dataset.speak==='zh'?'zh':'vi')));
+  backdrop.querySelectorAll('[data-menu3-speak]').forEach(button=>button.addEventListener('click',()=>speakText(button.dataset.menu3Speak==='zh'?values.hanzi:values.meaning,button.dataset.menu3Speak==='zh'?'zh':'vi')));
  };
  /* Let a newer lookup supersede pending work without allowing stale results to render. */
  const lookupButton=document.getElementById('homework3x-lookup');
