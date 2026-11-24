@@ -99,3 +99,29 @@ test('runtime has real whitespace regexes, not literal backslash-s matching',()=
   assert.ok(!runtime.includes("split(/[\\\\s,"));
   assert.ok(!runtime.includes("split(/\\\\s+/"));
 });
+
+
+test('unknown but clause-like dictionary compositions are retained for full-sentence Vietnamese translation',()=>{
+  assert.match(runtime,/function menu3CanTranslateWholeSentence\(entries\)/);
+  assert.match(runtime,/if\(!vi&&!menu3CanTranslateWholeSentence\(path\.entries\)\)continue/);
+  assert.match(runtime,/results\.push\(\{zh:path\.zh,py:path\.entries\.map\(entry=>String\(entry\.py\|\|''\)\.trim\(\)\)\.filter\(Boolean\)\.join\(' '\),vi:vi\|\|'',score:path\.score\}\)/);
+  assert.match(runtime,/const resolved=await mapLimit\(source,3,translateFullSentence\)/);
+});
+
+test('modal applies three isolated colors to the actual Hanzi, Pinyin and Vietnamese values',()=>{
+  assert.match(runtime,/homework3x-modal-value-hanzi/);
+  assert.match(runtime,/homework3x-modal-value-pinyin/);
+  assert.match(runtime,/homework3x-modal-value-meaning/);
+  assert.match(runtime,/color:#7b3fa1!important;-webkit-text-fill-color:#7b3fa1!important/);
+  assert.match(runtime,/color:#2563a6!important;-webkit-text-fill-color:#2563a6!important/);
+  assert.match(runtime,/color:#21805b!important;-webkit-text-fill-color:#21805b!important/);
+});
+
+test('modal speech bypasses shared auto speech and reads only the selected field',()=>{
+  assert.match(runtime,/Bypass shared auto-speech helpers/);
+  assert.match(runtime,/utterance\.text=text/);
+  assert.match(runtime,/synth\.cancel\(\)/);
+  assert.match(runtime,/language==='zh'\?'zh-CN':'vi-VN'/);
+  assert.doesNotMatch(runtime,/window\.bvtSpeakLocale\(text,locale\)/);
+  assert.doesNotMatch(runtime,/window\.speakMandarinSentence\(text\)/);
+});
