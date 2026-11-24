@@ -7,16 +7,16 @@ import sys
 path = Path(sys.argv[1] if len(sys.argv) > 1 else "index.html")
 html = path.read_text(encoding="utf-8")
 
-tabs = re.findall(r'<button\\b[^>]*class="[^"]*\\btab\\b[^"]*"[^>]*data-tab="([^"]+)"', html)
+tabs = re.findall(r'<button\b[^>]*class="[^"]*\btab\b[^"]*"[^>]*data-tab="([^"]+)"', html)
 if len(tabs) != 17:
-    tabs = re.findall(r'<button\\b(?=[^>]*class="[^"]*\\btab\\b)(?=[^>]*data-tab="[^"]+")[^>]*>', html)
+    tabs = re.findall(r'<button\b(?=[^>]*class="[^"]*\btab\b)(?=[^>]*data-tab="[^"]+")[^>]*>', html)
 if len(tabs) != 17:
     raise SystemExit(f"Expected exactly 17 navigation menu buttons; found {len(tabs)}.")
 required = ["BVT_FUNCTION_COLORS", "function bvtSyncFunctionHeading", "function switchTab(tab)"]
 missing = [token for token in required if token not in html]
 if missing:
     raise SystemExit("Cannot verify existing heading/color architecture: " + ", ".join(missing))
-heading_tags = re.findall(r'<h[1-6]\\b[^>]*class="[^"]*\\bsection-title\\b[^"]*"[^>]*data-function-number="[^"]+"[^>]*>', html)
+heading_tags = re.findall(r'<h[1-6]\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*data-function-number="[^"]+"[^>]*>', html)
 if len(heading_tags) < 17:
     raise SystemExit(f"Expected at least 17 numbered right-side headings; found {len(heading_tags)}.")
 
@@ -53,7 +53,7 @@ if style_pattern.search(html):
     if count != 1: raise SystemExit(f"Expected one old heading style; found {count}.")
 else:
     if html.count("</head>") != 1: raise SystemExit("Cannot uniquely locate </head>.")
-    html = html.replace("</head>", style + "\\n</head>", 1)
+    html = html.replace("</head>", style + "\n</head>", 1)
 
 script = r"""<script id="bvt-unified-17-menu-headings-runtime-v2">
 (function(){
@@ -95,7 +95,7 @@ if script_pattern.search(html):
     if count != 1: raise SystemExit(f"Expected one heading runtime; found {count}.")
 else:
     if html.count("</body>") != 1: raise SystemExit("Cannot uniquely locate </body>.")
-    html = html.replace("</body>", script + "\\n</body>", 1)
+    html = html.replace("</body>", script + "\n</body>", 1)
 
 if html.count('id="bvt-unified-17-menu-headings-v2"') != 1 or html.count('id="bvt-unified-17-menu-headings-runtime-v2"') != 1:
     raise SystemExit("Heading style/runtime validation failed.")
