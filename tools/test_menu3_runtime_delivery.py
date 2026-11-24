@@ -11,15 +11,15 @@ checks = {
     "result renderer targets the visible candidate container": "getElementById('homework3x-candidates')" in js,
     "all three result fields are rendered": all(x in js for x in ["homework3x-candidate-py", "homework3x-candidate-zh", "homework3x-candidate-vi"]),
     "Pinyin is explicitly large": "font-size:clamp(21px,5.2vw,27px)!important" in js,
-    "Vietnamese meaning is retained and validated": "item.preferredMeaning||item.vi||''" in js and "validMeaning(vi)" in js,
-    "candidate click opens the detail modal": "window.openHomework3xCandidateModal(selected,index,source.length)" in js,
+    "Vietnamese meaning is retained and validated": "const direct=[item.preferredMeaning,item.vi]" in js and "validMeaning(value)" in js,
+    "candidate click opens the detail modal": "window.openHomework3xCandidateModal(item,index,complete.length)" in js,
     "modal has Hanzi, Pinyin and Vietnamese": all(x in js for x in ["CHỮ HÁN", "PHIÊN ÂM PINYIN", "NGHĨA TIẾNG VIỆT"]),
     "modal has three copy actions": all(x in js for x in ['data-copy="hanzi"', 'data-copy="pinyin"', 'data-copy="meaning"']),
     "modal has two speech actions": all(x in js for x in ['data-speak="zh"', 'data-speak="vi"']),
     "candidate renderer is exported to the page": "window.renderHomework3xCandidatesV421023=renderCandidates" in js,
     "lookup bridge is present in HTML": "BVT_MENU3_FULL_RESULTS_RENDERER_BRIDGE_V1" in html and "window.renderHomework3xCandidatesV421023" in html,
     "exactly ten results per page": "const token=++renderToken;let page=0;const pageSize=10" in js,
-    "full Chinese sentence is translated when dictionary meaning is absent": "window.machineTranslate3x(String(item.zh),'zh-CN','vi')" in js,
+    "full Chinese sentence is translated when dictionary meaning is absent": "translators.push(()=>window.machineTranslate3x(hanzi,'zh-CN','vi'))" in js,
     "input word spacing is preserved": ".join('')" in js,
 }
 for label, ok in checks.items():

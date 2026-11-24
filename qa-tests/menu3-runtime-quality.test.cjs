@@ -68,10 +68,22 @@ test('strict umlaut matching splits multi-syllable input and candidate readings 
   assert.deepEqual(Array.from(result,x=>x.zh),['A']);
 });
 
-test('multi-row composed glosses are never trusted; whole Hanzi sentence translation is used',()=>{
+test('multi-row composed glosses are translated from complete Hanzi with a secondary translator',()=>{
   assert.match(runtime,/const composed=Array\.isArray\(item\.sourceRows\)&&item\.sourceRows\.length>1/);
-  assert.match(runtime,/let vi=composed\?'':cleanMeaning\(item\.preferredMeaning\|\|item\.vi\|\|''\)/);
-  assert.match(runtime,/window\.machineTranslate3x\(String\(item\.zh\),'zh-CN','vi'\)/);
+  assert.match(runtime,/const direct=\[item\.preferredMeaning,item\.vi\]\.map\(cleanMeaning\)/);
+  assert.match(runtime,/if\(!composed&&direct\)return \{\.\.\.item,vi:direct\}/);
+  assert.match(runtime,/translators\.push\(\(\)=>window\.machineTranslate3x\(hanzi,'zh-CN','vi'\)\)/);
+  assert.match(runtime,/translators\.push\(\(\)=>window\.machineTranslate\(hanzi,'zh-CN','vi'\)\)/);
+});
+
+test('resolved Vietnamese meanings survive invalid preferred glosses and translator fallback',()=>{
+  assert.match(runtime,/const direct=\[item\.preferredMeaning,item\.vi\]\.map\(cleanMeaning\)/);
+  assert.match(runtime,/!isPinyinEchoMeaning\(value,item\.py\)/);
+  assert.match(runtime,/translators\.push\(\(\)=>window\.machineTranslate3x\(hanzi,'zh-CN','vi'\)\)/);
+  assert.match(runtime,/translators\.push\(\(\)=>window\.machineTranslate\(hanzi,'zh-CN','vi'\)\)/);
+  assert.match(runtime,/result\.translation\?\?result\.translatedText/);
+  assert.match(runtime,/meaning:validMeaning\(modalVi\)&&!isPinyinEchoMeaning\(modalVi,item\?\.py\)/);
+  assert.match(runtime,/if\(!values\.hanzi\|\|!values\.pinyin\|\|!values\.meaning\)return/);
 });
 
 test('Vietnamese meanings are resolved before any result card is rendered',()=>{
