@@ -19,7 +19,7 @@ checks = {
     "candidate renderer is exported to the page": "window.renderHomework3xCandidatesV421023=renderCandidates" in js,
     "lookup bridge is present in HTML": "BVT_MENU3_FULL_RESULTS_RENDERER_BRIDGE_V1" in html and "window.renderHomework3xCandidatesV421023" in html,
     "exactly ten results per page": "const token=++renderToken;let page=0;const pageSize=10" in js,
-    "full Chinese sentence is translated when dictionary meaning is absent": "window.machineTranslate3x(String(item.zh),'zh-CN','vi')" in js,
+    "full Chinese sentence is translated when dictionary meaning is absent": "translators.push(()=>window.machineTranslate3x(hanzi,'zh-CN','vi'))" in js,
     "input word spacing is preserved": ".join('')" in js,
 }
 for label, ok in checks.items():
