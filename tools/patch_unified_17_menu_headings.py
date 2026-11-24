@@ -16,14 +16,14 @@ required = ["BVT_FUNCTION_COLORS", "function bvtSyncFunctionHeading", "function 
 missing = [token for token in required if token not in html]
 if missing:
     raise SystemExit("Cannot verify existing heading/color architecture: " + ", ".join(missing))
-heading_tags = re.findall(r'<h[1-6]\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*data-function-number="[^"]+"[^>]*>', html)
+heading_tags = re.findall(r'<h[1-6]\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*>', html)
 if len(heading_tags) < 17:
     raise SystemExit(f"Expected at least 17 numbered right-side headings; found {len(heading_tags)}.")
 
 style = """<style id="bvt-unified-17-menu-headings-v2">
 /* Normalize heading and nested fragments: no menu-specific oversized text. */
-body .panel .section-title[data-function-number],
-body .panel .section-title[data-function-number] * {
+body .panel .section-title,
+body .panel .section-title * {
   box-sizing: border-box !important;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif !important;
   font-size: 18px !important;
@@ -31,17 +31,17 @@ body .panel .section-title[data-function-number] * {
   line-height: 1.3 !important;
   letter-spacing: 0 !important;
 }
-body .panel .section-title[data-function-number] {
+body .panel .section-title {
   color: var(--red) !important;
   max-width: 100% !important;
   overflow-wrap: break-word !important;
   word-break: normal !important;
   text-wrap: pretty;
 }
-body .panel .section-title[data-function-number] * { color: inherit !important; }
+body .panel .section-title * { color: inherit !important; }
 @media (max-width: 600px) {
-  body .panel .section-title[data-function-number],
-  body .panel .section-title[data-function-number] * {
+  body .panel .section-title,
+  body .panel .section-title * {
     font-size: 16px !important;
     line-height: 1.3 !important;
   }
@@ -60,7 +60,7 @@ script = r"""<script id="bvt-unified-17-menu-headings-runtime-v2">
   function syncSelectedHeading(){
     const panel=document.querySelector('.panel.active');
     if(!panel)return;
-    const heading=panel.querySelector('.section-title[data-function-number]');
+    const heading=panel.querySelector('.section-title');
     if(!heading)return;
     const key=String(panel.id||'').replace(/^panel-/,'');
     let palette=null;
