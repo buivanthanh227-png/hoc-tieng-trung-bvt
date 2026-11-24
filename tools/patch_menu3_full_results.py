@@ -43,7 +43,5 @@ else:
 lookup_start = html.find("async function lookupHomework3x(){")
 if lookup_start < 0:
     raise SystemExit("Menu 3 lookup function not found.")
-lookup_end = html.find("\n}", lookup_start)
-lookup = html[lookup_start:lookup_end if lookup_end >= 0 else len(html)]
-if "renderHomework3xCandidates(" not in lookup:
+if "renderHomework3xCandidates(" not in html[lookup_start:]:
     raise SystemExit("Menu 3 lookup does not call the candidate renderer.")
