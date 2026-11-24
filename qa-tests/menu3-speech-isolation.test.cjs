@@ -71,3 +71,10 @@ test('modal speech controls use a private data attribute, isolated from the page
   assert.doesNotMatch(modal, /data-speak=/);
   assert.doesNotMatch(modal, /querySelectorAll\('\[data-speak\]'\)/);
 });
+
+test('deployment production verification checks the isolated Menu 3 speech attributes', () => {
+  const workflow = fs.readFileSync(path.join(__dirname, '..', '.github', 'workflows', 'deploy-pages.yml'), 'utf8');
+  assert.match(workflow, /'data-menu3-speak="zh"'/);
+  assert.match(workflow, /'data-menu3-speak="vi"'/);
+  assert.doesNotMatch(workflow, /'data-speak="(?:zh|vi)"'/);
+});
