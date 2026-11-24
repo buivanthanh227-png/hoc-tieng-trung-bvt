@@ -22,8 +22,9 @@ checks = {
         all(x in js for x in ["homework3x-candidate-py", "homework3x-candidate-zh", "homework3x-candidate-vi"]),
     "Pinyin remains visually prominent":
         "font-size:clamp(21px,5.2vw,27px)!important" in js,
-    "Pinyin grouping removes only artificial inner syllable spaces":
-        "syllables.slice(at,at+selected.length).join('')" in js,
+    "Pinyin grouping preserves user token boundaries and formats tones from source syllables":
+        "const sourceGroup=syllables.slice(at,at+selected.length)" in js
+        and "groups.push(menu3FormatWord(match[0],sourceGroup.join('')))" in js,
     "original separators and punctuation are copied from the user's input":
         "source.slice(previous.index+previous[0].length,current.index)" in js
         and "source.slice(last.index+last[0].length)" in js,
