@@ -10,6 +10,7 @@ on:
       - "qa-tests/menu3-pinyin-hotfix.test.cjs"
       - "qa-tests/menu3-composition-meaning.test.cjs"
       - "qa-tests/menu3-unified-render.test.cjs"
+      - "qa-tests/menu3-speech-isolation.test.cjs"
       - "index.html"
       - ".github/workflows/menu3-semantic-regression.yml"
   workflow_dispatch:
@@ -28,4 +29,4 @@ jobs:
       - name: Check Menu 3 runtime syntax
         run: node --check menu3-pinyin-fix-v42.10.23.js
       - name: Run Menu 3 semantic and modal regressions
-        run: node --test qa-tests/menu3-meaning-and-modal.test.cjs qa-tests/menu3-runtime-quality.test.cjs qa-tests/menu3-pinyin-hotfix.test.cjs qa-tests/menu3-composition-meaning.test.cjs qa-tests/menu3-unified-render.test.cjs
+        run: node --test qa-tests/menu3-meaning-and-modal.test.cjs qa-tests/menu3-runtime-quality.test.cjs qa-tests/menu3-pinyin-hotfix.test.cjs qa-tests/menu3-composition-meaning.test.cjs qa-tests/menu3-unified-render.test.cjs qa-tests/menu3-speech-isolation.test.cjs
