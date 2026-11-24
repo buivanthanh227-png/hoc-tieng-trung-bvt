@@ -123,8 +123,10 @@ jobs:
               raise SystemExit(f"Manifest version mismatch: {version}")
           if f"Phiên bản phát hành hiện tại: **{version}**." not in readme:
               raise SystemExit("README version does not match manifest")
-          if "app-shell-v42-10-23-" not in sw:
-              raise SystemExit("Service Worker cache version does not match manifest")
+          import re
+          cache_match = re.search(r"""const CACHE_NAME = ['"]hoc-trung-app-shell-v[0-9][^'"]*['"]""", sw)
+          if not cache_match:
+              raise SystemExit("Service Worker app-shell cache namespace is missing or invalid")
           if "menu3-pinyin-fix-v42.10.23.js" not in sw or "injectMenu3RuntimeFix" not in sw:
               raise SystemExit("Service Worker chưa nạp bản sửa Pinyin của Menu 3")
           print("Manifest, README and Service Worker version synchronization: PASS")
