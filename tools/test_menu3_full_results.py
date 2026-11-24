@@ -27,6 +27,8 @@ checks = {
     "original separators and punctuation are copied from the user's input":
         "source.slice(previous.index+previous[0].length,current.index)" in js
         and "source.slice(last.index+last[0].length)" in js,
+    "the user's original letter case is not changed":
+        "return output;" in js and "ch.toUpperCase()" not in js,
     "missing Vietnamese glosses are translated from the complete Hanzi sentence":
         "window.machineTranslate3x(String(item.zh),'zh-CN','vi')" in js,
     "meaning quality gate rejects dictionary metadata, not full sentence meanings":
