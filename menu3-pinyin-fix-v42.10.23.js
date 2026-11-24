@@ -192,7 +192,10 @@
  let currentCandidates=[];
  function menu3ReadingUsesUmlaut(value){
   const text=String(value||'').normalize('NFD').toLowerCase();
-  return text.includes('\u0308')||/v/.test(text);
+  // Tone-marked ü syllables (nǚ, lǜ, jù, qǔ, xū, yǔ) no longer
+  // carry the visible diaeresis after Unicode normalization.
+  const toneMarkedUmlaut=/(?:^|[^a-z])[nljqxy]u[\u0304\u0301\u030c\u0300]/.test(text);
+  return text.includes('\u0308')||/v/.test(text)||toneMarkedUmlaut;
  }
  function installMenu3UmlautSelector(){
   const original=window.pinyin18SelectToneDiverse;
