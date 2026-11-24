@@ -77,3 +77,16 @@ test('and-construction and fallback still work', () => {
   const together = context.menu3AnalyzeSentence('wo he ni');
   assert.ok(together.some(r => r.zh === '我和你' && /và/.test(r.vi)));
 });
+
+
+test('unmarked ni xihuan he cha ma composes a grammatical Vietnamese question', () => {
+  const rows = context.menu3AnalyzeSentence('ni xihuan he cha ma');
+  const expected = rows.find(row => row.zh === '你喜欢喝茶吗');
+  assert.ok(expected, 'must compose 你 + 喜欢 + 喝 + 茶 + 吗 from dictionary entries');
+  assert.match(expected.vi, /^Bạn thích uống trà không\?$/i);
+  assert.equal(
+    context.formatByInputSpacing('ni xihuan he cha ma', 'nǐ xǐ huan hē chá ma'),
+    'nǐ xǐhuan hē chá ma',
+    'must preserve the five user-entered space-delimited groups'
+  );
+});
