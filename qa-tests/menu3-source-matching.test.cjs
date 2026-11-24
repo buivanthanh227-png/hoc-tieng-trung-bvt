@@ -152,6 +152,10 @@ test('Menu 3 lookup delegates to complete 10-per-page results with sentence-leve
   assert.match(runtime, /const token=\+\+renderToken;let page=0;const pageSize=10/);
   assert.match(runtime, /window\.machineTranslate3x\(String\(item\.zh\),'zh-CN','vi'\)/);
   assert.match(runtime, /window\.openHomework3xCandidateModal\(item,index,source\.length\)/);
-  assert.match(runtime, /groups\.push\(syllables\.slice\(at,at\+selected\.length\)\.join\(''\)\)/);
+  // The runtime preserves the exact user token boundaries while applying
+  // dictionary tone marks to the source syllable group; it no longer pushes
+  // the unformatted source slice directly.
+  assert.match(runtime, /const sourceGroup=syllables\.slice\(at,at\+selected\.length\)/);
+  assert.match(runtime, /groups\.push\(menu3FormatWord\(match\[0\],sourceGroup\.join\(''\)\)\)/);
   assert.doesNotMatch(runtime, /Chọn để dịch nghĩa/);
 });
