@@ -9,7 +9,7 @@ required=[
  '<button class="tab" data-tab="translate3"',
  '<section id="panel-translate3"',
  'data-function-number="3"',
- 'DỊCH NHANH VIỆT ⇄ TRUNG, LUYỆN NGHE PHIÊN ÂM TIẾNG TRUNG và THỬ THÁCH NHỚ MẶT CHỮ HÁN',
+ 'DỊCH NHANH VIỆT ⇄ TRUNG',
  'id="homework3x-query"',
  'id="homework3x-lookup"',
  'id="homework3x-status"',
