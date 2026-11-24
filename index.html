@@ -5101,7 +5101,12 @@ function getPinyin3xComposerIndex(){
  for(const row of seedRows){
   const zh=String(row?.[0]||'').trim(),py=String(row?.[2]||'').trim();if(!zh||!py)continue;
   for(const ch of zh)if(/[\u3400-\u9fff\uf900-\ufaff]/.test(ch))trustedCharacters.add(ch);
-  const compact=py.split(/\s+/).map(pinyin18Key).join('');seedByKey.set(zh+'|'+compact,{level:String(row?.[4]||''),py});
+  const compact=py.split(/\s+/).map(pinyin18Key).join('');
+  const key=zh+'|'+compact;
+  const levelScore=l=>/HSK1/.test(l)?4:/HSK2/.test(l)?3:/HSK3/.test(l)?2:/HSK4/.test(l)?1:0;
+  const candidate={level:String(row?.[4]||''),py,vi:String(row?.[3]||'').trim()};
+  const existing=seedByKey.get(key);
+  if(!existing||levelScore(candidate.level)>levelScore(existing.level))seedByKey.set(key,candidate);
  }
  const sentenceSources=[...(Array.isArray(sentenceDeck)?sentenceDeck:[]),...(Array.isArray(MENU18_VERIFIED_SENTENCES)?MENU18_VERIFIED_SENTENCES:[]),...Object.values(typeof OFFLINE_SENTENCE_TRANSLATIONS==='object'?OFFLINE_SENTENCE_TRANSLATIONS:{})];
  for(const row of sentenceSources){
@@ -5120,7 +5125,7 @@ function getPinyin3xComposerIndex(){
   // Prefer a verified multi-character lexical item over a coincidental character-by-character split.
   const score=seedExact?112+levelBonus+(chars.length>1?48+chars.length*4:0):chars.length>1?72+chars.length*7:50;
   const key=zh+'|'+compact,previous=dedupe.get(key);
-  const entry={...item,zh,py:seedData?.py||py,compact,score,seedExact,chars:chars.length};
+  const entry={...item,zh,py:seedData?.py||py,vi:seedData?.vi||item.vi,compact,score,seedExact,chars:chars.length};
   if(!previous||entry.score>previous.score)dedupe.set(key,entry);
  }
  for(const entry of dedupe.values()){
