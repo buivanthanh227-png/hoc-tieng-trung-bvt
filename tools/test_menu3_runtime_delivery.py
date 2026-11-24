@@ -15,7 +15,7 @@ checks = {
     "candidate click opens the detail modal": "window.openHomework3xCandidateModal(item,index,complete.length)" in js,
     "modal has Hanzi, Pinyin and Vietnamese": all(x in js for x in ["CHỮ HÁN", "PHIÊN ÂM PINYIN", "NGHĨA TIẾNG VIỆT"]),
     "modal has three copy actions": all(x in js for x in ['data-copy="hanzi"', 'data-copy="pinyin"', 'data-copy="meaning"']),
-    "modal has two speech actions": all(x in js for x in ['data-speak="zh"', 'data-speak="vi"']),
+    "modal has two speech actions": all(x in js for x in ['data-menu3-speak="zh"', 'data-menu3-speak="vi"']),
     "candidate renderer is exported to the page": "window.renderHomework3xCandidatesV421023=renderCandidates" in js,
     "lookup bridge is present in HTML": "BVT_MENU3_FULL_RESULTS_RENDERER_BRIDGE_V1" in html and "window.renderHomework3xCandidatesV421023" in html,
     "exactly ten results per page": "const token=++renderToken;let page=0;const pageSize=10" in js,

@@ -9,7 +9,7 @@ const vm = require('node:vm');
 const SOURCE = fs.readFileSync(path.join(__dirname, '..', 'sw.js'), 'utf8');
 const SCOPE = 'https://pages.example.test/hoc-tieng-trung-bvt/';
 const WORKER_URL = new URL('sw.js', SCOPE).href;
-const CACHE_NAME = 'hoc-trung-app-shell-v42-9-5-offline-pages-20261121';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-10-26-menu3-speech-fix-20261124';
 
 function createHarness(options = {}) {
   const entries = new Map();
@@ -28,7 +28,7 @@ function createHarness(options = {}) {
     if (failedAssets.has(url)) return new Response('Not Found', { status: 404 });
     const body = url.includes('/luyen-so/')
       ? 'LUYEN_SO_DOCUMENT'
-      : 'HOME_DOCUMENT';
+      : (options.homeHtml || 'HOME_DOCUMENT');
     return new Response(body, {
       status: 200,
       headers: { 'Content-Type': 'text/html; charset=utf-8' }
@@ -157,4 +157,17 @@ test('offline navigation serves the matching document and never substitutes home
 
   const unknown = await harness.navigate(new URL('not-published/', SCOPE).href);
   assert.equal(unknown.status, 0);
+});
+
+
+test('Service Worker keeps Menu 3 runtime injection independent and cache-busted', () => {
+  assert.match(SOURCE, /const patchUrl = new URL\('menu3-pinyin-fix-v42\.10\.23\.js\?v=42\.10\.23-speechfix-1'/);
+  assert.match(SOURCE, /const scriptTag = '<script id="bvt-v421023-menu3-runtime" src="'/);
+  assert.match(SOURCE, /if \(!updated\.includes\('bvt-fix-right-menu-heading-typography-colors-v2'\)\)/);
+  assert.match(SOURCE, /if \(!updated\.includes\('bvt-v421023-menu3-runtime'\) && !updated\.includes\(patchUrl\)\)/);
+});
+
+test('Service Worker cache namespace is bumped for the Menu 3 speech runtime release', () => {
+  assert.match(SOURCE, /hoc-trung-app-shell-v42-10-26-menu3-speech-fix-20261124/);
+  assert.doesNotMatch(SOURCE, /hoc-trung-app-shell-v42-10-25-menu3-quality-fix-20261124/);
 });
