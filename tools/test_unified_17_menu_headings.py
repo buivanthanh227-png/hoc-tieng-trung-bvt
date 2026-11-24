@@ -7,12 +7,12 @@ import sys
 if len(sys.argv) != 2:
     raise SystemExit("Usage: test_unified_17_menu_headings.py <site/index.html>")
 html = Path(sys.argv[1]).read_text(encoding="utf-8")
-tabs = re.findall(r'<button\\b[^>]*class="[^"]*\\btab\\b[^"]*"[^>]*data-tab="([^"]+)"', html)
+tabs = re.findall(r'<button\b[^>]*class="[^"]*\btab\b[^"]*"[^>]*data-tab="([^"]+)"', html)
 if len(tabs) != 17:
-    tabs = re.findall(r'<button\\b(?=[^>]*class="[^"]*\\btab\\b)(?=[^>]*data-tab="[^"]+")[^>]*>', html)
+    tabs = re.findall(r'<button\b(?=[^>]*class="[^"]*\btab\b)(?=[^>]*data-tab="[^"]+")[^>]*>', html)
 if len(tabs) != 17:
     raise SystemExit(f"Expected 17 menu buttons; found {len(tabs)}.")
-headings = re.findall(r'<h[1-6]\\b[^>]*class="[^"]*\\bsection-title\\b[^"]*"[^>]*data-function-number="[^"]+"[^>]*>', html)
+headings = re.findall(r'<h[1-6]\b[^>]*class="[^"]*\bsection-title\b[^"]*"[^>]*data-function-number="[^"]+"[^>]*>', html)
 if len(headings) < 17:
     raise SystemExit(f"Expected at least 17 numbered headings; found {len(headings)}.")
 for marker in [
