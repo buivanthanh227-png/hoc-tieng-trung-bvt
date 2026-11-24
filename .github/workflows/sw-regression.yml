@@ -1,4 +1,4 @@
-name: Service Worker regression tests
+name: Repository regression tests
 
 on:
   push:
@@ -29,5 +29,5 @@ jobs:
         with:
           node-version: 22
 
-      - name: Test Service Worker offline and precache behavior
-        run: node --test qa-tests/sw.test.cjs
+      - name: Run the complete repository QA regression suite
+        run: node --test qa-tests/*.test.cjs
