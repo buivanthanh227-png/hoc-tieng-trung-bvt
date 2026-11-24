@@ -1,42 +1,41 @@
 # Học Tiếng Trung BVT
 
-**Công cụ tự học tiếng Trung dành cho người Việt – từ điển, luyện nghe, đọc, viết và thực hành Pinyin.**
+**Công cụ tự học tiếng Trung dành cho người Việt – tra cứu, dịch, luyện nghe Pinyin, đọc, viết và thực hành chữ Hán.**
 
-Ứng dụng web/PWA cá nhân, ưu tiên thao tác nhanh trên điện thoại, máy tính bảng và máy tính. Không yêu cầu tạo tài khoản. Nội dung và công cụ được phát triển theo nhu cầu học tập thực tế; đây là công cụ hỗ trợ tự học, không thay thế giáo trình, giáo viên hoặc chương trình HSK chính thức.
+Học Tiếng Trung BVT là ứng dụng web/PWA cá nhân, được phát triển theo nhu cầu học tập thực tế của người dùng với sự hỗ trợ của AI. Ứng dụng ưu tiên thao tác nhanh trên điện thoại, máy tính bảng và máy tính; không yêu cầu tạo tài khoản. Đây là công cụ hỗ trợ tự học, không thay thế giáo trình, giáo viên hoặc chương trình HSK chính thức.
 
 - **Ứng dụng:** https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/
 - **Mã nguồn:** https://github.com/buivanthanh227-png/hoc-tieng-trung-bvt
 - **Nền tảng:** GitHub Pages + GitHub Actions
 - **Giao diện:** Tiếng Việt; hỗ trợ điện thoại, máy tính bảng và máy tính
+- **Phiên bản:** xem số phiên bản mới nhất trong ứng dụng và `manifest.webmanifest`
 
 ## Giới thiệu
 
-Học Tiếng Trung BVT tập hợp các công cụ tra cứu, nghe phát âm, luyện phản xạ và thực hành với từ vựng/câu tiếng Trung. Ứng dụng được xây dựng như một dự án học tập cá nhân có sự hỗ trợ của AI. Các chức năng được mở rộng theo quá trình sử dụng và phản hồi; thứ tự menu không phải lộ trình sư phạm hay cam kết chuẩn đầu ra.
+Ứng dụng tập hợp các công cụ tra cứu từ vựng, dịch Việt–Trung, nghe phát âm, luyện phản xạ và thực hành với chữ Hán/Pinyin. Các chức năng được mở rộng theo quá trình sử dụng và phản hồi. Thứ tự menu phản ánh nhóm công cụ hiện có, không phải lộ trình sư phạm hoặc cam kết chuẩn đầu ra.
 
-## Các nhóm chức năng
+## Các chức năng
 
 Ứng dụng hiện có **17 menu**:
 
-- **Menu 1 – Từ điển tiếng Trung:** ba ô tìm kiếm theo nghĩa tiếng Việt, chữ Hán giản thể/phồn thể và Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin. Có thể tìm từng trường riêng hoặc kết hợp; dữ liệu CVDICT được nhúng trong ứng dụng.
+- **Menu 1 – Từ điển tiếng Trung:** tra cứu theo nghĩa tiếng Việt, chữ Hán giản thể/phồn thể và Pinyin; có bộ lọc thanh điệu. Dữ liệu CVDICT được tích hợp trong ứng dụng.
 - **Menu 2 – Nhận diện chữ Hán bằng hình ảnh.**
-- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** dịch câu Việt ⇄ Trung qua Cloudflare Workers AI có xác thực Turnstile, dự phòng MyMemory/Google khi dịch vụ chính không khả dụng. Với Pinyin, ứng dụng ưu tiên mục từ/câu mẫu khớp chính xác; nếu không có kết quả, thử ghép câu từ các âm tiết và mục từ có căn cứ trong dữ liệu từ điển/HSK. Khi có nhiều cách hiểu hợp lý, ứng dụng hiển thị phương án để người học chọn thay vì tự đoán. Hộp thoại kết quả cho phép sao chép riêng chữ Hán, Pinyin và nghĩa tiếng Việt; có thể nghe tiếng Trung hoặc nghĩa tiếng Việt. **Không phát âm thanh Pinyin.**
+- **Menu 3 – Dịch nhanh Việt ⇄ Trung / ánh xạ Pinyin:** hỗ trợ dịch câu và tra cứu/ghép phương án Pinyin có căn cứ từ dữ liệu tích hợp. Khi có nhiều cách hiểu hợp lý, ứng dụng hiển thị phương án để người học lựa chọn. Có thể sao chép riêng chữ Hán, Pinyin và nghĩa tiếng Việt; phần nghe hỗ trợ tiếng Trung và tiếng Việt, không phát âm thanh Pinyin.
 - **Menu 4–15:** các công cụ dịch giọng nói, luyện viết, luyện đọc, ghép câu, học từ vựng, luyện số, bộ thủ, lưu trữ tài liệu và dịch đa ngôn ngữ.
 - **Menu 16 – Luyện nghe phiên âm tiếng Trung:** luyện thanh mẫu, vận mẫu, âm tiết Pinyin và thanh điệu.
 - **Menu 17 – Thử thách nhớ mặt chữ Hán.**
 
-Các menu được tổ chức theo nhu cầu sử dụng, không phải lộ trình sư phạm hoặc chương trình HSK chính thức. Menu 3 có thể hiển thị Pinyin để người học đọc/đối chiếu; phần nghe chỉ phát tiếng Trung và nghĩa tiếng Việt. Dịch máy và một số dịch vụ ngoài cần kết nối Internet.
+**Lưu ý:** Menu thử nghiệm số 18 đã được loại bỏ; chức năng ghép/ánh xạ câu được bố trí trong Menu 3. Các menu hiện tại được tổ chức theo nhu cầu sử dụng, không phải chương trình HSK chính thức. Một số chức năng dịch và dịch vụ bên ngoài cần kết nối Internet.
 
 ## Cách sử dụng
 
 1. Mở [ứng dụng Học Tiếng Trung BVT](https://buivanthanh227-png.github.io/hoc-tieng-trung-bvt/).
-2. Chọn menu phù hợp. Với Menu 1, tìm lần lượt bằng nghĩa tiếng Việt, chữ Hán hoặc Pinyin; năm nút thanh điệu nằm ngay dưới ô Pinyin.
-3. Có thể chọn thanh điệu để thu hẹp kết quả Pinyin; kết hợp các trường để lọc chính xác hơn.
-4. Với Menu 3, nhập câu tiếng Việt, chữ Hán hoặc Pinyin; giữ nguyên cách phân tách âm tiết mong muốn. Với Pinyin mới, hãy thêm dấu thanh khi cần phân biệt các chữ đồng âm.
-5. Chạm vào phương án kết quả để mở chi tiết, sao chép nội dung hoặc nghe tiếng Trung/nghĩa tiếng Việt.
+2. Chọn menu theo nhu cầu học tập.
+3. Với Menu 1, tìm bằng nghĩa tiếng Việt, chữ Hán hoặc Pinyin; có thể kết hợp các trường và bộ lọc thanh điệu.
+4. Với Menu 3, nhập câu tiếng Việt, chữ Hán hoặc Pinyin. Khi nhập Pinyin, thêm dấu thanh nếu cần phân biệt các chữ đồng âm.
+5. Với các bài luyện nghe và luyện tập, đọc hướng dẫn trong từng menu trước khi bắt đầu.
 
-Thông tin phiên bản, ghi công tác giả và đồng hồ ngày/giờ được bố trí tại chân trang ứng dụng.
-
-### Cài trên thiết bị
+## Cài trên thiết bị
 
 - **iPhone/iPad:** mở bằng Safari → Chia sẻ → Thêm vào Màn hình chính.
 - **Android:** mở bằng Chrome → menu trình duyệt → Cài đặt ứng dụng hoặc Thêm vào màn hình chính.
@@ -61,15 +60,15 @@ Dữ liệu từ điển tích hợp được ghi công theo dự án [ph0ngp/CV
 | `index.html` | Ứng dụng chính và dữ liệu từ điển nhúng |
 | `manifest.webmanifest` | Tên, biểu tượng và cấu hình PWA |
 | `sw.js` | Service Worker và cache ngoại tuyến có giới hạn |
-| `audio/pinyin/` | Tài nguyên âm thanh Pinyin dùng ở các khu vực phù hợp |
+| `audio/pinyin/` | Tài nguyên âm thanh Pinyin |
 | `luyen-so/index.html` | Ứng dụng luyện số tiếng Trung |
-| `tools/` | Script vá artifact và kiểm thử hồi quy |
-| `.github/workflows/deploy-pages.yml` | Build, kiểm tra và xuất bản GitHub Pages |
+| `tools/` | Script hỗ trợ build, vá artifact và kiểm thử |
+| `.github/workflows/` | Quy trình kiểm tra và xuất bản GitHub Pages |
 | `README-QA.md`, `qa-tests/`, `QA-REPORTS/` | Tài liệu và kiểm thử chất lượng |
 
-## Build và deploy
+## Build, deploy và kiểm thử
 
-Khi cập nhật nhánh `main`, GitHub Actions sao chép ứng dụng vào thư mục `site/`, chạy các patch và regression tests, đóng gói rồi xuất bản GitHub Pages. Workflow xác minh Production đang phục vụ đúng commit vừa build. Dữ liệu CVDICT được nhúng trong `index.html`; workflow không tự tải bản từ điển mới.
+Khi cập nhật nhánh `main`, GitHub Actions chạy các bước kiểm tra, chuẩn bị thư mục `site/` và xuất bản GitHub Pages. Quy trình deploy có bước xác minh Production đang phục vụ đúng commit vừa build.
 
 Kiểm thử cục bộ cơ bản:
 
@@ -78,15 +77,13 @@ python3 -m py_compile tools/*.py
 node --test qa-tests/*.test.cjs
 ```
 
-Kiểm thử tĩnh không thay thế việc kiểm tra thao tác thực tế trên Safari iOS, Chrome Android, máy tính bảng và máy tính.
+Kiểm thử tự động hiện có là kiểm thử hồi quy theo các trường hợp đã viết. Chúng **không thay thế** kiểm thử thao tác thực tế trên Safari iOS, Chrome Android, máy tính bảng và máy tính; cũng không chứng minh mọi chức năng đều không còn lỗi.
 
 ## Phiên bản và báo lỗi
 
-Phiên bản phát hành hiện tại: **V42.10.23**.
+Xem phiên bản phát hành trong ứng dụng hoặc trường `name` của `manifest.webmanifest`.
 
-Bản vá Menu 3 cho V42.10.23 giữ nguyên luồng tra cứu Pinyin khớp chính xác và bổ sung bước ghép Pinyin mới dựa trên cách đọc, mục từ có căn cứ và dữ liệu HSK/câu mẫu tích hợp. Những trường hợp nhiều phương án ngang nhau được đưa ra để người học chọn; các chuỗi không đủ căn cứ bị từ chối thay vì tự tạo chữ Hán. Luồng dịch online thử Cloudflare Workers AI sau xác thực Turnstile với hạn chờ 12 giây dành riêng cho Menu 3; nếu chưa có token hoặc Worker lỗi, ứng dụng chuyển nhanh sang MyMemory/Google. Turnstile và kiểm tra token phía Worker vẫn được giữ nguyên; các menu ASR khác tiếp tục dùng thời hạn xác minh mặc định cũ. Service Worker đã đổi cache key để thiết bị lấy `index.html` và `sw.js` mới. Menu 1, banner, hộp thoại kết quả, Copy và phát âm được giữ nguyên.
-
-Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế.
+Khi báo lỗi, vui lòng nêu thiết bị, hệ điều hành, trình duyệt, menu, các bước tái hiện, nội dung đầu vào mẫu và kết quả mong đợi/thực tế. Nếu có thể, gửi kèm ảnh chụp màn hình hoặc video thao tác.
 
 ## Liên kết
 
