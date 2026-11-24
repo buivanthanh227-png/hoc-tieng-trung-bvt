@@ -37,7 +37,7 @@ checks = {
     "touching a result opens the detail modal":
         "window.openHomework3xCandidateModal(item,index,complete.length)" in js,
     "detail modal provides three copy controls and two speech controls":
-        all(x in js for x in ['data-copy="hanzi"', 'data-copy="pinyin"', 'data-copy="meaning"', 'data-speak="zh"', 'data-speak="vi"']),
+        all(x in js for x in ['data-copy="hanzi"', 'data-copy="pinyin"', 'data-copy="meaning"', 'data-menu3-speak="zh"', 'data-menu3-speak="vi"']),
     "old instruction to tap merely to translate is absent":
         "Chọn để dịch nghĩa" not in js,
 }
