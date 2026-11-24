@@ -19,7 +19,7 @@ def main():
         raise SystemExit("Could not uniquely locate the Menu 3 panel boundaries.")
     panel = html[panel_start:panel_end]
     heading_pattern = re.compile(
-        r'(<h2\\b[^>]*data-function-number="3"[^>]*>)(.*?)(</h2>)',
+        r'(<h2\b[^>]*data-function-number="3"[^>]*>)(.*?)(</h2>)',
         flags=re.I | re.S,
     )
     heading_matches = list(heading_pattern.finditer(panel))
