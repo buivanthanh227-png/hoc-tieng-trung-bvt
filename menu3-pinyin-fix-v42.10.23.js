@@ -527,8 +527,10 @@
   const content=questionAt===parts.length-1?parts.slice(0,-1):parts.slice();
   if(content.length&&content[content.length-1].zh==='了'&&pinyinKey(content[content.length-1].entry.py)==='le')content.pop();
   if(content.length<2||content.some(part=>menu3BadEntry(part.entry)||!part.gloss))return false;
+  const pleaseAt=content.findIndex(part=>part.zh==='请'||pinyinKey(part.entry.py)==='qing');
+  if(pleaseAt>=0&&!menu3HasVerb(content.slice(pleaseAt+1)))return false;
   // Permit valid dictionary-backed clauses outside the hand-written templates,
-  // but never translate a bare subject+noun fragment as if it were a sentence.
+  // but never translate a bare subject+noun fragment or an incomplete 请 phrase.
   return menu3HasVerb(content);
  }
  function menu3ShortestSyllables(token){
