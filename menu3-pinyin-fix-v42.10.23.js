@@ -443,7 +443,7 @@
  function menu3IsVerbGloss(gloss){
   const text=String(gloss||'').toLocaleLowerCase('vi').trim();
   if(!text)return false;
-  return /^(yêu|thích|nhớ|gặp|quen|giúp|mời|hỏi|nhìn|xem|nghe|gọi|uống|ăn|đi|đến|tới|học|làm|nói|đọc|viết|mua|bán|cho|lấy|đưa|mang|mở|đóng|ngồi|đứng|chạy|bay|hát|nhảy|chơi|trả|lời|cười|khóc|ngủ|thức|dậy|tắm|rửa|mặc|cởi|về|ra|vào|lên|xuống|qua|lại|biết|hiểu|nghĩ|muốn|cần|phải|có thể|sẽ|đã|đang|vừa|mới|còn|chỉ|cũng|rất|không|có|là|ở|tại|từ)$/.test(text);
+  return /^(?:yêu thích|ưa thích|thích|yêu|nhớ|gặp|quen|giúp|mời|hỏi|nhìn|xem|nghe|gọi|uống|ăn|đi|đến|tới|học|làm|nói|đọc|viết|mua|bán|cho|lấy|đưa|mang|mở|đóng|ngồi|đứng|chạy|bay|hát|nhảy|chơi|trả|lời|cười|khóc|ngủ|thức|dậy|tắm|rửa|mặc|cởi|về|ra|vào|lên|xuống|qua|lại|biết|hiểu|nghĩ|muốn|cần|phải|có thể|sẽ|đã|đang|vừa|mới|còn|chỉ|cũng|rất|không|có|là|ở|tại|từ)$/.test(text);
  }
  function menu3HasVerb(parts){
   return (Array.isArray(parts)?parts:[]).some(part=>menu3IsVerbGloss(part.gloss||part));
@@ -536,10 +536,11 @@
       if(!window.pinyin18InputInfosMatchSource(entry,span))continue;
       for(const path of states[start]){
        const candidate={score:path.score+Number(entry.score||0)+(Number(entry.chars)>1?20:0)-4,zh:path.zh+entry.zh,entries:path.entries.concat(entry)};
-       const bucket=states[end],prior=bucket.find(item=>item.zh===candidate.zh);
+       const candidateReading=candidate.entries.map(entry=>String(entry.py||'')).join(' ');
+       const bucket=states[end],prior=bucket.find(item=>item.zh===candidate.zh&&item.entries.map(entry=>String(entry.py||'')).join(' ')===candidateReading);
        if(prior){if(candidate.score>prior.score)Object.assign(prior,candidate);}else bucket.push(candidate);
        bucket.sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh,'zh-CN'));
-       if(bucket.length>256)bucket.length=256;
+       if(bucket.length>512)bucket.length=512;
       }
      }
     }
@@ -550,8 +551,10 @@
   const results=[],seen=new Set();
   for(const path of found){
    const vi=menu3MeaningFromEntries(path.entries);if(!vi)continue;
-   if(path.entries.some(entry=>Number(entry.score||0)<80&&!(entry.zh==='了'&&pinyinKey(entry.py)==='le')))continue;
-   const id=path.zh+'|'+vi;if(seen.has(id))continue;seen.add(id);
+   // The Vietnamese sentence grammar below is the final validity gate.
+   // Do not discard a reading solely because its dictionary frequency score is low.
+   const reading=path.entries.map(entry=>String(entry.py||'').trim()).join(' ');
+   const id=path.zh+'|'+reading+'|'+vi;if(seen.has(id))continue;seen.add(id);
    results.push({zh:path.zh,py:path.entries.map(entry=>String(entry.py||'').trim()).filter(Boolean).join(' '),vi,score:path.score});
    if(results.length>=300)break;
   }
