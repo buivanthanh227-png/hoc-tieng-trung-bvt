@@ -338,10 +338,25 @@
   area.remove();return ok;
  };
  const speakText=(value,locale)=>{
-  const text=String(value||'').trim();if(!text)return;
-  if(typeof window.bvtSpeakLocale==='function'){window.bvtSpeakLocale(text,locale);return;}
-  if(typeof window.speakMandarinSentence==='function'&&locale==='zh'){window.speakMandarinSentence(text);return;}
-  if('speechSynthesis'in window){window.speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(text);utterance.lang=locale==='zh'?'zh-CN':'vi-VN';window.speechSynthesis.speak(utterance);}
+  // Read only the selected field. Bypass shared auto-speech helpers because
+  // they may append queued chunks or detect extra languages from page text.
+  const text=String(value??'').normalize('NFC').replace(/[\\u200B-\\u200D\\uFEFF]/g,'').trim();
+  if(!text||!('speechSynthesis'in window)||typeof SpeechSynthesisUtterance==='undefined')return;
+  const synth=window.speechSynthesis;
+  synth.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  const language=locale==='zh'?'zh-CN':'vi-VN';
+  utterance.text=text;
+  utterance.lang=language;
+  utterance.rate=locale==='zh'?0.88:0.94;
+  utterance.pitch=1;
+  try{
+   const voices=typeof synth.getVoices==='function'?synth.getVoices():[];
+   const voice=voices.find(item=>String(item.lang||'').toLowerCase()===language.toLowerCase())
+    ||voices.find(item=>String(item.lang||'').toLowerCase().startsWith(locale==='zh'?'zh':'vi'));
+   if(voice)utterance.voice=voice;
+  }catch(_){}
+  synth.speak(utterance);
  };
  window.openHomework3xCandidateModal=function(item,index,total){
   const existing=document.querySelector('.homework3x-modal-backdrop');
@@ -363,9 +378,9 @@
   backdrop.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,12,17,.62);overscroll-behavior:contain';
   backdrop.innerHTML='<section role="dialog" aria-modal="true" aria-labelledby="homework3x-detail-title" style="width:min(620px,100%);max-height:88dvh;overflow:auto;background:#fff;color:#172033;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.3)">'+
    '<header style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px"><h3 id="homework3x-detail-title" style="margin:0;font-size:18px">Kết quả '+(Number(index)+1)+' / '+Number(total||0)+'</h3><button type="button" data-detail-close style="min-width:40px;min-height:40px;border-radius:10px;font-weight:800">✕</button></header>'+
-   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#7b3fa1">CHỮ HÁN</b><div style="font-size:27px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</div><div><button type="button" data-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-speak="zh">🔊 Phát âm chữ Hán</button></div></div>'+
-   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#2563a6">PHIÊN ÂM PINYIN</b><div style="font-size:22px;font-weight:800;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.pinyin)+'</div><button type="button" data-copy="pinyin">Sao chép Pinyin</button></div>'+
-   '<div style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="color:#21805b">NGHĨA TIẾNG VIỆT</b><div style="font-size:19px;font-weight:700;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</div><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-speak="vi">🔊 Phát âm tiếng Việt</button></div></div>'+
+   '<div class="homework3x-modal-line homework3x-modal-line-hanzi" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#7b3fa1!important">CHỮ HÁN</b><span class="homework3x-modal-value homework3x-modal-value-hanzi" style="display:block!important;color:#7b3fa1!important;-webkit-text-fill-color:#7b3fa1!important;font-size:29px!important;font-weight:850!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.hanzi)+'</span><div><button type="button" data-copy="hanzi">Sao chép chữ Hán</button><button type="button" data-speak="zh">🔊 Phát âm chữ Hán</button></div></div>'+
+   '<div class="homework3x-modal-line homework3x-modal-line-pinyin" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#2563a6!important">PHIÊN ÂM PINYIN</b><span class="homework3x-modal-value homework3x-modal-value-pinyin" style="display:block!important;color:#2563a6!important;-webkit-text-fill-color:#2563a6!important;font-size:24px!important;font-weight:850!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.pinyin)+'</span><button type="button" data-copy="pinyin">Sao chép Pinyin</button></div>'+
+   '<div class="homework3x-modal-line homework3x-modal-line-meaning" style="border:1px solid #dbe2ea;border-radius:12px;padding:13px;margin:9px 0"><b style="display:block;color:#21805b!important">NGHĨA TIẾNG VIỆT</b><span class="homework3x-modal-value homework3x-modal-value-meaning" style="display:block!important;color:#21805b!important;-webkit-text-fill-color:#21805b!important;font-size:20px!important;font-weight:800!important;line-height:1.5!important;margin:7px 0;overflow-wrap:anywhere">'+escapeHtml(values.meaning||'Chưa có nghĩa tiếng Việt hợp lệ')+'</span><div><button type="button" data-copy="meaning">Sao chép nghĩa</button><button type="button" data-speak="vi">🔊 Phát âm tiếng Việt</button></div></div>'+
    '<p data-copy-status role="status" aria-live="polite" style="min-height:20px;color:#15803d;font-weight:700"></p></section>';
   const prevOverflow=document.body.style.overflow;
   document.body.style.overflow='hidden';
@@ -501,6 +516,23 @@
   if(core.length===1&&!menu3BadGloss(core[0].gloss))return asked?menu3FinishSentence(core[0].gloss,'?'):core[0].gloss;
   return '';
  }
+ function menu3CanTranslateWholeSentence(entries){
+  const parts=(Array.isArray(entries)?entries:[]).map(entry=>({
+   zh:String(entry?.zh||''),gloss:menu3Gloss(entry),entry,
+   question:String(entry?.zh||'')==='吗'&&pinyinKey(entry?.py)==='ma'
+  }));
+  if(parts.length<2)return false;
+  const questionAt=parts.findIndex(part=>part.question);
+  if(questionAt>=0&&questionAt!==parts.length-1)return false;
+  const content=questionAt===parts.length-1?parts.slice(0,-1):parts.slice();
+  if(content.length&&content[content.length-1].zh==='了'&&pinyinKey(content[content.length-1].entry.py)==='le')content.pop();
+  if(content.length<2||content.some(part=>menu3BadEntry(part.entry)||!part.gloss))return false;
+  const pleaseAt=content.findIndex(part=>part.zh==='请'||pinyinKey(part.entry.py)==='qing');
+  if(pleaseAt>=0&&!menu3HasVerb(content.slice(pleaseAt+1)))return false;
+  // Permit valid dictionary-backed clauses outside the hand-written templates,
+  // but never translate a bare subject+noun fragment or an incomplete 请 phrase.
+  return menu3HasVerb(content);
+ }
  function menu3ShortestSyllables(token){
   if(typeof window.getPinyin18SourceIndex!=='function')return [];
   const available=window.getPinyin18SourceIndex()?.syllables;if(!available)return [];
@@ -550,12 +582,15 @@
   found.sort((a,b)=>b.score-a.score);
   const results=[],seen=new Set();
   for(const path of found){
-   const vi=menu3MeaningFromEntries(path.entries);if(!vi)continue;
-   // The Vietnamese sentence grammar below is the final validity gate.
+   const vi=menu3MeaningFromEntries(path.entries);
+   // Known Vietnamese templates are preferred. If the lexical sequence is
+   // clause-like (has a recognized verb and valid dictionary entries) but
+   // falls outside those templates, keep it for whole-Hanzi translation.
+   if(!vi&&!menu3CanTranslateWholeSentence(path.entries))continue;
    // Do not discard a reading solely because its dictionary frequency score is low.
    const reading=path.entries.map(entry=>String(entry.py||'').trim()).join(' ');
    const id=path.zh+'|'+reading+'|'+vi;if(seen.has(id))continue;seen.add(id);
-   results.push({zh:path.zh,py:path.entries.map(entry=>String(entry.py||'').trim()).filter(Boolean).join(' '),vi,score:path.score});
+   results.push({zh:path.zh,py:path.entries.map(entry=>String(entry.py||'').trim()).filter(Boolean).join(' '),vi:vi||'',score:path.score});
    if(results.length>=300)break;
   }
   return results;
