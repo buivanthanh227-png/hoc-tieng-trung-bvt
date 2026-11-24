@@ -12,7 +12,7 @@ function loadRuntime(){
   const listeners={};
   const host={hidden:false,replaceChildren(){},appendChild(){}};
   const status={textContent:''};
-  const query={value:''};
+  const query={value:'',addEventListener(){}};
   const originalSelector=(items)=>items;
   const windowObject={
     pinyin18Key(value){
