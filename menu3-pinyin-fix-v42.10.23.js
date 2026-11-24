@@ -180,16 +180,21 @@
   const composed=Array.isArray(item.sourceRows)&&item.sourceRows.length>1;
   let vi=composed?'':cleanMeaning(item.preferredMeaning||item.vi||'');
   if(!composed&&validMeaning(vi))return {...item,vi};
-  try{
-   let translated='';
-   if(typeof window.machineTranslate3x==='function'){
-    const result=await window.machineTranslate3x(String(item.zh),'zh-CN','vi');
-    translated=cleanMeaning(result&&typeof result==='object'?result.text:result);
-   }else if(typeof window.machineTranslate==='function'){
-    translated=cleanMeaning(await window.machineTranslate(String(item.zh),'zh-CN','vi'));
-   }
-   return validMeaning(translated)?{...item,vi:translated,note:'Nghĩa tiếng Việt được dịch từ toàn câu chữ Hán.'}:null;
-  }catch(_){return null;}
+  // Translate the complete Hanzi only; retry up to 2 times on failure.
+  for(let attempt=0;attempt<3;attempt++){
+   try{
+    let translated='';
+    if(typeof window.machineTranslate3x==='function'){
+     const result=await window.machineTranslate3x(String(item.zh),'zh-CN','vi');
+     translated=cleanMeaning(result&&typeof result==='object'?result.text:result);
+    }else if(typeof window.machineTranslate==='function'){
+     translated=cleanMeaning(await window.machineTranslate(String(item.zh),'zh-CN','vi'));
+    }
+    if(validMeaning(translated))return {...item,vi:translated,note:'Nghĩa tiếng Việt được dịch từ toàn câu chữ Hán.'};
+   }catch(_){}
+   if(attempt<2)await new Promise(r=>setTimeout(r,180));
+  }
+  return null;
  };
  async function mapLimit(items,limit,worker){
   const output=new Array(items.length);let next=0;
@@ -237,21 +242,28 @@
    const id=String(item.zh)+'|'+String(item.py);
    if(seen.has(id))return false;seen.add(id);return true;
   });
-  // Reuse the exact Menu 18 tone-position selector. It validates every
-  // syllable and tone, selects compact-token boundaries, and only varies
-  // one syllable's tone at a time (never a Cartesian product).
   const source=typeof window.pinyin18SelectToneDiverse==='function'
    ?window.pinyin18SelectToneDiverse(valid,query,30)
    :valid.filter(item=>matchesPreferredBoundaries(query,item.py))
      .sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)).slice(0,30);
   if(!source.length){host.replaceChildren();host.hidden=true;if(status)status.textContent='Chưa tìm được kết quả Pinyin khớp với mục từ/câu hoàn chỉnh trong từ điển.';return null;}
   const token=++renderToken;let page=0;const pageSize=10;
-  currentCandidates=source;
-  host.hidden=false;
-  const renderPage=async()=>{
+  if(status)status.textContent='Đang hoàn thiện nghĩa tiếng Việt cho các kết quả…';
+  host.hidden=false;host.replaceChildren();
+  // Resolve meanings for the entire candidate set before any card is shown.
+  const resolved=await mapLimit(source,3,translateFullSentence);
+  if(token!==renderToken)return null;
+  const complete=resolved.filter(item=>item&&item.zh&&item.py&&validMeaning(item.vi));
+  if(!complete.length){
+   host.replaceChildren();host.hidden=true;
+   if(status)status.textContent='Chưa thể xác minh nghĩa tiếng Việt hợp lệ cho các kết quả tìm được.';
+   return null;
+  }
+  currentCandidates=complete;
+  const renderPage=()=>{
    if(token!==renderToken)return;
-   const pageCount=Math.max(1,Math.ceil(source.length/pageSize));
-   const start=page*pageSize,rawItems=source.slice(start,start+pageSize);
+   const pageCount=Math.max(1,Math.ceil(complete.length/pageSize));
+   const start=page*pageSize,items=complete.slice(start,start+pageSize);
    host.replaceChildren();
    const nav=()=>{
     const node=document.createElement('div');node.className='homework3x-pagination'+(pageCount<=1?' single-page':'');
@@ -263,50 +275,30 @@
     return node;
    };
    const grid=document.createElement('div');grid.className='homework3x-candidate-grid';
-   const cards=[];
-   rawItems.forEach((item,offset)=>{
-    if(!item||!item.zh||!item.py)return;
+   items.forEach((item,offset)=>{
     const index=start+offset,button=document.createElement('button');
     button.type='button';button.className='homework3x-candidate';button.dataset.homework3xCandidate=String(index);
     const number=document.createElement('span');number.className='homework3x-candidate-number';number.textContent=String(index+1);
     const content=document.createElement('span');content.className='homework3x-candidate-content';
     const py=document.createElement('span');py.className='homework3x-candidate-py';py.style.cssText='display:block!important;color:#1769c2!important;font-size:clamp(21px,5.2vw,27px)!important;font-weight:900!important;line-height:1.35!important;letter-spacing:.01em!important;overflow-wrap:anywhere!important';py.textContent=formatByInputSpacing(query,item.py);
     const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.style.cssText='display:block!important;color:#7b3fa1!important;font-size:19px!important;font-weight:850!important;line-height:1.4!important;overflow-wrap:anywhere!important';zh.textContent=item.zh;
-    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.style.cssText='display:block!important;color:#16845b!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important';
-    const initialMeaning=cleanMeaning(item.preferredMeaning||item.vi||'');
-    vi.textContent=validMeaning(initialMeaning)?initialMeaning:'Đang xác minh nghĩa tiếng Việt…';
+    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.style.cssText='display:block!important;color:#16845b!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important';vi.textContent=item.vi;
     content.append(py,zh,vi);button.append(number,content);
     button.addEventListener('click',event=>{
      event.preventDefault();event.stopPropagation();
      window.homework3xSelectedCandidateIndex=index;
-     const selected=source[index]||item;
-     if(typeof window.openHomework3xCandidateModal==='function'){window.openHomework3xCandidateModal(selected,index,source.length);}
-     else if(status){status.textContent='Không tải được hộp thoại chi tiết. Vui lòng tải lại trang.';}
+     if(typeof window.openHomework3xCandidateModal==='function'){window.openHomework3xCandidateModal(item,index,complete.length);}
     });
-    grid.appendChild(button);cards.push({index,button,meaning:vi});source[index]=item;
+    grid.appendChild(button);
    });
    host.appendChild(nav());
    host.appendChild(grid);
    host.appendChild(nav());
    host.hidden=false;
-   if(status)status.textContent='Đã hiển thị '+rawItems.length+' kết quả Pinyin. Đang kiểm tra nghĩa tiếng Việt của từng câu hoàn chỉnh…';
-   const items=await mapLimit(rawItems,3,translateFullSentence);
-   if(token!==renderToken)return;
-   items.forEach((item,offset)=>{
-    const card=cards.find(entry=>entry.index===start+offset);
-    if(!card)return;
-    if(!item){card.button.remove();return;}
-    source[card.index]=item;card.meaning.textContent=item.vi;
-   });
-   const visible=cards.filter(card=>card.button.parentNode===grid).length;
-   if(!visible){
-    host.hidden=true;host.replaceChildren();
-    if(status)status.textContent='Không tìm thấy nghĩa tiếng Việt đáng tin cậy cho các phương án ở trang này. Đã loại bỏ kết quả không đạt yêu cầu.';
-    return;
-   }
-   if(status)status.textContent='Có '+source.length+' phương án từ bộ ánh xạ Pinyin theo từ/câu hoàn chỉnh. Hiển thị 10 kết quả mỗi trang.';
-  };;
-  await renderPage();return source[0]||null;
+   if(status)status.textContent='Có '+complete.length+' kết quả hợp lệ. Mỗi kết quả đã có phiên âm, chữ Hán và nghĩa tiếng Việt. Hiển thị tối đa 10 kết quả mỗi trang.';
+  };
+  renderPage();
+  return complete[0]||null;
  }
  window.formatByInputSpacing=formatByInputSpacing;
  window.renderHomework3xCandidatesV421023=renderCandidates;

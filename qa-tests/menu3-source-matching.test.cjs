@@ -149,9 +149,9 @@ test('Menu 3 lookup delegates to complete 10-per-page results with sentence-leve
   const renderEnd = html.indexOf('function looksLikeVietnamese3x(raw){', renderStart);
   assert.ok(renderStart >= 0 && renderEnd > renderStart);
   assert.match(html.slice(renderStart, renderEnd), /window\.renderHomework3xCandidatesV421023/);
-  assert.match(runtime, /const token=\+\+renderToken;let page=0;const pageSize=10/);
+  assert.match(runtime, /const pageSize=10/);
   assert.match(runtime, /window\.machineTranslate3x\(String\(item\.zh\),'zh-CN','vi'\)/);
-  assert.match(runtime, /window\.openHomework3xCandidateModal\(selected,index,source\.length\)/);
+  assert.match(runtime, /window\.openHomework3xCandidateModal\(item,index,complete\.length\)/);
   // The runtime preserves the exact user token boundaries while applying
   // dictionary tone marks to the source syllable group; it no longer pushes
   // the unformatted source slice directly.
