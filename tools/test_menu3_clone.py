@@ -18,7 +18,7 @@ required=[
  'function renderHomework3xCard(',
  'async function renderHomework3xCandidates(candidates)',
  'async function lookupHomework3x()',
- 'data-homework3x-candidate',
+ 'BVT_MENU3_FULL_RESULTS_RENDERER_BRIDGE_V1',
  'data-homework3x-speak="zh"',
  'data-homework3x-speak="vi"',
  'function looksLikePinyin3x(',
