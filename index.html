@@ -8851,19 +8851,14 @@ renderChart();bindChartScrollbars();renderChoices();
 
 
 <script id="menu3-independent-lookup-logic">
-function renderHomework3xCard(result,sourceLabel=''){
- const box=$('homework3x-results'),zh=String(result.zh||'').trim(),traditional=String(result.trad||pinyin18Traditional(zh));
- const py=formatHomework3xPinyinByWord(zh,String(result.py||pinyinForChinese(zh)));
- const vi=String(result.vi||'Đang tra nghĩa tiếng Việt…');
- const row=(label,value,kind,actions)=>'<div class="homework3x-output-row"><div class="homework3x-output-main"><span class="homework3x-output-label">'+label+'</span><span class="homework3x-output-value '+'is-'+kind+'">'+value+'</span></div><span class="homework3x-inline-actions">'+actions+'</span></div>';
- const copyButton=(value,label)=>'<button type="button" class="homework3x-action" data-copy-control="1" data-copy-value="'+escapeHTML(value)+'" title="Sao chép '+label+'" aria-label="Sao chép '+label+'">⧉</button>';
- const speakButton=(value,label)=>'<button type="button" class="homework3x-action" data-speak="'+escapeHTML(value)+'" title="Nghe '+label+'" aria-label="Nghe '+label+'">🔊</button>';
- const hanziValue=escapeHTML(zh)+(traditional&&traditional!==zh?'<span class="homework3x-output-trad">（'+escapeHTML(traditional)+'）</span>':'');
- box.innerHTML='<article class="homework-answer homework3x-answer"><div class="subtle">'+escapeHTML(sourceLabel||'Kết quả dịch')+'</div>'+
-  row('Chữ Hán',hanziValue,'hanzi',copyButton(zh,'chữ Hán')+speakButton(zh,'chữ Hán'))+
-  row('Phiên âm Pinyin',escapeHTML(py),'pinyin',copyButton(py,'Pinyin'))+
-  row('Nghĩa tiếng Việt',escapeHTML(vi),'meaning',copyButton(vi,'nghĩa tiếng Việt')+speakButton(vi,'nghĩa tiếng Việt'))+
-  (result.note?'<div class="homework-source">'+escapeHTML(result.note)+'</div>':'')+'</article>';
+async function renderHomework3xCard(result,sourceLabel=''){
+ const status=$('homework3x-status'),renderer=window.renderHomework3xCandidatesV421023;
+ if(typeof renderer!=='function'){
+  if(status)status.textContent='Chưa thể hoàn thiện và xác minh nghĩa tiếng Việt cho kết quả. Vui lòng tải lại trang.';
+  return null;
+ }
+ const item={...result,sourceLabel:result?.sourceLabel||sourceLabel,source:result?.source||sourceLabel};
+ return await renderer([item]);
 }
 let homework3xCandidates=[];
 let homework3xSelectedIndex=0;
@@ -9106,22 +9101,18 @@ async function acceptPinyinComposition3x(option,lookupToken){
  }
  if(lookupToken!==homework3xLookupToken||window.__homework3xCompositionTask!==task)return;
  task.active=false;
- renderHomework3xCard({zh:option.zh,py:option.py,vi,note},'Pinyin mới → chữ Hán');
- status.textContent='Đã nhận diện Pinyin và xác minh nghĩa tiếng Việt.';
+ await renderHomework3xCard({zh:option.zh,py:option.py,vi,note},'Pinyin mới → chữ Hán');
 }
-function renderPinyinCompositionOptions3x(options,lookupToken){
- const host=$('homework3x-candidates');if(!host)return;host.replaceChildren();host.hidden=false;
- const heading=document.createElement('div');heading.className='homework3x-candidate-heading';heading.textContent='Các phương án dựa trên dữ liệu từ điển đã xác nhận';host.appendChild(heading);
- const grid=document.createElement('div');grid.className='homework3x-candidate-grid';host.appendChild(grid);
- for(const option of (Array.isArray(options)?options:[])){
-  const button=document.createElement('button');button.type='button';button.className='homework3x-candidate';
-  const content=document.createElement('span');content.className='homework3x-candidate-content';
-  const py=document.createElement('span');py.className='homework3x-candidate-py';py.textContent=option.py;
-  const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.textContent=option.zh;
-  const note=document.createElement('span');note.className='homework3x-candidate-source';note.textContent='Chọn để dịch nghĩa';
-  content.append(py,zh,note);button.appendChild(content);
-  button.addEventListener('click',()=>acceptPinyinComposition3x(option,lookupToken));grid.appendChild(button);
+async function renderPinyinCompositionOptions3x(options,lookupToken){
+ if(lookupToken!==homework3xLookupToken)return null;
+ const status=$('homework3x-status'),renderer=window.renderHomework3xCandidatesV421023;
+ if(typeof renderer!=='function'){
+  status.textContent='Chưa thể hoàn thiện và xác minh nghĩa tiếng Việt cho các phương án. Vui lòng tải lại trang.';
+  return null;
  }
+ status.textContent='Đang tự động xác minh nghĩa tiếng Việt cho các phương án Pinyin…';
+ const result=await renderer(Array.isArray(options)?options:[]);
+ return lookupToken===homework3xLookupToken?result:null;
 }
 let homework3xLookupToken=0;
 async function lookupHomework3x(){
@@ -9133,9 +9124,7 @@ async function lookupHomework3x(){
  if(looksLikePinyin3x(raw,local)){
   const candidates=pinyinToChineseCandidates(raw);
   if(candidates.length){
-   const best=await renderHomework3xCandidates(candidates);
-   if(!best){status.textContent='Chưa tìm được cách ghép Pinyin phù hợp.';return;}
-   status.textContent='Đã tìm thấy mục từ/câu mẫu có cách đọc Pinyin khớp đầy đủ trong dữ liệu nguồn.';
+   await renderHomework3xCandidates(candidates);
    return;
   }
   const composed=composePinyinSentence3x(raw);
@@ -9144,27 +9133,26 @@ async function lookupHomework3x(){
    return;
   }
   if(composed.status==='ambiguous'){
-   status.textContent='Pinyin có nhiều cách chuyển chữ Hán hợp lý. Hãy chọn phương án hoặc bổ sung dấu thanh để xác định chính xác.';
-   renderPinyinCompositionOptions3x(composed.options,token);
+   status.textContent='Có nhiều phương án Pinyin phù hợp; hệ thống đang tự động xác minh nghĩa trước khi hiển thị.';
+   await renderPinyinCompositionOptions3x(composed.options,token);
    return;
   }
   status.textContent='Chưa tìm được cách chuyển Pinyin đủ tin cậy trong dữ liệu hiện có. Hãy thêm dấu thanh hoặc kiểm tra lại cách viết và khoảng cách giữa các âm tiết.';
   box.innerHTML='<div class="empty">Không tìm thấy câu Pinyin khớp dữ liệu và không đủ căn cứ để tự ghép chữ Hán.</div>';
   return;
- } if(local){renderHomework3xCard(local,local.source);status.textContent='Đã tìm thấy kết quả trong dữ liệu offline.';return;}
+ } if(local){await renderHomework3xCard(local,local.source);return;}
  status.textContent='Đang dịch…';
  const source=hasChinese?'zh-CN':'vi',target=hasChinese?'vi':'zh-CN';
  try{
   const translation=await machineTranslate3x(query,source,target,{onStage:message=>{if(token===homework3xLookupToken)status.textContent=message;}});const translated=translation.text;
   if(token!==homework3xLookupToken||homework3xSelectedIndex!==0)return;
   if(hasChinese){
-   renderHomework3xCard({zh:raw,py:pinyinForChinese(raw),vi:translated,note:'Bản dịch máy online · '+translation.provider},'Trung → Việt');
+   await renderHomework3xCard({zh:raw,py:pinyinForChinese(raw),vi:translated,note:'Bản dịch máy online · '+translation.provider},'Trung → Việt');
   }else{
    const curated=OFFLINE_SENTENCE_TRANSLATIONS[norm(query)];
    const zh=curated?.zh||translated;
-   renderHomework3xCard({zh,py:pinyinForChinese(zh,curated?.py||''),vi:raw,note:curated?'Câu mẫu đã kiểm chứng':'Bản dịch máy online · '+translation.provider},'Việt → Trung');
+   await renderHomework3xCard({zh,py:pinyinForChinese(zh,curated?.py||''),vi:raw,note:curated?'Câu mẫu đã kiểm chứng':'Bản dịch máy online · '+translation.provider},'Việt → Trung');
   }
-  status.textContent='Đã dịch xong. Hãy kiểm tra ngữ cảnh với câu dài hoặc đa nghĩa.';
  }catch(error){
   if(token!==homework3xLookupToken||homework3xSelectedIndex!==0)return;
   status.textContent='Không dịch được nội dung mới: '+(error?.message||error);
