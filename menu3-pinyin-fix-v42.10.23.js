@@ -118,8 +118,31 @@
   }
   return offset===actual.length;
  }
+ function menu3SourceLetters(value){
+  const toneMarks=new Set(['\u0304','\u0301','\u030c','\u0300']);
+  const letters=[];let lastVowel=-1;
+  for(const ch of String(value||'').normalize('NFD').toLowerCase()){
+   if(ch==='v'){letters.push({base:'u',mark:'',umlaut:true});lastVowel=letters.length-1;continue;}
+   if(/[a-z]/.test(ch)){letters.push({base:ch,mark:'',umlaut:false});if('aeiou'.includes(ch))lastVowel=letters.length-1;continue;}
+   if(ch==='\u0308'){if(lastVowel>=0&&letters[lastVowel].base==='u')letters[lastVowel].umlaut=true;continue;}
+   if(toneMarks.has(ch)){if(lastVowel>=0&&!letters[lastVowel].mark)letters[lastVowel].mark=ch;continue;}
+  }
+  return letters;
+ }
+ function menu3FormatWord(rawWord,sourceWord){
+  const rawLetters=menu3SourceLetters(rawWord),sourceLetters=menu3SourceLetters(sourceWord);
+  if(!rawLetters.length||rawLetters.length!==sourceLetters.length)return rawWord;
+  const rawChars=[...String(rawWord).normalize('NFD')].filter(ch=>/[A-Za-z]/.test(ch));
+  return rawLetters.map((letter,index)=>{
+   const source=sourceLetters[index],upper=/[A-Z]/.test(rawChars[index]||'');
+   let output=upper?letter.base.toUpperCase():letter.base;
+   if(letter.umlaut||source.umlaut)output+='\u0308';
+   output+=source.mark||'';
+   return output;
+  }).join('').normalize('NFC');
+ }
  function formatByInputSpacing(raw,sourcePinyin){
-  const source=String(raw||''),matches=[...source.matchAll(/[^\s,，、;；.!?！？]+/g)];
+  const source=String(raw??''),matches=[...source.matchAll(/[^\s,，、;；.!?！？]+/g)];
   const syllables=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
   if(!matches.length||!syllables.length)return String(sourcePinyin||'');
   if(typeof window.getPinyin18SourceIndex!=='function')return String(sourcePinyin||'');
@@ -130,7 +153,8 @@
    const paths=pathsForInputToken(match[0],available);
    const selected=paths.find(path=>path.length<=keys.length-at&&path.every((key,index)=>keys[at+index]===key));
    if(!selected)return String(sourcePinyin||'');
-   groups.push(syllables.slice(at,at+selected.length).join(''));at+=selected.length;
+   const sourceGroup=syllables.slice(at,at+selected.length);
+   groups.push(menu3FormatWord(match[0],sourceGroup.join('')));at+=selected.length;
   }
   if(at!==syllables.length)return String(sourcePinyin||'');
   const first=matches[0],last=matches[matches.length-1];
@@ -165,11 +189,34 @@
  }
  let renderToken=0;
  let currentCandidates=[];
+ function menu3ReadingUsesUmlaut(value){
+  const text=String(value||'').normalize('NFD').toLowerCase();
+  return text.includes('\u0308')||/v/.test(text);
+ }
+ function installMenu3UmlautSelector(){
+  const original=window.pinyin18SelectToneDiverse;
+  if(typeof original!=='function'||original.__menu3UmlautStrict)return;
+  const wrapped=function(candidates,raw,limit){
+   const inputTokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean);
+   let pool=Array.isArray(candidates)?candidates:[];
+   if(inputTokens.some(menu3ReadingUsesUmlaut)){
+    pool=pool.filter(item=>{
+     const tokens=String(item?.py||'').trim().split(/\\s+/).filter(Boolean);
+     return inputTokens.every((token,index)=>!menu3ReadingUsesUmlaut(token)||menu3ReadingUsesUmlaut(tokens[index]));
+    });
+   }
+   if(!pool.length)return [];
+   return original.call(this,pool,raw,limit);
+  };
+  wrapped.__menu3UmlautStrict=true;
+  window.pinyin18SelectToneDiverse=wrapped;
+ }
  async function renderCandidates(candidates){
   const host=document.getElementById('homework3x-candidates');
   if(!host)return null;
   const status=document.getElementById('homework3x-status');
   const query=String(document.getElementById('homework3x-query')?.value||'');
+  installMenu3UmlautSelector();
   const seen=new Set();
   const valid=(Array.isArray(candidates)?candidates:[]).filter(item=>{
    if(!item||!item.zh||!item.py)return false;
@@ -229,6 +276,7 @@
   };
   await renderPage();return source[0]||null;
  }
+ window.formatByInputSpacing=formatByInputSpacing;
  window.renderHomework3xCandidatesV421023=renderCandidates;
 
  /* Menu 3 candidate detail modal: three values, three copy actions, two speech actions. */

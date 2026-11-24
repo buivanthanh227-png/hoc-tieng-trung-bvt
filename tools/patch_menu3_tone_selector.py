@@ -26,6 +26,10 @@ function pinyin18Menu3ShortestPaths(raw, syllables) {
  }
  return memo[0]||[];
 }
+function menu3ReadingUsesUmlaut(value){
+ const text=String(value||'').normalize('NFD').toLowerCase();
+ return text.includes('\u0308')||/v/.test(text);
+}
 function pinyin18SelectToneDiverse(candidates, raw, limit=30) {
  const inputTokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
  if(!inputTokens.length)return [];
@@ -75,8 +79,14 @@ function pinyin18SelectToneDiverse(candidates, raw, limit=30) {
   }
   return {item,tokens:String(item.py||'').trim().split(/\s+/).filter(Boolean),priority,tones:match.tones,base};
  }).filter(Boolean);
- if(!rows.length)return [];
- let ranked=rows;
+ let pool=rows;
+ if(inputTokens.some(menu3ReadingUsesUmlaut)){
+  pool=rows.filter(row=>inputTokens.every((token,i)=>
+   !menu3ReadingUsesUmlaut(token)||menu3ReadingUsesUmlaut(row.tokens[i])
+  ));
+ }
+ if(!pool.length)return [];
+ let ranked=pool;
  if(hasCompact){
   const groups=new Map();
   for(const row of ranked){if(!groups.has(row.base))groups.set(row.base,[]);groups.get(row.base).push(row);}
