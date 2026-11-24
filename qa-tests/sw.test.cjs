@@ -28,7 +28,7 @@ function createHarness(options = {}) {
     if (failedAssets.has(url)) return new Response('Not Found', { status: 404 });
     const body = url.includes('/luyen-so/')
       ? 'LUYEN_SO_DOCUMENT'
-      : 'HOME_DOCUMENT';
+      : (options.homeHtml || 'HOME_DOCUMENT');
     return new Response(body, {
       status: 200,
       headers: { 'Content-Type': 'text/html; charset=utf-8' }
@@ -161,7 +161,7 @@ test('offline navigation serves the matching document and never substitutes home
 
 
 test('Menu 3 runtime is injected independently of the heading-style marker and cache-busted', async () => {
-  const harness = createHarness();
+  const harness = createHarness({ homeHtml: '<html><head><style id="bvt-fix-right-menu-heading-typography-colors-v2"></style></head><body>HOME_DOCUMENT</body></html>' });
   const home = await harness.navigate(SCOPE);
   const html = await home.text();
   assert.match(html, /bvt-v421023-menu3-runtime/);
