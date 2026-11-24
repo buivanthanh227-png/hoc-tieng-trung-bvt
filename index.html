@@ -2411,6 +2411,36 @@ html body .topbar .brand>.brand-flag:last-child{
  }
 }
 </style>
+<style id="bvt-unified-17-menu-headings-v1">
+/* A single typography rule for all right-side headings.
+   switchTab() assigns --red from the selected menu's existing banner palette. */
+.panel .section-title[data-function-number] {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif !important;
+  font-size: clamp(16px, 2.1vw, 18px) !important;
+  font-weight: 850 !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+  color: var(--red) !important;
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  text-wrap: pretty;
+}
+.panel.active .section-title[data-function-number] {
+  color: var(--red) !important;
+}
+.panel .section-title[data-function-number] .function-title-icon {
+  font: inherit !important;
+  line-height: inherit !important;
+}
+@media (max-width: 600px) {
+  .panel .section-title[data-function-number] {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header class="topbar"><div class="toprow"><div class="brand">
