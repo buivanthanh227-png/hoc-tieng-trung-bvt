@@ -344,6 +344,8 @@
  },true);
  root.dataset.menu3PinyinFix='42.10.23';
 
- const menu3Heading=document.querySelector('#panel-translate3 h2[data-function-number="3"]');
+ const menu3Heading=typeof document.querySelector==='function'
+  ?document.querySelector('#panel-translate3 h2[data-function-number="3"]')
+  :null;
  if(menu3Heading)menu3Heading.textContent='DỊCH NHANH VIỆT ⇄ TRUNG'; root.dataset.menu3PinyinMapper='menu18-source-sentence-mapper';
 })();
