@@ -143,10 +143,15 @@ test('whole-sentence candidate meanings are not assembled from isolated gloss fr
   }
 });
 
-test('Pinyin candidates are never machine-translated or assembled from component entries', () => {
+test('Menu 3 lookup delegates to complete 10-per-page results with sentence-level meanings', () => {
+  const runtime = fs.readFileSync(path.join(__dirname, '..', 'menu3-pinyin-fix-v42.10.23.js'), 'utf8');
   const renderStart = html.indexOf('async function renderHomework3xCandidates(candidates){');
   const renderEnd = html.indexOf('function looksLikeVietnamese3x(raw){', renderStart);
   assert.ok(renderStart >= 0 && renderEnd > renderStart);
-  assert.doesNotMatch(html.slice(renderStart, renderEnd), /machineTranslate/);
-  assert.match(html.slice(renderStart, renderEnd), /homework3xPageSize=12/);
+  assert.match(html.slice(renderStart, renderEnd), /window\.renderHomework3xCandidatesV421023/);
+  assert.match(runtime, /const token=\+\+renderToken;let page=0;const pageSize=10/);
+  assert.match(runtime, /window\.machineTranslate3x\(String\(item\.zh\),'zh-CN','vi'\)/);
+  assert.match(runtime, /window\.openHomework3xCandidateModal\(item,index,source\.length\)/);
+  assert.match(runtime, /groups\.push\(syllables\.slice\(at,at\+selected\.length\)\.join\(''\)\)/);
+  assert.doesNotMatch(runtime, /Chọn để dịch nghĩa/);
 });
