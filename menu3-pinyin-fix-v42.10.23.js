@@ -140,7 +140,7 @@
    output+=source.slice(previous.index+previous[0].length,current.index)+groups[i];
   }
   output+=source.slice(last.index+last[0].length);
-  return output.replace(/^(\s*)([a-zü])/i,(_,space,ch)=>space+ch.toUpperCase());
+  return output;
  }
  const translateFullSentence=async item=>{
   let vi=cleanMeaning(item.preferredMeaning||item.vi||'');
