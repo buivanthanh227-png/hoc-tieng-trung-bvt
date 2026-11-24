@@ -136,7 +136,7 @@
   return rawLetters.map((letter,index)=>{
    const source=sourceLetters[index],upper=/[A-Z]/.test(rawChars[index]||'');
    let output=upper?letter.base.toUpperCase():letter.base;
-   if(letter.umlaut||source.umlaut)output+='\u0308';
+   if(source.umlaut)output+='\u0308';
    output+=source.mark||'';
    return output;
   }).join('').normalize('NFC');
@@ -167,8 +167,9 @@
   return output;
  }
  const translateFullSentence=async item=>{
-  let vi=cleanMeaning(item.preferredMeaning||item.vi||'');
-  if(validMeaning(vi))return {...item,vi};
+  const composed=Array.isArray(item.sourceRows)&&item.sourceRows.length>1;
+  let vi=composed?'':cleanMeaning(item.preferredMeaning||item.vi||'');
+  if(!composed&&validMeaning(vi))return {...item,vi};
   try{
    let translated='';
    if(typeof window.machineTranslate3x==='function'){
@@ -185,7 +186,7 @@
   const runners=Array.from({length:Math.min(limit,items.length)},async()=>{
    while(next<items.length){const index=next++;output[index]=await worker(items[index],index);}
   });
-  await Promise.all(runners);return output.filter(Boolean);
+  await Promise.all(runners);return output;
  }
  let renderToken=0;
  let currentCandidates=[];
@@ -197,11 +198,11 @@
   const original=window.pinyin18SelectToneDiverse;
   if(typeof original!=='function'||original.__menu3UmlautStrict)return;
   const wrapped=function(candidates,raw,limit){
-   const inputTokens=String(raw||'').trim().split(/[\\s,，、;；]+/).filter(Boolean);
+   const inputTokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
    let pool=Array.isArray(candidates)?candidates:[];
    if(inputTokens.some(menu3ReadingUsesUmlaut)){
     pool=pool.filter(item=>{
-     const tokens=String(item?.py||'').trim().split(/\\s+/).filter(Boolean);
+     const tokens=String(item?.py||'').trim().split(/\s+/).filter(Boolean);
      return inputTokens.every((token,index)=>!menu3ReadingUsesUmlaut(token)||menu3ReadingUsesUmlaut(tokens[index]));
     });
    }
@@ -239,9 +240,6 @@
    const pageCount=Math.max(1,Math.ceil(source.length/pageSize));
    const start=page*pageSize,rawItems=source.slice(start,start+pageSize);
    host.replaceChildren();
-   if(status)status.textContent='Đang kiểm tra nghĩa tiếng Việt của tối đa 10 câu hoàn chỉnh…';
-   const items=await mapLimit(rawItems,3,translateFullSentence);
-   if(token!==renderToken)return;
    const nav=()=>{
     const node=document.createElement('div');node.className='homework3x-pagination';
     node.innerHTML='<button type="button" data-page-prev>‹ Trang trước</button><span>Trang '+(page+1)+' / '+pageCount+' · '+source.length+' kết quả</span><button type="button" data-page-next>Trang sau ›</button>';
@@ -251,29 +249,51 @@
     node.querySelector('[data-page-next]').addEventListener('click',()=>{if(page<pageCount-1){page++;renderPage();}});
     return node;
    };
-   host.appendChild(nav());
    const grid=document.createElement('div');grid.className='homework3x-candidate-grid';
-   items.forEach((item,offset)=>{
+   const cards=[];
+   rawItems.forEach((item,offset)=>{
+    if(!item||!item.zh||!item.py)return;
     const index=start+offset,button=document.createElement('button');
     button.type='button';button.className='homework3x-candidate';button.dataset.homework3xCandidate=String(index);
     const number=document.createElement('span');number.className='homework3x-candidate-number';number.textContent=String(index+1);
     const content=document.createElement('span');content.className='homework3x-candidate-content';
     const py=document.createElement('span');py.className='homework3x-candidate-py';py.style.cssText='display:block!important;color:#1769c2!important;font-size:clamp(21px,5.2vw,27px)!important;font-weight:900!important;line-height:1.35!important;letter-spacing:.01em!important;overflow-wrap:anywhere!important';py.textContent=formatByInputSpacing(query,item.py);
     const zh=document.createElement('span');zh.className='homework3x-candidate-zh';zh.style.cssText='display:block!important;color:#7b3fa1!important;font-size:19px!important;font-weight:850!important;line-height:1.4!important;overflow-wrap:anywhere!important';zh.textContent=item.zh;
-    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.style.cssText='display:block!important;color:#16845b!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important';vi.textContent=item.vi;
+    const vi=document.createElement('span');vi.className='homework3x-candidate-vi';vi.style.cssText='display:block!important;color:#16845b!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;overflow-wrap:anywhere!important';
+    const composed=Array.isArray(item.sourceRows)&&item.sourceRows.length>1;
+    const initialMeaning=composed?'':cleanMeaning(item.preferredMeaning||item.vi||'');
+    vi.textContent=validMeaning(initialMeaning)?initialMeaning:'Đang xác minh nghĩa tiếng Việt…';
     content.append(py,zh,vi);button.append(number,content);
-    button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();window.homework3xSelectedCandidateIndex=index;if(typeof window.openHomework3xCandidateModal==='function'){window.openHomework3xCandidateModal(item,index,source.length);}else if(status){status.textContent='Không tải được hộp thoại chi tiết. Vui lòng tải lại trang.';}});
-    grid.appendChild(button);
-    source[index]=item;
+    button.addEventListener('click',event=>{
+     event.preventDefault();event.stopPropagation();
+     window.homework3xSelectedCandidateIndex=index;
+     const selected=source[index]||item;
+     if(typeof window.openHomework3xCandidateModal==='function'){window.openHomework3xCandidateModal(selected,index,source.length);}
+     else if(status){status.textContent='Không tải được hộp thoại chi tiết. Vui lòng tải lại trang.';}
+    });
+    grid.appendChild(button);cards.push({index,button,meaning:vi});source[index]=item;
    });
-   if(!items.length){
+   host.appendChild(nav());
+   host.appendChild(grid);
+   host.appendChild(nav());
+   host.hidden=false;
+   if(status)status.textContent='Đã hiển thị '+rawItems.length+' kết quả Pinyin. Đang kiểm tra nghĩa tiếng Việt của từng câu hoàn chỉnh…';
+   const items=await mapLimit(rawItems,3,translateFullSentence);
+   if(token!==renderToken)return;
+   items.forEach((item,offset)=>{
+    const card=cards.find(entry=>entry.index===start+offset);
+    if(!card)return;
+    if(!item){card.button.remove();return;}
+    source[card.index]=item;card.meaning.textContent=item.vi;
+   });
+   const visible=cards.filter(card=>card.button.parentNode===grid).length;
+   if(!visible){
     host.hidden=true;host.replaceChildren();
-    if(status)status.textContent='Không tìm thấy nghĩa tiếng Việt hợp lý cho các phương án ở trang này. Đã loại bỏ kết quả không đạt yêu cầu.';
+    if(status)status.textContent='Không tìm thấy nghĩa tiếng Việt đáng tin cậy cho các phương án ở trang này. Đã loại bỏ kết quả không đạt yêu cầu.';
     return;
    }
-   host.appendChild(grid);host.appendChild(nav());
    if(status)status.textContent='Có '+source.length+' phương án từ bộ ánh xạ Pinyin theo từ/câu hoàn chỉnh. Hiển thị 10 kết quả mỗi trang.';
-  };
+  };;
   await renderPage();return source[0]||null;
  }
  window.formatByInputSpacing=formatByInputSpacing;
