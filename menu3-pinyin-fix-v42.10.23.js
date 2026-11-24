@@ -143,11 +143,18 @@
  }
  function formatByInputSpacing(raw,sourcePinyin){
   const source=String(raw??''),matches=[...source.matchAll(/[^\s,，、;；.!?！？]+/g)];
-  const syllables=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
-  if(!matches.length||!syllables.length)return String(sourcePinyin||'');
+  let syllables=String(sourcePinyin||'').trim().split(/\s+/).filter(Boolean);
+  if(!matches.length)return String(sourcePinyin||'');
   if(typeof window.getPinyin18SourceIndex!=='function')return String(sourcePinyin||'');
   const available=window.getPinyin18SourceIndex()?.syllables;
   if(!available)return String(sourcePinyin||'');
+  // If source is compact (one token) but user has multiple tokens, expand it.
+  if(syllables.length===1 && matches.length>1){
+   const compactKey=pinyinKey(syllables[0]);
+   const paths=pathsForInputToken(syllables[0],available);
+   const expanded=paths.find(path=>path.join('')===compactKey);
+   if(expanded)syllables=expanded.map(base=>base); // use base forms; tones will be applied later if needed
+  }
   const keys=syllables.map(pinyinKey),groups=[];let at=0;
   for(const match of matches){
    const paths=pathsForInputToken(match[0],available);
@@ -367,7 +374,189 @@
  },true);
  root.dataset.menu3PinyinFix='42.10.23';
 
- const menu3Heading=typeof document.querySelector==='function'
+
+ /* Vietnamese sentence meaning composition for Menu 3. */
+ function menu3Gloss(entry){
+  let text=String(entry?.vi||'');
+  text=text.split(/[;；]/)[0];
+  text=text.replace(/\([^)]*\)/g,' ').replace(/\[[^\]]*\]/g,' ');
+  text=text.replace(/^[\s·•,，、:：|\-]+/,'').replace(/[\s·•,，、:：|\-]+$/,'').replace(/\s+/g,' ').trim();
+  return text;
+ }
+ function menu3BadGloss(text){
+  return !text||text.length>80||/biến thể|phương ngữ|hình thức kết hợp|tên khoa học|danh pháp|trợ từ|chất liệu/i.test(text)||/[\u3400-\u9fff]/.test(text);
+ }
+ function menu3BadEntry(entry){
+  const raw=String(entry?.vi||'');
+  if(/biến thể|phương ngữ|hình thức kết hợp|tên khoa học|danh pháp|trợ từ|dùng trong|chất liệu/i.test(raw))return true;
+  if(/^\s*họ\s*\[/i.test(raw))return true;
+  return menu3BadGloss(menu3Gloss(entry));
+ }
+ function menu3FinishSentence(text){
+  let sentence=String(text||'').replace(/\s+/g,' ').trim();
+  if(!sentence)return '';
+  sentence=sentence.charAt(0).toLocaleUpperCase('vi')+sentence.slice(1);
+  if(!/[.!?…]$/.test(sentence))sentence+='.';
+  return sentence;
+ }
+ function menu3IsVerbGloss(gloss){
+  const text=String(gloss||'').toLocaleLowerCase('vi').trim();
+  if(!text)return false;
+  return /^(yêu|thích|nhớ|gặp|quen|giúp|mời|hỏi|nhìn|xem|nghe|gọi|uống|ăn|đi|đến|tới|học|làm|nói|đọc|viết|mua|bán|cho|lấy|đưa|mang|mở|đóng|ngồi|đứng|chạy|bay|hát|nhảy|chơi|trả|lời|cười|khóc|ngủ|thức|dậy|tắm|rửa|mặc|cởi|về|ra|vào|lên|xuống|qua|lại|biết|hiểu|nghĩ|muốn|cần|phải|có thể|sẽ|đã|đang|vừa|mới|còn|chỉ|cũng|rất|không|có|là|ở|tại|từ)$/.test(text);
+ }
+ function menu3HasVerb(parts){
+  return (Array.isArray(parts)?parts:[]).some(part=>menu3IsVerbGloss(part.gloss||part));
+ }
+ function menu3MeaningFromEntries(entries){
+  const parts=(Array.isArray(entries)?entries:[]).map(entry=>{
+   const zh=String(entry.zh||''),gloss=menu3Gloss(entry),key=pinyinKey(entry.py);
+   return {zh,gloss,entry,le:zh==='了'&&key==='le',qing:zh==='请',and:zh==='和'||zh==='合'||zh==='跟'};
+  });
+  if(!parts.length)return '';
+  const completed=parts[parts.length-1].le;
+  const core=completed?parts.slice(0,-1):parts.slice();
+  if(!core.length||core.some(part=>menu3BadEntry(part.entry)))return '';
+  const time=/^(hôm qua|hôm nay|hôm kia|ngày mai|bây giờ|sáng nay|tối nay|tuần trước|tuần sau|năm ngoái)$/i;
+  const person=/^(tôi|mình|bạn|anh|chị|em|họ|ông|bà|chúng tôi|chúng ta)$/i;
+  const andAt=core.findIndex(part=>part.and);
+  if(andAt>=0){
+   const left=core.slice(0,andAt),right=core.slice(andAt+1);
+   if(!left.length||!right.length||left.concat(right).some(part=>part.and||part.qing))return '';
+   const personSide=/^(tôi|mình|bạn|anh|chị|em|họ|ông|bà|chúng tôi|chúng ta|các bạn)$/i;
+   const countPeople=parts=>parts.filter(part=>personSide.test(part.gloss)).length;
+   const leftPeople=countPeople(left),rightPeople=countPeople(right);
+   if((leftPeople>0)!==(rightPeople>0))return '';
+   if((leftPeople&&leftPeople!==left.length)||(rightPeople&&rightPeople!==right.length))return '';
+   const conj=core[andAt].gloss.toLocaleLowerCase('vi');
+   const word=/^(và|với|cùng|cùng với)$/.test(conj)?conj:'và';
+   return menu3FinishSentence(left.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' ')+' '+word+' '+right.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' '));
+  }
+  let index=0;const times=[];
+  while(index<core.length&&time.test(core[index].gloss)){times.push(core[index].gloss.toLocaleLowerCase('vi'));index++;}
+  let subject='';
+  if(index<core.length&&person.test(core[index].gloss)){subject=core[index].gloss.toLocaleLowerCase('vi');index++;}
+  const rest=core.slice(index);
+  if(rest[0]&&rest[0].qing){
+   const after=rest.slice(1);let object='';
+   if(after[0]&&person.test(after[0].gloss)){object=after.shift().gloss.toLocaleLowerCase('vi');}
+   if(after.some(part=>part.and))return '';
+   const action=after.map(part=>part.gloss.toLocaleLowerCase('vi')).filter(Boolean);
+   if(!object||!menu3HasVerb(after))return '';
+   return menu3FinishSentence([times.join(' '),subject,completed?'đã':'','mời',object,action.join(' ')].filter(Boolean).join(' '));
+  }
+  if(subject&&rest.length&&!rest.some(part=>part.and||part.qing)){
+   const pronoun=/^(tôi|mình|bạn|anh|chị|em|họ|ông|bà|chúng tôi|chúng ta|các bạn)$/i;
+   const social=/^(yêu|thích|nhớ|gặp|quen|giúp|mời|hỏi|nhìn|xem|nghe|gọi)$/i;
+   if(pronoun.test(rest[rest.length-1].gloss)&&!social.test(rest[0].gloss))return '';
+   if(!menu3HasVerb(rest))return '';
+   return menu3FinishSentence([times.join(' '),subject,completed?'đã':'',rest.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' ')].filter(Boolean).join(' '));
+  }
+  if(core.length===1&&!menu3BadGloss(core[0].gloss))return core[0].gloss;
+  return '';
+ }
+ function menu3ShortestSyllables(token){
+  if(typeof window.getPinyin18SourceIndex!=='function')return [];
+  const available=window.getPinyin18SourceIndex()?.syllables;if(!available)return [];
+  return pathsForInputToken(token,available);
+ }
+ function menu3ComposeAnalyses(raw){
+  if(typeof window.getPinyin3xComposerIndex!=='function'||typeof window.pinyin18InputInfosMatchSource!=='function')return [];
+  const composer=window.getPinyin3xComposerIndex();
+  const tokens=String(raw||'').trim().split(/[\s,，、;；]+/).filter(Boolean);
+  if(!tokens.length||tokens.length>12)return [];
+  let sequences=[[]];
+  for(const token of tokens){
+   const paths=menu3ShortestSyllables(token);
+   if(!paths.length)return [];
+   const shortest=Math.min(...paths.map(path=>path.length));
+   const chosen=paths.filter(path=>path.length===shortest).slice(0,2);
+   const next=[];
+   for(const prefix of sequences)for(const path of chosen){
+    next.push(prefix.concat(path.map(base=>({base,tones:[]}))));
+    if(next.length>=6)break;
+   }
+   sequences=next;if(!sequences.length)return [];
+  }
+  const found=[];
+  for(const input of sequences){
+   const states=Array.from({length:input.length+1},()=>[]);states[0]=[{score:0,zh:'',entries:[]}];
+   for(let start=0;start<input.length;start++){
+    if(!states[start].length)continue;
+    for(let end=start+1;end<=Math.min(input.length,start+6);end++){
+     const span=input.slice(start,end),compact=span.map(item=>item.base).join('');
+     const entries=composer.byCompact.get(compact)||[];
+     for(const entry of entries){
+      if(!window.pinyin18InputInfosMatchSource(entry,span))continue;
+      for(const path of states[start]){
+       const candidate={score:path.score+Number(entry.score||0)+(Number(entry.chars)>1?20:0)-4,zh:path.zh+entry.zh,entries:path.entries.concat(entry)};
+       const bucket=states[end],prior=bucket.find(item=>item.zh===candidate.zh);
+       if(prior){if(candidate.score>prior.score)Object.assign(prior,candidate);}else bucket.push(candidate);
+       bucket.sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh,'zh-CN'));
+       if(bucket.length>16)bucket.length=16;
+      }
+     }
+    }
+   }
+   for(const path of states[input.length]||[])found.push(path);
+  }
+  found.sort((a,b)=>b.score-a.score);
+  const results=[],seen=new Set();
+  for(const path of found){
+   const vi=menu3MeaningFromEntries(path.entries);if(!vi)continue;
+   if(path.entries.some(entry=>Number(entry.score||0)<80&&!(entry.zh==='了'&&pinyinKey(entry.py)==='le')))continue;
+   const id=path.zh+'|'+vi;if(seen.has(id))continue;seen.add(id);
+   results.push({zh:path.zh,py:path.entries.map(entry=>String(entry.py||'').trim()).filter(Boolean).join(' '),vi,score:path.score});
+   if(results.length>=30)break;
+  }
+  return results;
+ }
+ function menu3LexicalMeaning(item){
+  const direct=cleanMeaning(item?.preferredMeaning||item?.vi||'');
+  if(validMeaning(direct)&&!menu3BadGloss(direct))return direct;
+  const gloss=menu3Gloss(item);
+  return !menu3BadGloss(gloss)&&validMeaning(gloss)?gloss:'';
+ }
+ function menu3EntryMatchesReading(token,item){
+  if(!menu3ReadingUsesUmlaut(token))return true;
+  return String(item?.py||'').trim().split(/\s+/).filter(Boolean).some(menu3ReadingUsesUmlaut);
+ }
+ function menu3AnalyzeSentence(raw){
+  const query=String(raw||'');
+  installMenu3UmlautSelector();
+  const findChinese=window['pinyinToChineseCandidates'];
+  const exact=typeof findChinese==='function'?findChinese(query):[];
+  let rows=[];
+  if(exact.length){
+   const tokens=query.trim().split(/[\s,，、;；]+/).filter(Boolean);
+   let pool=exact;
+   if(tokens.length>1){
+    const chooseTone=window.pinyin18SelectToneDiverse;
+    pool=typeof chooseTone==='function'?chooseTone(exact,query,30):exact.slice(0,30);
+   }else{
+    const token=tokens[0]||'';
+    pool=exact.filter(item=>menu3EntryMatchesReading(token,item)).sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)||String(a.zh).localeCompare(String(b.zh),'zh-CN'));
+   }
+   const seen=new Set();
+   for(const item of pool){
+    if(!item||seen.has(item.zh+'|'+item.py))continue;seen.add(item.zh+'|'+item.py);
+    const vi=menu3LexicalMeaning(item);if(!vi)continue;
+    rows.push({zh:item.zh,py:item.py,vi});
+    if(rows.length>=30)break;
+   }
+  }
+  if(!rows.length)rows=menu3ComposeAnalyses(query);
+  return rows.map(item=>({zh:item.zh,py:formatByInputSpacing(query,item.py),vi:item.vi,sourcePy:item.py}));
+ }
+ window.menu3AnalyzeSentence=menu3AnalyzeSentence;
+ window.menu3PageItems=function(items,page,pageSize){
+  const list=Array.isArray(items)?items:[],size=Math.max(1,Number(pageSize)||10);
+  const pageCount=Math.max(1,Math.ceil(list.length/size)||1);
+  const current=Math.min(Math.max(0,Number(page)||0),pageCount-1);
+  const start=current*size;
+  return {page:current,pageCount,total:list.length,items:list.slice(start,start+size),start};
+ };
+
+const menu3Heading=typeof document.querySelector==='function'
   ?document.querySelector('#panel-translate3 h2[data-function-number="3"]')
   :null;
  if(menu3Heading)menu3Heading.textContent='DỊCH NHANH VIỆT ⇄ TRUNG'; root.dataset.menu3PinyinMapper='menu18-source-sentence-mapper';
