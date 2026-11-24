@@ -42,6 +42,7 @@ jobs:
           python3 tools/patch_android_chrome_speech.py index.html
           python3 tools/patch_v421023_menu3_runtime.py index.html
           python3 tools/patch_menu3_tone_selector.py index.html
+          python3 tools/patch_menu3_full_results.py index.html
           git diff --check
           if ! git diff --quiet -- index.html; then
             git config user.name "github-actions[bot]"
@@ -75,6 +76,7 @@ jobs:
           # Menu 18, banner, footer hoặc bộ nạp từ điển.
           cp index.html site/
           node --test qa-tests/*.test.cjs
+          python3 tools/test_menu3_full_results.py site/index.html menu3-pinyin-fix-v42.10.23.js
           python3 -m py_compile tools/*.py
           python3 tools/test_menu18_word_mapping.py site/index.html
           python3 tools/test_menu3_clone.py site/index.html
@@ -213,7 +215,7 @@ jobs:
                     exit 1
                   fi
                 done
-                for marker in 'MENU3_INDEPENDENT_COPY_OF_MENU18_V1' 'id="panel-translate3"' 'data-tab="translate3"' 'id="homework3x-query"' 'async function lookupHomework3x()' 'runLongTranslation3x' 'runFileTranslation3x'; do
+                for marker in 'BVT_MENU3_FULL_RESULTS_RENDERER_BRIDGE_V1' 'window.renderHomework3xCandidatesV421023' 'MENU3_INDEPENDENT_COPY_OF_MENU18_V1' 'id="panel-translate3"' 'data-tab="translate3"' 'id="homework3x-query"' 'async function lookupHomework3x()' 'runLongTranslation3x' 'runFileTranslation3x'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu Menu 3 độc lập: $marker"
                     exit 1
@@ -232,7 +234,7 @@ jobs:
                 fi
 
                 patch_js="$(curl --fail --silent --show-error --location --max-time 15 "$BASE_URL/menu3-pinyin-fix-v42.10.23.js")"
-                for marker in 'font-size:clamp(21px,5.2vw,27px)!important' 'window.openHomework3xCandidateModal(item,index,source.length)' 'data-copy="hanzi"' 'data-copy="pinyin"' 'data-copy="meaning"' 'data-speak="zh"' 'data-speak="vi"'; do
+                for marker in 'font-size:clamp(21px,5.2vw,27px)!important' 'window.renderHomework3xCandidatesV421023=renderCandidates' 'const token=++renderToken;let page=0;const pageSize=10' 'window.machineTranslate3x(String(item.zh),'\''zh-CN'\'','\''vi'\'')' 'window.openHomework3xCandidateModal(item,index,source.length)' 'data-copy="hanzi"' 'data-copy="pinyin"' 'data-copy="meaning"' 'data-speak="zh"' 'data-speak="vi"'; do
                   if ! grep -Fq "$marker" <<< "$patch_js"; then
                     echo "::error::Production thiếu hiển thị kết quả đầy đủ hoặc hộp thoại Menu 3: $marker"
                     exit 1
