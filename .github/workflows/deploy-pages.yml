@@ -83,6 +83,7 @@ jobs:
           python3 tools/test_menu3_clone.py site/index.html
           python3 tools/test_menu3_ui_fix.py site/index.html
           python3 tools/test_brand_header.py site/index.html
+          python3 tools/test_unified_17_menu_headings.py site/index.html
           python3 tools/test_menu1_dictionary_search.py site/index.html
           python3 tools/test_requested_ui_20261123.py site/index.html
           python3 tools/test_requested_ui_20261123_v2.py site/index.html
@@ -210,7 +211,7 @@ jobs:
                   echo "::error::Production vẫn còn Menu 18."
                   exit 1
                 fi
-                for marker in 'BVT_REQUESTED_UI_20261123_V1' 'id="bvt-menu3-modal-equal-font"' '.homework3x-modal-line.is-pinyin .homework3x-modal-value' 'id="bvt-banner-footer-layout-v1"' 'id="bvt-footer-meta-move-v1"' 'id="bvt-menu1-colored-actions-v1' 'if(!hasQuery){filteredIndices=[];}' 'BVT_REQUESTED_UI_20261123_V2' 'id="bvt-banner-footer-layout-v2"' 'id="bvt-footer-meta-move-v2"' "getElementById('bvt-header-clock')" "window.__menu1DictionaryLoaded=function(count,sourceName)" 'BVT_ANDROID_CHROME_SPEECH_FIX_V1' 'id="bvt-unified-17-menu-headings-v1"'; do
+                for marker in 'BVT_REQUESTED_UI_20261123_V1' 'id="bvt-menu3-modal-equal-font"' '.homework3x-modal-line.is-pinyin .homework3x-modal-value' 'id="bvt-banner-footer-layout-v1"' 'id="bvt-footer-meta-move-v1"' 'id="bvt-menu1-colored-actions-v1' 'if(!hasQuery){filteredIndices=[];}' 'BVT_REQUESTED_UI_20261123_V2' 'id="bvt-banner-footer-layout-v2"' 'id="bvt-footer-meta-move-v2"' "getElementById('bvt-header-clock')" "window.__menu1DictionaryLoaded=function(count,sourceName)" 'BVT_ANDROID_CHROME_SPEECH_FIX_V1' 'id="bvt-unified-17-menu-headings-v2"' 'id="bvt-unified-17-menu-headings-runtime-v2"'; do
                   if ! grep -Fq "$marker" <<< "$html"; then
                     echo "::error::Production thiếu cập nhật giao diện: $marker"
                     exit 1
