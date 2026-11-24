@@ -11,7 +11,7 @@ checks = {
     "result renderer targets the visible candidate container": "getElementById('homework3x-candidates')" in js,
     "all three result fields are rendered": all(x in js for x in ["homework3x-candidate-py", "homework3x-candidate-zh", "homework3x-candidate-vi"]),
     "Pinyin is explicitly large": "font-size:clamp(21px,5.2vw,27px)!important" in js,
-    "Vietnamese meaning is retained and validated": "item.preferredMeaning||item.vi||''" in js and "validMeaning(vi)" in js,
+    "Vietnamese meaning is retained and validated": "const direct=[item.preferredMeaning,item.vi]" in js and "validMeaning(value)" in js,
     "candidate click opens the detail modal": "window.openHomework3xCandidateModal(item,index,complete.length)" in js,
     "modal has Hanzi, Pinyin and Vietnamese": all(x in js for x in ["CHỮ HÁN", "PHIÊN ÂM PINYIN", "NGHĨA TIẾNG VIỆT"]),
     "modal has three copy actions": all(x in js for x in ['data-copy="hanzi"', 'data-copy="pinyin"', 'data-copy="meaning"']),
