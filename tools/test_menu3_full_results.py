@@ -31,7 +31,7 @@ checks = {
     "the user's original letter case is not changed":
         "return output;" in js and "ch.toUpperCase()" not in js,
     "missing Vietnamese glosses are translated from the complete Hanzi sentence":
-        "window.machineTranslate3x(String(item.zh),'zh-CN','vi')" in js,
+        "translators.push(()=>window.machineTranslate3x(hanzi,'zh-CN','vi'))" in js,
     "meaning quality gate rejects dictionary metadata, not full sentence meanings":
         "validMeaning(translated)" in js and "phương ngữ miền bắc" in js,
     "touching a result opens the detail modal":
