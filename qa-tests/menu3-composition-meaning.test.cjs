@@ -122,3 +122,76 @@ test('unaccented but recognizably Vietnamese text remains a valid meaning', asyn
   assert.equal(cards.length, 1);
   assert.equal(cards[0].vi, 'Toi thich uong tra.');
 });
+
+test('the exact Vietnamese verification failure notice is rejected as a meaning', () => {
+  const { context } = boot();
+  assert.equal(context.isValidHomework3xMeaning(
+    'Không thể xác minh nghĩa tiếng Việt; kết quả chưa được hiển thị. Vui lòng thử lại.', option.py
+  ), false);
+});
+
+test('Vietnamese status messages with diacritics are rejected as meanings', () => {
+  const { context } = boot();
+  const statuses = [
+    'Không thể xác minh nghĩa tiếng Việt; kết quả chưa được hiển thị. Vui lòng thử lại.',
+    'Đang xử lý bản dịch, vui lòng chờ trong giây lát.',
+    'Đã nhận diện Pinyin và xác minh nghĩa tiếng Việt.',
+    'Dịch vụ hiện không khả dụng, vui lòng thử lại sau.'
+  ];
+  for (const text of statuses) {
+    assert.equal(context.isValidHomework3xMeaning(text, option.py), false, `${text} must be rejected`);
+  }
+});
+
+test('French and Spanish text with accents are not accepted as Vietnamese meanings', () => {
+  const { context } = boot();
+  for (const text of ['Très bon, merci.', 'El niño está aquí.', 'La niña es muy feliz.']) {
+    assert.equal(context.isValidHomework3xMeaning(text, option.py), false, `${text} must be rejected`);
+  }
+});
+
+test('a late onStage callback after timeout cannot overwrite the final timeout status', async () => {
+  const { context, status, cards } = boot({ forceTimeout: true });
+  let lateStage;
+  context.machineTranslate3x = (_text, _source, _target, options) => {
+    lateStage = options.onStage;
+    return new Promise(() => {});
+  };
+  await context.acceptPinyinComposition3x(option, 17);
+  const finalStatus = status.textContent;
+  assert.match(finalStatus, /Không thể xác minh nghĩa tiếng Việt/i);
+  lateStage('Đang dịch rất tốt…');
+  assert.equal(status.textContent, finalStatus);
+  assert.equal(cards.length, 0);
+});
+
+test('an onStage callback after successful completion cannot overwrite the final success status', async () => {
+  const { context, status, cards } = boot();
+  let lateStage;
+  context.machineTranslate3x = async (_text, _source, _target, options) => {
+    lateStage = options.onStage;
+    return { text: 'Xin chào.', provider: 'test translator' };
+  };
+  await context.acceptPinyinComposition3x(option, 17);
+  const finalStatus = status.textContent;
+  lateStage('Đang dịch…');
+  assert.equal(status.textContent, finalStatus);
+  assert.equal(cards.length, 1);
+  assert.equal(cards[0].vi, 'Xin chào.');
+});
+
+test('a callback from a previous lookup cannot affect the newer query status', async () => {
+  const { context, status, cards } = boot({ forceTimeout: true });
+  let oldStage;
+  context.machineTranslate3x = (_text, _source, _target, options) => {
+    oldStage = options.onStage;
+    return new Promise(() => {});
+  };
+  const oldOperation = context.acceptPinyinComposition3x(option, 17);
+  context.homework3xLookupToken = 18;
+  status.textContent = 'Đang xử lý truy vấn mới.';
+  oldStage('Đang dịch rất tốt…');
+  assert.equal(status.textContent, 'Đang xử lý truy vấn mới.');
+  await oldOperation;
+  assert.equal(cards.length, 0);
+});
