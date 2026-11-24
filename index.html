@@ -9074,14 +9074,32 @@ function looksLikePinyin3x(raw,local){
 async function acceptPinyinComposition3x(option,lookupToken){
  const status=$('homework3x-status');if(lookupToken!==homework3xLookupToken)return;
  status.textContent='Đã chuyển Pinyin thành chữ Hán: '+option.zh+' · Đang dịch nghĩa…';
- let vi='Đã chuyển Pinyin sang chữ Hán; hiện chưa lấy được nghĩa tiếng Việt.',note='Chuyển Pinyin theo từ điển tích hợp';
- try{
-  const translation=await machineTranslate3x(option.zh,'zh-CN','vi',{onStage:message=>{if(lookupToken===homework3xLookupToken)status.textContent=message;}});
-  vi=translation.text;note+=' · '+translation.provider;
- }catch(error){note+=' · Dịch nghĩa online chưa khả dụng: '+String(error?.message||error);}
+ const validMeaning=window.isValidHomework3xMeaning;
+ if(typeof validMeaning!=='function'){
+  status.textContent='Không thể xác minh nghĩa tiếng Việt; kết quả chưa được hiển thị. Vui lòng thử lại.';
+  return;
+ }
+ let vi=typeof option.vi==='string'&&validMeaning(option.vi,option.py)?option.vi.trim():'';
+ let note='Chuyển Pinyin theo từ điển tích hợp';
+ if(!vi){
+  let timeoutId;
+  try{
+   const timeout=new Promise((_,reject)=>{timeoutId=setTimeout(()=>reject(new Error('Translation timed out')),15000);});
+   const translation=await Promise.race([
+    machineTranslate3x(option.zh,'zh-CN','vi',{onStage:message=>{if(lookupToken===homework3xLookupToken)status.textContent=message;}}),
+    timeout
+   ]);
+   vi=String(translation?.text||'').trim();
+   if(!validMeaning(vi,option.py))throw new Error('Translation returned an invalid Vietnamese meaning');
+   note+=' · '+String(translation?.provider||'Dịch máy');
+  }catch(_){
+   if(lookupToken===homework3xLookupToken)status.textContent='Không thể xác minh nghĩa tiếng Việt cho '+String(option.zh||'kết quả này')+'; kết quả chưa được hiển thị. Vui lòng thử lại.';
+   return;
+  }finally{if(timeoutId!==undefined)clearTimeout(timeoutId);}
+ }
  if(lookupToken!==homework3xLookupToken)return;
  renderHomework3xCard({zh:option.zh,py:option.py,vi,note},'Pinyin mới → chữ Hán');
- status.textContent=vi.startsWith('Đã chuyển Pinyin')?'Đã chuyển Pinyin sang chữ Hán; chưa dịch được nghĩa tiếng Việt.':'Đã nhận diện Pinyin và hoàn tất dịch nghĩa.';
+ status.textContent='Đã nhận diện Pinyin và xác minh nghĩa tiếng Việt.';
 }
 function renderPinyinCompositionOptions3x(options,lookupToken){
  const host=$('homework3x-candidates');if(!host)return;host.replaceChildren();host.hidden=false;

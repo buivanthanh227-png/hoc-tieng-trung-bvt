@@ -77,6 +77,7 @@
  const validMeaning=value=>{
   const v=cleanMeaning(value),low=v.toLocaleLowerCase('vi');
   if(v.length<2||v.length>180)return false;
+  if(/^(?:đang (?:tra|dịch|hoàn thiện)|chưa (?:có|tìm|tra|lấy|dịch) được nghĩa|đã chuyển pinyin|không (?:thể|kết nối|tìm) (?:được|dịch)|dịch (?:thất bại|không khả dụng)|dịch vụ không khả dụng|(?:translation|request) (?:failed|unavailable|error|timed out)|no translation(?: found)?|error\b|failed\b|timeout\b|placeholder)(?:\b|\s|[.:…])/i.test(low))return false;
   if(/(?:chưa có nghĩa|chưa tìm được nghĩa|chưa tra được nghĩa|không có nghĩa|không tìm thấy nghĩa|not found|undefined|null)/i.test(low))return false;
   if(/[\d\u3400-\u9fff\uf900-\ufaff]/.test(v))return false;
   if(/\b(?:phương ngữ miền bắc|phương ngữ miền nam|dạng kết hợp|tên khoa học|danh pháp|tên riêng tiếng)\b/i.test(low))return false;
@@ -179,6 +180,16 @@
  const isPinyinEchoMeaning=(meaning,pinyin)=>{
   const meaningKey=pinyinKey(meaning),pinyinValue=pinyinKey(pinyin);
   return !!meaningKey&&!!pinyinValue&&meaningKey===pinyinValue;
+ };
+ window.isValidHomework3xMeaning=(value,pinyin='')=>{
+  const meaning=cleanMeaning(value);
+  if(!validMeaning(meaning)||isPinyinEchoMeaning(meaning,pinyin))return false;
+  const hasVietnameseDiacritic=/[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(meaning);
+  if(hasVietnameseDiacritic)return true;
+  const normalized=meaning.toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d');
+  const vietnameseWords=new Set('toi minh ban anh chi em ho ong ba chung ta chung toi cac ban nguoi va voi cung khong mot la co cua trong tren duoi hoc tieng trung sach nuoc nha gia dinh an uong di den ve yeu thich muon can lam noi doc viet rat nhieu xin chao cam on da dang se duoc'.split(' '));
+  const words=normalized.match(/[a-z]+/g)||[];
+  return words.filter(word=>vietnameseWords.has(word)).length>=2;
  };
  const translateFullSentence=async item=>{
   if(!item||!String(item.zh||'').trim()||!String(item.py||'').trim())return null;
