@@ -176,22 +176,42 @@
   output+=source.slice(last.index+last[0].length);
   return output;
  }
+ const isPinyinEchoMeaning=(meaning,pinyin)=>{
+  const meaningKey=pinyinKey(meaning),pinyinValue=pinyinKey(pinyin);
+  return !!meaningKey&&!!pinyinValue&&meaningKey===pinyinValue;
+ };
  const translateFullSentence=async item=>{
+  if(!item||!String(item.zh||'').trim()||!String(item.py||'').trim())return null;
   const composed=Array.isArray(item.sourceRows)&&item.sourceRows.length>1;
-  let vi=composed?'':cleanMeaning(item.preferredMeaning||item.vi||'');
-  if(!composed&&validMeaning(vi))return {...item,vi};
-  // Translate the complete Hanzi only; retry up to 2 times on failure.
+  // Prefer the first genuinely valid Vietnamese gloss; an invalid
+  // preferredMeaning must never mask a valid item.vi value.
+  const direct=[item.preferredMeaning,item.vi].map(cleanMeaning)
+   .find(value=>validMeaning(value)&&!isPinyinEchoMeaning(value,item.py));
+  if(!composed&&direct)return {...item,vi:direct};
+  const hanzi=String(item.zh).trim();
+  const translators=[];
+  if(typeof window.machineTranslate3x==='function'){
+   translators.push(()=>window.machineTranslate3x(hanzi,'zh-CN','vi'));
+  }
+  // Keep the legacy translator as a real fallback even when the newer
+  // machineTranslate3x function exists but rejects, times out or returns junk.
+  if(typeof window.machineTranslate==='function'){
+   translators.push(()=>window.machineTranslate(hanzi,'zh-CN','vi'));
+  }
+  if(!translators.length)return null;
   for(let attempt=0;attempt<3;attempt++){
-   try{
-    let translated='';
-    if(typeof window.machineTranslate3x==='function'){
-     const result=await window.machineTranslate3x(String(item.zh),'zh-CN','vi');
-     translated=cleanMeaning(result&&typeof result==='object'?result.text:result);
-    }else if(typeof window.machineTranslate==='function'){
-     translated=cleanMeaning(await window.machineTranslate(String(item.zh),'zh-CN','vi'));
-    }
-    if(validMeaning(translated))return {...item,vi:translated,note:'Nghĩa tiếng Việt được dịch từ toàn câu chữ Hán.'};
-   }catch(_){}
+   for(const translate of translators){
+    try{
+     const result=await translate();
+     const raw=result&&typeof result==='object'
+      ?(result.text??result.translation??result.translatedText??'')
+      :result;
+     const translated=cleanMeaning(raw);
+     if(validMeaning(translated)&&!isPinyinEchoMeaning(translated,item.py)){
+      return {...item,vi:translated,note:'Nghĩa tiếng Việt được dịch từ toàn câu chữ Hán.'};
+     }
+    }catch(_){}
+   }
    if(attempt<2)await new Promise(r=>setTimeout(r,180));
   }
   return null;
@@ -323,12 +343,18 @@
  window.openHomework3xCandidateModal=function(item,index,total){
   const existing=document.querySelector('.homework3x-modal-backdrop');
   if(existing)existing.remove();
+  const modalVi=cleanMeaning(item?.vi||'');
+  const preferredVi=cleanMeaning(item?.preferredMeaning||'');
   const values={
    hanzi:String(item?.zh||'').trim(),
    pinyin:String(item?.py||'').trim(),
-   meaning:cleanMeaning(item?.preferredMeaning||item?.vi||'')
+   // The resolved card meaning is authoritative; never let a stale or
+   // invalid preferredMeaning hide the verified Vietnamese result.
+   meaning:validMeaning(modalVi)&&!isPinyinEchoMeaning(modalVi,item?.py)
+    ?modalVi
+    :(validMeaning(preferredVi)&&!isPinyinEchoMeaning(preferredVi,item?.py)?preferredVi:'')
   };
-  if(!values.hanzi||!values.pinyin)return;
+  if(!values.hanzi||!values.pinyin||!values.meaning)return;
   const backdrop=document.createElement('div');
   backdrop.className='homework3x-modal-backdrop';
   backdrop.style.cssText='position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,12,17,.62);overscroll-behavior:contain';
