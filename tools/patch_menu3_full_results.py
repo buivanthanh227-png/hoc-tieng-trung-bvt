@@ -29,9 +29,9 @@ async function renderHomework3xCandidates(candidates){
  return await renderer(candidates);
 }
 """
-existing = html[start:end]
+existing = html[max(0, start - 80):end]
 if MARKER in existing:
-    if "window.renderHomework3xCandidatesV421023" not in existing:
+    if "window.renderHomework3xCandidatesV421023" not in html[start:end]:
         raise SystemExit("Menu 3 renderer bridge marker exists but is malformed.")
     print("Menu 3 full-result renderer bridge already installed.")
 else:
