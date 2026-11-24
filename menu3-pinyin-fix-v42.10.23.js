@@ -521,11 +521,12 @@
    zh:String(entry?.zh||''),gloss:menu3Gloss(entry),entry,
    question:String(entry?.zh||'')==='吗'&&pinyinKey(entry?.py)==='ma'
   }));
-  if(parts.length<2||parts.some(part=>menu3BadEntry(part.entry)||!part.gloss))return false;
+  if(parts.length<2)return false;
   const questionAt=parts.findIndex(part=>part.question);
   if(questionAt>=0&&questionAt!==parts.length-1)return false;
-  const content=questionAt===parts.length-1?parts.slice(0,-1):parts;
-  if(content.length<2)return false;
+  const content=questionAt===parts.length-1?parts.slice(0,-1):parts.slice();
+  if(content.length&&content[content.length-1].zh==='了'&&pinyinKey(content[content.length-1].entry.py)==='le')content.pop();
+  if(content.length<2||content.some(part=>menu3BadEntry(part.entry)||!part.gloss))return false;
   // Permit valid dictionary-backed clauses outside the hand-written templates,
   // but never translate a bare subject+noun fragment as if it were a sentence.
   return menu3HasVerb(content);
