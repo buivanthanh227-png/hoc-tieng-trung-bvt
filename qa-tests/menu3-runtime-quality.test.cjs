@@ -10,6 +10,9 @@ const runtime=fs.readFileSync(path.join(__dirname,'..','menu3-pinyin-fix-v42.10.
 function loadRuntime(){
   const syllables=new Set(['zuo','tian','zou','ti','an','ni','qing','wo','he','cha','le','nv','nu','nve','lve','lu']);
   const listeners={};
+  const host={hidden:false,replaceChildren(){},appendChild(){}};
+  const status={textContent:''};
+  const query={value:''};
   const originalSelector=(items)=>items;
   const windowObject={
     pinyin18Key(value){
@@ -25,12 +28,17 @@ function loadRuntime(){
     head:{appendChild(){}},
     createElement(){return {style:{},classList:{add(){},remove(){}},setAttribute(){}};},
     addEventListener(type,callback){(listeners[type]||=[]).push(callback);},
-    getElementById(){return null;},
+    getElementById(id){
+      if(id==='homework3x-candidates')return host;
+      if(id==='homework3x-status')return status;
+      if(id==='homework3x-query')return query;
+      return null;
+    },
     querySelector(){return null;}
   };
   const context=vm.createContext({window:windowObject,document:documentObject,navigator:{},console,Map,Set});
   vm.runInContext(runtime,context,{timeout:10000});
-  return {window:windowObject,context,listeners};
+  return {window:windowObject,context,listeners,query,status,host};
 }
 
 test('compact zuotian is resolved as zuo+tian, not zou+ti+an; original spacing is preserved',()=>{
@@ -51,8 +59,10 @@ test('source syllables, not an ambiguous raw alias, determine whether ü is disp
   assert.equal(window.formatByInputSpacing('lu','lù'),'lù');
 });
 
-test('strict umlaut matching splits multi-syllable input and candidate readings on whitespace',()=>{
-  const {window}=loadRuntime();
+test('strict umlaut matching splits multi-syllable input and candidate readings on whitespace',async()=>{
+  const {window}=loadRuntime('nv3 lv4');
+  // The runtime installs its strict selector when the result renderer is first invoked.
+  await window.renderHomework3xCandidatesV421023([]);
   const candidates=[{zh:'A',py:'nü lǚ'},{zh:'B',py:'nü lu'}];
   const result=window.pinyin18SelectToneDiverse(candidates,'nv3 lv4',30);
   assert.deepEqual(Array.from(result,x=>x.zh),['A']);
