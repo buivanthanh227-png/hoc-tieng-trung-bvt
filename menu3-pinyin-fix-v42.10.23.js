@@ -264,6 +264,7 @@
   if(!host)return null;
   const status=document.getElementById('homework3x-status');
   const query=String(document.getElementById('homework3x-query')?.value||'');
+  const lookupToken=window.__homework3xLookupRequestToken;
   installMenu3UmlautSelector();
   const seen=new Set();
   const valid=(Array.isArray(candidates)?candidates:[]).filter(item=>{
@@ -280,11 +281,14 @@
   );
   if(!source.length){host.replaceChildren();host.hidden=true;if(status)status.textContent='Chưa tìm được kết quả Pinyin khớp với mục từ/câu hoàn chỉnh trong từ điển.';return null;}
   const token=++renderToken;let page=0;const pageSize=10;
+  const isCurrent=()=>token===renderToken&&
+   (lookupToken===undefined||lookupToken===window.__homework3xLookupRequestToken)&&
+   String(document.getElementById('homework3x-query')?.value||'').trim()===query.trim();
   if(status)status.textContent='Đang hoàn thiện nghĩa tiếng Việt cho các kết quả…';
   host.hidden=false;host.replaceChildren();
   // Resolve meanings for the entire candidate set before any card is shown.
   const resolved=await mapLimit(source,3,translateFullSentence);
-  if(token!==renderToken)return null;
+  if(!isCurrent())return null;
   const complete=resolved.filter(item=>item&&item.zh&&item.py&&validMeaning(item.vi));
   if(!complete.length){
    host.replaceChildren();host.hidden=true;
@@ -293,7 +297,7 @@
   }
   currentCandidates=complete;
   const renderPage=()=>{
-   if(token!==renderToken)return;
+   if(!isCurrent())return;
    const pageCount=Math.max(1,Math.ceil(complete.length/pageSize));
    const start=page*pageSize,items=complete.slice(start,start+pageSize);
    host.replaceChildren();
@@ -406,14 +410,17 @@
   }));
   backdrop.querySelectorAll('[data-speak]').forEach(button=>button.addEventListener('click',()=>speakText(button.dataset.speak==='zh'?values.hanzi:values.meaning,button.dataset.speak==='zh'?'zh':'vi')));
  };
- /* Serialize lookup requests; every path, including errors, releases the lock. */
+ /* Let a newer lookup supersede pending work without allowing stale results to render. */
  const lookupButton=document.getElementById('homework3x-lookup');
  const originalLookup=window.lookupHomework3x;
  if(typeof originalLookup==='function'&&!originalLookup.__bvtSerializedV421023){
-  let running=false;
+  let latestRequest=0;
   const serialized=async function(){
-   if(running)return null;
-   running=true;if(lookupButton)lookupButton.disabled=true;
+   const request=++latestRequest;
+   window.__homework3xLookupRequestToken=request;
+   if(typeof homework3xLookupToken==='number')homework3xLookupToken++;
+   const resultBox=document.getElementById('homework3x-results');if(resultBox)resultBox.replaceChildren();
+   const candidateBox=document.getElementById('homework3x-candidates');if(candidateBox){candidateBox.replaceChildren();candidateBox.hidden=true;}
    try{
     const query=String(document.getElementById('homework3x-query')?.value||'').trim();
     const semantic=typeof window.menu3AnalyzeSentence==='function'?window.menu3AnalyzeSentence(query):[];
@@ -426,17 +433,15 @@
    }
    catch(error){
     const status=document.getElementById('homework3x-status');
-    if(status)status.textContent='Đã xảy ra lỗi khi tra cứu. Bạn có thể thử lại: '+String(error&&error.message||error);
+    if(request===latestRequest&&status)status.textContent='Đã xảy ra lỗi khi tra cứu. Bạn có thể thử lại: '+String(error&&error.message||error);
     return null;
-   }finally{running=false;if(lookupButton)lookupButton.disabled=false;}
+   }finally{if(request===latestRequest&&lookupButton)lookupButton.disabled=false;}
   };
   serialized.__bvtSerializedV421023=true;
   window.lookupHomework3x=serialized;
  }
  const input=document.getElementById('homework3x-query');
- if(input)input.addEventListener('keydown',event=>{
-  if(event.key==='Enter'&&window.lookupHomework3x?.__bvtSerializedV421023&&lookupButton?.disabled)event.preventDefault();
- },true);
+ if(lookupButton)lookupButton.disabled=false;
  root.dataset.menu3PinyinFix='42.10.23';
 
 

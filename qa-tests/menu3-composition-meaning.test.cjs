@@ -47,12 +47,16 @@ function boot({ forceTimeout = false } = {}) {
     .replace(/u\u0308/g, 'v').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
   context.getPinyin18SourceIndex = () => ({ syllables });
   context.$ = () => status;
-  context.renderHomework3xCard = item => cards.push(item);
+  context.renderHomework3xCard = async item => {
+    cards.push(item);
+    status.textContent = 'Có 1 kết quả hợp lệ với phiên âm, chữ Hán và nghĩa tiếng Việt.';
+    return item;
+  };
   context.homework3xLookupToken = 17;
   vm.runInContext(runtime, context, { timeout: 10000 });
   vm.runInContext(extract(
     'async function acceptPinyinComposition3x(option,lookupToken){',
-    'function renderPinyinCompositionOptions3x('
+    'async function renderPinyinCompositionOptions3x('
   ), context, { timeout: 10000 });
   return { context, status, cards };
 }
@@ -65,7 +69,7 @@ test('composition translation success renders only the validated Vietnamese mean
   await context.acceptPinyinComposition3x(option, 17);
   assert.equal(cards.length, 1);
   assert.equal(cards[0].vi, 'Xin chào.');
-  assert.match(status.textContent, /xác minh nghĩa tiếng Việt/i);
+  assert.match(status.textContent, /1 kết quả hợp lệ/i);
 });
 
 test('composition translation failure does not render a fake Vietnamese meaning', async () => {
