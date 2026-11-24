@@ -12,6 +12,14 @@
   'button,input[type=button],input[type=submit],[role=button],[role=tab],.btn,.tab,.menu-button,.tool-button,[data-action]{-webkit-tap-highlight-color:transparent;touch-action:manipulation;transition:transform 110ms ease,filter 110ms ease,box-shadow 110ms ease!important}',
   '.bvt-press-active{transform:translateY(2px) scale(.965)!important;filter:brightness(.86)!important;box-shadow:inset 0 3px 7px rgba(0,0,0,.24)!important}',
   'button:active,input[type=button]:active,input[type=submit]:active,[role=button]:active,[role=tab]:active,.btn:active,.tab:active,.menu-button:active,.tool-button:active{transform:translateY(2px) scale(.965)!important;filter:brightness(.86)!important;box-shadow:inset 0 3px 7px rgba(0,0,0,.24)!important}',
+  '#homework3x-candidates .homework3x-candidate-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important}',
+  '#homework3x-candidates .homework3x-candidate{display:flex!important;align-items:flex-start!important;gap:10px!important;width:100%!important;min-width:0!important;min-height:150px!important;padding:12px!important;border:1.5px solid #dfe5ec!important;border-radius:15px!important;background:#fff!important;text-align:left!important;white-space:normal!important;box-shadow:0 1px 2px rgba(15,23,42,.04)!important}',
+  '#homework3x-candidates .homework3x-candidate-content{display:flex!important;flex:1!important;flex-direction:column!important;gap:7px!important;min-width:0!important}',
+  '#homework3x-candidates .homework3x-pagination{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;margin:12px 0!important;flex-wrap:nowrap!important}',
+  '#homework3x-candidates .homework3x-pagination button{padding:9px 12px!important;border:1px solid #cbd5e1!important;border-radius:10px!important;background:#fff!important;font-weight:750!important;color:#344256!important}',
+  '#homework3x-candidates .homework3x-pagination button:disabled{opacity:.4!important}',
+  '@media(max-width:600px){#homework3x-candidates .homework3x-candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}#homework3x-candidates .homework3x-candidate{min-height:140px!important;padding:9px!important}#homework3x-candidates .homework3x-candidate-number{flex:0 0 25px!important;width:25px!important;height:25px!important;font-size:13px!important}}',
+  '@media(max-width:360px){#homework3x-candidates .homework3x-candidate-grid{grid-template-columns:1fr!important}}',
   '@media(prefers-reduced-motion:reduce){button,input[type=button],input[type=submit],[role=button],[role=tab],.btn,.tab,.menu-button,.tool-button{transition:none!important}}'
  ].join('\n');
  (document.head||root).appendChild(style);
@@ -137,9 +145,14 @@
  const translateFullSentence=async item=>{
   let vi=cleanMeaning(item.preferredMeaning||item.vi||'');
   if(validMeaning(vi))return {...item,vi};
-  if(typeof window.machineTranslate!=='function')return null;
   try{
-   const translated=cleanMeaning(await window.machineTranslate(String(item.zh),'zh-CN','vi'));
+   let translated='';
+   if(typeof window.machineTranslate3x==='function'){
+    const result=await window.machineTranslate3x(String(item.zh),'zh-CN','vi');
+    translated=cleanMeaning(result&&typeof result==='object'?result.text:result);
+   }else if(typeof window.machineTranslate==='function'){
+    translated=cleanMeaning(await window.machineTranslate(String(item.zh),'zh-CN','vi'));
+   }
    return validMeaning(translated)?{...item,vi:translated,note:'Nghĩa tiếng Việt được dịch từ toàn câu chữ Hán.'}:null;
   }catch(_){return null;}
  };
@@ -216,7 +229,7 @@
   };
   await renderPage();return source[0]||null;
  }
- window.renderHomework3xCandidates=renderCandidates;
+ window.renderHomework3xCandidatesV421023=renderCandidates;
 
  /* Menu 3 candidate detail modal: three values, three copy actions, two speech actions. */
  const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
