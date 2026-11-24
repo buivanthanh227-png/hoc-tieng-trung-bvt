@@ -262,10 +262,13 @@
    const id=String(item.zh)+'|'+String(item.py);
    if(seen.has(id))return false;seen.add(id);return true;
   });
-  const source=typeof window.pinyin18SelectToneDiverse==='function'
-   ?window.pinyin18SelectToneDiverse(valid,query,30)
-   :valid.filter(item=>matchesPreferredBoundaries(query,item.py))
-     .sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)).slice(0,30);
+  // Candidates have already passed Menu 3's semantic sentence gate.
+  // Do not run Menu 18's one-position tone selector here: it would discard
+  // valid combinations that differ at more than one Pinyin position.
+  const source=valid.slice().sort((a,b)=>
+   (Number(b.score)||Number(b.priority)||0)-(Number(a.score)||Number(a.priority)||0)||
+   String(a.zh).localeCompare(String(b.zh),'zh-CN')
+  );
   if(!source.length){host.replaceChildren();host.hidden=true;if(status)status.textContent='Chưa tìm được kết quả Pinyin khớp với mục từ/câu hoàn chỉnh trong từ điển.';return null;}
   const token=++renderToken;let page=0;const pageSize=10;
   if(status)status.textContent='Đang hoàn thiện nghĩa tiếng Việt cho các kết quả…';
@@ -347,7 +350,7 @@
   const preferredVi=cleanMeaning(item?.preferredMeaning||'');
   const values={
    hanzi:String(item?.zh||'').trim(),
-   pinyin:String(item?.py||'').trim(),
+   pinyin:formatByInputSpacing(String(document.getElementById('homework3x-query')?.value||''),String(item?.py||'').trim()),
    // The resolved card meaning is authoritative; never let a stale or
    // invalid preferredMeaning hide the verified Vietnamese result.
    meaning:validMeaning(modalVi)&&!isPinyinEchoMeaning(modalVi,item?.py)
@@ -387,7 +390,16 @@
   const serialized=async function(){
    if(running)return null;
    running=true;if(lookupButton)lookupButton.disabled=true;
-   try{return await originalLookup.apply(this,arguments);}
+   try{
+    const query=String(document.getElementById('homework3x-query')?.value||'').trim();
+    const semantic=typeof window.menu3AnalyzeSentence==='function'?window.menu3AnalyzeSentence(query):[];
+    if(semantic.length&&typeof window.renderHomework3xCandidatesV421023==='function'){
+     const status=document.getElementById('homework3x-status');
+     if(status)status.textContent='Đã ghép các phương án từ điển và kiểm tra nghĩa tiếng Việt của toàn câu…';
+     return await window.renderHomework3xCandidatesV421023(semantic);
+    }
+    return await originalLookup.apply(this,arguments);
+   }
    catch(error){
     const status=document.getElementById('homework3x-status');
     if(status)status.textContent='Đã xảy ra lỗi khi tra cứu. Bạn có thể thử lại: '+String(error&&error.message||error);
@@ -421,11 +433,11 @@
   if(/^\s*họ\s*\[/i.test(raw))return true;
   return menu3BadGloss(menu3Gloss(entry));
  }
- function menu3FinishSentence(text){
+ function menu3FinishSentence(text,ending='.'){
   let sentence=String(text||'').replace(/\s+/g,' ').trim();
   if(!sentence)return '';
   sentence=sentence.charAt(0).toLocaleUpperCase('vi')+sentence.slice(1);
-  if(!/[.!?…]$/.test(sentence))sentence+='.';
+  if(!/[.!?…]$/.test(sentence))sentence+=ending;
   return sentence;
  }
  function menu3IsVerbGloss(gloss){
@@ -439,11 +451,17 @@
  function menu3MeaningFromEntries(entries){
   const parts=(Array.isArray(entries)?entries:[]).map(entry=>{
    const zh=String(entry.zh||''),gloss=menu3Gloss(entry),key=pinyinKey(entry.py);
-   return {zh,gloss,entry,le:zh==='了'&&key==='le',qing:zh==='请',and:zh==='和'||zh==='合'||zh==='跟'};
+   return {zh,gloss,entry,le:zh==='了'&&key==='le',question:zh==='吗'&&key==='ma',qing:zh==='请',and:zh==='和'||zh==='合'||zh==='跟'};
   });
   if(!parts.length)return '';
-  const completed=parts[parts.length-1].le;
-  const core=completed?parts.slice(0,-1):parts.slice();
+  // 吗 is a sentence-final question particle, not a content word. Keep it
+  // as a grammatical signal and exclude its dictionary gloss from Vietnamese.
+  const questionAt=parts.findIndex(part=>part.question);
+  if(questionAt>=0&&questionAt!==parts.length-1)return '';
+  const asked=questionAt===parts.length-1;
+  const content=asked?parts.slice(0,-1):parts.slice();
+  const completed=content.length>0&&content[content.length-1].le;
+  const core=completed?content.slice(0,-1):content;
   if(!core.length||core.some(part=>menu3BadEntry(part.entry)))return '';
   const time=/^(hôm qua|hôm nay|hôm kia|ngày mai|bây giờ|sáng nay|tối nay|tuần trước|tuần sau|năm ngoái)$/i;
   const person=/^(tôi|mình|bạn|anh|chị|em|họ|ông|bà|chúng tôi|chúng ta)$/i;
@@ -458,7 +476,7 @@
    if((leftPeople&&leftPeople!==left.length)||(rightPeople&&rightPeople!==right.length))return '';
    const conj=core[andAt].gloss.toLocaleLowerCase('vi');
    const word=/^(và|với|cùng|cùng với)$/.test(conj)?conj:'và';
-   return menu3FinishSentence(left.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' ')+' '+word+' '+right.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' '));
+   return menu3FinishSentence(left.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' ')+' '+word+' '+right.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' '),asked?'?':'.');
   }
   let index=0;const times=[];
   while(index<core.length&&time.test(core[index].gloss)){times.push(core[index].gloss.toLocaleLowerCase('vi'));index++;}
@@ -471,16 +489,16 @@
    if(after.some(part=>part.and))return '';
    const action=after.map(part=>part.gloss.toLocaleLowerCase('vi')).filter(Boolean);
    if(!object||!menu3HasVerb(after))return '';
-   return menu3FinishSentence([times.join(' '),subject,completed?'đã':'','mời',object,action.join(' ')].filter(Boolean).join(' '));
+   return menu3FinishSentence([times.join(' '),subject,completed?'đã':'','mời',object,action.join(' ')].filter(Boolean).join(' '),asked?'?':'.');
   }
   if(subject&&rest.length&&!rest.some(part=>part.and||part.qing)){
    const pronoun=/^(tôi|mình|bạn|anh|chị|em|họ|ông|bà|chúng tôi|chúng ta|các bạn)$/i;
    const social=/^(yêu|thích|nhớ|gặp|quen|giúp|mời|hỏi|nhìn|xem|nghe|gọi)$/i;
    if(pronoun.test(rest[rest.length-1].gloss)&&!social.test(rest[0].gloss))return '';
    if(!menu3HasVerb(rest))return '';
-   return menu3FinishSentence([times.join(' '),subject,completed?'đã':'',rest.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' ')].filter(Boolean).join(' '));
+   return menu3FinishSentence([times.join(' '),subject,completed?'đã':'',rest.map(part=>part.gloss.toLocaleLowerCase('vi')).join(' '),asked?'không':''].filter(Boolean).join(' '),asked?'?':'.');
   }
-  if(core.length===1&&!menu3BadGloss(core[0].gloss))return core[0].gloss;
+  if(core.length===1&&!menu3BadGloss(core[0].gloss))return asked?menu3FinishSentence(core[0].gloss,'?'):core[0].gloss;
   return '';
  }
  function menu3ShortestSyllables(token){
@@ -521,7 +539,7 @@
        const bucket=states[end],prior=bucket.find(item=>item.zh===candidate.zh);
        if(prior){if(candidate.score>prior.score)Object.assign(prior,candidate);}else bucket.push(candidate);
        bucket.sort((a,b)=>b.score-a.score||a.zh.localeCompare(b.zh,'zh-CN'));
-       if(bucket.length>16)bucket.length=16;
+       if(bucket.length>256)bucket.length=256;
       }
      }
     }
@@ -535,7 +553,7 @@
    if(path.entries.some(entry=>Number(entry.score||0)<80&&!(entry.zh==='了'&&pinyinKey(entry.py)==='le')))continue;
    const id=path.zh+'|'+vi;if(seen.has(id))continue;seen.add(id);
    results.push({zh:path.zh,py:path.entries.map(entry=>String(entry.py||'').trim()).filter(Boolean).join(' '),vi,score:path.score});
-   if(results.length>=30)break;
+   if(results.length>=300)break;
   }
   return results;
  }
@@ -550,31 +568,32 @@
   return String(item?.py||'').trim().split(/\s+/).filter(Boolean).some(menu3ReadingUsesUmlaut);
  }
  function menu3AnalyzeSentence(raw){
-  const query=String(raw||'');
+  const query=String(raw||'').trim();
+  if(!query)return [];
   installMenu3UmlautSelector();
+  // Primary path: compose dictionary-backed lexical entries across every
+  // Pinyin slot, then accept only combinations that pass the Vietnamese
+  // sentence-structure validator. This is the semantic final gate.
+  const rows=menu3ComposeAnalyses(query);
+  const seen=new Set(rows.map(item=>String(item.zh)+'|'+String(item.py)));
+  // Add only complete, independently glossed dictionary phrases. Never let
+  // isolated component-word glosses bypass the sentence-level semantic gate.
   const findChinese=window['pinyinToChineseCandidates'];
   const exact=typeof findChinese==='function'?findChinese(query):[];
-  let rows=[];
-  if(exact.length){
-   const tokens=query.trim().split(/[\s,，、;；]+/).filter(Boolean);
-   let pool=exact;
-   if(tokens.length>1){
-    const chooseTone=window.pinyin18SelectToneDiverse;
-    pool=typeof chooseTone==='function'?chooseTone(exact,query,30):exact.slice(0,30);
-   }else{
-    const token=tokens[0]||'';
-    pool=exact.filter(item=>menu3EntryMatchesReading(token,item)).sort((a,b)=>(Number(b.priority)||Number(b.score)||0)-(Number(a.priority)||Number(a.score)||0)||String(a.zh).localeCompare(String(b.zh),'zh-CN'));
-   }
-   const seen=new Set();
-   for(const item of pool){
-    if(!item||seen.has(item.zh+'|'+item.py))continue;seen.add(item.zh+'|'+item.py);
-    const vi=menu3LexicalMeaning(item);if(!vi)continue;
-    rows.push({zh:item.zh,py:item.py,vi});
-    if(rows.length>=30)break;
-   }
+  for(const item of Array.isArray(exact)?exact:[]){
+   if(!item||!item.zh||!item.py)continue;
+   if(!Array.isArray(item.sourceRows)||item.sourceRows.length!==1)continue;
+   const sourceRow=item.sourceRows[0];
+   if(!Array.isArray(sourceRow)||String(sourceRow[0]||'')!==String(item.zh))continue;
+   const vi=menu3LexicalMeaning(item);
+   if(!vi||!validMeaning(vi))continue;
+   const id=String(item.zh)+'|'+String(item.py);
+   if(seen.has(id))continue;
+   seen.add(id);
+   rows.push({zh:item.zh,py:item.py,vi,score:Number(item.priority)||Number(item.score)||0});
   }
-  if(!rows.length)rows=menu3ComposeAnalyses(query);
-  return rows.map(item=>({zh:item.zh,py:formatByInputSpacing(query,item.py),vi:item.vi,sourcePy:item.py}));
+  rows.sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0)||String(a.zh).localeCompare(String(b.zh),'zh-CN'));
+  return rows.map(item=>({zh:item.zh,py:formatByInputSpacing(query,item.py),vi:item.vi,score:item.score||0,sourcePy:item.py}));
  }
  window.menu3AnalyzeSentence=menu3AnalyzeSentence;
  window.menu3PageItems=function(items,page,pageSize){
