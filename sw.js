@@ -1,5 +1,5 @@
 'use strict';
-const CACHE_NAME = 'hoc-trung-app-shell-v42-10-23-menu3-title-2';
+const CACHE_NAME = 'hoc-trung-app-shell-v42-10-24-menu-heading-fix';
 const PINYIN_AUDIO_CACHE = 'bvt-pinyin-audio-assets-v42-10';
 const PINYIN_AUDIO_ORIGIN = 'https://cdn.jsdelivr.net';
 const PINYIN_AUDIO_PATH = '/gh/hugolpz/audio-cmn@f759a0f18f27690742957619e1248ed91e9b3f2c/64k/syllabs/';
@@ -38,7 +38,8 @@ async function injectMenu3RuntimeFix(response) {
   const html = await response.text();
   const patchUrl = new URL('menu3-pinyin-fix-v42.10.23.js', self.registration.scope).href;
   const scriptTag = '<script src="' + patchUrl + '" defer></script>';
-  const updated = html.includes('menu3-pinyin-fix-v42.10.23.js') ? html : html.replace(/<\/body\s*>/i, scriptTag + '</body>');
+  const headingStyle = "<style id=\"bvt-fix-right-menu-heading-typography-colors-v2\">\n.panel .section-title[data-function-number],.panel.active .section-title[data-function-number],#panel-pinyin-audio .p16-title,#panel-hanzi-memory .hm-hero h2.section-title{font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Noto Sans\",sans-serif!important;font-size:18px!important;font-weight:800!important;line-height:1.3!important;letter-spacing:0!important;max-width:100%!important;overflow-wrap:break-word!important;word-break:normal!important;text-wrap:pretty}\n.panel .section-title[data-function-number]::before{width:25px!important;height:25px!important;flex:0 0 25px!important;font-family:inherit!important;font-size:13px!important;font-weight:900!important;line-height:1!important}\n#panel-translate3 .section-title[data-function-number]{color:#0891b2!important}\n#panel-multilingual-image .section-title[data-function-number]{color:var(--ml-image-accent,#E4575D)!important}\n#panel-multilingual-voice .section-title[data-function-number]{color:var(--ml-voice-accent,#2FA66A)!important}\n#panel-pinyin-audio .section-title[data-function-number]{color:#1e3a8a!important}\n#panel-hanzi-memory .section-title[data-function-number]{color:#831843!important}\n@media(max-width:600px){.panel .section-title[data-function-number],.panel.active .section-title[data-function-number],#panel-pinyin-audio .p16-title,#panel-hanzi-memory .hm-hero h2.section-title{font-size:16px!important;line-height:1.3!important}}\n</style>";
+  const updated = html.includes('bvt-fix-right-menu-heading-typography-colors-v2') ? html : html.replace(/<\/body\s*>/i, headingStyle + scriptTag + '</body>');
   const headers = new Headers(response.headers);
   headers.delete('content-length');
   headers.delete('content-encoding');
