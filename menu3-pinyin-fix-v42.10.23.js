@@ -343,5 +343,7 @@
   if(event.key==='Enter'&&window.lookupHomework3x?.__bvtSerializedV421023&&lookupButton?.disabled)event.preventDefault();
  },true);
  root.dataset.menu3PinyinFix='42.10.23';
- root.dataset.menu3PinyinMapper='menu18-source-sentence-mapper';
+
+ const menu3Heading=document.querySelector('#panel-translate3 h2[data-function-number="3"]');
+ if(menu3Heading)menu3Heading.textContent='DỊCH NHANH VIỆT ⇄ TRUNG'; root.dataset.menu3PinyinMapper='menu18-source-sentence-mapper';
 })();
