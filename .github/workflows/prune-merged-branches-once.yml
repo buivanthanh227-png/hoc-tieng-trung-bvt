@@ -1,0 +1,46 @@
+name: One-time cleanup of fully merged branches
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/prune-merged-branches-once.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  prune-merged-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete only branches proven to be fully contained in main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            "diagnose/menu1-dictionary-search-structure"
+            "feat/menu3-context-pinyin-candidates"
+            "feat/menu18-pinyin-candidates"
+            "fix/menu3-meaning-before-render"
+            "fix/menu3-meaning-fallback-and-validation"
+            "fix/menu3-meaning-modal-speech"
+            "fix/menu3-pinyin-composition-meaning-validation"
+            "fix/menu3-regression-test-expectations"
+            "fix/menu3-results-ui-experience"
+            "fix/menu3-semantic-composition"
+            "fix/menu3-speech-deploy-and-cache"
+            "fix/menu3-speech-double-trigger"
+            "fix/menu3-unified-result-modal"
+            "fix/menu3-vietnamese-pinyin-integration"
+            "fix/sync-version-v42-9-4"
+            "fix/v42.9.4-qa"
+          )
+          for branch in "${branches[@]}"; do
+            echo "Deleting merged branch: ${branch}"
+            gh api --method DELETE "repos/${REPOSITORY}/git/refs/heads/${branch}"
+          done
+          echo "Deleted ${#branches[@]} fully merged branches."
