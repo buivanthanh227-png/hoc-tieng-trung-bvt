@@ -65,7 +65,9 @@ Dữ liệu từ điển tích hợp được ghi công theo dự án [ph0ngp/CV
 | `luyen-so/index.html` | Ứng dụng luyện số tiếng Trung |
 | `tools/` | Script hỗ trợ build, vá artifact và kiểm thử |
 | `.github/workflows/` | Quy trình kiểm tra và xuất bản GitHub Pages |
-| `README-QA.md`, `qa-tests/`, `QA-REPORTS/` | Tài liệu và kiểm thử chất lượng |
+| `qa-tests/` | Bộ kiểm thử hồi quy Node.js |
+| `QA-REPORTS/` | Hướng dẫn QA, báo cáo và ảnh bằng chứng; hồ sơ cũ nằm trong `archive/` |
+| `docs/` | Thông tin repository và mã nguồn legacy được lưu trữ |
 
 ## Build, deploy và kiểm thử
 

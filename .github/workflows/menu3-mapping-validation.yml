@@ -2,7 +2,7 @@ name: Menu 3 independent mapping validation
 
 on:
   push:
-    branches: [main, fix/menu18-whole-sentence-verified-v42-10-1]
+    branches: [main]
     paths:
       - 'index.html'
       - 'tools/patch_menu18_ranking.py'
@@ -16,7 +16,7 @@ on:
       - 'tools/patch_brand_header.py'
       - 'tools/test_brand_header.py'
       - '.github/workflows/deploy-pages.yml'
-      - '.github/workflows/menu18-patch-validation.yml'
+      - '.github/workflows/menu3-mapping-validation.yml'
   pull_request:
     branches: [main]
     paths:
@@ -32,7 +32,7 @@ on:
       - 'tools/patch_brand_header.py'
       - 'tools/test_brand_header.py'
       - '.github/workflows/deploy-pages.yml'
-      - '.github/workflows/menu18-patch-validation.yml'
+      - '.github/workflows/menu3-mapping-validation.yml'
 
 permissions:
   contents: read
@@ -46,7 +46,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: Validate source Menu 3 and retired Menu 18 state
         shell: bash
         run: |

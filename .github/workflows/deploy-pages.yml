@@ -1,13 +1,10 @@
 name: Build and deploy Học Tiếng Trung
-# Trigger Pages from the latest main commit, including the visible Pinyin color-group patch.
+# Publish the validated source on main; one-off patch workflows have been retired.
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Vendor Pinyin MP3", "Patch Pinyin chart ueng and w-series", "Patch Pinyin final color groups"]
-    types: [completed]
 
 permissions:
   contents: write
@@ -20,7 +17,6 @@ concurrency:
 
 jobs:
   build-deploy:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
