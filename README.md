@@ -8,7 +8,8 @@ Học Tiếng Trung BVT là ứng dụng web/PWA cá nhân, được phát tri�
 - **Mã nguồn:** https://github.com/buivanthanh227-png/hoc-tieng-trung-bvt
 - **Nền tảng:** GitHub Pages + GitHub Actions
 - **Giao diện:** Tiếng Việt; hỗ trợ điện thoại, máy tính bảng và máy tính
-- **Phiên bản:** xem số phiên bản mới nhất trong ứng dụng và `manifest.webmanifest`
+- **Phiên bản:** V42.10.23
+- Phiên bản phát hành hiện tại: **V42.10.23**.
 
 ## Giới thiệu
 
