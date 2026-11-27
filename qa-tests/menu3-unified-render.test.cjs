@@ -185,3 +185,20 @@ test('new lookup request invalidates old renderer work and keeps the newest resu
   assert.equal(buttons[0].children[1].children[1].textContent, 'new');
   assert.equal(buttons[0].children[1].children[2].textContent, 'Xin chào.');
 });
+
+test('editing the query invalidates pending work even when the query is changed back', async () => {
+  const { window, input, host, status } = boot({ withLookup: true });
+  let resolveTranslation;
+  window.menu3AnalyzeSentence = query => [{ zh: query, py: 'nǐ hǎo', vi: '' }];
+  window.machineTranslate3x = () => new Promise(resolve => { resolveTranslation = resolve; });
+  input.value = 'same query';
+  const pending = window.lookupHomework3x();
+  input.value = 'edited query';
+  input.dispatch('input');
+  input.value = 'same query';
+  input.dispatch('input');
+  resolveTranslation({ text: 'Tôi yêu bạn.' });
+  await pending;
+  assert.equal(candidateButtons(host).length, 0, 'a response from before the edits must not render');
+  assert.match(status.textContent, /Nội dung đã thay đổi/i);
+});

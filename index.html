@@ -4501,11 +4501,17 @@ function revealPracticeAnswer(){
  const box=$('practice-result');box.hidden=false;box.className='result mid';
  box.innerHTML=`<b>Đáp án mẫu</b><div style="margin-top:6px;font-size:19px;font-weight:850">${escapeHTML(expected)}${audio(expected,practiceMode==='zh-vi'?'đáp án tiếng Việt':'đáp án tiếng Trung')}</div>${chineseAnswer?`<div><b>Chữ Hán:</b> ${escapeHTML(chineseAnswer)}${audio(chineseAnswer,'chữ Hán')}</div>`:''}${py?`<div><b>Pinyin:</b> ${escapeHTML(py)}</div>`:''}${meaning?`<div><b>Nghĩa tiếng Việt:</b> ${escapeHTML(meaning)}${audio(meaning,'nghĩa tiếng Việt')}</div>`:''}<p class="smallprint" style="margin:6px 0 0">Đây là đáp án tham khảo, chưa tính vào thống kê đúng/sai.</p>`;
 }
+function scoreVietnameseSentenceAnswer(user,sentence){
+ const expected=String(sentence?.vi||'');
+ if(!expected)return 0;
+ // Chinese-to-Vietnamese exercises accept Vietnamese variants only.
+ return scoreAnswer(user,expected,[expected.replace(/[.!?。？！]+$/,'')]);
+}
 function handleSubmit(){
  if(practiceChecked){if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){toast('Đã kiểm tra câu này. Bấm “Đổi câu hỏi” để luyện từ tiếp theo.');return;}nextPractice();return;}
  const user=$('user-answer').value.trim();if(practiceMode==='read'){handleReadSubmit(user);return;}if(!user){const res=$('practice-result');if(res){res.hidden=true;res.innerHTML='';}toast('Nhập câu trả lời trước khi chấm.');$('user-answer')?.focus();return;}
  const p=currentPractice;let score=0,expected='',py='',meaning='',notes='';
- if(p?.type==='sentence'){if(practiceMode==='zh-vi'){expected=p.sentence.vi;score=scoreAnswer(user,expected,[expected.replace(/[.!?。？！]+$/,''),p.sentence.zh]);py=p.sentence.py;meaning='';}else{expected=p.sentence.zh;score=scoreAnswer(user,expected,[expected.replace(/[。！？]/g,''),p.sentence.py,keyPinyin(p.sentence.py)]);py=p.sentence.py;meaning=p.sentence.vi;}}
+ if(p?.type==='sentence'){if(practiceMode==='zh-vi'){expected=p.sentence.vi;score=scoreVietnameseSentenceAnswer(user,p.sentence);py=p.sentence.py;meaning='';}else{expected=p.sentence.zh;score=scoreAnswer(user,expected,[expected.replace(/[。！？]/g,''),p.sentence.py,keyPinyin(p.sentence.py)]);py=p.sentence.py;meaning=p.sentence.vi;}}
  else{const r=p.row;if(practiceMode==='vi-zh'||practiceMode==='write'){expected=r[0];const alternatives=[r[1],r[2],keyPinyin(r[2]),r[0]+' '+r[2]];score=scoreAnswer(user,expected,alternatives);py=r[2];meaning=r[3];if(practiceMode==='write'&&cleanAnswer(user)===cleanAnswer(expected))notes='Bạn đã nhập đúng chữ Hán. Ô vẽ tự do là luyện tay; dùng chế độ Chấm thứ tự nét để kiểm tra từng nét theo mẫu.';}else{expected=r[3];score=scoreAnswer(user,expected,[simpleGloss(r[3]),r[0]]);py=r[2];meaning='';notes='';}}
  showScore(score,expected,py,meaning,notes);practiceChecked=true;
  if(practiceMode==='vi-zh'||practiceMode==='zh-vi'){$('submit-answer').disabled=true;$('next-question').hidden=true;}

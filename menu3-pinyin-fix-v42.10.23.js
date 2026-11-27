@@ -411,10 +411,10 @@
   backdrop.querySelectorAll('[data-menu3-speak]').forEach(button=>button.addEventListener('click',()=>speakText(button.dataset.menu3Speak==='zh'?values.hanzi:values.meaning,button.dataset.menu3Speak==='zh'?'zh':'vi')));
  };
  /* Let a newer lookup supersede pending work without allowing stale results to render. */
+ let latestRequest=0;
  const lookupButton=document.getElementById('homework3x-lookup');
  const originalLookup=window.lookupHomework3x;
  if(typeof originalLookup==='function'&&!originalLookup.__bvtSerializedV421023){
-  let latestRequest=0;
   const serialized=async function(){
    const request=++latestRequest;
    window.__homework3xLookupRequestToken=request;
@@ -441,6 +441,20 @@
   window.lookupHomework3x=serialized;
  }
  const input=document.getElementById('homework3x-query');
+ // Typing must supersede pending work immediately, even if the query is later
+ // changed back to its previous value before an older translation resolves.
+ if(input)input.addEventListener('input',()=>{
+  renderToken++;
+  latestRequest++;
+  window.__homework3xLookupRequestToken=latestRequest;
+  if(typeof homework3xLookupToken==='number')homework3xLookupToken++;
+  const candidateBox=document.getElementById('homework3x-candidates');
+  if(candidateBox){candidateBox.replaceChildren();candidateBox.hidden=true;}
+  const resultBox=document.getElementById('homework3x-results');
+  if(resultBox)resultBox.replaceChildren();
+  const status=document.getElementById('homework3x-status');
+  if(status)status.textContent='Nội dung đã thay đổi. Bấm “Dịch câu” để tra cứu lại.';
+ });
  if(lookupButton)lookupButton.disabled=false;
  root.dataset.menu3PinyinFix='42.10.23';
 
