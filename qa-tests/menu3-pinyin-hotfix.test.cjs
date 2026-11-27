@@ -12,6 +12,7 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 test('Menu 3 runtime is loaded directly by the application HTML', () => {
   assert.match(html, /id="bvt-v421023-menu3-runtime"/);
   assert.match(html, /menu3-pinyin-fix-v42\.10\.23\.js\?v=42\.10\.23/);
+  assert.match(html, /menu3-pinyin-fix-v42\.10\.23\.js\?v=42\.10\.23-racefix-20261127/);
 });
 
 test('Menu 3 uses Menu 18 tone-position selector and restores the complete detail modal', () => {
