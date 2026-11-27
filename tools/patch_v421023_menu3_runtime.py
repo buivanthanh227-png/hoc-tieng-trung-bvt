@@ -5,7 +5,7 @@ import re
 import sys
 
 MARKER = 'id="bvt-v421023-menu3-runtime"'
-SCRIPT = '<script id="bvt-v421023-menu3-runtime" src="./menu3-pinyin-fix-v42.10.23.js?v=42.10.23-speechfix-1" defer></script>'
+SCRIPT = '<script id="bvt-v421023-menu3-runtime" src="./menu3-pinyin-fix-v42.10.23.js?v=42.10.23-racefix-20261127" defer></script>'
 
 def main():
     target = Path(sys.argv[1] if len(sys.argv) > 1 else "index.html")
